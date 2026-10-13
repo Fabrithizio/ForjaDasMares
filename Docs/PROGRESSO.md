@@ -1,4 +1,17 @@
-﻿# Progresso — Forja das Marés
+# Etapa 3 — entrega atual (13/10/2026)
+
+Quatro heróis configurados e selecionáveis na ArenaTest existente. Guerreiro: espada em arco/combo e impacto; Patrulheiro: projéteis e armadilha; Arcanista: gelo/fogo/raio e pulso glacial; Cavaleiro Rúnico: armadura, proteção do aliado e investida. ScriptableObjects separados; pool de projéteis/zonas; dano, facção, direção, obstáculos, knockback, recuperação/cooldowns e invulnerabilidade finita. Sem equipamento ou multiplayer.
+
+Joystick Android substituído por base fixa, indicador interno e captura de pointerId. Testes verificaram retenção do vetor, liberação de outro dedo e deslocamento do CharacterController. São testes sintéticos no Editor; moto g15 ausente da lista ADB nesta rodada. A nova versão ainda exige confirmação humana no aparelho.
+
+Verificação final: **22 testes PlayMode, 22 aprovados, zero falhas**; testes-final.xml. Mantidos os 11 testes da base e adicionados 11 de heróis/efeitos/controles/apresentação. Primeiro corrigida a criação de MaterialPropertyBlock no construtor. Depois corrigidos colisão do aliado com o percurso de teste e raio da explosão de fogo. A rodada final inclui movimento pelo joystick, investida/dano único/knockback e poses de dano/morte/vitória.
+
+Não há clips reais ou modelos finais. Idle/Walk/Attack/Skill/Dodge/Hit/Dead/Victory são estados de placeholders procedurais, com pontos de integração de Animator documentados. Animation integrado 1.0.0 habilitado. VS Code continua o editor; Visual Studio IDE não foi instalado.
+
+Guia: Docs/HEROIS_COMO_TESTAR.md. Catálogo: Docs/ARQUIVOS_ETAPA3.txt. Próxima etapa de inimigos depende de nova instrução. Histórico abaixo descreve checkpoints anteriores.
+
+---
+# Progresso — Forja das Marés
 
 ## Entrega atual
 
@@ -117,3 +130,11 @@ Windows: Builds/Windows/ForjaDasMares.exe, compilado e confirmado pelo usuário.
 
 Verificação final após os ajustes dos menus e da proteção de cenas: 11 testes PlayMode executados novamente, 11 aprovados, zero falhas; código C# compilado. O helper de abertura também preserva cenas com componentes personalizados. Nenhuma próxima etapa foi iniciada.
 
+
+## Builds da etapa 3
+
+Windows 0.2.0 x64/Mono: BuildPipeline retornou ARENA_PLAYER_BUILD_OK e saída 0. Executável iniciado nesta rodada; inicializou PhysX/Input System e carregou a cena, sem Exception, NullReference, MissingReference ou FATAL no log consultado. Encerrado o processo de teste criado por esta sessão. Não foi uma nova confirmação humana de teclado/mouse no executável; os comandos foram verificados nos testes PlayMode.
+
+Captura real URP da arena atual gerada por ArenaPreviewCapture e inspecionada: chão/obstáculos/iluminação/câmera, guerreiro com espada geométrica, grupo de alvos, aliado e HUD presentes. Arquivo arena-herois.png na entrega. ZIP do executável e todos os dados Windows produzido.
+
+Android 0.2.0: montagem em andamento neste checkpoint. Nova confirmação física depende do aparelho voltar a ser detectado por ADB. O código funcional no PC pode ser salvo no GitHub conforme autorização anterior.

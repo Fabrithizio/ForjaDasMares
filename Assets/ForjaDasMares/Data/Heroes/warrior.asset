@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f78da534427364fbf8dab22877fb72, type: 3}
+  m_Name: warrior
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroDefinition
+  heroId: warrior
+  displayName: GUERREIRO - Brasa
+  role: 'GUERREIRO '
+  strengths: Golpes em arco e impacto em grupo
+  weaknesses: Precisa aproximar-se
+  maximumHealth: 140
+  armor: 0.05
+  speed: 5.8
+  acceleration: 40
+  deceleration: 50
+  dodge:
+    duration: 0.22
+    speed: 12
+    cooldown: 0.8
+    invulnerableStart: 0.03
+    invulnerableEnd: 0.15
+  attacks:
+  - {fileID: 11400000, guid: 9fbd4954b1b46e6419e622e82f0c3700, type: 2}
+  - {fileID: 11400000, guid: eb1e8de4998c9e64db9e86a8e2f71115, type: 2}
+  - {fileID: 11400000, guid: 40b39108dfde85448ac5976baae3e851, type: 2}
+  special: {fileID: 11400000, guid: f8abad9b850d6f24c97a4207b69aea23, type: 2}
+  color: {r: 1, g: 0.45, b: 0.16, a: 1}
+  visualSlot: 0

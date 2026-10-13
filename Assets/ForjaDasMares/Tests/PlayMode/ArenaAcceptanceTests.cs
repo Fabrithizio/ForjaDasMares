@@ -34,6 +34,8 @@ namespace ForjaDasMares.Tests
             motor.GetComponent<PlayerAim>().enabled = false;
             motor.GetComponent<ArenaInput>().enabled = false;
             combat.enabled = false;
+            motor.GetComponent<HeroCombat>().enabled = false;
+            motor.GetComponent<HeroRoster>().enabled = false;
             session.enabled = false;
         }
 
@@ -233,20 +235,19 @@ namespace ForjaDasMares.Tests
         public IEnumerator TouchWidgetsSendVirtualGamepadCommandsWithoutSubmittingReset()
         {
             ArenaHud hud = Object.FindFirstObjectByType<ArenaHud>();
-            OnScreenStick stick = hud.GetComponentInChildren<OnScreenStick>(true);
+            TouchMoveStick stick = hud.GetComponentInChildren<TouchMoveStick>(true);
             OnScreenButton attackButton = null;
             foreach (OnScreenButton button in hud.GetComponentsInChildren<OnScreenButton>(true))
                 if (button.controlPath == "<Gamepad>/buttonSouth") attackButton = button;
             Assert.That(attackButton, Is.Not.Null);
             // Test the UI event adapter directly; physical multi-touch remains a device test.
-            stick.useIsolatedInputActions = false;
             stick.transform.parent.gameObject.SetActive(true);
             ArenaInput reader = motor.GetComponent<ArenaInput>(); reader.enabled = true;
             yield return null;
             Vector2 center = RectTransformUtility.WorldToScreenPoint(null, stick.transform.position);
             var pointer = new PointerEventData(EventSystem.current) { position = center };
             stick.OnPointerDown(pointer);
-            pointer.position += Vector2.right * 65f;
+            pointer.position += Vector2.right * stick.Radius * hud.GetComponent<Canvas>().scaleFactor;
             stick.OnDrag(pointer);
             yield return null;
             Assert.That(reader.Move.x, Is.GreaterThan(0.8f));

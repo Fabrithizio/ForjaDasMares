@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f78da534427364fbf8dab22877fb72, type: 3}
+  m_Name: arcanist
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroDefinition
+  heroId: arcanist
+  displayName: ARCANISTA - Prisma
+  role: 'ARCANISTA '
+  strengths: Tres elementos e controle de grupos
+  weaknesses: Vida baixa
+  maximumHealth: 80
+  armor: 0
+  speed: 5.5
+  acceleration: 40
+  deceleration: 50
+  dodge:
+    duration: 0.22
+    speed: 12
+    cooldown: 0.8
+    invulnerableStart: 0.03
+    invulnerableEnd: 0.15
+  attacks:
+  - {fileID: 11400000, guid: c82e29bb4347d324da037359073952a4, type: 2}
+  - {fileID: 11400000, guid: 4289a9f0e86704e418c6113079103559, type: 2}
+  - {fileID: 11400000, guid: 20d68bec3944f2d4e8dd531c4d8c120e, type: 2}
+  special: {fileID: 11400000, guid: 317221a2fdaf1c04f8773c8b6c6f4efb, type: 2}
+  color: {r: 0.65, g: 0.35, b: 1, a: 1}
+  visualSlot: 2

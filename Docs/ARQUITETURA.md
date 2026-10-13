@@ -127,3 +127,11 @@ Medir CPU/GPU, alocações, draw calls e tráfego em aparelhos reais. Orçamento
 
 Um teste local com dois clientes Windows não demonstra crossplay. Registrar aparelhos, versões, cenários executados e falhas. Nenhum desses testes foi executado nesta etapa.
 
+# Atualização da etapa 3 — heróis locais
+
+HeroDefinition referencia AttackDefinition[] e AbilityDefinition, separando tuning do comportamento. HeroRoster seleciona a configuração e a silhueta; HeroCombat controla preparação, recuperação, cadeia, habilidade e cooldown. DamageResolver realiza alcance/arco, linha de visão, facção e deduplicação por Health. CombatProjectile faz spherecast contínuo para evitar atravessar obstáculos; CombatZone resolve armadilhas de duração finita. CombatEffectPool cria a capacidade uma vez e reutiliza instâncias. Health contém vida, armadura, proteção e controle temporário; PlayerMotor limita a janela de invulnerabilidade e conserva colisões.
+
+HeroPresentation possui estados visuais procedurais; não há clips finais. HeroHud mostra vida/cooldown e a arena tem controles de teste. IHeroCommands estende a interface de entrada existente. TouchMoveStick usa eventos do EventSystem/Input System para um vetor capturado por dedo com base imóvel, enviado a ArenaInput. O resto dos botões usa controles virtuais. A cena mantém câmera, chão, iluminação, obstáculos e spawn existentes. O ataque anterior fica desabilitado, preservado para regressão.
+
+Autoridade de servidor continua planejada, sem implementação nesta etapa. Vida, ataques, posição e efeitos são locais; não considerar a API de simulação pública uma validação de rede. Pool e resolver têm capacidades finitas expostas/documentadas; profiling real e testes em vários aparelhos permanecem pendentes. Sem equipamento/progressão/multiplayer.
+

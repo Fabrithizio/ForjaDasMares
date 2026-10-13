@@ -20,6 +20,10 @@ namespace ForjaDasMares
             if (instructions != null) instructions.text = touch ? "ARRASTE PARA MOVER  |  ATAQUE / ESQUIVA  |  REINICIAR NO TOPO" : "WASD / SETAS: mover   MOUSE: mirar   CLIQUE: atacar   ESPAÇO: esquiva   R: reiniciar";
         }
         void OnEnable() { trainingTarget.Changed += Refresh; Refresh(); }
+        void Start()
+        {
+            if (instructions != null) instructions.text = Application.isMobilePlatform || showTouchInEditor ? "SEGURE O JOYSTICK | ATAQUE / ESQUIVA / HABILIDADE | HEROI NO TOPO" : "WASD: mover | MOUSE: mirar/atacar | E: habilidade | ESPACO: esquiva | 1-4/TAB: heroi | R: reiniciar";
+        }
         void OnDisable() => trainingTarget.Changed -= Refresh;
         void Refresh()
         {

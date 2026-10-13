@@ -11,6 +11,10 @@ namespace ForjaDasMares
         [SerializeField] Health trainingTarget;
         [SerializeField] LayerMask solidGeometry;
         [SerializeField] float fallThreshold = -4f;
+        [SerializeField] HeroRoster heroes;
+        [SerializeField] TrainingTargetMotion[] movableTargets;
+        [SerializeField] Health ally;
+        public void ConfigureHeroes(HeroRoster roster, TrainingTargetMotion[] targets, Health friend) { heroes = roster; movableTargets = targets; ally = friend; }
         public PlayerMotor Player => player;
         public Health TrainingTarget => trainingTarget;
         public Transform Spawn => spawn;
@@ -24,6 +28,9 @@ namespace ForjaDasMares
         void Update() { if (player.Commands.TakeReset() || player.transform.position.y < fallThreshold) ResetArena(); }
         public void ResetArena()
         {
+            if (movableTargets != null) foreach (var target in movableTargets) if (target != null) target.ResetTarget();
+            if (heroes != null) heroes.ResetHero();
+            if (ally != null) ally.Restore();
             CharacterController controller = player.GetComponent<CharacterController>();
             Vector3 center = spawn.position + Vector3.up * controller.height * 0.5f;
             float half = Mathf.Max(0f, controller.height * 0.5f - controller.radius);

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f78da534427364fbf8dab22877fb72, type: 3}
+  m_Name: rune-knight
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroDefinition
+  heroId: rune-knight
+  displayName: CAVALEIRO RUNICO - Baluarte
+  role: 'CAVALEIRO RUNICO '
+  strengths: Resistencia, protecao e investida
+  weaknesses: Movimento lento e alcance curto
+  maximumHealth: 210
+  armor: 0.18
+  speed: 4.7
+  acceleration: 40
+  deceleration: 50
+  dodge:
+    duration: 0.22
+    speed: 12
+    cooldown: 0.8
+    invulnerableStart: 0.03
+    invulnerableEnd: 0.15
+  attacks:
+  - {fileID: 11400000, guid: 7ca2182e8c273fc498d008659acb8b3b, type: 2}
+  special: {fileID: 11400000, guid: 9453f65fd34042741b02d4c3c92a9c6b, type: 2}
+  color: {r: 0.3, g: 0.65, b: 1, a: 1}
+  visualSlot: 3

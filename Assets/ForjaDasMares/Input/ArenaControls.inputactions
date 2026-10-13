@@ -50,6 +50,78 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Special",
+                    "type": "Button",
+                    "id": "e877f16e-340f-417f-90a7-2778bfa7288c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "NextHero",
+                    "type": "Button",
+                    "id": "c66cd003-7986-42ca-9a2a-781faf140037",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TestDamage",
+                    "type": "Button",
+                    "id": "d3955f58-5d69-4779-872d-99aa2c17456c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Victory",
+                    "type": "Button",
+                    "id": "e9099777-6469-4e5a-8689-ca4169186aa2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hero1",
+                    "type": "Button",
+                    "id": "83db3fa4-018e-4ab1-b69f-98c6041d9a1b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hero2",
+                    "type": "Button",
+                    "id": "8ef3af6c-1a5d-44f7-95c9-7e7f40ad3a6b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hero3",
+                    "type": "Button",
+                    "id": "0f87589c-3a82-4e6d-a471-03130c96e181",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hero4",
+                    "type": "Button",
+                    "id": "0b68b433-8c79-465b-9d6a-d5731d3b397a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -248,6 +320,127 @@
                     "processors": "",
                     "groups": "",
                     "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "21e47b02-5bbc-4211-8e77-ad0bc3abe67b",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Special",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2395a479-289b-46eb-8659-13c889349cf7",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Special",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b62ab61-46fa-4ed4-9921-85ac448bde3d",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Special",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d6feadc-7585-40bb-a627-6029a2c490ba",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NextHero",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1a7cd555-f71d-4c43-a3b2-1554c13d2425",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NextHero",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "54dc7a9a-7c4c-4962-b904-ff23dedfd35f",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TestDamage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b997d1fa-de66-4f73-958b-f0af6c2a0cc3",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Victory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0de0d84c-9655-4d1f-9ad3-2849efb8eb47",
+                    "path": "<Keyboard>/digit1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hero1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c4da725b-5b1a-4ffc-b3a8-d278d9d6d2f9",
+                    "path": "<Keyboard>/digit2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hero2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa5367f5-80ea-4f33-a5eb-ea44270db91f",
+                    "path": "<Keyboard>/digit3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hero3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f6a30ad-fcb8-4b57-a2f0-26d13e5b4443",
+                    "path": "<Keyboard>/digit4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hero4",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

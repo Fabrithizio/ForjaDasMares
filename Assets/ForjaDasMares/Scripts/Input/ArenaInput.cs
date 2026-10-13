@@ -4,16 +4,20 @@ using UnityEngine.InputSystem;
 namespace ForjaDasMares
 {
     [DefaultExecutionOrder(-200)]
-    public sealed class ArenaInput : MonoBehaviour, IPlayerCommands
+    public sealed class ArenaInput : MonoBehaviour, IHeroCommands
     {
         [SerializeField] InputActionAsset actions;
         InputActionAsset runtimeActions;
         InputActionMap gameplay;
         InputAction move, pointer;
         bool attackPending, dodgePending, resetPending, pointerMode;
+        bool specialPending, nextPending, damagePending, victoryPending, touchHeld;
+        int heroSlot = -1;
+        Vector2 touchMove;
         public InputActionAsset Actions => actions;
 
-        public Vector2 Move => move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+        public Vector2 Move => touchHeld ? touchMove : move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+        public void SetTouchMove(Vector2 value, bool held) { touchHeld = held; touchMove = Vector2.ClampMagnitude(value, 1f); if (held) pointerMode = false; }
         public Vector2 PointerPosition => pointer != null && pointer.enabled ? pointer.ReadValue<Vector2>() : Vector2.zero;
         public bool HasPointer => pointerMode && pointer != null && pointer.enabled;
         public void Configure(InputActionAsset asset) => actions = asset;
@@ -30,7 +34,14 @@ namespace ForjaDasMares
             gameplay.FindAction("Attack", true).performed += OnAttack;
             gameplay.FindAction("Dodge", true).performed += OnDodge;
             gameplay.FindAction("Reset", true).performed += OnReset;
+            BindOptional("Special", () => specialPending = true);
+            BindOptional("NextHero", () => nextPending = true);
+            BindOptional("TestDamage", () => damagePending = true);
+            BindOptional("Victory", () => victoryPending = true);
+            for (int i = 0; i < 4; i++) { int slot = i; BindOptional("Hero" + (i + 1), () => heroSlot = slot); }
         }
+        void BindOptional(string name, System.Action callback)
+        { InputAction action = gameplay.FindAction(name); if (action != null) action.performed += _ => callback(); }
 
         void OnEnable() => gameplay?.Enable();
         void OnDisable() { gameplay?.Disable(); ClearRequests(); }
@@ -41,9 +52,14 @@ namespace ForjaDasMares
         void OnAttack(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; attackPending = true; }
         void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
         void OnReset(InputAction.CallbackContext _) => resetPending = true;
-        void ClearRequests() { attackPending = dodgePending = resetPending = false; }
+        void ClearRequests() { attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }
         public bool TakeAttack() { bool value = attackPending; attackPending = false; return value; }
         public bool TakeDodge() { bool value = dodgePending; dodgePending = false; return value; }
         public bool TakeReset() { bool value = resetPending; resetPending = false; return value; }
+        public bool TakeSpecial() { bool value = specialPending; specialPending = false; return value; }
+        public bool TakeNextHero() { bool value = nextPending; nextPending = false; return value; }
+        public int TakeHeroSlot() { int value = heroSlot; heroSlot = -1; return value; }
+        public bool TakeTestDamage() { bool value = damagePending; damagePending = false; return value; }
+        public bool TakeVictory() { bool value = victoryPending; victoryPending = false; return value; }
     }
 }

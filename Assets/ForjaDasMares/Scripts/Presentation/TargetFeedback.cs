@@ -21,6 +21,12 @@ namespace ForjaDasMares
         void Refresh()
         {
             Color color = remaining > 0f ? flashColor : health.Current > 0 ? originalColor : originalColor * 0.3f;
+            if (remaining <= 0f && health.IsAlive)
+            {
+                if (health.ControlMultiplier == 0f) color = Color.cyan;
+                else if (health.ControlMultiplier < 1f) color = Color.Lerp(originalColor, Color.cyan, 0.6f);
+                else if (health.ProtectionRemaining > 0) color = Color.Lerp(originalColor, Color.yellow, 0.5f);
+            }
             body.GetPropertyBlock(properties); properties.SetColor(BaseColor, color); body.SetPropertyBlock(properties);
         }
     }

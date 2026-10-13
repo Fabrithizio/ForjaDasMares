@@ -16,6 +16,7 @@ namespace ForjaDasMares
         }
         void Update()
         {
+            if (motor.FacingLocked) return;
             IPlayerCommands commands = motor.Commands;
             if (commands == null) return;
             Vector3 direction = motor.WorldDirection(commands.Move);

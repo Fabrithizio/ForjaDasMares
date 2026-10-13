@@ -21,9 +21,32 @@ namespace ForjaDasMares
         IPlayerCommands commands;
         Vector3 velocity, dodgeDirection;
         float verticalSpeed, dodgeRemaining, cooldownRemaining;
+        Health health;
+        float invulnerableStart, invulnerableEnd, facingLock;
+        bool charge;
 
         public float Speed => speed;
-        public bool IsDodging => dodgeRemaining > 0f;
+        public bool IsDodging => dodgeRemaining > 0f && !charge;
+        public bool IsCharging => dodgeRemaining > 0f && charge;
+        public bool IsInvulnerable => IsDodging && dodgeDuration - dodgeRemaining >= invulnerableStart && dodgeDuration - dodgeRemaining < invulnerableEnd;
+        public bool FacingLocked => facingLock > 0f || IsCharging;
+        public Vector3 PlanarVelocity => velocity;
+        public float DodgeCooldownRemaining => cooldownRemaining;
+        public void ApplyHero(HeroDefinition profile, Health owner)
+        {
+            health = owner; speed = Mathf.Max(0.1f, profile.speed); acceleration = Mathf.Max(1, profile.acceleration); deceleration = Mathf.Max(1, profile.deceleration);
+            dodgeDuration = Mathf.Max(0.05f, profile.dodge.duration); dodgeSpeed = Mathf.Max(0.1f, profile.dodge.speed); dodgeCooldown = Mathf.Max(0, profile.dodge.cooldown);
+            invulnerableStart = Mathf.Clamp(profile.dodge.invulnerableStart, 0, dodgeDuration);
+            invulnerableEnd = Mathf.Clamp(profile.dodge.invulnerableEnd, invulnerableStart, dodgeDuration);
+            velocity = Vector3.zero; dodgeRemaining = cooldownRemaining = 0f; charge = false;
+        }
+        public void LockFacing(float duration) => facingLock = Mathf.Max(facingLock, duration);
+        public bool StartCharge(Vector3 direction, float duration, float chargeSpeed)
+        {
+            if ((health != null && (!health.IsAlive || health.ControlMultiplier == 0f)) || dodgeRemaining > 0) return false;
+            direction.y = 0; dodgeDirection = direction.normalized * chargeSpeed / dodgeSpeed;
+            dodgeRemaining = Mathf.Max(0.05f, duration); charge = true; return true;
+        }
         public IPlayerCommands Commands => commands;
         public void Configure(MonoBehaviour source, Transform basis) { commandSource = source; cameraBasis = basis; }
 
@@ -37,6 +60,7 @@ namespace ForjaDasMares
 
         void Update()
         {
+            if (health != null && !health.IsAlive) { commands.TakeDodge(); Simulate(Time.deltaTime, Vector2.zero); return; }
             if (commands.TakeDodge()) TryDodge(commands.Move);
             Simulate(Time.deltaTime, commands.Move);
         }
@@ -50,9 +74,10 @@ namespace ForjaDasMares
 
         public bool TryDodge(Vector2 direction)
         {
-            if (cooldownRemaining > 0f || IsDodging) return false;
+            if (cooldownRemaining > 0f || dodgeRemaining > 0f || (health != null && (!health.IsAlive || health.ControlMultiplier == 0f))) return false;
             dodgeDirection = direction.sqrMagnitude > 0.01f ? WorldDirection(direction).normalized : transform.forward;
             dodgeRemaining = dodgeDuration;
+            charge = false;
             cooldownRemaining = dodgeDuration + dodgeCooldown;
             return true;
         }
@@ -62,7 +87,9 @@ namespace ForjaDasMares
         {
             if (deltaTime <= 0f || controller == null || !controller.enabled) return;
             cooldownRemaining = Mathf.Max(0f, cooldownRemaining - deltaTime);
-            Vector3 desired = WorldDirection(Vector2.ClampMagnitude(move, 1f)) * speed;
+            facingLock = Mathf.Max(0, facingLock - deltaTime);
+            if (health != null && !health.IsAlive) { move = Vector2.zero; velocity = Vector3.zero; dodgeRemaining = 0; }
+            Vector3 desired = WorldDirection(Vector2.ClampMagnitude(move, 1f)) * speed * (health != null ? health.ControlMultiplier : 1f);
             float rate = move.sqrMagnitude > 0.0001f ? acceleration : deceleration;
             velocity = Vector3.MoveTowards(velocity, desired, rate * deltaTime);
             float dashTime = Mathf.Min(deltaTime, dodgeRemaining);
@@ -82,6 +109,7 @@ namespace ForjaDasMares
             controller.enabled = wasEnabled;
             velocity = Vector3.zero;
             verticalSpeed = dodgeRemaining = cooldownRemaining = 0f;
+            facingLock = 0f; charge = false;
             Physics.SyncTransforms();
         }
     }

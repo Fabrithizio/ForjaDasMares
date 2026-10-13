@@ -96,3 +96,13 @@ Avisos observados: metadados SDK em Program Files não puderam ser regravados, e
 Criados nesta rodada: README.md, ArenaLauncher.cs e ArenaBuilds.cs com meta files, checkpoint Git e ZIP do projeto. Atualizados: manifest/lock para áudio/física, teste de referências, configurações Android ARM64/IL2CPP/API35, guia, progresso e auditoria. O helper de build inclui menus Windows/Android; a ferramenta de abertura oferece F6 e protege cenas alteradas.
 
 Windows: Builds/Windows/ForjaDasMares.exe, compilado e confirmado pelo usuário. Android: Builds/Android/ForjaDasMares.apk, gerado, instalado e testado. Builds e capturas não ficam no Git; os arquivos que permitem reconstruir o projeto ficam no repositório. O novo checkpoint deve incluir estas conclusões.
+# Auditoria anterior à etapa 3 — 13/10/2026
+
+Inspecionados antes da migração: ProjectVersion, manifest/lock, ArenaTest salva, scripts de entrada/movimento/câmera/ataque/vida/HUD/reset, builders e testes da etapa 2; checkout Git limpo no checkpoint faec7a5. Cópia de segurança da cena feita em work/etapa3/ArenaTest.before.unity. A Unity usada é 6000.3.26f1. URP 17.3.0 e Input System 1.14.2 já instalados; Android SDK/NDK/JDK e VS Code disponíveis. Não foi instalado Visual Studio IDE.
+
+Não havia HeroDefinition, projéteis, habilidade modular, joystick fixo customizado, modelos finais, .anim ou Animator Controllers equivalentes. Componentes existentes foram estendidos e a cena migrada, sem regenerar a arena. O joystick antigo movia a área interativa e usava ações isoladas; foi substituído por base fixa com captura de um pointerId. A confirmação anterior do PC pertence à versão 0.1.0; a etapa 3 requer novas verificações.
+
+Animation integrado 1.0.0 foi habilitado após o compilador identificar a ausência de UnityEngine.AnimationModule. Compatibilidade confirmada com o pacote integrado da instalação e [documentação Unity 6.3](https://docs.unity.com/en-us/engine/6000.3/manual/packages-list/packages-all/pack-build/com-unity-modules-animation). Não implica existência de clips/modelos prontos. Sem nova dependência de rede nesta etapa.
+
+
+Preservação confirmada por IDs da cena: 326 dos 327 objetos/componentes originais permanecem. O único ID removido pertence ao OnScreenStick antigo, substituído pelo TouchMoveStick. Nenhum chão, parede, câmera, iluminação ou outro objeto original foi recriado/removido.
