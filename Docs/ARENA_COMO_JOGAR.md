@@ -12,7 +12,7 @@ Editor escolhido: Unity 6.3 LTS, `6000.3.26f1`. Base: template oficial Universal
 
 1. No Unity Hub, adicionar esta pasta como projeto e abrir com a versão indicada em `ProjectSettings/ProjectVersion.txt`.
 2. Aguardar a importação/resolução de pacotes e conferir o Console.
-3. Abrir `Assets/ForjaDasMares/Scenes/ArenaTest.unity`.
+3. Abrir `Assets/ForjaDasMares/Scenes/ArenaTest.unity`, ou usar Forja das Mares → Open playable arena (F6).
 4. Clicar em Play e dar foco à janela Game.
 
 A cena já está salva e configurada. O menu `Forja das Mares/Create test arena (only if absent)` existe como ferramenta de recuperação: gera a cena somente se ela não existir e preserva uma arena já editada. Não é preciso executar um gerador a cada Play.
@@ -57,3 +57,41 @@ Esta entrega não inclui inimigos, multiplayer, progressão ou inventário. Tamb
 
 Para um teste em aparelho, usar Android Build Support com o SDK/NDK/OpenJDK da mesma versão de Editor. No Build Profiles, criar/selecionar Android, incluir ArenaTest e conferir ferramentas externas em Preferences. A geração/instalação de APK e testes físicos só podem ser registrados como concluídos após execução real. Os módulos não substituem um telefone conectado/configurado.
 
+
+
+## Executáveis desta rodada
+
+Windows: abrir Builds/Windows/ForjaDasMares.exe mantendo a pasta de dados ao lado. Android: APK ARM64 em Builds/Android/ForjaDasMares.apk; já instalado e testado no moto g15 conectado. Movimento, ataque, esquiva e reset foram conferidos no aparelho. Consultar PROGRESSO.md para a limitação do Gradle na invocação interna da Unity nesta sessão.
+
+
+## Montagem Android alternativa observada nesta sessão
+
+O menu Forja das Mares → Build Android prototype configura ARM64/IL2CPP/API35 e tenta o build normal da Unity. Se falhar especificamente com Unable to establish loopback connection depois de gerar o projeto Gradle, a montagem abaixo foi usada com sucesso. Não usar esse procedimento para esconder erros C# ou outros erros de build: esses precisam ser corrigidos primeiro.
+
+Na pasta raiz do projeto, em um PowerShell aberto normalmente, executar:
+
+```powershell
+$projectRoot = (Get-Location).Path
+$androidToolsRoot = 'C:\Program Files\Unity\Hub\Editor\6000.3.26f1\Editor\Data\PlaybackEngines\AndroidPlayer'
+$javaLauncher = Join-Path $androidToolsRoot 'OpenJDK\bin\java.exe'
+$gradleLauncher = Join-Path $androidToolsRoot 'Tools\gradle\lib\gradle-launcher-9.3.1.jar'
+$generatedProject = Join-Path $projectRoot 'Library\Bee\Android\Prj\IL2CPP\Gradle'
+$previousJavaOptions = $env:JAVA_TOOL_OPTIONS
+# README.md é um arquivo, portanto não permite criar sockets Unix sob esse caminho.
+# O JDK instalado trata a falha do listener e utiliza seu fallback TCP.
+$ipcMarker = (Join-Path $projectRoot 'README.md').Replace('\', '/')
+$env:JAVA_TOOL_OPTIONS = "$previousJavaOptions -Djava.net.preferIPv4Stack=true `"-Djdk.net.unixdomain.tmpdir=$ipcMarker`""
+Push-Location $generatedProject
+try {
+    & $javaLauncher -classpath $gradleLauncher org.gradle.launcher.GradleMain '-Dorg.gradle.jvmargs=-Xmx4096m' assembleDebug --no-daemon
+    if ($LASTEXITCODE -ne 0) { throw 'Gradle falhou; conferir o erro antes de instalar.' }
+    $apkOutput = Join-Path $projectRoot 'Builds\Android\ForjaDasMares.apk'
+    New-Item -ItemType Directory -Force -Path (Split-Path $apkOutput) | Out-Null
+    Copy-Item -LiteralPath 'launcher\build\outputs\apk\debug\launcher-debug.apk' -Destination $apkOutput -Force
+} finally {
+    Pop-Location
+    $env:JAVA_TOOL_OPTIONS = $previousJavaOptions
+}
+```
+
+Esse ajuste é por processo e foi validado com o JDK 17.0.18 fornecido neste Editor; revalidar se mudar o JDK. Não altera firewall, permissões de Windows ou configuração global Java. A pasta Gradle e o APK são resultados de build e não ficam no Git. Builds obtidos pela Unity aberta fora do contexto desta sessão ainda precisam de confirmação.

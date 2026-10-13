@@ -23,8 +23,14 @@ namespace ForjaDasMares.Editor
             GameObject[] roots = scene.GetRootGameObjects();
             if (roots.Length > 2) return false;
             foreach (GameObject root in roots)
+            {
                 if (root.transform.childCount != 0 ||
                     (root.GetComponent<Camera>() == null && root.GetComponent<Light>() == null)) return false;
+                foreach (Component component in root.GetComponents<Component>())
+                    if (!(component is Transform || component is Camera || component is Light || component is AudioListener ||
+                          component is UnityEngine.Rendering.Universal.UniversalAdditionalCameraData ||
+                          component is UnityEngine.Rendering.Universal.UniversalAdditionalLightData)) return false;
+            }
             return true;
         }
 

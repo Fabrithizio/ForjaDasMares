@@ -3,33 +3,38 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace ForjaDasMares.Editor
 {
     public static class ArenaBuilds
     {
-        static string OutputArgument()
+        static string OutputArgument(string fallback)
         {
             string[] args = Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length - 1; i++)
                 if (args[i] == "-arenaBuildOutput") return Path.GetFullPath(args[i + 1]);
-            throw new ArgumentException("Provide -arenaBuildOutput <absolute output path>.");
+            return Path.GetFullPath(fallback);
         }
 
+        [MenuItem("Forja das Mares/Build Windows prototype")]
         public static void Windows()
         {
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
-            Build(BuildTarget.StandaloneWindows64, OutputArgument());
+            Build(BuildTarget.StandaloneWindows64, OutputArgument("Builds/Windows/ForjaDasMares.exe"));
         }
 
+        [MenuItem("Forja das Mares/Build Android prototype")]
         public static void Android()
         {
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)35;
             EditorUserBuildSettings.buildAppBundle = false;
-            Build(BuildTarget.Android, OutputArgument());
+            Build(BuildTarget.Android, OutputArgument("Builds/Android/ForjaDasMares.apk"));
         }
 
         static void Build(BuildTarget target, string output)

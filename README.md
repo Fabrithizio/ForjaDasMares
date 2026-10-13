@@ -14,7 +14,7 @@ WASD/setas: mover. Mouse: mirar. Clique esquerdo: atacar. Espaço: esquivar. R: 
 
 ## Validação
 
-Versão Windows compilada e executada no PC. Funcionamento de movimento, ataque e reinício confirmado pelo usuário. 11 testes de PlayMode aprovados após as correções. Android depende do registro de build/teste em `Docs/PROGRESSO.md`.
+Versão Windows compilada e executada no PC. Funcionamento de movimento, ataque e reinício confirmado pelo usuário. 11 testes de PlayMode aprovados após as correções. APK ARM64 gerado, instalado e testado no moto g15 com Android 15: movimento, ataque, esquiva e reinício conferidos. A invocação interna do Gradle pela Unity nesta sessão apresentou uma limitação Java; a montagem direta pelo Gradle foi concluída. Detalhes e procedimento em Docs/PROGRESSO.md.
 
 Os personagens, espada e obstáculos são placeholders geométricos. Não há arte ou animação final nesta etapa.
 
@@ -28,3 +28,4 @@ Os personagens, espada e obstáculos são placeholders geométricos. Não há ar
 O backup inclui Assets e seus arquivos meta, Packages, ProjectSettings, scripts e documentação. Library/Temp/Logs/Builds são gerados localmente e ficam fora do Git. Para recuperar em outro PC, clonar/baixar o repositório e abrir com a versão indicada acima. Não copie somente os scripts: a cena, materiais, referências e configurações também são necessários.
 
 VS Code com extensões Unity e C# é o editor de código escolhido. Visual Studio IDE não é necessário para esta arena.
+
