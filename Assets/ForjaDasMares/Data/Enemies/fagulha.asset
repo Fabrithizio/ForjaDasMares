@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: fagulha
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: fagulha
+  displayName: Fagulha Instavel
+  kind: 3
+  prefab: {fileID: 1331027331075233529, guid: 757f6e8634e4efb40bb2669cb78ffbc2, type: 3}
+  maximumHealth: 28
+  poolCapacity: 3
+  armor: 0
+  speed: 3.9
+  acceleration: 24
+  height: 1.7
+  radius: 0.32
+  agentTypeId: 0
+  detectionRange: 16
+  forgetRange: 20
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: d0bc5ae516470534495336c5c97e7943, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0
+  staggerDuration: 0.12
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 0}
+  color: {r: 1, g: 0.45, b: 0.1, a: 1}

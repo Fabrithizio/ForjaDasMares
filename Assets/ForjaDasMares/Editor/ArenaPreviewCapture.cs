@@ -21,6 +21,7 @@ namespace ForjaDasMares.Editor
             for (int i = 0; i < args.Length - 1; i++) if (args[i] == "-arenaPreviewPath") output = args[i + 1];
             if (string.IsNullOrEmpty(output)) throw new ArgumentException("Provide -arenaPreviewPath <absolute png path>.");
             SessionState.SetString(OutputKey, output);
+            SessionState.SetBool("ForjaPvePreview", Array.IndexOf(args, "-pvePreview") >= 0);
             SessionState.SetBool(PendingKey, true);
             EditorSceneManager.OpenScene(ArenaBuilder.ScenePath);
             startTime = EditorApplication.timeSinceStartup;
@@ -38,6 +39,13 @@ namespace ForjaDasMares.Editor
         static void CaptureWhenReady()
         {
             if (!EditorApplication.isPlaying || EditorApplication.timeSinceStartup - startTime < 2d) return;
+            if (SessionState.GetBool("ForjaPvePreview", false))
+            {
+                SessionState.SetBool("ForjaPvePreview", false);
+                UnityEngine.Object.FindFirstObjectByType<EncounterController>().StartSelected();
+                startTime = EditorApplication.timeSinceStartup;
+                return;
+            }
             EditorApplication.update -= CaptureWhenReady;
             SessionState.SetBool(PendingKey, false);
             try

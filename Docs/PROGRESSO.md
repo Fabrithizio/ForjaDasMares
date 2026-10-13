@@ -160,3 +160,19 @@ O projeto permanece em Área de Trabalho/Jogos/ForjaDasMares. Abrir a cena por F
 SHA256 do APK entregue: 0493543A863A925F13627778B15D9D01FC9DD36F2616B71E899A72A9CAD3E092
 
 Windows final recompilado com ARENA_PLAYER_BUILD_OK e saída 0. Executável final iniciado, ARENA_RUNTIME_READY confirmou PC_RPAsset e referências da arena; consulta do log sem exceções. Processo de teste encerrado e ZIP atualizado. Backup final inclui a correção Android e os 23 testes.
+
+## Etapa 4 — integração PvE em validação final (13/10/2026)
+
+Arena preservada; cinco arquétipos, minion de invocação e chefe Custódio da Forja com três ataques/fase 2. AI Navigation 2.0.16 e módulo AI resolvidos e compilados; dois NavMeshData salvos, raio do chefe 0,8. IA separada de movimento, dano e apresentação; CharacterController mantém colisões. Pool fixo de 24 atores, limite 12 em Android e 18 em PC, limite de invocação por dono e orçamento de sessão. Armas/ataques/vida/controle existentes reutilizados. Avisos geométricos e três bipes sintetizados originais, sem arte/clips finais.
+
+HUD permite escolher encontro e iniciar. R cancela e limpa; troca de herói cancela o desafio da arena. Ondas aguardam a fila de spawn e os inimigos relevantes; derrota encerra o encontro. Chefe dá 25 selos temporários uma vez, sem inventário ou salvamento. Projetil termina no primeiro impacto; dano em área deduplica Health; morte limpa invocações, projéteis e avisos.
+
+Primeira suíte: 33/33 PlayMode aprovados, incluindo os 23 anteriores, quatro heróis × cinco arquétipos e quatro heróis contra o chefe, morte, navegação ao redor da parede, bloqueio, áudio configurado, dano e limpeza. Duas verificações extras de ondas e colliders múltiplos foram acrescentadas e aguardam execução final. Build PC e captura ainda em andamento neste registro.
+
+Android sem aparelho nesta etapa a pedido do usuário. Nenhuma confirmação humana, teste físico de celular, profiling de desempenho ou balanceamento comercial é alegado. Etapa 5 está autorizada, mas só começa após finalizar a validação da etapa 4. Multiplayer/equipamentos continuam fora do escopo.
+
+## Fechamento PvE
+
+35/35 testes PlayMode aprovados, zero falhas. As duas verificações adicionais confirmaram exatamente nove spawns nas três ondas e um único dano em área para o jogador com colliders múltiplos. O executável Windows 0.3.0 compilou, abriu com ARENA_RUNTIME_READY e PC_RPAsset, sem exceções no log. Captura URP real com três inimigos ativos revisada; a sobreposição do texto do encontro foi corrigida no HUD. Build final será recompilado com esse ajuste visual.
+
+Etapa 4 validada no PC. Não houve teste físico Android nesta etapa; o telefone foi levado pelo usuário. Não há multiplayer, inventário ou arte final. Etapa 5 pode começar conforme autorização explícita de executar na ordem, sem confirmação presencial.

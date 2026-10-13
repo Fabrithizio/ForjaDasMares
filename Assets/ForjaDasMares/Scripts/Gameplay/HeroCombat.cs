@@ -41,7 +41,7 @@ namespace ForjaDasMares
             }
             Simulate(Time.deltaTime);
         }
-        bool CanStart => profile != null && health.IsAlive && !active && !motor.IsDodging && !motor.IsCharging;
+        bool CanStart => profile != null && health.IsAlive && !health.IsStunned && !active && !motor.IsDodging && !motor.IsCharging;
         public bool TryAttack()
         {
             if (!CanStart || profile.attacks == null || profile.attacks.Length == 0) return false;
@@ -65,7 +65,7 @@ namespace ForjaDasMares
         public void Simulate(float deltaTime)
         {
             specialCooldown = Mathf.Max(0, specialCooldown - Mathf.Max(0, deltaTime));
-            if (!health.IsAlive || motor.IsDodging) { active = false; chargeWindow = false; return; }
+            if (!health.IsAlive || health.IsStunned || motor.IsDodging) { active = false; chargeWindow = false; return; }
             if (!active) return;
             elapsed += Mathf.Max(0, deltaTime);
             if (!resolved && elapsed >= currentAttack.windup)

@@ -4,6 +4,7 @@ namespace ForjaDasMares
 {
     public sealed class ArenaSession : MonoBehaviour
     {
+        public event System.Action Resetting;
         [SerializeField] PlayerMotor player;
         [SerializeField] Transform spawn;
         [SerializeField] MeleeAttack combat;
@@ -35,6 +36,7 @@ namespace ForjaDasMares
         }
         public void ResetArena()
         {
+            Resetting?.Invoke();
             if (movableTargets != null) foreach (var target in movableTargets) if (target != null) target.ResetTarget();
             if (heroes != null) heroes.ResetHero();
             if (ally != null) ally.Restore();

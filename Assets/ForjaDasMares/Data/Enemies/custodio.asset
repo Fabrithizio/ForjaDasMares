@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: custodio
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: custodio
+  displayName: Custodio da Forja
+  kind: 6
+  prefab: {fileID: 2947600674569460248, guid: e3c320c102fb0e747a4fc59518c70f30, type: 3}
+  maximumHealth: 450
+  poolCapacity: 1
+  armor: 0.1
+  speed: 2.2
+  acceleration: 24
+  height: 2.7
+  radius: 0.7
+  agentTypeId: -1372625422
+  detectionRange: 16
+  forgetRange: 20
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: eb78fac8461979141baf6eadff1bb2dc, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 1
+  staggerDuration: 0
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 11400000, guid: 7357e29de253c5f49a44e22e5e2979f6, type: 2}
+  color: {r: 0.8, g: 0.4, b: 0.18, a: 1}

@@ -19,7 +19,7 @@ namespace ForjaDasMares
         [SerializeField, Min(0f)] float dodgeCooldown = 0.65f;
         CharacterController controller;
         IPlayerCommands commands;
-        Vector3 velocity, dodgeDirection;
+        Vector3 velocity, dodgeDirection, impulse;
         float verticalSpeed, dodgeRemaining, cooldownRemaining;
         Health health;
         float invulnerableStart, invulnerableEnd, facingLock;
@@ -34,12 +34,16 @@ namespace ForjaDasMares
         public float DodgeCooldownRemaining => cooldownRemaining;
         public void ApplyHero(HeroDefinition profile, Health owner)
         {
+            if (health != null) health.Impact -= ReceiveImpact;
             health = owner; speed = Mathf.Max(0.1f, profile.speed); acceleration = Mathf.Max(1, profile.acceleration); deceleration = Mathf.Max(1, profile.deceleration);
+            health.Impact += ReceiveImpact;
             dodgeDuration = Mathf.Max(0.05f, profile.dodge.duration); dodgeSpeed = Mathf.Max(0.1f, profile.dodge.speed); dodgeCooldown = Mathf.Max(0, profile.dodge.cooldown);
             invulnerableStart = Mathf.Clamp(profile.dodge.invulnerableStart, 0, dodgeDuration);
             invulnerableEnd = Mathf.Clamp(profile.dodge.invulnerableEnd, invulnerableStart, dodgeDuration);
-            velocity = Vector3.zero; dodgeRemaining = cooldownRemaining = facingLock = 0f; charge = false;
+            velocity = impulse = Vector3.zero; dodgeRemaining = cooldownRemaining = facingLock = 0f; charge = false;
         }
+        void ReceiveImpact(Vector3 direction, float force) { direction.y = 0; impulse = Vector3.ClampMagnitude(impulse + direction.normalized * force, 12); }
+        void OnDestroy() { if (health != null) health.Impact -= ReceiveImpact; }
         public void LockFacing(float duration) => facingLock = Mathf.Max(facingLock, duration);
         public bool StartCharge(Vector3 direction, float duration, float chargeSpeed)
         {
@@ -95,10 +99,8 @@ namespace ForjaDasMares
             float dashTime = Mathf.Min(deltaTime, dodgeRemaining);
             Vector3 displacement = dodgeDirection * (dodgeSpeed * dashTime) + velocity * (deltaTime - dashTime);
             dodgeRemaining = Mathf.Max(0f, dodgeRemaining - deltaTime);
-            if (controller.isGrounded && verticalSpeed < 0f) verticalSpeed = -2f;
-            verticalSpeed += gravity * deltaTime;
-            displacement.y = verticalSpeed * deltaTime;
-            controller.Move(displacement);
+            displacement += impulse * deltaTime; impulse = Vector3.MoveTowards(impulse, Vector3.zero, 20 * deltaTime);
+            ActorMotion.Move(controller, displacement, deltaTime, ref verticalSpeed, gravity);
         }
 
         public void Teleport(Vector3 position, Quaternion rotation)
@@ -107,7 +109,7 @@ namespace ForjaDasMares
             controller.enabled = false;
             transform.SetPositionAndRotation(position, rotation);
             controller.enabled = wasEnabled;
-            velocity = Vector3.zero;
+            velocity = impulse = Vector3.zero;
             verticalSpeed = dodgeRemaining = cooldownRemaining = 0f;
             facingLock = 0f; charge = false;
             Physics.SyncTransforms();

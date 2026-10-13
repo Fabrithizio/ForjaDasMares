@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e54c0d6a123fc3e449903136f7dcec53, type: 3}
+  m_Name: CustodioPattern
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BossDefinition
+  attacks:
+  - displayName: Arco da Forja
+    kind: 0
+    hit: {fileID: 11400000, guid: a102d124d4b12904dbbc99e354af1619, type: 2}
+    warning: 0.9
+    recovery: 0.8
+    cooldown: 1.6
+    range: 4
+    radius: 3.5
+    length: 7
+    chargeSpeed: 8
+    arc: 120
+    warningColor: {r: 1, g: 0.25, b: 0.05, a: 1}
+  - displayName: Tres Selos
+    kind: 1
+    hit: {fileID: 11400000, guid: 91bb9ac060cd8084780fe4d5316a8edc, type: 2}
+    warning: 1.1
+    recovery: 0.8
+    cooldown: 1.6
+    range: 16
+    radius: 1.3
+    length: 7
+    chargeSpeed: 8
+    arc: 120
+    warningColor: {r: 1, g: 0.25, b: 0.05, a: 1}
+  - displayName: Investida Incandescente
+    kind: 2
+    hit: {fileID: 11400000, guid: 77e2468799f8af348b3a2a2165dabac6, type: 2}
+    warning: 1
+    recovery: 0.8
+    cooldown: 1.6
+    range: 10
+    radius: 0.9
+    length: 7
+    chargeSpeed: 8
+    arc: 120
+    warningColor: {r: 1, g: 0.25, b: 0.05, a: 1}
+  phaseTwoThreshold: 0.5
+  phaseTwoTiming: 0.85
+  phaseTwoDamage: 1.15
+  phaseTwoRadius: 1.15
+  rewardSeals: 25

@@ -45,5 +45,10 @@ namespace ForjaDasMares
             if (projectiles != null) foreach (var shot in projectiles) shot.gameObject.SetActive(false);
             if (zones != null) foreach (var zone in zones) zone.gameObject.SetActive(false);
         }
+        public void ClearOwned(Health owner)
+        {
+            if (projectiles != null) foreach (var shot in projectiles) if (shot.OwnedBy(owner)) shot.gameObject.SetActive(false);
+            if (zones != null) foreach (var zone in zones) if (zone.OwnedBy(owner)) zone.gameObject.SetActive(false);
+        }
     }
 }

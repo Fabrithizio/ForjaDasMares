@@ -12,6 +12,8 @@ namespace ForjaDasMares
         Vector3 direction;
         float distance;
         int targets, geometry;
+        public bool OwnedBy(Health source) => gameObject.activeSelf && owner == source;
+        void OnDisable() { owner = null; attack = null; resolver.Clear(); System.Array.Clear(hits, 0, hits.Length); }
         public void Fire(Vector3 position, Vector3 forward, AttackDefinition data, Health source, int targetMask, int wallMask)
         {
             if (properties == null) properties = new MaterialPropertyBlock();

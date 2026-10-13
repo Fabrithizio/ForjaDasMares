@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: vigia-sombrio
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: vigia-sombrio
+  displayName: Vigia Sombrio
+  kind: 2
+  prefab: {fileID: 4910535500189214910, guid: ab6918ecf0907a4428a8eb81f72aae09, type: 3}
+  maximumHealth: 42
+  poolCapacity: 3
+  armor: 0
+  speed: 3.3
+  acceleration: 24
+  height: 1.7
+  radius: 0.32
+  agentTypeId: 0
+  detectionRange: 16
+  forgetRange: 20
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.5
+  attack: {fileID: 11400000, guid: eb2bbbd3b1818bd4aab06649008c85c0, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0
+  staggerDuration: 0.12
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 0}
+  color: {r: 0.45, g: 0.25, b: 0.7, a: 1}
