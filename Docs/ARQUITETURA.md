@@ -1,0 +1,129 @@
+﻿# Arquitetura proposta — Forja das Marés
+
+Estado: documento mestre iniciado na etapa 1. As áreas futuras abaixo são planejamento. A arena local da etapa 2 já foi implementada; o catálogo real e a validação estão em PROGRESSO.md.
+
+Atualização para a etapa 2: alvos atuais **Windows e Android**. iOS está adiado por instrução posterior do usuário. As seções de longo prazo permanecem como planejamento, não como recursos implementados. A arena usa o template oficial Universal 3D e componentes de entrada, movimento, mira, câmera, dano, feedback e HUD. Consultar `PROGRESSO.md` para a lista real de arquivos e evidências de validação.
+
+## Produto e primeiro recorte
+
+Cooperativo de ação e RPG, câmera diagonal de cima, até quatro jogadores, Windows/Android (iOS adiado). Sessões privadas curtas são o primeiro objetivo online. Meta de design inicial: expedições de 8 a 12 minutos, a ajustar com sessões reais. A campanha comercial completa será expandida em entregas incrementais.
+
+Primeiro recorte local: arena legível, um herói de teste com placeholder claramente identificado, movimento relativo à câmera, ataque próximo, esquiva e alvo de treino. Nenhuma animação final ou modelo será declarado pronto a partir de uma primitiva.
+
+## Organização proposta
+
+| Área futura | Responsabilidade | Dependências permitidas |
+| --- | --- | --- |
+| Core | Identificadores, resultados de ações, relógio de simulação e contratos pequenos | C# e dependências mínimas |
+| Data | ScriptableObjects e validação de conteúdo | Core e Unity |
+| Gameplay | Movimento, combate, habilidades, atributos, IA, salas, drops e progressão | Core, Data e Unity; sem SDK de serviços |
+| Presentation | Modelos, câmera, animação, VFX e áudio a partir do estado do jogo | Gameplay/Core; sem calcular dano ou conceder loot |
+| Input | Adaptadores do Input System que produzem comandos | Core e Input System |
+| UI | HUD, menus e apresentação de inventário/opções | Dados de leitura e ações explícitas; sem aplicar recompensas |
+| Persistence | Serialização, migração e gravação do perfil | Core e dados persistentes; sem objetos de cena |
+| Networking | NGO/Transport, replicação, validação de pedidos, sessão e UGS | Core/Gameplay e SDKs de rede |
+| Bootstrap | Inicialização e composição das dependências da cena | Módulos necessários |
+| Editor | Ferramentas e validações usadas apenas no Editor | Código de runtime quando necessário |
+
+Usar `Assets/ForjaDasMares/` como raiz futura do conteúdo próprio e `Docs/` para decisões/progresso. Criar pastas e assembly definitions apenas quando houver código a isolar. Não gerar dezenas de componentes vazios. Assemblies de runtime nunca devem depender de UnityEditor; a camada Gameplay não deve conhecer Lobby/Relay.
+
+Composição por referências serializadas ou injeção explícita na inicialização. Evitar um gerenciador global para todos os sistemas, buscas repetidas na cena e um barramento universal que esconda dependências. Eventos tipados locais podem comunicar alterações de vida, ataque e conclusão de sala; o estado autoritativo permanece consultável.
+
+## Dados e estado
+
+ScriptableObjects armazenam configurações compartilhadas e imutáveis em execução. Cada conteúdo tem identificador estável próprio, independente do nome de arquivo. Estado de uma instância fica em objetos/runtime separados; não gravar vida, cooldown, inventário ou XP de um jogador no asset compartilhado.
+
+| Definição futura | Dados principais |
+| --- | --- |
+| Herói | ID, atributos base, movimento, habilidade inicial e referências de apresentação |
+| Arma | ID, categoria, alcance, dano, custo, passos de combo e habilidades compatíveis |
+| Habilidade | ID, cooldown, custo, execução, alcance, alvos, interrupções e apresentação |
+| Inimigo | ID, atributos, percepção, comportamento e tabela de recompensas |
+| Sala | ID, sockets de conexão, limites, encontros, objetivos e restrições de geração |
+| Equipamento/raridade | ID, peso de sorteio, modificadores permitidos e limites |
+| Missão/dificuldade | Objetivos e modificadores explícitos de encontro/recompensa |
+
+Instâncias de equipamento têm ID único, definição, raridade e modificadores sorteados. Definições e saves têm versão de esquema. O catálogo valida IDs duplicados, referências ausentes, custos negativos e salas sem conexão. Fazer esse validador quando o primeiro catálogo real existir.
+
+## Movimento, câmera e combate
+
+Plano de jogo XZ, gravidade no eixo Y. Começar com CharacterController para movimento responsivo em terreno simples; confirmar essa escolha ao inspecionar a futura cena. Separar leitura de input, simulação de deslocamento e apresentação. A câmera diagonal acompanha o alvo suavemente, sem controlar as regras de movimento.
+
+Um comando de jogador representa direção, mira e intenções de ataque/esquiva/habilidade. Teclado, mouse, gamepad e toque produzem o mesmo formato. Não usar UI como fonte da verdade nem enviar posição final livremente para o host.
+
+Combate baseado em estados com preparação, janela ativa e recuperação. O relógio da simulação determina as janelas; animação e VFX acompanham o resultado. Não depender de Animation Events para decidir dano. Um ataque possui ID e registra os alvos atingidos para evitar dano repetido por vários colliders.
+
+Ataque próximo usa consultas físicas limitadas e buffers reutilizados quando adequado. Não exige criar um projétil por golpe. Esquiva define duração, custo, deslocamento e janela de invulnerabilidade explícita. Cancelamentos e encadeamento dos combos precisam de regras pequenas e observáveis; balanceamento começa com medidas de resposta e clareza.
+
+O resolvedor de dano verifica autoria, alvo vivo, distância, janela, equipe, invulnerabilidade e modificadores. Só ele altera a vida. UI e apresentação recebem o resultado. A arena offline usa o mesmo caminho de resolução que posteriormente será executado pelo host.
+
+## Heróis e conteúdo original
+
+Ideias provisórias para a etapa 3: Guardião da Âncora (próximo e defesa), Tecelã da Maré (controle de área) e Batedor de Cobre (mobilidade e distância). São conceitos, sem assets ou habilidades implementadas. A seleção final será determinada por contraste de silhueta, controles em toque e variedade no grupo.
+
+Introduzir um herói completo primeiro, depois outro estilo. Compartilhar atributos, estados de ação, equipamentos e interfaces de habilidade. Evitar copiar um controlador inteiro por herói.
+
+## IA, masmorras e geração
+
+IA inicialmente com estados pequenos: inativo, perceber, aproximar, preparar ataque, executar, recuperar, morrer. Escalonar percepção e decisões de hordas para evitar consultas caras em todos os inimigos a cada frame. Navegação pode usar AI Navigation/NavMesh, após verificar o pacote e a geometria na etapa 4. IA e criação de encontros pertencem ao host quando a rede existir.
+
+Geração controlada usa salas próprias previamente validadas e um grafo conectado. Separar topologia, montagem espacial e escolha de encontros. Garantir entrada, saída, caminho até o chefe, sockets válidos e ausência de sobreposição; limitar tentativas e ter uma rota de fallback pré-validada.
+
+O host decide seed, versão do algoritmo e conteúdo selecionado. Seed sozinha não garante que clientes com catálogos/versões diferentes produzam a mesma masmorra: enviar e validar IDs e conexões definitivas. Não depender de simulação física determinística entre plataformas.
+
+Armadilhas, baús e portas possuem estado autoritativo e interações identificadas. Salas comunicam conclusão por objetivos reais, não apenas por uma chamada da interface.
+
+## Progressão, inventário e persistência
+
+Primeiro inventário simples com capacidade e regras de equipamento explícitas. XP, moedas, equipamentos, melhorias, mascotes e missões entram depois do combate/masmorra funcionarem. Separar progresso da expedição do perfil persistente. O mascote inicial deve ter uma função limitada e clara; não criar subsistemas de criação/comércio antecipadamente.
+
+Resultados usam ID de expedição e ID de concessão para evitar duplicações em retries. O host sorteia loot e concede moedas/XP; clientes pedem coleta, equipar ou abrir baús. O host valida ownership, capacidade, distância e estado antes de aplicar. Inventário e recompensas não devem ser aceitos de mensagens do cliente sem validação.
+
+Save local em `Application.persistentDataPath`, versão de esquema, gravação temporária seguida de substituição e backup anterior. Validar dados carregados e migrar versões explicitamente. Não serializar MonoBehaviours nem referências vivas da cena.
+
+Perfil local e host de jogador servem às sessões privadas iniciais, mas não oferecem economia comercial resistente a adulteração. Para economia confiável e perfil entre dispositivos será necessário backend com identidade persistente e regras de concessão verificadas; crossplay de partida e sincronização de perfil são entregas diferentes.
+
+## Rede e autoridade
+
+Proposta: NGO + Unity Transport + Multiplayer Services SDK (Sessions/Lobby/Relay) + Authentication. Fixar versões somente após confirmar a linha do Editor, resolver dependências e testar na etapa 7. Não usar autoridade distribuída nesta proposta. Relay transporta dados; não executa simulação nem valida recompensas.
+
+| Ação/estado | Decisão no host | Cliente |
+| --- | --- | --- |
+| Movimento | Validar comandos, velocidade, colisão, tick e estado de ação | Enviar intenção e apresentar estado recebido |
+| Ataque/habilidade | Verificar custo, cooldown, alvos e janela; aplicar resultado | Pedir execução e mostrar feedback |
+| IA/chefe/armadilha | Simular decisões, dano e mudanças de fase | Apresentar estados/eventos |
+| Baú/loot/equipamento | Sortear, conceder, validar coleta e ownership | Pedir interação |
+| Sala/seed/resultado | Selecionar conteúdo, concluir objetivos e emitir resultado único | Receber configuração e resultado |
+
+Pedidos carregam IDs e sequências, têm limites de frequência e rejeitam conteúdo inválido. Verificar no host o jogador associado à conexão, sem confiar no ID declarado pelo remetente. Validar versão de protocolo e catálogo no ingresso. Nunca aceitar dano, loot ou conclusão de sala calculados exclusivamente pelo cliente.
+
+O primeiro multiplayer usa movimentação autoritativa com interpolação. Se a latência causar resposta insatisfatória, adicionar previsão local e reconciliação limitada de movimento, medida com latência real. Isso é trabalho explícito, não uma capacidade já pronta do transporte. Evitar previsão de loot/resultados.
+
+Host local é uma escolha de custo e complexidade para pequenos grupos privados. O dono do host ainda pode adulterar a simulação: autoridade do host não equivale a segurança de servidor dedicado. Deixar composição da simulação preparada para um processo de servidor futuramente, sem implementar dois ambientes nesta etapa.
+
+Salas privadas terão até quatro jogadores e código de entrada; convites nativos de plataforma são entrega separada. Reconexão requer identidade persistente, reserva temporária do slot, snapshot de estado, sincronização de inventário e política de expiração. Planejar pausa/retorno de app móvel. Inicialmente, queda do host encerra a partida com resultado definido; reconectar um cliente não resolve migração do host. Migração transparente deve ser planejada e testada separadamente.
+
+## Apresentação, UI e acessibilidade
+
+URP com orçamento voltado ao aparelho mínimo definido antes da otimização final. Silhuetas e telegráficos legíveis, iluminação moderada e controle de sombras/partículas. Arte de placeholder própria deve ser identificada e substituível sem mudar regras do combate.
+
+HUD mostra vida, recursos, esquiva e habilidades. Input System separa mapas Gameplay e UI. Toque usa joystick e botões com mira/assistência ajustáveis; teclado/mouse e gamepad recebem ações equivalentes. Prever safe area, escalonamento, remapeamento, tamanho de texto, intensidade de tremor, flashes e pistas de forma/ícone além de cor. Definir orientação móvel paisagem como proposta inicial.
+
+Áudio reage a eventos confirmados; volume de música/efeitos separado. Não afirmar existência de trilhas, efeitos ou animações antes de incorporá-los ao projeto.
+
+## Pooling e desempenho
+
+Pool por prefab para projéteis, VFX e objetos frequentes; criar quando usados. Resetar vida, timers, assinaturas, referências e estado de colisão ao devolver/alugar. Em rede, alinhar spawn/despawn com ciclo de vida de NetworkObjects; um pool local sozinho não sincroniza objetos.
+
+Medir CPU/GPU, alocações, draw calls e tráfego em aparelhos reais. Orçamento inicial de 60 FPS no PC e opção de 30/60 FPS móvel é uma meta, sem garantia de desempenho. Definir dispositivo mínimo, máximo de inimigos e partículas com profiling do primeiro recorte, antes de prometer hordas numericamente.
+
+## Critérios de validação futuros
+
+- Regras: cooldown, golpe único por alvo, atributos, geração conectada, concessão idempotente e migração de save.
+- Integração no Editor: colisões, ataque/esquiva, transição de salas e reentrada de objetos no pool.
+- Rede: 2 a 4 jogadores, atraso/perda, comandos inválidos, duplicações, ingresso tardio, queda do host e reconexão do cliente.
+- Crossplay real: Windows + Android + iPhone/iPad na mesma sessão, mesma versão de protocolo/catálogo, background/retorno e redes Wi-Fi/celular.
+- Builds: Windows, Android com toolchain do Editor e iOS em ambiente macOS/Xcode ou serviço de build apropriado; assinatura e distribuição são configurações futuras.
+
+Um teste local com dois clientes Windows não demonstra crossplay. Registrar aparelhos, versões, cenários executados e falhas. Nenhum desses testes foi executado nesta etapa.
+

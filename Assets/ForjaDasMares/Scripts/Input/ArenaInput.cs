@@ -1,0 +1,49 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace ForjaDasMares
+{
+    [DefaultExecutionOrder(-200)]
+    public sealed class ArenaInput : MonoBehaviour, IPlayerCommands
+    {
+        [SerializeField] InputActionAsset actions;
+        InputActionAsset runtimeActions;
+        InputActionMap gameplay;
+        InputAction move, pointer;
+        bool attackPending, dodgePending, resetPending, pointerMode;
+        public InputActionAsset Actions => actions;
+
+        public Vector2 Move => move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+        public Vector2 PointerPosition => pointer != null && pointer.enabled ? pointer.ReadValue<Vector2>() : Vector2.zero;
+        public bool HasPointer => pointerMode && pointer != null && pointer.enabled;
+        public void Configure(InputActionAsset asset) => actions = asset;
+
+        void Awake()
+        {
+            if (actions == null) { Debug.LogError("ArenaInput requires the ArenaControls asset.", this); enabled = false; return; }
+            runtimeActions = Instantiate(actions);
+            gameplay = runtimeActions.FindActionMap("Gameplay", true);
+            move = gameplay.FindAction("Move", true);
+            pointer = gameplay.FindAction("Point", true);
+            pointer.performed += OnPoint;
+            move.performed += OnMove;
+            gameplay.FindAction("Attack", true).performed += OnAttack;
+            gameplay.FindAction("Dodge", true).performed += OnDodge;
+            gameplay.FindAction("Reset", true).performed += OnReset;
+        }
+
+        void OnEnable() => gameplay?.Enable();
+        void OnDisable() { gameplay?.Disable(); ClearRequests(); }
+        void OnDestroy() { if (runtimeActions != null) Destroy(runtimeActions); }
+        void OnApplicationFocus(bool focus) { if (!focus) ClearRequests(); }
+        void OnPoint(InputAction.CallbackContext _) => pointerMode = !Application.isMobilePlatform;
+        void OnMove(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; }
+        void OnAttack(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; attackPending = true; }
+        void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
+        void OnReset(InputAction.CallbackContext _) => resetPending = true;
+        void ClearRequests() { attackPending = dodgePending = resetPending = false; }
+        public bool TakeAttack() { bool value = attackPending; attackPending = false; return value; }
+        public bool TakeDodge() { bool value = dodgePending; dodgePending = false; return value; }
+        public bool TakeReset() { bool value = resetPending; resetPending = false; return value; }
+    }
+}

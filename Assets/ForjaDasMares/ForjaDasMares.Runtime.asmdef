@@ -1,0 +1,6 @@
+{
+  "name": "ForjaDasMares.Runtime",
+  "rootNamespace": "ForjaDasMares",
+  "references": ["Unity.InputSystem", "Unity.ugui"],
+  "autoReferenced": true
+}

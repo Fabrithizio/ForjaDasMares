@@ -1,0 +1,12 @@
+/Library/
+/Temp/
+/Obj/
+/Logs/
+/UserSettings/
+/Builds/
+/Recordings/
+.vs/
+*.csproj
+*.sln
+*.slnx
+/Assets/Resources/PerformanceTestRun*.json*
