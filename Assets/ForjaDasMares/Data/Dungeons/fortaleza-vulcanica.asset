@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 327b400aa0a0fc543875cc7263981207, type: 3}
+  m_Name: fortaleza-vulcanica
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BiomeDefinition
+  biomeId: fortaleza-vulcanica
+  displayName: FORTALEZA VULCANICA
+  floor: {fileID: 2100000, guid: a45630bd238544945b917d39b8f8c482, type: 2}
+  wall: {fileID: 2100000, guid: a3e52305b3e80754a84ff92751548cf8, type: 2}
+  accent: {fileID: 2100000, guid: 390e2b825739966478b0e10b6419d39a, type: 2}
+  decoration: {fileID: 2100000, guid: cab710fce0cf1e54a861ea368d0c5bb8, type: 2}
+  ambient: {r: 0.4995, g: 0.43449998, b: 0.428, a: 1}
+  light: {r: 1, g: 0.783, b: 0.678, a: 1}
+  background: {r: 0.025, g: 0.035, b: 0.05, a: 1}
+  decorationMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  decorationScale: {x: 0.6, y: 1.1, z: 0.6}
+  encountersByDepth:
+  - {fileID: 11400000, guid: 76a807ae8f3e51049a9d0bcdd3e1f7d2, type: 2}
+  - {fileID: 11400000, guid: 49c9db2cb1a8ab54594b450ef90a78b5, type: 2}
+  - {fileID: 11400000, guid: bfff77d5187d09e4db8fbe6a98c2e83d, type: 2}
+  boss: {fileID: 11400000, guid: 6a310b858d09d3041a4e8d653b429ad2, type: 2}
+  rewards: {fileID: 11400000, guid: 9f3da68de87a81e438b15cbbd2bcfbca, type: 2}

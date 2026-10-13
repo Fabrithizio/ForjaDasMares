@@ -176,3 +176,15 @@ Android sem aparelho nesta etapa a pedido do usuário. Nenhuma confirmação hum
 35/35 testes PlayMode aprovados, zero falhas. As duas verificações adicionais confirmaram exatamente nove spawns nas três ondas e um único dano em área para o jogador com colliders múltiplos. O executável Windows 0.3.0 compilou, abriu com ARENA_RUNTIME_READY e PC_RPAsset, sem exceções no log. Captura URP real com três inimigos ativos revisada; a sobreposição do texto do encontro foi corrigida no HUD. Build final será recompilado com esse ajuste visual.
 
 Etapa 4 validada no PC. Não houve teste físico Android nesta etapa; o telefone foi levado pelo usuário. Não há multiplayer, inventário ou arte final. Etapa 5 pode começar conforme autorização explícita de executar na ordem, sem confirmação presencial.
+
+## Etapa 5 — masmorras em verificação final
+
+Reutilizada a arena/PvE validada no checkpoint 7869a62. Nova DungeonTest, sem regravar ArenaTest: SHA256 da referência e da cena preservada 07D9C27D59A80610BC2D7FE669ADA364A1CB961CB9FA177BEA33D28B7399A7C4. Três biomas geométricos originais com materiais/luzes/decoração e tabelas diferentes; oito categorias de sala; layout seeded com percurso conectado e ramificações, 7–12 salas; modo fixo.
+
+Portas físicas/carving fecham em encontro e abrem após vitória. Evento exige cristal; armadilha tem aviso/bipe e alavanca; chave da sessão abre tesouro opcional; baú abre e concede moedas uma vez; descanso cura uma vez; saída exige chefe vencido. Câmara com limite opcional usado somente na masmorra. NavMesh é construído e validado para inimigos normais e chefe; spawn valida geometria/colisão. Sem aumento arbitrário de atributos, equipamentos ou multiplayer.
+
+Os testes individuais já passaram para 2.000 seeds × seis limites (12.000 combinações), mesma seed igual assinatura, 12 gerações reais em três biomas/quatro seeds, portas, objetivos, baú, reset e percurso completo com movimento/colisões/combate real do Cavaleiro Rúnico, descanso, três encontros, chefe e saída. Corrigido reset de alvos de referência inativos. Bot de teste usa NavMeshQueryFilter explícito do agente normal para evitar consultas ambíguas entre duas superfícies. A suíte completa e builds ainda estão em execução.
+
+Android sem teste físico por instrução do usuário; preparar build para instalação posterior. Arte/clips/profiling/gamepad físico permanecem pendentes. A próxima etapa não será iniciada automaticamente.
+
+Suíte completa da etapa 5: 41/41 PlayMode aprovados, zero falhas; mantém os 35 testes do PvE e acrescenta seis testes de masmorra. Percurso completo passou em 72,98 s no teste isolado e novamente na suíte completa. Seeds verificadas em 12.000 combinações lógicas; 12 gerações físicas com NavMesh de ambos os tamanhos. Builds/capturas seguem como validação separada, sem alegar Android físico.

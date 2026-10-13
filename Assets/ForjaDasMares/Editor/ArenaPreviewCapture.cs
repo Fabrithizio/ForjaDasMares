@@ -22,8 +22,11 @@ namespace ForjaDasMares.Editor
             if (string.IsNullOrEmpty(output)) throw new ArgumentException("Provide -arenaPreviewPath <absolute png path>.");
             SessionState.SetString(OutputKey, output);
             SessionState.SetBool("ForjaPvePreview", Array.IndexOf(args, "-pvePreview") >= 0);
+            bool dungeon = Array.IndexOf(args, "-dungeonPreview") >= 0;
+            SessionState.SetInt("ForjaDungeonPreviewBiome", dungeon ? 0 : -1);
+            for (int i = 0; i < args.Length - 1; i++) if (args[i] == "-dungeonBiome") SessionState.SetInt("ForjaDungeonPreviewBiome", int.Parse(args[i + 1]));
             SessionState.SetBool(PendingKey, true);
-            EditorSceneManager.OpenScene(ArenaBuilder.ScenePath);
+            EditorSceneManager.OpenScene(dungeon ? DungeonInstaller.ScenePath : ArenaBuilder.ScenePath);
             startTime = EditorApplication.timeSinceStartup;
             EditorApplication.update += CaptureWhenReady;
             EditorApplication.EnterPlaymode();
@@ -39,6 +42,14 @@ namespace ForjaDasMares.Editor
         static void CaptureWhenReady()
         {
             if (!EditorApplication.isPlaying || EditorApplication.timeSinceStartup - startTime < 2d) return;
+            int biome = SessionState.GetInt("ForjaDungeonPreviewBiome", -1);
+            if (biome >= 0)
+            {
+                SessionState.SetInt("ForjaDungeonPreviewBiome", -1);
+                UnityEngine.Object.FindFirstObjectByType<DungeonSession>().ConfigureTest(12345, true, biome);
+                startTime = EditorApplication.timeSinceStartup;
+                return;
+            }
             if (SessionState.GetBool("ForjaPvePreview", false))
             {
                 SessionState.SetBool("ForjaPvePreview", false);

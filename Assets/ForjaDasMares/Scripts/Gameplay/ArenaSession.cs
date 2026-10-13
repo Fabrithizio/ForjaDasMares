@@ -37,7 +37,7 @@ namespace ForjaDasMares
         public void ResetArena()
         {
             Resetting?.Invoke();
-            if (movableTargets != null) foreach (var target in movableTargets) if (target != null) target.ResetTarget();
+            if (movableTargets != null) foreach (var target in movableTargets) if (target != null && target.isActiveAndEnabled) target.ResetTarget();
             if (heroes != null) heroes.ResetHero();
             if (ally != null) ally.Restore();
             CharacterController controller = player.GetComponent<CharacterController>();

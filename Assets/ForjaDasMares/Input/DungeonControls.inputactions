@@ -1,0 +1,46 @@
+{
+    "version": 1,
+    "name": "DungeonControls",
+    "maps": [
+        {
+            "name": "Dungeon",
+            "id": "68826ca0-ac8a-426c-8e9b-fe2a9ae31e5f",
+            "actions": [
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "9a189cb2-9bad-4d55-acbc-9d14d56c9c17",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "44ac3d32-accc-4830-8294-f2d62951af50",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aa0002a4-13b1-4093-babd-fdfc344c01e5",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

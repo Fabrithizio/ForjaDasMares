@@ -17,6 +17,10 @@ namespace ForjaDasMares
         [SerializeField, Min(0.5f)] float referenceAspect = 1.777778f;
         Vector3 smoothedFocus, smoothVelocity;
         Camera cameraComponent;
+        bool boundFocus;
+        Bounds focusBounds;
+        public void SetFocusBounds(Bounds bounds, bool enabled) { focusBounds = bounds; boundFocus = enabled; }
+        Vector3 Focus() => boundFocus ? focusBounds.ClosestPoint(target.position + lookOffset) : target.position + lookOffset;
         public Transform Target => target;
         public void Configure(Transform followTarget, LayerMask mask) { target = followTarget; blockers = mask; }
         void Awake()
@@ -29,13 +33,13 @@ namespace ForjaDasMares
         {
             if (target == null) return;
             if (cameraComponent == null) cameraComponent = GetComponent<Camera>();
-            smoothedFocus = target.position + lookOffset;
+            smoothedFocus = Focus();
             smoothVelocity = Vector3.zero;
             ApplyPose();
         }
         void LateUpdate()
         {
-            smoothedFocus = Vector3.SmoothDamp(smoothedFocus, target.position + lookOffset, ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
+            smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
             if (Physics.CheckSphere(smoothedFocus, collisionRadius, blockers, QueryTriggerInteraction.Ignore))
             { smoothedFocus = target.position + lookOffset; smoothVelocity = Vector3.zero; }
             ApplyPose();
