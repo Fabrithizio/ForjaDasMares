@@ -26,6 +26,13 @@ namespace ForjaDasMares
             { Debug.LogError("ArenaSession has incomplete references.", this); enabled = false; }
         }
         void Update() { if (player.Commands.TakeReset() || player.transform.position.y < fallThreshold) ResetArena(); }
+        void Start()
+        {
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Camera camera = followCamera.GetComponent<Camera>();
+            Debug.Log($"ARENA_RUNTIME_READY player={player.transform.position} camera={camera.transform.position} mask={camera.cullingMask} quality={QualitySettings.GetQualityLevel()} pipeline={UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline} targetViewport={camera.WorldToViewportPoint(trainingTarget.transform.position + Vector3.up)}");
+#endif
+        }
         public void ResetArena()
         {
             if (movableTargets != null) foreach (var target in movableTargets) if (target != null) target.ResetTarget();

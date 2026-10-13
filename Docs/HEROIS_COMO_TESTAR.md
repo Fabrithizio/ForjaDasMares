@@ -37,8 +37,14 @@ Para usar clips reais, substitua o modelo preservando a raiz visual e configure 
 
 ## Escopo e limitações
 
-Os alvos são bonecos de treino, sem IA. Proteção afeta o boneco aliado e o jogador local; não é multiplayer. Não há equipamento, inventário, progressão, salas, rede ou crossplay. O dano de teste e a troca de herói são recursos da arena de desenvolvimento. Ausência de dispositivo ADB impede validar o APK novo fisicamente nesta sessão; testes sintéticos de toque não substituem uso humano no aparelho.
+Os alvos são bonecos de treino, sem IA. Proteção afeta o boneco aliado e o jogador local; não é multiplayer. Não há equipamento, inventário, progressão, salas, rede ou crossplay. O dano de teste e a troca de herói são recursos da arena de desenvolvimento. O APK foi instalado e testado no moto g15 com entrada injetada por ADB. Foram conferidos movimento segurando o joystick, ataques e habilidades dos quatro heróis, esquiva, proteção finita e reset. Ainda é necessária avaliação humana de ergonomia e multitoque simultâneo; esse teste curto não comprova todos os Androids.
 
 O menu Upgrade existing arena with heroes é uma migração executada uma vez. Se já houver HeroRoster na cena, preserva dados e objetos. Não recria chão, câmera, obstáculos ou entrada. O ataque antigo fica desabilitado na cena e é conservado para as verificações de regressão da base.
 
 As instruções de montagem Android e a limitação de Gradle desta máquina permanecem no guia da arena e no documento de progresso. A montagem usa o SDK/NDK/JDK da Unity, sem Visual Studio IDE.
+
+## Correção verificada no build Android
+
+O pool referencia explicitamente malhas geométricas de esfera e cilindro serializadas na cena, além do material. No runtime cria MeshFilter/MeshRenderer, sem CreatePrimitive e sem colliders provisórios. Isso evita o stripping de SphereCollider identificado na primeira montagem Android da etapa. As referências estão configuradas no objeto CombatEffectPool. A versão de entrega usa essa correção.
+
+Reset também reinicia a cadeia de ataques. Trocar herói remove a trava de direção do ataque anterior. A última suíte contém 23 testes aprovados.

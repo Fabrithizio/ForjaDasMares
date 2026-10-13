@@ -6882,6 +6882,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatEffectPool
   material: {fileID: 2100000, guid: 145bf6acecd879e44a08fc7d10d09ebb, type: 2}
+  projectileMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  zoneMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   projectileCapacity: 32
   zoneCapacity: 12
 --- !u!4 &1414071815

@@ -4,7 +4,7 @@ Nome provisório de um jogo original de ação e RPG cooperativo para até quatr
 
 ## Estado real desta pasta
 
-A arena existente recebeu quatro heróis modulares, habilidades e joystick fixo. Os 22 testes de PlayMode passaram. Consulte Docs/HEROIS_COMO_TESTAR.md. Consulte Docs/PROGRESSO.md para evidências, limitações e próximos passos.
+A arena existente recebeu quatro heróis modulares, habilidades e joystick fixo. Os 23 testes de PlayMode passaram. Consulte Docs/HEROIS_COMO_TESTAR.md. Consulte Docs/PROGRESSO.md para evidências, limitações e próximos passos.
 
 Os alvos atuais são **Windows e Android**. iOS está adiado.
 

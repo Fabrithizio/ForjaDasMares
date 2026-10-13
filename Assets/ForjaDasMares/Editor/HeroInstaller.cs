@@ -30,6 +30,7 @@ namespace ForjaDasMares.Editor
             foreach (Transform child in player.transform) if (child.name != "StrikeOrigin") child.gameObject.SetActive(false);
             var hp = player.AddComponent<Health>();
             var pool = new GameObject("CombatEffectPool").AddComponent<CombatEffectPool>(); pool.Configure(Material("Combat_White", Color.white));
+            ConfigurePoolMeshes(pool);
             var combat = player.AddComponent<HeroCombat>();
             combat.Configure(motor, hp, player.transform.Find("StrikeOrigin"), pool, 1 << 10, 1 << 9, (1 << 11) | (1 << 12));
             var presentation = player.AddComponent<HeroPresentation>();
@@ -50,6 +51,19 @@ namespace ForjaDasMares.Editor
             ConfigureHud(input, roster, combat);
             PlayerSettings.bundleVersion = "0.2.0"; PlayerSettings.Android.bundleVersionCode = 2;
             EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets(); Debug.Log("HERO_INSTALL_OK");
+        }
+        static void ConfigurePoolMeshes(CombatEffectPool pool)
+        {
+            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere); var cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            pool.ConfigureMeshes(sphere.GetComponent<MeshFilter>().sharedMesh, cylinder.GetComponent<MeshFilter>().sharedMesh);
+            UnityEngine.Object.DestroyImmediate(sphere); UnityEngine.Object.DestroyImmediate(cylinder);
+            EditorUtility.SetDirty(pool);
+        }
+        public static void RepairPoolMeshes()
+        {
+            var scene = EditorSceneManager.OpenScene(ArenaBuilder.ScenePath);
+            ConfigurePoolMeshes(UnityEngine.Object.FindFirstObjectByType<CombatEffectPool>());
+            EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets(); Debug.Log("HERO_POOL_MESHES_OK");
         }
         static T Asset<T>(string name, Action<T> configure) where T : ScriptableObject
         {

@@ -2,9 +2,9 @@
 
 Quatro heróis configurados e selecionáveis na ArenaTest existente. Guerreiro: espada em arco/combo e impacto; Patrulheiro: projéteis e armadilha; Arcanista: gelo/fogo/raio e pulso glacial; Cavaleiro Rúnico: armadura, proteção do aliado e investida. ScriptableObjects separados; pool de projéteis/zonas; dano, facção, direção, obstáculos, knockback, recuperação/cooldowns e invulnerabilidade finita. Sem equipamento ou multiplayer.
 
-Joystick Android substituído por base fixa, indicador interno e captura de pointerId. Testes verificaram retenção do vetor, liberação de outro dedo e deslocamento do CharacterController. São testes sintéticos no Editor; moto g15 ausente da lista ADB nesta rodada. A nova versão ainda exige confirmação humana no aparelho.
+Joystick Android substituído por base fixa, indicador interno e captura de pointerId. Testes verificaram retenção do vetor, liberação de outro dedo e deslocamento do CharacterController. O moto g15 voltou a ser detectado e o APK foi instalado e testado nele por entrada de toque injetada via ADB. Movimento segurado, ataques e habilidades dos quatro heróis, esquiva e reset conferidos em capturas. Avaliação humana de ergonomia e multitoque simultâneo ainda é necessária.
 
-Verificação final: **22 testes PlayMode, 22 aprovados, zero falhas**; testes-final.xml. Mantidos os 11 testes da base e adicionados 11 de heróis/efeitos/controles/apresentação. Primeiro corrigida a criação de MaterialPropertyBlock no construtor. Depois corrigidos colisão do aliado com o percurso de teste e raio da explosão de fogo. A rodada final inclui movimento pelo joystick, investida/dano único/knockback e poses de dano/morte/vitória.
+Verificação final: **23 testes PlayMode, 23 aprovados, zero falhas**; testes-delivery.xml. Mantidos os 11 testes da base e adicionados 12 de heróis/efeitos/controles/apresentação, incluindo reset da cadeia e liberação da direção ao trocar herói. Primeiro corrigida a criação de MaterialPropertyBlock no construtor. Depois corrigidos colisão do aliado com o percurso de teste e raio da explosão de fogo. A rodada final inclui movimento pelo joystick, investida/dano único/knockback e poses de dano/morte/vitória.
 
 Não há clips reais ou modelos finais. Idle/Walk/Attack/Skill/Dodge/Hit/Dead/Victory são estados de placeholders procedurais, com pontos de integração de Animator documentados. Animation integrado 1.0.0 habilitado. VS Code continua o editor; Visual Studio IDE não foi instalado.
 
@@ -138,3 +138,25 @@ Windows 0.2.0 x64/Mono: BuildPipeline retornou ARENA_PLAYER_BUILD_OK e saída 0.
 Captura real URP da arena atual gerada por ArenaPreviewCapture e inspecionada: chão/obstáculos/iluminação/câmera, guerreiro com espada geométrica, grupo de alvos, aliado e HUD presentes. Arquivo arena-herois.png na entrega. ZIP do executável e todos os dados Windows produzido.
 
 Android 0.2.0: montagem em andamento neste checkpoint. Nova confirmação física depende do aparelho voltar a ser detectado por ADB. O código funcional no PC pode ser salvo no GitHub conforme autorização anterior.
+
+### Nova rodada no aparelho
+
+O moto g15 voltou a ser detectado. A primeira montagem 0.2.0 terminou no Gradle em 45 s e instalou com Success, mas o teste físico revelou stripping de SphereCollider chamado por GameObject.CreatePrimitive no pool. Este APK inicial não é a entrega final. Pool corrigido para criar MeshFilter/MeshRenderer com malhas explícitas previamente serializadas na cena, sem criar/remover colliders. Verificações e montagem estão sendo repetidas.
+
+## Conclusão da etapa 3 — versão 0.2.0
+
+Última suíte: 23 testes PlayMode aprovados, zero falhas, após a correção do pool Android e do reset do combo/trava de direção. O pool usa malhas serializadas com MeshFilter/MeshRenderer e não cria colliders no runtime. O stripping identificado no primeiro APK foi corrigido.
+
+Android final: IL2CPP/ARM64, mínimo API 25, alvo API 35, versionCode 2, versionName 0.2.0. Montagem direta Gradle concluída em 22 s com BUILD SUCCESSFUL; instalada com Success e aberta no moto g15. Nova verificação da versão final: joystick segurado desloca o herói, primeiro ataque deixa alvo em 74, reset restaura alvo e reinicia combo (primeiro golpe novamente 74). Log de 52 linhas do novo processo, sem E Unity, Exception, NullReference, MissingReference ou FATAL na consulta. Perfil Mobile confirmado pelo diagnóstico de runtime. Capturas reais conferidas.
+
+Sessão física desta etapa, com toque injetado no aparelho: Guerreiro 100→74→29 (golpe e impacto/empurrão de grupo); Patrulheiro projétil 100→80 e armadilha 100→72 com alvos imobilizados; Arcanista 100→84→64→46 (gelo/fogo/raio), pulso 100→68 com imobilização de grupo; Cavaleiro golpe+investida 100→54, proteção reduz dano no aliado 150→134 e no herói 210→196, depois expira (segundo dano: aliado 94, herói 163). Esquiva desloca o personagem e reset restaura arena/vida/câmera. Cada resultado observado em captura, além dos testes automatizados.
+
+A proteção só começa após a preparação da habilidade; pressionar DANO imediatamente, antes da resolução, aplica o dano normal. Foi repetido o teste aguardando a preparação, comprovando redução e expiração. Não é invulnerabilidade permanente.
+
+Limitações: placeholders geométricos e poses procedurais; gamepad físico, ergonomia humana/multitoque simultâneo, profiling, outros aparelhos e testes de longa duração ainda pendentes. A chamada interna do Gradle pela Unity continua falhando nesta máquina em Java NIO; o APK entregue usa montagem direta do projeto gerado, com ajuste somente no processo Java. Sem alteração de segurança/firewall/global do Windows. Não há equipamento, progressão, IA de inimigos ou multiplayer/crossplay nesta etapa.
+
+O projeto permanece em Área de Trabalho/Jogos/ForjaDasMares. Abrir a cena por F6 e Play. A próxima etapa exige nova instrução do usuário.
+
+SHA256 do APK entregue: 0493543A863A925F13627778B15D9D01FC9DD36F2616B71E899A72A9CAD3E092
+
+Windows final recompilado com ARENA_PLAYER_BUILD_OK e saída 0. Executável final iniciado, ARENA_RUNTIME_READY confirmou PC_RPAsset e referências da arena; consulta do log sem exceções. Processo de teste encerrado e ZIP atualizado. Backup final inclui a correção Android e os 23 testes.

@@ -106,3 +106,5 @@ Animation integrado 1.0.0 foi habilitado após o compilador identificar a ausên
 
 
 Preservação confirmada por IDs da cena: 326 dos 327 objetos/componentes originais permanecem. O único ID removido pertence ao OnScreenStick antigo, substituído pelo TouchMoveStick. Nenhum chão, parede, câmera, iluminação ou outro objeto original foi recriado/removido.
+
+No teste Android 0.2.0, CreatePrimitive exigiu um SphereCollider que o IL2CPP havia removido. A API oficial documenta a necessidade de preservar esses tipos: https://docs.unity3d.com/ja/6000.0/ScriptReference/GameObject.CreatePrimitive.html . A solução desta arena elimina essa dependência: o Editor serializa malhas geométricas existentes; o pool cria MeshFilter/MeshRenderer explicitamente, sem collider. Malhas/material configurados na cena e revalidados por 23 testes e pelo APK no aparelho. Essa descoberta demonstra por que a validação do Editor não substitui o build IL2CPP real.

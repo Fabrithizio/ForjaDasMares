@@ -114,5 +114,12 @@ namespace ForjaDasMares.Tests
             Assert.That(visual.State, Is.EqualTo(HeroState.Dead)); session.ResetArena(); roster.Victory(); yield return null;
             Assert.That(visual.State, Is.EqualTo(HeroState.Victory));
         }
+        [Test] public void ResetRestartsComboAndSwitchingClearsOldFacingLock()
+        {
+            Position(); combat.TryAttack(); combat.Simulate(0.12f); Assert.That(session.TrainingTarget.Current, Is.EqualTo(74));
+            session.ResetArena(); Position(); combat.TryAttack(); combat.Simulate(0.12f); Assert.That(session.TrainingTarget.Current, Is.EqualTo(74));
+            session.ResetArena(); combat.TryAttack(); Assert.That(motor.FacingLocked, Is.True);
+            roster.Select(1); Assert.That(motor.FacingLocked, Is.False);
+        }
     }
 }

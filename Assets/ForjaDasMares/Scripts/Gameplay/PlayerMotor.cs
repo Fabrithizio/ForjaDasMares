@@ -38,7 +38,7 @@ namespace ForjaDasMares
             dodgeDuration = Mathf.Max(0.05f, profile.dodge.duration); dodgeSpeed = Mathf.Max(0.1f, profile.dodge.speed); dodgeCooldown = Mathf.Max(0, profile.dodge.cooldown);
             invulnerableStart = Mathf.Clamp(profile.dodge.invulnerableStart, 0, dodgeDuration);
             invulnerableEnd = Mathf.Clamp(profile.dodge.invulnerableEnd, invulnerableStart, dodgeDuration);
-            velocity = Vector3.zero; dodgeRemaining = cooldownRemaining = 0f; charge = false;
+            velocity = Vector3.zero; dodgeRemaining = cooldownRemaining = facingLock = 0f; charge = false;
         }
         public void LockFacing(float duration) => facingLock = Mathf.Max(facingLock, duration);
         public bool StartCharge(Vector3 direction, float duration, float chargeSpeed)
