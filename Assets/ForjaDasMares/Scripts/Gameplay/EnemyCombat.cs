@@ -55,7 +55,7 @@ namespace ForjaDasMares
                     if (warnings.Acquire(TelegraphShape.Circle, marks[i], direction, radius, 0, 360, windup, move.warningColor, this) == null) { Cancel(); return false; }
                 }
             }
-            else if (warnings.Acquire(move.kind == BossAttackKind.Charge ? TelegraphShape.Line : TelegraphShape.Cone, transform.position, direction, radius, move.length, move.arc, windup, move.warningColor, this) == null) { Cancel(); return false; }
+            else if (warnings.Acquire(move.kind == BossAttackKind.Charge ? TelegraphShape.Line : TelegraphShape.Cone, transform.position, direction, radius, move.length + (move.kind == BossAttackKind.Charge ? radius : 0), move.arc, windup, move.warningColor, this) == null) { Cancel(); return false; }
             return true;
         }
         public void Simulate(float deltaTime)
@@ -69,7 +69,7 @@ namespace ForjaDasMares
                 if (bossMove != null) ResolveBoss(); else ResolveNormal();
             }
             if (busy && resolved && bossMove != null && bossMove.kind == BossAttackKind.Charge && actor.Motor.IsRushing)
-                resolver.Area(transform.position + Vector3.up, radius, direction, 360, attack, actor.Health, targets, geometry, false, scale);
+                resolver.Area(transform.position + Vector3.up, radius, direction, 180, attack, actor.Health, targets, geometry, false, scale);
             float rushLength = bossMove != null && bossMove.kind == BossAttackKind.Charge ? bossMove.length / bossMove.chargeSpeed : 0;
             if (busy && elapsed >= windup + recovery + rushLength)
             { busy = false; cooldown = bossMove != null ? bossMove.cooldown : summoning ? actor.Profile.summonCooldown : actor.Profile.attackCooldown; resolver.Clear(); }

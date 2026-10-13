@@ -1,15 +1,26 @@
-﻿# Etapa 5 — plano aguardando entrega PvE
+﻿# Masmorras — arquitetura implementada
 
-Auditoria: nenhuma implementação equivalente de Dungeon/Room/Biome/Loot/Interaction encontrada nos scripts existentes. ArenaTest permanecerá como referência. A nova cena DungeonTest reutilizará jogador/câmera/UI/EncounterController/pools e dados da etapa 4. Não reconstruir os heróis ou dano.
+Base auditada e reutilizada: arena/heróis e PvE, Unity 6000.3.26f1, URP17.3.0, Input System1.14.2 e AI Navigation2.0.16. Não havia sistemas equivalentes de Dungeon/Room/Biome/Interaction. DungeonTest foi salva a partir da cena existente, mantendo seus personagens, câmera, controles, pools e dados de combate. ArenaTest não foi regravada nesta etapa.
 
-Layout lógico de árvore em grid com espaçamento 16, salas 12x12, corredores 4x3, sockets cardinais recíprocos. System.Random(seed), percurso principal entrada→combate→combate→evento→combate difícil→armadilha→chefe. Ramificações de tesouro e descanso até o limite configurado. Tentativas limitadas + fallback fixo validado; BFS, coords únicas, portas recíprocas, saída final e limite. Testar milhares de seeds e mesma seed igual assinatura. Mapa fixo preserva a mesma sequência de teste.
+## Separação de responsabilidades
 
-BiomeDefinition: materiais/paleta, luz, decoração, tabela de encontros e recompensas; três assets. RoomDefinition: categoria, dimensões, obstáculos locais, sockets e objetivos. Construtor usa meshes explícitas (sem Runtime CreatePrimitive, evitando stripping Android). Salas/controladores gerados têm dados e referências completas, sem métodos vazios.
+- DungeonLayout/DungeonNode: árvore lógica em grid; System.Random(seed), percurso principal fixo por categoria e coordenadas variadas; ramificações opcionais; assinatura, BFS e validação de conexões recíprocas/limite/overlap. Nenhum estado global de Unity Random participa do layout.
+- RoomDefinition: categoria, tamanho de módulo, largura de porta, altura de paredes e obstáculos. O gerador usa módulos compatíveis de 12×12, corredor4×3 e grid16.
+- BiomeDefinition: quatro materiais, iluminação, mesh/escala de decoração, tabelas de encontros e recompensa. Três assets originais, sem modelos/clips finais.
+- DungeonGenerator: meshes explícitas, chão/peças/obstáculos/colliders, sockets cardinais, corredores, interações e navegação. Valida caminho do tamanho normal e do chefe antes de fechar as portas. Substituições de modelos devem preservar colliders/sockets e dados.
+- DungeonRoom/DungeonDoor: estado da sala e barreiras físicas/carving dinâmico. A porta abre quando uma ponta foi concluída, ambas estão sem encontro ativo e a chave opcional permite a entrada. A sala de combate só conclui após fila de spawn e todos os inimigos relevantes mortos.
+- DungeonSession: percurso, início de encontro sem restaurar o herói, objetivos obrigatórios, retorno/seed/bioma, chave/moedas voláteis, fim/reset. Trocar herói reinicia o percurso de teste.
+- DungeonInteractable: distância validada, uso único, tampa/objeto geométrico, baú, cristal, descanso, alavanca e saída. Não há equipamento/inventário persistente.
+- DungeonTrap: intervalo, aviso visual/bipe, dano único por pulso via DamageResolver e desarme. Não causa dano silencioso sem adquirir um aviso do pool.
+- DungeonInteractionInput: asset próprio do Input System (F/botão norte) e comando do botão de toque, separado de movimento/mira/combate.
+- DungeonHud: estado legível, vida, objetivo próximo, moedas/chave e barra do chefe. Renderização de salas atuais/adjacentes e corredores ligados à sala atual; câmera com limites opcionais somente nesta cena.
 
-NavMeshSurface normal+chefe gerados depois da geometria, portas abertas durante bake; portas com colliders + carving dinâmico. Portas de progresso só abrem após vencer encontros e objetivos; fechar entrada quando herói passar a margem segura, não dentro do collider. Spawn usa pontos internos válidos + validação existente do EnemyPool, excluindo paredes, baús e jogador.
+## Progressão de encontros
 
-Interações F/gamepad/celular: baú com abertura geométrica, chave de sessão opcional para tesouro, evento obrigatório, descanso cura única, alavanca de armadilha, saída após chefe. Saldo/chaves voláteis, sem equipamentos/inventário persistente. Armadilhas reutilizam Health/DamageResolver/TelegraphPool e têm aviso/intervalo/ledger de acerto.
+Os três encontros principais usam índices 0,1,2 da tabela de cada bioma: catacumbas usam saqueadores/guardas/arqueiro; floresta usa ecos/invocações; fortaleza usa instáveis/guardas/arqueiro. Atributos básicos dos inimigos não são multiplicados por profundidade. Quantidade/composição e recompensas são dados. O chefe reutiliza o Custódio do PvE.
 
-Dificuldade por composições e quantidade de encontros por profundidade; atributos de inimigos preservados. RoomController exige fila de spawn concluída, todos relevantes mortos e objetivo obrigatório. R reinicia mesma seed; troca de herói reinicia o percurso de teste para não conceder vitórias falsas. UI escolha de bioma/seed/fixo e volta à arena. Mostrar só salas atuais/adjacentes e fundo escuro; câmera com limites opcionais exclusivamente na DungeonTest.
+## Verificação
 
-Validar conectividade lógica e NavMesh real, portas/corredores/baú/objetivos/armadilha/chefe/saída; executar sequência completa por combate existente. PC executável e captura; Android sem aparelho nesta rodada. Nunca declarar arte final, teste físico ou multiplayer.
+Suíte de 41 casos aprovada, incluindo os 35 anteriores. 2.000 seeds × seis limites (12.000 combinações) conectadas, limitadas, reproduzíveis, com três salas de combate e chefe; 12 gerações físicas nos três biomas/quatro seeds, com NavMesh normal/chefe. Percurso completo venceu três combates, usou descanso, baú/cristal, desarmou a armadilha, matou chefe e saiu com movimento/colisões/combate reais. Verificações adicionais de câmera, input e alcance da investida do chefe estão na execução final registrada em PROGRESSO.md.
+
+Sem teste físico Android nesta rodada: aparelho com o usuário. Sem alegações de profiling, balanceamento comercial, animações finais, salvamento completo ou multiplayer.

@@ -1,35 +1,36 @@
-# Etapa 4 — auditoria e plano de implementação
+﻿# Etapa 4 â€” auditoria e plano de implementaÃ§Ã£o
 
 ## Base auditada
 
-Checkpoint c0bb83b, Unity 6000.3.26f1, URP 17.3.0, Input System 1.14.2. Cena ArenaTest existente e 23 testes aprovados na etapa 3. Código e árvore Git conferidos em clone independente; Windows e APK 0.2.0 testados, incluindo toque no moto g15. Cópia da cena antes desta etapa em work/etapa4/ArenaTest.before.unity. Nenhum Enemy/Boss/Encounter/Wave/Nav equivalente encontrado no código do jogo; não há AGENTS.md no projeto.
+Checkpoint c0bb83b, Unity 6000.3.26f1, URP 17.3.0, Input System 1.14.2. Cena ArenaTest existente e 23 testes aprovados na etapa 3. CÃ³digo e Ã¡rvore Git conferidos em clone independente; Windows e APK 0.2.0 testados, incluindo toque no moto g15. CÃ³pia da cena antes desta etapa em work/etapa4/ArenaTest.before.unity. Nenhum Enemy/Boss/Encounter/Wave/Nav equivalente encontrado no cÃ³digo do jogo; nÃ£o hÃ¡ AGENTS.md no projeto.
 
-Conferidos Health, PlayerMotor, HeroCombat, DamageResolver, CombatProjectile, CombatEffectPool, ArenaSession, dados, assemblies, cena e documento mestre. A etapa anterior atende aos critérios funcionais verificados; porcentagem de certeza não substitui testes. Multitoque humano/gamepad físico e arte/clips finais continuam pendentes.
+Conferidos Health, PlayerMotor, HeroCombat, DamageResolver, CombatProjectile, CombatEffectPool, ArenaSession, dados, assemblies, cena e documento mestre. A etapa anterior atende aos critÃ©rios funcionais verificados; porcentagem de certeza nÃ£o substitui testes. Multitoque humano/gamepad fÃ­sico e arte/clips finais continuam pendentes.
 
-## Dependência de navegação
+## DependÃªncia de navegaÃ§Ã£o
 
-Usar AI Navigation 2.0.16, versão publicada para Unity 6000.3 na [documentação oficial](https://docs.unity3d.com/6000.3/Documentation/Manual/com.unity.ai.navigation.html), mais o módulo AI integrado. A compatibilidade efetiva será confirmada pela resolução de pacotes e compilação local. NavMeshSurface será construído a partir do chão/obstáculos existentes; dados reais serão salvos no projeto. NavMeshAgent fornece caminho/desvio, CharacterController aplica movimento com colisões, usando a mesma função de gravidade/colisão do jogador. Não é necessário Visual Studio IDE.
+Usar AI Navigation 2.0.16, versÃ£o publicada para Unity 6000.3 na [documentaÃ§Ã£o oficial](https://docs.unity3d.com/6000.3/Documentation/Manual/com.unity.ai.navigation.html), mais o mÃ³dulo AI integrado. A compatibilidade efetiva serÃ¡ confirmada pela resoluÃ§Ã£o de pacotes e compilaÃ§Ã£o local. NavMeshSurface serÃ¡ construÃ­do a partir do chÃ£o/obstÃ¡culos existentes; dados reais serÃ£o salvos no projeto. NavMeshAgent fornece caminho/desvio, CharacterController aplica movimento com colisÃµes, usando a mesma funÃ§Ã£o de gravidade/colisÃ£o do jogador. NÃ£o Ã© necessÃ¡rio Visual Studio IDE.
 
 ## Componentes planejados
 
-- EnemyDefinition: atributos, percepção, alcance, cadência, comportamento, bloqueio, invocação e referência de prefab/ataque.
-- EnemyActor: ciclo de ativação/morte/retorno ao pool e referências explícitas de contexto.
-- EnemyMotor: NavMesh, CharacterController, impedimentos/empurrão e detecção de falta de progresso; sem leitura de input.
-- EnemyBrain: Idle/Patrol/Detect/Chase/Attack/Retreat/Stunned/Dead, distância/linha de visão e decisões com intervalos.
-- EnemyCombat: preparação/resolução/recuperação, reutilizando AttackDefinition, DamageResolver, Health e pool de projéteis.
-- EnemyPresentation e TelegraphPool: silhuetas geométricas, poses, áreas de perigo e bipes sintetizados originais. Nenhuma animação/modelo final será declarado pronto.
-- EnemyPool: capacidade fixa por tipo, limite global de ativos e limites de invocação por proprietário; limpeza de referências na morte/desativação.
-- EncounterDefinition/EncounterController: ondas configuráveis com tipos/quantidades/atrasos, eliminação/sobrevivência/chefe como condições, vitória e derrota reais.
-- BossDefinition/BossBrain: pelo menos três ataques sinalizados (arco, marcas no chão, investida), fases e barra de vida. Recompensa será um contador de treino da sessão, concedido uma vez; não é inventário/progressão persistente.
+- EnemyDefinition: atributos, percepÃ§Ã£o, alcance, cadÃªncia, comportamento, bloqueio, invocaÃ§Ã£o e referÃªncia de prefab/ataque.
+- EnemyActor: ciclo de ativaÃ§Ã£o/morte/retorno ao pool e referÃªncias explÃ­citas de contexto.
+- EnemyMotor: NavMesh, CharacterController, impedimentos/empurrÃ£o e detecÃ§Ã£o de falta de progresso; sem leitura de input.
+- EnemyBrain: Idle/Patrol/Detect/Chase/Attack/Retreat/Stunned/Dead, distÃ¢ncia/linha de visÃ£o e decisÃµes com intervalos.
+- EnemyCombat: preparaÃ§Ã£o/resoluÃ§Ã£o/recuperaÃ§Ã£o, reutilizando AttackDefinition, DamageResolver, Health e pool de projÃ©teis.
+- EnemyPresentation e TelegraphPool: silhuetas geomÃ©tricas, poses, Ã¡reas de perigo e bipes sintetizados originais. Nenhuma animaÃ§Ã£o/modelo final serÃ¡ declarado pronto.
+- EnemyPool: capacidade fixa por tipo, limite global de ativos e limites de invocaÃ§Ã£o por proprietÃ¡rio; limpeza de referÃªncias na morte/desativaÃ§Ã£o.
+- EncounterDefinition/EncounterController: ondas configurÃ¡veis com tipos/quantidades/atrasos, eliminaÃ§Ã£o/sobrevivÃªncia/chefe como condiÃ§Ãµes, vitÃ³ria e derrota reais.
+- BossDefinition/EnemyBrain: pelo menos trÃªs ataques sinalizados (arco, marcas no chÃ£o, investida), fases e barra de vida. Recompensa serÃ¡ um contador de treino da sessÃ£o, concedido uma vez; nÃ£o Ã© inventÃ¡rio/progressÃ£o persistente.
 
-## Integração e verificação
+## IntegraÃ§Ã£o e verificaÃ§Ã£o
 
-Preservar chão, luz, câmera, controles, heróis e arena. Acrescentar desafio selecionável/início de encontro ao HUD mínimo. R limpa encontro, projéteis, avisos, inimigos e restaura a arena. Trocar herói cancela o encontro de teste, evitando completar desafios restaurando vida artificialmente. Inimigos usarão camada própria e facções impedirão fogo amigo involuntário.
+Preservar chÃ£o, luz, cÃ¢mera, controles, herÃ³is e arena. Acrescentar desafio selecionÃ¡vel/inÃ­cio de encontro ao HUD mÃ­nimo. R limpa encontro, projÃ©teis, avisos, inimigos e restaura a arena. Trocar herÃ³i cancela o encontro de teste, evitando completar desafios restaurando vida artificialmente. Inimigos usarÃ£o camada prÃ³pria e facÃ§Ãµes impedirÃ£o fogo amigo involuntÃ¡rio.
 
-Manter os 23 testes anteriores. Acrescentar testes de dados/referências, navegação/obstáculos, alcance/visão, bloqueio frontal/traseiro, telegraph/áudio, dano único, invocação/capacidade/limpeza, ondas, chefe/fases/recompensa, vitória e morte. Exercitar cada herói contra cada um dos cinco tipos e contra o chefe. Compilar e testar no Windows/Android quando as ferramentas permitirem. Registrar limitações reais e parar ao final da etapa. Multiplayer permanece fora deste recorte.
+Manter os 23 testes anteriores. Acrescentar testes de dados/referÃªncias, navegaÃ§Ã£o/obstÃ¡culos, alcance/visÃ£o, bloqueio frontal/traseiro, telegraph/Ã¡udio, dano Ãºnico, invocaÃ§Ã£o/capacidade/limpeza, ondas, chefe/fases/recompensa, vitÃ³ria e morte. Exercitar cada herÃ³i contra cada um dos cinco tipos e contra o chefe. Compilar e testar no Windows/Android quando as ferramentas permitirem. Registrar limitaÃ§Ãµes reais e parar ao final da etapa. Multiplayer permanece fora deste recorte.
 
 ## Fechamento PvE
 
-35/35 testes PlayMode aprovados, zero falhas. As duas verificações adicionais confirmaram exatamente nove spawns nas três ondas e um único dano em área para o jogador com colliders múltiplos. O executável Windows 0.3.0 compilou, abriu com ARENA_RUNTIME_READY e PC_RPAsset, sem exceções no log. Captura URP real com três inimigos ativos revisada; a sobreposição do texto do encontro foi corrigida no HUD. Build final será recompilado com esse ajuste visual.
+35/35 testes PlayMode aprovados, zero falhas. As duas verificaÃ§Ãµes adicionais confirmaram exatamente nove spawns nas trÃªs ondas e um Ãºnico dano em Ã¡rea para o jogador com colliders mÃºltiplos. O executÃ¡vel Windows 0.3.0 compilou, abriu com ARENA_RUNTIME_READY e PC_RPAsset, sem exceÃ§Ãµes no log. Captura URP real com trÃªs inimigos ativos revisada; a sobreposiÃ§Ã£o do texto do encontro foi corrigida no HUD. Build final serÃ¡ recompilado com esse ajuste visual.
 
-Etapa 4 validada no PC. Não houve teste físico Android nesta etapa; o telefone foi levado pelo usuário. Não há multiplayer, inventário ou arte final. Etapa 5 pode começar conforme autorização explícita de executar na ordem, sem confirmação presencial.
+Etapa 4 validada no PC. NÃ£o houve teste fÃ­sico Android nesta etapa; o telefone foi levado pelo usuÃ¡rio. NÃ£o hÃ¡ multiplayer, inventÃ¡rio ou arte final. Etapa 5 pode comeÃ§ar conforme autorizaÃ§Ã£o explÃ­cita de executar na ordem, sem confirmaÃ§Ã£o presencial.
+

@@ -2,6 +2,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 namespace ForjaDasMares.Tests
@@ -64,6 +66,35 @@ namespace ForjaDasMares.Tests
             string before = dungeon.Generator.Layout.Signature(); dungeon.OpenChest(3); Object.FindFirstObjectByType<ArenaSession>().ResetArena(); yield return null; yield return null;
             Assert.That(dungeon.Generator.Layout.Signature(), Is.EqualTo(before)); Assert.That(dungeon.Coins, Is.Zero); Assert.That(dungeon.CurrentRoom.node.id, Is.Zero); Assert.That(motor.transform.position.y, Is.GreaterThan(0));
             heroes.Select(1); yield return null; Assert.That(dungeon.CurrentRoom.node.id, Is.Zero); Assert.That(heroes.Selected, Is.EqualTo(1)); Assert.That(heroes.Health.Current, Is.EqualTo(105));
+        }
+        [Test] public void DungeonCameraKeepsHeroVisibleAcrossAspectRatios()
+        {
+            var follow = Object.FindFirstObjectByType<ArenaCamera>(); var camera = follow.GetComponent<Camera>();
+            foreach (float aspect in new[] { 16f / 9f, 4f / 3f, 9f / 16f }) foreach (Vector3 offset in new[] { new Vector3(0, 0.06f, -3), new Vector3(4.2f, 0.06f, 4.2f), new Vector3(-4.2f, 0.06f, -4.2f) })
+            {
+                camera.aspect = aspect; motor.Teleport(dungeon.CurrentRoom.Center + offset, Quaternion.identity); follow.Snap(); Vector3 screen = camera.WorldToViewportPoint(motor.transform.position + Vector3.up);
+                Assert.That(screen.x, Is.InRange(0.05f, 0.95f)); Assert.That(screen.y, Is.InRange(0.05f, 0.95f)); Assert.That(screen.z, Is.GreaterThan(0));
+            }
+        }
+        [UnityTest] public IEnumerator InputSystemInteractionActivatesNearbyRequiredCrystal()
+        {
+            var room = dungeon.Generator.Rooms[3]; motor.Teleport(room.Center + Vector3.up * 0.06f, Quaternion.identity); dungeon.Enter(room);
+            DungeonInteractable crystal = null; foreach (var item in room.interactions) if (item.Kind == DungeonInteractionKind.Crystal) crystal = item;
+            motor.Teleport(crystal.transform.position + new Vector3(0, 0.06f, -1.3f), Quaternion.identity); yield return new WaitForSeconds(0.15f);
+            Assert.That(dungeon.Nearby, Is.SameAs(crystal)); var reader = dungeon.GetComponent<DungeonInteractionInput>(); Assert.That(reader.InteractionEnabled, Is.True);
+            var originalBackground = InputSystem.settings.backgroundBehavior; var originalEditor = InputSystem.settings.editorInputBehaviorInPlayMode;
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                // Batch mode has no focused Game View. Route this synthetic device to the player only during this test.
+                InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+                InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+                Assert.That(reader.InteractionAction.controls, Does.Contain(keyboard.fKey));
+                InputState.Change(keyboard, new KeyboardState(Key.F), InputUpdateType.Dynamic);
+                // Dynamic state monitors invoke the actual action callback; the session consumes it in its normal Update.
+                yield return null; yield return null; yield return null; Assert.That(crystal.Used, Is.True, "Use after action"); Assert.That(room.completed, Is.True);
+            }
+            finally { InputSystem.RemoveDevice(keyboard); InputSystem.settings.backgroundBehavior = originalBackground; InputSystem.settings.editorInputBehaviorInPlayMode = originalEditor; }
         }
         [UnityTest] public IEnumerator CompleteFixedRouteWinsThreeCombatsChestObjectiveTrapBossAndExit()
         {

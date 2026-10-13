@@ -7,6 +7,8 @@ namespace ForjaDasMares
         [SerializeField] InputActionAsset actions;
         InputActionAsset runtime;
         bool pending;
+        public bool InteractionEnabled => runtime != null && runtime.FindAction("Interact", true).enabled;
+        public InputAction InteractionAction => runtime != null ? runtime.FindAction("Interact", true) : null;
         public void Configure(InputActionAsset asset) => actions = asset;
         void Awake() { runtime = Instantiate(actions); runtime.FindAction("Interact", true).performed += OnInteract; }
         void OnInteract(InputAction.CallbackContext context) => pending = true;

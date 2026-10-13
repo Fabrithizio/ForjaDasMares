@@ -44,7 +44,7 @@ MonoBehaviour:
     recovery: 0.8
     cooldown: 1.6
     range: 10
-    radius: 0.9
+    radius: 1.5
     length: 7
     chargeSpeed: 8
     arc: 120

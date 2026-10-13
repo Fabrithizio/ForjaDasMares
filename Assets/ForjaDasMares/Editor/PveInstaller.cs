@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
@@ -74,7 +74,7 @@ namespace ForjaDasMares.Editor
             }
             result[4].summonedEnemy = result[5]; EditorUtility.SetDirty(result[4]);
             var sweep = Attack("BossSweep", 22, 4, 0.9f); var marks = Attack("BossMarks", 18, 1.4f, 1.1f); var charge = Attack("BossCharge", 24, 1.2f, 1);
-            result[6].boss = Asset<BossDefinition>("Data/Enemies", "CustodioPattern", b => b.attacks = new[] { new BossAttack { displayName = "Arco da Forja", kind = BossAttackKind.Sweep, hit = sweep, warning = 0.9f, radius = 3.5f, range = 4, arc = 120 }, new BossAttack { displayName = "Tres Selos", kind = BossAttackKind.GroundMarks, hit = marks, warning = 1.1f, radius = 1.3f, range = 16 }, new BossAttack { displayName = "Investida Incandescente", kind = BossAttackKind.Charge, hit = charge, warning = 1, radius = 0.9f, length = 7, range = 10, chargeSpeed = 8 } }); EditorUtility.SetDirty(result[6]);
+            result[6].boss = Asset<BossDefinition>("Data/Enemies", "CustodioPattern", b => b.attacks = new[] { new BossAttack { displayName = "Arco da Forja", kind = BossAttackKind.Sweep, hit = sweep, warning = 0.9f, radius = 3.5f, range = 4, arc = 120 }, new BossAttack { displayName = "Tres Selos", kind = BossAttackKind.GroundMarks, hit = marks, warning = 1.1f, radius = 1.3f, range = 16 }, new BossAttack { displayName = "Investida Incandescente", kind = BossAttackKind.Charge, hit = charge, warning = 1, radius = 1.5f, length = 7, range = 10, chargeSpeed = 8 } }); EditorUtility.SetDirty(result[6]);
             return result;
         }
         static Material Material(string name, Color color, bool unlit = false)
@@ -139,5 +139,12 @@ namespace ForjaDasMares.Editor
             canvas.Find("BossBar").GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -230);
             EditorSceneManager.SaveScene(scene); Debug.Log("PVE_HUD_REPAIRED");
         }
+        public static void RepairChargeRange()
+        {
+            var boss = AssetDatabase.LoadAssetAtPath<BossDefinition>(Root + "Data/Enemies/CustodioPattern.asset");
+            foreach (var move in boss.attacks) if (move.kind == BossAttackKind.Charge && move.radius < 1.5f) move.radius = 1.5f;
+            EditorUtility.SetDirty(boss); AssetDatabase.SaveAssets(); Debug.Log("BOSS_CHARGE_RANGE_REPAIRED");
+        }
     }
 }
+

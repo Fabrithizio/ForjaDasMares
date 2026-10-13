@@ -124,6 +124,15 @@ namespace ForjaDasMares.Tests
                 yield return Fight(boss, 60); Assert.That(boss.IsAlive, Is.False, "Boss survived hero " + hero); Assert.That(heroes.Health.IsAlive, Is.True, "Boss killed hero " + hero);
             }
         }
+        [UnityTest] public IEnumerator BossChargeActuallyDamagesOnceWithoutCrossingPlayerOrWalls()
+        {
+            heroes.Select(3); var boss = encounter.Enemies.TrySpawn(encounter.Presets[6].waves[0].entries[0].enemy, new Vector3(0, 0.06f, -3)); Assert.That(boss, Is.Not.Null); boss.Brain.enabled = false;
+            var move = boss.Profile.boss.attacks[2]; Assert.That(move.kind, Is.EqualTo(BossAttackKind.Charge)); Assert.That(boss.Combat.TryBossAttack(move, false), Is.True);
+            int hp = heroes.Health.Current; float elapsed = 0;
+            while (elapsed < 2.5f) { boss.Combat.Simulate(Time.deltaTime); boss.Motor.Tick(Time.deltaTime); motor.Simulate(Time.deltaTime, Vector2.zero); elapsed += Time.deltaTime; yield return null; }
+            Assert.That(hp - heroes.Health.Current, Is.EqualTo(Mathf.CeilToInt(move.hit.damage * (1 - heroes.Current.armor))));
+            boss.Combat.Simulate(5); Assert.That(hp - heroes.Health.Current, Is.EqualTo(20)); Assert.That(boss.transform.position.z, Is.GreaterThan(motor.transform.position.z + 0.7f));
+        }
         [UnityTest] public IEnumerator WavesWaitForEverySpawnAndRelevantEnemyThenComplete()
         {
             encounter.Begin(encounter.Presets[0]); int spawned = 0; encounter.Enemies.Spawned += Count;
