@@ -194,3 +194,15 @@ Verificação adicional: câmera visível em 16:9,4:3 e9:16. A interação F foi
 Validação final do código: 44/44 testes PlayMode aprovados, zero falhas, incluindo a investida com dano real e único, F pelo Input System e câmera em três proporções. Os quatro heróis continuam vencendo cada arquétipo e o chefe com a correção de alcance. Percurso completo da masmorra aprovado novamente. Unity encerrou com resultado Passed. Capturas catacumbas/floresta revisadas; fortaleza/builds ainda em preparação.
 
 Revisão final da interface: barra do chefe agora usa geometria real com largura proporcional à vida, pois Image Filled sem sprite não reduz o desenho. Helper reutilizado na arena e na masmorra, sem regravar ArenaTest. Teste verifica largura real, alinhamento e proporção. Suíte completa final: 45/45 aprovados, zero falhas. Windows0.4 compilou e abriu com DUNGEON_GENERATED/DUNGEON_RUNTIME_READY, sem exceções; recompilar para incluir o helper final. Android IL2CPP/URP compilou e gerou projeto Gradle, mas montagem interna encontrou Java NIO Unable to establish loopback connection, mesma limitação conhecida. Preparar montagem direta após recompilação final.
+
+## Entrega final da etapa 5 — 13/10/2026
+
+45/45 PlayMode aprovados. Windows0.4.0 final recompilado com o helper da barra, iniciado e DUNGEON_RUNTIME_READY/seed12345 confirmou geração de9 salas; log sem exceções. Processo de teste encerrado e ZIP atualizado. Atalho Jogar ForjaDasMares na pasta Área de Trabalho/Jogos aponta para Builds/Windows/ForjaDasMares.exe.
+
+Android0.4.0 final: IL2CPP/URP/nativo gerados pela Unity; montagem interna falhou somente no problema conhecido Java NIO. Gradle direto terminou BUILD SUCCESSFUL em25s. APK copiado do launcher-debug.apk gerado, versãoCode4, minSDK25,targetSDK35,ARM64; assinatura v2 verificada pelo apksigner. Arquivo38707750 bytes. SHA25663803B4EFFFB7F1D8C8B4ABE206687EE0A14D23F4B84233614B8B88D7AC9614A. Esta versão não foi instalada/testada em aparelho: usuário levou o telefone. A compilação não prova funcionamento físico/crossplay.
+
+Ajuste de Java limitado ao processo de montagem, sem alterações de firewall/segurança/ambiente global. Avisos de metadados SDK somente leitura e de opções Gradle obsoletas não impediram a montagem. O menu Android usa o pipeline padrão; nesta máquina a montagem direta permanece necessária nesta sessão.
+
+Capturas URP reais dos três biomas revistas. ArenaTest preservada byte a byte, SHA25607D9C27D59A80610BC2D7FE669ADA364A1CB961CB9FA177BEA33D28B7399A7C4. Cenas/materiais/ScriptableObjects/prefabs/.meta/configurações estão no Git; Library/Builds ficam fora. Arquivo fonte ZIP e guias serão exportados do checkpoint final, com verificação em clone independente.
+
+Limites: placeholders geométricos e poses, sem arte/clips finais; sem profiling de aparelhos, ergonomia humana, gamepad físico, equipamento completo, persistência completa, multiplayer/crossplay. Etapas4 e5 concluídas neste recorte; não avançar a equipamentos/rede sem próxima instrução. Desenvolvimento continua por blocos, com backup no GitHub após cada validação.

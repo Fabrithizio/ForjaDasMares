@@ -24,3 +24,5 @@ Os três encontros principais usam índices 0,1,2 da tabela de cada bioma: catac
 Suíte de 41 casos aprovada, incluindo os 35 anteriores. 2.000 seeds × seis limites (12.000 combinações) conectadas, limitadas, reproduzíveis, com três salas de combate e chefe; 12 gerações físicas nos três biomas/quatro seeds, com NavMesh normal/chefe. Percurso completo venceu três combates, usou descanso, baú/cristal, desarmou a armadilha, matou chefe e saiu com movimento/colisões/combate reais. Verificações adicionais de câmera, input e alcance da investida do chefe estão na execução final registrada em PROGRESSO.md.
 
 Sem teste físico Android nesta rodada: aparelho com o usuário. Sem alegações de profiling, balanceamento comercial, animações finais, salvamento completo ou multiplayer.
+
+Fechamento:45/45 testes aprovados. Windows0.4.0 compilado/executado, APKARM64 montado e assinatura verificada; Android físico pendente. Saúde do chefe tem largura real proporcional à vida e teste específico. Fonte/artefatos/limites finais em PROGRESSO.md.
