@@ -154,5 +154,13 @@ namespace ForjaDasMares.Tests
             int hits = resolver.Area(enemy.transform.position + Vector3.up, 4, Vector3.back, 360, enemy.Profile.attack, enemy.Health, 1 << 11, 1 << 9);
             Assert.That(hits, Is.EqualTo(1)); Assert.That(before - heroes.Health.Current, Is.EqualTo(10)); Object.Destroy(extra);
         }
+        [UnityTest] public IEnumerator BossHealthBarReallyShrinksWithoutDependingOnMissingSprite()
+        {
+            encounter.Begin(encounter.Presets[6]); yield return new WaitForSeconds(1.2f); Assert.That(encounter.Boss, Is.Not.Null);
+            encounter.Boss.Health.ApplyDamage(100); yield return new WaitForSeconds(0.2f);
+            var image = GameObject.Find("BossBar/Fill").GetComponent<UnityEngine.UI.Image>();
+            Assert.That(image.rectTransform.rect.width, Is.EqualTo(460f * encounter.Boss.Health.Current / encounter.Boss.Health.Maximum).Within(0.1f));
+            Assert.That(image.rectTransform.rect.width, Is.LessThan(460)); Assert.That(image.rectTransform.pivot.x, Is.Zero); Assert.That(image.type, Is.EqualTo(UnityEngine.UI.Image.Type.Simple));
+        }
     }
 }

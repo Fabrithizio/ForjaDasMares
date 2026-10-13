@@ -9,6 +9,8 @@ namespace ForjaDasMares
         [SerializeField] Image bossFill;
         string previousStatus, previousBoss;
         float refresh;
+        float fullWidth;
+        void Awake() => fullWidth = HealthBarGeometry.Initialize(bossFill);
         public void Configure(EncounterController controller, Text label, Text bossLabel, Image fill) { encounter = controller; status = label; bossText = bossLabel; bossFill = fill; }
         void Update()
         {
@@ -19,7 +21,7 @@ namespace ForjaDasMares
             bossFill.transform.parent.gameObject.SetActive(show);
             value = show ? boss.Profile.displayName + " | " + boss.Health.Current + "/" + boss.Health.Maximum + " | Fase " + boss.Brain.BossPhase : "";
             if (previousBoss != value) { bossText.text = value; previousBoss = value; }
-            if (show) bossFill.fillAmount = (float)boss.Health.Current / boss.Health.Maximum;
+            if (show) HealthBarGeometry.Set(bossFill, boss.Health.Current, boss.Health.Maximum, fullWidth);
         }
     }
 }

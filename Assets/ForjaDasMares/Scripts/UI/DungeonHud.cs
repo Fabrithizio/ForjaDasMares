@@ -8,6 +8,8 @@ namespace ForjaDasMares
         [SerializeField] Text title, hero, status, interaction, bossText;
         [SerializeField] Image bossFill;
         float timer;
+        float fullWidth;
+        void Awake() => fullWidth = HealthBarGeometry.Initialize(bossFill);
         static readonly string[] RoomNames = { "Entrada", "Combate", "Combate dificil", "Tesouro", "Descanso", "Evento", "Armadilha", "Chefe" };
         public void Configure(DungeonSession game, Text heading, Text health, Text progress, Text prompt, Text bossLabel, Image fill)
         { session = game; title = heading; hero = health; status = progress; interaction = prompt; bossText = bossLabel; bossFill = fill; }
@@ -19,7 +21,7 @@ namespace ForjaDasMares
             status.text = session.Finished ? "MASMORRA CONCLUIDA! Moedas " + session.Coins : !session.Heroes.Health.IsAlive ? "DERROTA - REINICIAR / R" : "Sala " + (session.CurrentRoom.node.id + 1) + " " + RoomNames[(int)session.CurrentRoom.node.category] + " | " + (session.CurrentRoom.completed ? "Concluida" : "Em andamento") + " | Moedas " + session.Coins + " | Chave " + (session.HasKey ? "SIM" : "NAO");
             interaction.text = session.Nearby != null ? session.Nearby.Label + " | F / INTERAGIR" : "";
             var boss = session.Encounter.Boss; bool alive = boss != null && boss.IsAlive; bossFill.transform.parent.gameObject.SetActive(alive);
-            if (alive) { bossFill.fillAmount = (float)boss.Health.Current / boss.Health.Maximum; bossText.text = boss.Profile.displayName + " | " + boss.Health.Current + "/" + boss.Health.Maximum + " | Fase " + boss.Brain.BossPhase; }
+            if (alive) { HealthBarGeometry.Set(bossFill, boss.Health.Current, boss.Health.Maximum, fullWidth); bossText.text = boss.Profile.displayName + " | " + boss.Health.Current + "/" + boss.Health.Maximum + " | Fase " + boss.Brain.BossPhase; }
         }
     }
 }

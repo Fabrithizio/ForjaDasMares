@@ -12,7 +12,7 @@ Quatro heróis originais, cinco arquétipos de inimigos, invocações limitadas,
 
 ## Verificação
 
-44 testes PlayMode aprovados no PC: os 23 de base/heróis, 13 de PvE e oito de masmorra, incluindo câmera e Input System. Cada herói derrotou os cinco arquétipos e o chefe. Percurso completo da masmorra foi vencido por movimento/combate reais. Gerador testado em 2.000 seeds × seis limites (12.000 combinações), além de 12 gerações físicas nos três biomas, com caminhos normal/chefe verificados. Builds e limitações constam em Docs/PROGRESSO.md. Não alegamos crossplay, multiplayer, equipamentos, salvamento completo ou teste físico Android desta etapa.
+45 testes PlayMode aprovados no PC: os 23 de base/heróis, 14 de PvE e oito de masmorra, incluindo câmera, Input System e barra de vida real. Cada herói derrotou os cinco arquétipos e o chefe. Percurso completo da masmorra foi vencido por movimento/combate reais. Gerador testado em 2.000 seeds × seis limites (12.000 combinações), além de 12 gerações físicas nos três biomas, com caminhos normal/chefe verificados. Builds e limitações constam em Docs/PROGRESSO.md. Não alegamos crossplay, multiplayer, equipamentos, salvamento completo ou teste físico Android desta etapa.
 
 ## Guias
 
@@ -24,4 +24,5 @@ Quatro heróis originais, cinco arquétipos de inimigos, invocações limitadas,
 - Docs/ARQUITETURA.md (plano mestre de longo prazo)
 
 Backup contém Assets e .meta, Packages, ProjectSettings, código e documentação. Library, Temp, Logs e Builds ficam fora do Git. Para recuperar, clone/baixe o repositório e abra a pasta inteira na versão de Unity indicada, aguardando a resolução de pacotes. Não recupere somente os scripts, pois cenas/materials/configurações também são necessários.
+
 
