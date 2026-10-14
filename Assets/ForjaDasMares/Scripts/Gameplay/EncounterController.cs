@@ -25,7 +25,7 @@ namespace ForjaDasMares
         public int WaveNumber => waveIndex + 1;
         public int Seals { get; private set; }
         public EnemyActor Boss => boss;
-        public event Action Completed, Failed;
+        public event Action Started, Completed, Failed;
         public void Configure(EnemyPool pool, HeroRoster player, ArenaSession reset, EncounterDefinition[] data, Transform[] sockets)
         { enemies = pool; heroes = player; arena = reset; presets = data; spawnPoints = sockets; }
         void Awake() { arena.Resetting += Cancel; heroes.Changed += Cancel; enemies.Spawned += Spawned; enemies.Died += Died; }
@@ -40,6 +40,7 @@ namespace ForjaDasMares
             if (current == null || current.waves == null || current.waves.Length == 0) { Fail(); return; }
             enemies.SetLimit(Application.isMobilePlatform ? data.maximumMobileEnemies : data.maximumPcEnemies);
             NextWave();
+            Started?.Invoke();
         }
         void NextWave() { entryIndex = spawnedInEntry = 0; waveTime = spawnFailureTime = 0; timer = current.waves[waveIndex].delayBefore; State = EncounterState.Spawning; }
         void Update()

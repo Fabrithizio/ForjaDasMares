@@ -24,6 +24,7 @@ namespace ForjaDasMares
         Health health;
         float invulnerableStart, invulnerableEnd, facingLock;
         bool charge;
+        float baseDodgeCooldown;
 
         public float Speed => speed;
         public bool IsDodging => dodgeRemaining > 0f && !charge;
@@ -38,6 +39,7 @@ namespace ForjaDasMares
             health = owner; speed = Mathf.Max(0.1f, profile.speed); acceleration = Mathf.Max(1, profile.acceleration); deceleration = Mathf.Max(1, profile.deceleration);
             health.Impact += ReceiveImpact;
             dodgeDuration = Mathf.Max(0.05f, profile.dodge.duration); dodgeSpeed = Mathf.Max(0.1f, profile.dodge.speed); dodgeCooldown = Mathf.Max(0, profile.dodge.cooldown);
+            baseDodgeCooldown = dodgeCooldown;
             invulnerableStart = Mathf.Clamp(profile.dodge.invulnerableStart, 0, dodgeDuration);
             invulnerableEnd = Mathf.Clamp(profile.dodge.invulnerableEnd, invulnerableStart, dodgeDuration);
             velocity = impulse = Vector3.zero; dodgeRemaining = cooldownRemaining = facingLock = 0f; charge = false;
@@ -45,6 +47,8 @@ namespace ForjaDasMares
         void ReceiveImpact(Vector3 direction, float force) { direction.y = 0; impulse = Vector3.ClampMagnitude(impulse + direction.normalized * force, 12); }
         void OnDestroy() { if (health != null) health.Impact -= ReceiveImpact; }
         public void LockFacing(float duration) => facingLock = Mathf.Max(facingLock, duration);
+        public void ApplyMovementAttributes(float unitsPerSecond, float cooldownMultiplier)
+        { speed = Mathf.Max(.1f, unitsPerSecond); if (health != null) dodgeCooldown = baseDodgeCooldown * Mathf.Clamp(cooldownMultiplier, .65f, 1); }
         public bool StartCharge(Vector3 direction, float duration, float chargeSpeed)
         {
             if ((health != null && (!health.IsAlive || health.ControlMultiplier == 0f)) || dodgeRemaining > 0) return false;

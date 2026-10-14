@@ -15,14 +15,16 @@ namespace ForjaDasMares
         public bool Use()
         {
             if (!CanUse || (session.Heroes.transform.position - transform.position).sqrMagnitude > 2.1f * 2.1f) return false;
+            if (Kind == DungeonInteractionKind.Chest && !session.TryOpenChest(room.node.id)) return false;
+            if (Kind == DungeonInteractionKind.Exit && !session.TryExitDungeon()) return false;
             Used = true;
             switch (Kind)
             {
-                case DungeonInteractionKind.Chest: movingPart.localRotation = Quaternion.Euler(-70, 0, 0); session.OpenChest(room.node.id); break;
+                case DungeonInteractionKind.Chest: movingPart.localRotation = Quaternion.Euler(-70, 0, 0); break;
                 case DungeonInteractionKind.Crystal: movingPart.localScale *= 0.5f; session.CompleteObjective(room, true); break;
                 case DungeonInteractionKind.Rest: session.Heroes.Health.Restore(); break;
                 case DungeonInteractionKind.TrapLever: movingPart.localRotation = Quaternion.Euler(50, 0, 0); session.DisableTrap(room); break;
-                case DungeonInteractionKind.Exit: session.ExitDungeon(); break;
+                case DungeonInteractionKind.Exit: break;
             }
             return true;
         }

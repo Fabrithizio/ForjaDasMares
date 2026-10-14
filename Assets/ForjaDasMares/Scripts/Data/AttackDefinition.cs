@@ -21,5 +21,7 @@ namespace ForjaDasMares
         [Min(0)] public float controlDuration;
         [Range(0.05f, 1)] public float slowMultiplier = 0.5f;
         public Color color = Color.yellow;
+        [Range(1, 5)] public int projectileCount = 1;
+        [Range(0, 60)] public float projectileSpread;
     }
 }

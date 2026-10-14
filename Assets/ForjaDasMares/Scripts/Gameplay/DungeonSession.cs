@@ -31,6 +31,12 @@ namespace ForjaDasMares
         public bool HasKey { get; private set; }
         public bool Finished { get; private set; }
         public DungeonInteractable Nearby { get; private set; }
+        public event System.Action Generated;
+        public event System.Action<DungeonRoom> RoomCompleted;
+        public System.Func<int, bool> ChestRewardRequested { get; set; }
+        public System.Func<bool> ExitRewardRequested { get; set; }
+        [SerializeField] string arenaSceneName = "ArenaTest";
+        public void ConfigureArenaScene(string name) => arenaSceneName = name;
         public void Configure(DungeonGenerator map, EncounterController fights, HeroRoster player, ArenaSession reset, ArenaCamera follow, DungeonInteractionInput controls, TelegraphPool signs, BiomeDefinition[] data, Light sun)
         { generator = map; encounter = fights; heroes = player; arena = reset; cameraFollow = follow; input = controls; warnings = signs; biomes = data; mainLight = sun; }
         void Awake() { encounter.Completed += EncounterWon; encounter.Failed += EncounterFailed; arena.Resetting += RequestReset; heroes.Changed += RequestReset; }
@@ -47,6 +53,7 @@ namespace ForjaDasMares
             heroes.GetComponent<PlayerMotor>().Teleport(arena.Spawn.position, Quaternion.identity);
             RefreshDoors(); UpdateVisibility(); cameraFollow.Snap(); generating = false;
             Debug.Log("DUNGEON_RUNTIME_READY biome=" + Biome.biomeId + " seed=" + seed);
+            Generated?.Invoke();
         }
         void Update()
         {
@@ -84,16 +91,20 @@ namespace ForjaDasMares
         void TryComplete(DungeonRoom room)
         {
             if (room.completed || !room.encounterComplete || !room.objectiveComplete) return;
-            room.completed = true; if (room.encounter != null) Coins += Biome.rewards.victoryCoins; RefreshDoors();
+            room.completed = true; if (room.encounter != null) Coins += Biome.rewards.victoryCoins; RefreshDoors(); RoomCompleted?.Invoke(room);
         }
         public void CompleteObjective(DungeonRoom room, bool grantKey)
         { room.objectiveComplete = true; if (grantKey && Biome.rewards.eventGrantsOptionalKey) HasKey = true; TryComplete(room); RefreshDoors(); }
         public void DisableTrap(DungeonRoom room)
         { foreach (var trap in generator.Traps) if (trap.transform.IsChildOf(room.root.transform)) trap.Disarm(); CompleteObjective(room, false); }
         public void OpenChest(int roomId)
+        { TryOpenChest(roomId); }
+        public bool TryOpenChest(int roomId)
         {
+            if (ChestRewardRequested != null && !ChestRewardRequested(roomId)) return false;
             var random = new System.Random(unchecked(seed * 397 ^ roomId * 7919)); int minimum = Mathf.Max(0, Biome.rewards.minimumCoins), maximum = Mathf.Max(minimum, Biome.rewards.maximumCoins);
             Coins += random.Next(minimum, maximum + 1);
+            return true;
         }
         public void RefreshDoors()
         {
@@ -111,11 +122,13 @@ namespace ForjaDasMares
             foreach (var door in generator.Doors) door.SetVisible(door.A == CurrentRoom.node.id || door.B == CurrentRoom.node.id || CurrentRoom.node.connections.Contains(door.A) || CurrentRoom.node.connections.Contains(door.B));
             cameraFollow.SetFocusBounds(new Bounds(CurrentRoom.Center + Vector3.up * 0.9f, new Vector3(9, 100, 9)), true);
         }
-        public void ExitDungeon() { if (CurrentRoom.node.category == RoomCategory.Boss && CurrentRoom.completed) { Finished = true; encounter.Cancel(); heroes.Victory(); } }
+        public void ExitDungeon() { TryExitDungeon(); }
+        public bool TryExitDungeon()
+        { if (Finished || CurrentRoom == null || CurrentRoom.node.category != RoomCategory.Boss || !CurrentRoom.completed || !heroes.Health.IsAlive) return false; if (ExitRewardRequested != null && !ExitRewardRequested()) return false; Finished = true; encounter.Cancel(); heroes.Victory(); return true; }
         public void NextBiome() { biomeIndex = (biomeIndex + 1) % biomes.Length; Generate(); }
         public void NextSeed() { seed = unchecked(seed + 1); Generate(); }
         public void ToggleFixed() { fixedMap = !fixedMap; Generate(); }
         public void ConfigureTest(int newSeed, bool fixedLayout, int biome = 0) { seed = newSeed; fixedMap = fixedLayout; biomeIndex = Mathf.Clamp(biome, 0, biomes.Length - 1); Generate(); }
-        public void BackToArena() => SceneManager.LoadScene("ArenaTest");
+        public void BackToArena() => SceneManager.LoadScene(arenaSceneName);
     }
 }

@@ -26,18 +26,18 @@ namespace ForjaDasMares
             item.GetComponent<MeshFilter>().sharedMesh = mesh; item.GetComponent<MeshRenderer>().sharedMaterial = material;
             item.SetActive(false); return item;
         }
-        public bool Shoot(Vector3 origin, Vector3 direction, AttackDefinition data, Health owner, int targets, int geometry)
+        public bool Shoot(Vector3 origin, Vector3 direction, AttackDefinition data, Health owner, int targets, int geometry, float damageScale = 1)
         {
             if (projectiles == null) return false;
             foreach (CombatProjectile shot in projectiles)
-                if (!shot.gameObject.activeSelf) { shot.Fire(origin, direction, data, owner, targets, geometry); return true; }
+                if (!shot.gameObject.activeSelf) { shot.Fire(origin, direction, data, owner, targets, geometry, damageScale); return true; }
             return false;
         }
-        public bool PlaceZone(Vector3 origin, float radius, float lifetime, AttackDefinition data, Health owner, int targets, int geometry, bool trap)
+        public bool PlaceZone(Vector3 origin, float radius, float lifetime, AttackDefinition data, Health owner, int targets, int geometry, bool trap, float damageScale = 1)
         {
             if (zones == null) return false;
             foreach (CombatZone zone in zones)
-                if (!zone.gameObject.activeSelf) { zone.Place(origin, radius, lifetime, data, owner, targets, geometry, trap); return true; }
+                if (!zone.gameObject.activeSelf) { zone.Place(origin, radius, lifetime, data, owner, targets, geometry, trap, damageScale); return true; }
             return false;
         }
         public void Clear()

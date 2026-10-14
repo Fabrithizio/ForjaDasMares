@@ -57,5 +57,9 @@ namespace ForjaDasMares
             return true;
         }
         public void Restore() { current = maximum; protectionTime = controlTime = stunTime = 0f; Changed?.Invoke(); }
+        public void ApplyAttributes(int hitPoints, float reduction)
+        { maximum = Mathf.Max(1, hitPoints); armor = Mathf.Clamp(reduction, 0, .75f); current = Mathf.Min(current, maximum); Changed?.Invoke(); }
+        public bool Heal(int amount)
+        { if (!IsAlive || amount <= 0 || current >= maximum) return false; current = Mathf.Min(maximum, current + amount); Changed?.Invoke(); return true; }
     }
 }

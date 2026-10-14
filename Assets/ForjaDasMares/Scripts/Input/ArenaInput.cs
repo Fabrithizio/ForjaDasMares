@@ -14,12 +14,14 @@ namespace ForjaDasMares
         bool specialPending, nextPending, damagePending, victoryPending, touchHeld;
         int heroSlot = -1;
         Vector2 touchMove;
+        bool blocked;
+        public void BlockCommands(bool value) { blocked = value; ClearRequests(); }
         public InputActionAsset Actions => actions;
 
-        public Vector2 Move => touchHeld ? touchMove : move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+        public Vector2 Move => blocked ? Vector2.zero : touchHeld ? touchMove : move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
         public void SetTouchMove(Vector2 value, bool held) { touchHeld = held; touchMove = Vector2.ClampMagnitude(value, 1f); if (held) pointerMode = false; }
         public Vector2 PointerPosition => pointer != null && pointer.enabled ? pointer.ReadValue<Vector2>() : Vector2.zero;
-        public bool HasPointer => pointerMode && pointer != null && pointer.enabled;
+        public bool HasPointer => !blocked && pointerMode && pointer != null && pointer.enabled;
         public void Configure(InputActionAsset asset) => actions = asset;
 
         void Awake()
@@ -53,13 +55,13 @@ namespace ForjaDasMares
         void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
         void OnReset(InputAction.CallbackContext _) => resetPending = true;
         void ClearRequests() { attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }
-        public bool TakeAttack() { bool value = attackPending; attackPending = false; return value; }
-        public bool TakeDodge() { bool value = dodgePending; dodgePending = false; return value; }
-        public bool TakeReset() { bool value = resetPending; resetPending = false; return value; }
-        public bool TakeSpecial() { bool value = specialPending; specialPending = false; return value; }
-        public bool TakeNextHero() { bool value = nextPending; nextPending = false; return value; }
-        public int TakeHeroSlot() { int value = heroSlot; heroSlot = -1; return value; }
-        public bool TakeTestDamage() { bool value = damagePending; damagePending = false; return value; }
-        public bool TakeVictory() { bool value = victoryPending; victoryPending = false; return value; }
+        public bool TakeAttack() { bool value = !blocked && attackPending; attackPending = false; return value; }
+        public bool TakeDodge() { bool value = !blocked && dodgePending; dodgePending = false; return value; }
+        public bool TakeReset() { bool value = !blocked && resetPending; resetPending = false; return value; }
+        public bool TakeSpecial() { bool value = !blocked && specialPending; specialPending = false; return value; }
+        public bool TakeNextHero() { bool value = !blocked && nextPending; nextPending = false; return value; }
+        public int TakeHeroSlot() { int value = blocked ? -1 : heroSlot; heroSlot = -1; return value; }
+        public bool TakeTestDamage() { bool value = !blocked && damagePending; damagePending = false; return value; }
+        public bool TakeVictory() { bool value = !blocked && victoryPending; victoryPending = false; return value; }
     }
 }
