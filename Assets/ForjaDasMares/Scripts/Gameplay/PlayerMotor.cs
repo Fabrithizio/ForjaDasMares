@@ -56,7 +56,7 @@ namespace ForjaDasMares
             dodgeRemaining = Mathf.Max(0.05f, duration); charge = true; return true;
         }
         public IPlayerCommands Commands => commands;
-        public void Configure(MonoBehaviour source, Transform basis) { commandSource = source; cameraBasis = basis; }
+        public void Configure(MonoBehaviour source, Transform basis) { commandSource = source; cameraBasis = basis; commands = source as IPlayerCommands; }
 
         void Awake()
         {

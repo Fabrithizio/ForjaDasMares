@@ -46,7 +46,7 @@ namespace ForjaDasMares
         void Update()
         {
             if (State != EncounterState.Spawning && State != EncounterState.Fighting) return;
-            if (!heroes.Health.IsAlive) { Fail(); return; }
+            if (!enemies.HasLivingPlayers) { Fail(); return; }
             float dt = Time.deltaTime; waveTime += dt; timer -= dt;
             var wave = current.waves[waveIndex];
             if (State == EncounterState.Spawning && timer <= 0)

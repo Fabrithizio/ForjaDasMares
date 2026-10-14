@@ -130,6 +130,6 @@ namespace ForjaDasMares
                 pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }
-        public void ResetCombat() { active = special = resolved = chargeWindow = false; combo = 0; elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.Clear(); }
+        public void ResetCombat() { active = special = resolved = chargeWindow = false; combo = 0; elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

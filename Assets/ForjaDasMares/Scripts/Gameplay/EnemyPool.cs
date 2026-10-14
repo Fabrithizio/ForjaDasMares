@@ -18,6 +18,9 @@ namespace ForjaDasMares
         public int Capacity => actors != null ? actors.Length : 0;
         public int ActiveCount { get { int count = 0; if (actors != null) foreach (var actor in actors) if (actor.IsAlive) count++; return count; } }
         public event Action<EnemyActor> Spawned, Died;
+        public CombatParty Party { get; set; }
+        public bool HasLivingPlayers => Party != null ? Party.AnyAlive : heroes.Health.IsAlive;
+        public Health SelectTarget(Vector3 position) => Party != null ? Party.Nearest(position) : heroes.Health;
         public void Configure(EnemyDefinition[] data, HeroRoster player, CombatEffectPool shots, TelegraphPool signs, int walls, int blockers, int playerTargets)
         { definitions = data; heroes = player; projectiles = shots; warnings = signs; geometry = walls; spawnBlockers = blockers; targets = playerTargets; }
         void Awake()
@@ -34,7 +37,7 @@ namespace ForjaDasMares
         public void SetLimit(int maximum) => limit = Mathf.Clamp(maximum, 1, Capacity);
         public EnemyActor TrySpawn(EnemyDefinition data, Vector3 desired, EnemyActor summoner = null)
         {
-            if (ActiveCount >= limit || data == null || !heroes.Health.IsAlive) return null;
+            if (ActiveCount >= limit || data == null || !HasLivingPlayers) return null;
             var filter = new NavMeshQueryFilter { agentTypeID = data.agentTypeId, areaMask = NavMesh.AllAreas };
             for (int attempt = 0; attempt < 12; attempt++)
             {
@@ -47,7 +50,7 @@ namespace ForjaDasMares
                 for (int i = 0; i < actors.Length; i++)
                     if (slots[i] == data && !actors[i].IsSpawned)
                     {
-                        if (!actors[i].Activate(data, position, heroes.Health, this, projectiles, warnings, targets, geometry, summoner)) return null;
+                        if (!actors[i].Activate(data, position, SelectTarget(position), this, projectiles, warnings, targets, geometry, summoner)) return null;
                         Spawned?.Invoke(actors[i]); return actors[i];
                     }
                 return null;

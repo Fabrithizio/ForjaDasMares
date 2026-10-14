@@ -19,6 +19,7 @@ namespace ForjaDasMares
         public EnemyCombat Combat => combat;
         public EnemyMotor Motor => motor;
         public EnemyDefinition Profile => profile;
+        public Health SelectTarget() => pool != null ? pool.SelectTarget(transform.position) : null;
         public EnemyActor Summoner => summoner;
         public bool IsAlive => live && health.IsAlive;
         public bool IsSpawned => gameObject.activeSelf;

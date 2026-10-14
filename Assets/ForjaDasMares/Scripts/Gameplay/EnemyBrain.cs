@@ -30,7 +30,13 @@ namespace ForjaDasMares
         }
         void Update()
         {
-            if (actor == null || !actor.IsAlive || target == null) return;
+            if (actor == null || !actor.IsAlive) return;
+            if (!actor.Combat.IsBusy)
+            {
+                Health selected = actor.SelectTarget();
+                if (selected != target) { target = selected; actor.Combat.SetTarget(selected); perception = 0; }
+            }
+            if (target == null) { actor.Motor.Stop(); actor.Motor.Tick(Time.deltaTime); return; }
             float delta = Time.deltaTime; actor.Combat.Simulate(delta);
             if (!actor.IsAlive || target == null) return;
             if (actor.Health.IsStunned) { state = EnemyState.Stunned; actor.Combat.Cancel(); actor.Motor.Stop(); actor.Motor.Tick(delta); return; }
