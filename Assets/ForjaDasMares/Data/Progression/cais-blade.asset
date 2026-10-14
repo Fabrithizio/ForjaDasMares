@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: cais-blade
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: cais-blade
+  displayName: "L\xE2mina do Cais"
+  description: "Cortes alternados; aceita escudo. Guerreiro e Cavaleiro R\xFAnico."
+  slot: 0
+  category: 0
+  compatibleHeroes: 9
+  minimumLevel: 1
+  twoHanded: 0
+  allowsOffHand: 1
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: ba1fa7f62a6d2f340acd964965e7eead, type: 2}
+  - {fileID: 11400000, guid: 35a3e05e80bdd98418b40539e32fe782, type: 2}
+  bonuses:
+  - stat: 1
+    value: 0.04
+  frontalBlock: 0
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  visualScale: {x: 0.15, y: 0.15, z: 1.2}

@@ -123,6 +123,23 @@ namespace ForjaDasMares.Tests
             }
             var exit = dungeon.CurrentRoom.interactions[0]; yield return WalkNear(exit.transform.position); Assert.That(exit.Use(), Is.True); Assert.That(dungeon.Finished, Is.True); Assert.That(dungeon.Coins, Is.GreaterThan(12));
         }
+        [UnityTest] public IEnumerator ProgressionRouteCommitsBossChestLootExperienceAndVictoryOnce()
+        {
+            SceneManager.LoadScene("ProgressionDungeon"); yield return null; yield return null;
+            dungeon=Object.FindFirstObjectByType<DungeonSession>(); heroes=dungeon.Heroes; motor=heroes.GetComponent<PlayerMotor>(); combat=heroes.GetComponent<HeroCombat>(); motor.enabled=false; combat.enabled=false; motor.GetComponent<ArenaInput>().enabled=false; motor.GetComponent<PlayerAim>().enabled=false;
+            var bridge=Object.FindFirstObjectByType<ProgressionSceneBridge>(); heroes.Select(3); yield return null; yield return null;
+            foreach(string id in new[]{"cais-blade","laje-shield","brasa-armor","estrada-charm","retorno-seal"})
+            { var item=bridge.Service.Profile.inventory.Find(value=>value.definitionId==id); Assert.That(bridge.Equip(item.instanceId,bridge.Catalog.Find(id).slot),Is.True,bridge.Service.Message); }
+            var profile=Object.FindFirstObjectByType<ProgressionProfileRuntime>();
+            try
+            {
+                yield return CompleteFixedRouteWinsThreeCombatsChestObjectiveTrapBossAndExit();
+                Assert.That(bridge.Service.Profile.expedition,Is.Null); var result=bridge.Service.Profile.lastResult; Assert.That(result.outcome,Is.EqualTo("Masmorra concluída")); Assert.That(result.items.Count,Is.GreaterThanOrEqualTo(4)); Assert.That(result.experience,Is.GreaterThanOrEqualTo(380)); Assert.That(bridge.Equipment.Stats.level,Is.GreaterThan(1));
+                int coins=bridge.Service.Profile.coins,count=bridge.Service.Profile.inventory.Count; Assert.That(dungeon.TryExitDungeon(),Is.False); Assert.That(bridge.Service.FinishExpedition(result.runId,true,"Replay"),Is.False); Assert.That(bridge.Service.Profile.coins,Is.EqualTo(coins)); Assert.That(bridge.Service.Profile.inventory.Count,Is.EqualTo(count));
+                var loaded=new ProfileService(bridge.Catalog,new ProfileStore(profile.SavePath)); Assert.That(loaded.Profile.coins,Is.EqualTo(coins)); Assert.That(loaded.Profile.lastResult.runId,Is.EqualTo(result.runId));
+            }
+            finally { if(profile!=null) Object.Destroy(profile.gameObject); }
+        }
         IEnumerator WalkTo(DungeonRoom room)
         {
             Vector3 currentCenter = dungeon.CurrentRoom.Center, direction = (room.Center - currentCenter).normalized;

@@ -26,7 +26,8 @@ namespace ForjaDasMares
         public HeroEquipment Equipment => equipment;
         public SupportCompanion Companion => companion;
         public string Error { get; private set; }
-        public bool CanManage => Service != null && encounter.State != EncounterState.Spawning && encounter.State != EncounterState.Fighting && !heroes.GetComponent<HeroCombat>().IsBusy && heroes.GetComponent<HeroCombat>().Pool.ActiveProjectiles == 0 && heroes.Health.IsAlive;
+        public bool Closing { get; private set; }
+        public bool CanManage => Service != null && encounter.State != EncounterState.Spawning && encounter.State != EncounterState.Fighting && !heroes.GetComponent<HeroCombat>().IsBusy && heroes.GetComponent<HeroCombat>().Pool.ActiveProjectiles == 0 && heroes.GetComponent<HeroCombat>().Pool.ActiveZones == 0 && heroes.Health.IsAlive;
         public void Configure(ProgressionCatalog data, HeroRoster roster, HeroEquipment gear, EncounterController fights, ArenaSession reset, DungeonSession map, SupportCompanion pet, ArenaInput input)
         { catalog = data; heroes = roster; equipment = gear; encounter = fights; arena = reset; dungeon = map; companion = pet; commands = input; }
         void Awake()
@@ -34,15 +35,16 @@ namespace ForjaDasMares
             try { runtime = ProgressionProfileRuntime.Open(catalog); equipment.Initialize(Service, catalog); companion.Initialize(Service); }
             catch (Exception error) { Error = error.Message; Debug.LogError("Progression initialization failed: " + Error, this); return; }
             encounter.Enemies.Spawned += Spawned; encounter.Enemies.Died += Died; heroes.Health.Changed += HealthChanged;
-            if (dungeon != null) { dungeon.Generated += BeginDungeon; dungeon.RoomCompleted += RoomWon; dungeon.ChestRewardRequested = Chest; dungeon.ExitRewardRequested = FinishDungeon; }
+            if (dungeon != null) { dungeon.Generated += BeginDungeon; dungeon.RoomCompleted += RoomWon; dungeon.ChestRewardRequested = Chest; dungeon.ExitRewardRequested = FinishDungeon; dungeon.RewardCoinsQuery = VisibleCoins; }
             else { encounter.Started += BeginArena; encounter.Completed += ArenaWon; arena.Resetting += Abort; heroes.Changed += Abort; }
             bound = true;
         }
         void OnDestroy()
         {
+            Closing = true;
             if (!bound) return;
             encounter.Enemies.Spawned -= Spawned; encounter.Enemies.Died -= Died; heroes.Health.Changed -= HealthChanged;
-            if (dungeon != null) { dungeon.Generated -= BeginDungeon; dungeon.RoomCompleted -= RoomWon; dungeon.ChestRewardRequested = null; dungeon.ExitRewardRequested = null; }
+            if (dungeon != null) { dungeon.Generated -= BeginDungeon; dungeon.RoomCompleted -= RoomWon; dungeon.ChestRewardRequested = null; dungeon.ExitRewardRequested = null; dungeon.RewardCoinsQuery = null; }
             else { encounter.Started -= BeginArena; encounter.Completed -= ArenaWon; arena.Resetting -= Abort; heroes.Changed -= Abort; }
             Abort();
         }
@@ -51,6 +53,7 @@ namespace ForjaDasMares
         void Begin(string location)
         {
             if (Service == null) return;
+            runId = null; spawned.Clear(); sequence = 0;
             if (!Service.BeginExpedition(heroes.Current.heroId, location)) { Error = Service.Message; return; }
             runId = Service.Profile.expedition.runId; spawned.Clear(); sequence = 0; companion.ResetBudget();
         }
@@ -73,6 +76,7 @@ namespace ForjaDasMares
             if (dungeon.CurrentRoom == null || dungeon.CurrentRoom.node.id != roomId || !heroes.Health.IsAlive) return false;
             return Grant("chest:" + roomId, catalog.chest);
         }
+        int VisibleCoins() => Service?.Profile.expedition != null ? Service.Profile.expedition.coins : Service?.Profile.lastResult != null ? Service.Profile.lastResult.coins : 0;
         bool FinishDungeon()
         {
             if (Service?.Profile.expedition == null || runId == null) return false;
@@ -92,5 +96,6 @@ namespace ForjaDasMares
         public void BlockCommands(bool value)
         { commands.BlockCommands(value); if (dungeon != null) dungeon.GetComponent<DungeonInteractionInput>().enabled = !value; }
         public void OpenDungeon() { Abort(); SceneManager.LoadScene("ProgressionDungeon"); }
+        public void RestartExpedition() { if (dungeon != null) dungeon.Generate(); else arena.ResetArena(); }
     }
 }

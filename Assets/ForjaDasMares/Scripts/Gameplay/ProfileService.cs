@@ -85,7 +85,8 @@ namespace ForjaDasMares
                 var run = next.expedition; int xp = victory ? run.experience : run.experience / 2, coins = victory ? run.coins : run.coins / 2;
                 next.experience = Mathf.Min(1000000, next.experience + xp); next.coins = Mathf.Min(100000000, next.coins + coins);
                 foreach (var item in run.items) { if (next.inventory.Count < catalog.inventoryCapacity) next.inventory.Add(item); else next.deliveries.Add(item); }
-                next.lastResult = new ExpeditionResult { runId = run.runId, location = run.location, outcome = outcome, experience = xp, coins = coins, items = run.items };
+                if (xp > 0 || coins > 0 || run.items.Count > 0 || outcome != "Abandono" && outcome != "Aplicação interrompida")
+                    next.lastResult = new ExpeditionResult { runId = run.runId, location = run.location, outcome = outcome, experience = xp, coins = coins, items = run.items };
                 next.completedRuns.Add(run.runId); if (next.completedRuns.Count > 256) next.completedRuns.RemoveAt(0); next.expedition = null;
             }, victory ? "Vitória! Recompensas salvas." : "Expedição encerrada: itens guardados, metade de XP/moedas.");
         }

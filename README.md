@@ -4,17 +4,17 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 ## Executar
 
-Windows: use a build corrigida 0.4.1. O ZIP de PC 0.4.0 apresentou falta de recursos gráficos da URP; a correção e a verificação do executável estão em Docs/PROGRESSO.md. APK Android disponível permanece 0.4.0, sem nova validação física.
+Windows: versão de progressão0.5.0 em validação final. O ZIP de PC0.4.0 apresentou falta de recursos gráficos da URP;0.4.1 corrigiu a seleção da plataforma na compilação. Builds e testes atuais constam em Docs/PROGRESSO.md.
 
-Abra Assets/ForjaDasMares/Scenes/DungeonTest.unity e pressione Play. Menu Forja das Mares → Open dungeon test. ArenaTest permanece como referência: F6 abre a arena de heróis/PvE. No executável, VOLTAR A ARENA acessa essa cena.
+Abra Assets/ForjaDasMares/Scenes/ProgressionDungeon.unity e pressione Play. Menu Forja das Mares → Open progression dungeon. VOLTAR A ARENA acessa ProgressionArena com equipamento/inventário; nessa arena, MASMORRA retorna ao percurso. ArenaTest e DungeonTest permanecem como referência e testes da base; F6 abre ArenaTest.
 
 WASD/setas, mouse para mirar/atacar, E/clique direito para habilidade, Espaço para esquiva, 1–4/Tab para herói, R reinicia. F/gamepad botão norte/INTERAGIR usa objeto próximo. Android mantém joystick fixo e botões; nova etapa sem teste físico porque o usuário está com o aparelho.
 
-Quatro heróis originais, cinco arquétipos de inimigos, invocações limitadas, três ondas de arena e chefe com três ataques/fases. Masmorras com três biomas, oito categorias de salas, seed configurável, mapa fixo, conexões físicas, portas, baús, chave opcional, descanso, objetivos, armadilhas e saída após chefe. Modelos geométricos e poses são provisórios: não há arte ou clips finais.
+Quatro heróis originais, cinco arquétipos de inimigos, invocações limitadas, três ondas de arena e chefe com três ataques/fases. Masmorras com três biomas, oito categorias de salas, seed configurável, mapa fixo, conexões físicas, portas, baús, chave opcional, descanso, objetivos, armadilhas e saída após chefe. Progressão local com9 categorias de armas,5 raridades,5 slots por conjunto de herói, inventário/comparação/descarte confirmado, entregas, XP/nível/moedas, saque temporário, resultado e save versionado. Mascote de suporte com cura/cargas finitas. Modelos geométricos e poses são provisórios: não há arte ou clips finais.
 
 ## Verificação
 
-45 testes PlayMode aprovados no PC: os 23 de base/heróis, 14 de PvE e oito de masmorra, incluindo câmera, Input System e barra de vida real. Cada herói derrotou os cinco arquétipos e o chefe. Percurso completo da masmorra foi vencido por movimento/combate reais. Gerador testado em 2.000 seeds × seis limites (12.000 combinações), além de 12 gerações físicas nos três biomas, com caminhos normal/chefe verificados. Builds e limitações constam em Docs/PROGRESSO.md. Não alegamos crossplay, multiplayer, equipamentos, salvamento completo ou teste físico Android desta etapa.
+68 testes PlayMode aprovados no PC, conservando os45 anteriores e acrescentando13 de domínio de progressão,9 de integração e1 percurso completo com equipamento/loot. Após revisão visual,9 testes de integração foram repetidos com verificação dos rótulos de botões. Cada herói derrotou os cinco arquétipos e o chefe nos testes da base; a masmorra também foi vencida com equipamento, coleta e persistência de resultado. Gerador:12.000 combinações lógicas e12 gerações físicas. Auditoria:4 cenas,7 prefabs,92 definições,0 scripts/referências ausentes. Sem crossplay ou multiplayer implementado neste checkpoint. APK e teste físico são verificações separadas.
 
 ## Compilar por plataforma
 
@@ -23,6 +23,9 @@ No Editor, os menus de build ativam a plataforma correspondente antes de compila
 ## Guias de conteúdo
 
 - Docs/MASMORRAS_COMO_JOGAR.md
+- Docs/PROGRESSAO_COMO_JOGAR.md
+- Docs/PROGRESSAO_ARQUITETURA.md
+- Docs/REVISAO_TECNICA_2026-10-14.md
 - Docs/MASMORRAS_ARQUITETURA.md
 - Docs/PVE_COMO_JOGAR.md
 - Docs/HEROIS_COMO_TESTAR.md

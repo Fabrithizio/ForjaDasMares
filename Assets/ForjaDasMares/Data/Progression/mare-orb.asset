@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: mare-orb
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: mare-orb
+  displayName: "Orbe da Mar\xE9 Morta"
+  description: "Proj\xE9til lento, explos\xE3o maior e raiz breve; menor cad\xEAncia.
+    Arcanista."
+  slot: 0
+  category: 8
+  compatibleHeroes: 4
+  minimumLevel: 1
+  twoHanded: 0
+  allowsOffHand: 1
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: ce0cbe1b6d0d36346a05132c01636b9f, type: 2}
+  bonuses:
+  - stat: 7
+    value: 0.08
+  frontalBlock: 0
+  color: {r: 0.5, g: 0.3, b: 0.95, a: 1}
+  visualScale: {x: 0.45, y: 0.45, z: 0.45}

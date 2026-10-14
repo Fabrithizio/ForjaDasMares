@@ -15,6 +15,7 @@ namespace ForjaDasMares
         int heroSlot = -1;
         Vector2 touchMove;
         bool blocked;
+        public System.Predicate<Vector2> PointerBlocked { get; set; }
         public void BlockCommands(bool value) { blocked = value; ClearRequests(); }
         public InputActionAsset Actions => actions;
 
@@ -51,7 +52,8 @@ namespace ForjaDasMares
         void OnApplicationFocus(bool focus) { if (!focus) ClearRequests(); }
         void OnPoint(InputAction.CallbackContext _) => pointerMode = !Application.isMobilePlatform;
         void OnMove(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; }
-        void OnAttack(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; attackPending = true; }
+        void OnAttack(InputAction.CallbackContext context)
+        { if (context.control.device is Mouse && PointerBlocked != null && PointerBlocked(PointerPosition)) return; if (context.control.device is Gamepad) pointerMode = false; attackPending = true; }
         void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
         void OnReset(InputAction.CallbackContext _) => resetPending = true;
         void ClearRequests() { attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }

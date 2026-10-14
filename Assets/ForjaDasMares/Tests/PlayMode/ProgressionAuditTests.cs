@@ -121,5 +121,11 @@ namespace ForjaDasMares.Tests
             Assert.That(service.Profile.expedition.items.Count, Is.EqualTo(5)); Assert.That(service.Profile.expedition.experience, Is.EqualTo(96)); Assert.That(service.Grant(run, "enemy7", catalog.enemy, 7), Is.False);
             Assert.That(service.Grant(run, "boss", catalog.boss, 10), Is.True); Assert.That(service.Profile.expedition.items.Count, Is.EqualTo(7));
         }
+        [Test] public void EmptyAbandonPreservesLastMeaningfulResult()
+        {
+            string run=Begin(); service.Grant(run,"boss",catalog.boss,1); service.FinishExpedition(run,true,"Victory"); string result=service.Profile.lastResult.runId;
+            run=Begin(); service.FinishExpedition(run,false,"Abandono"); Assert.That(service.Profile.lastResult.runId,Is.EqualTo(result));
+            var loaded=new ProfileService(catalog,new ProfileStore(store.Path)); Assert.That(loaded.Profile.lastResult.runId,Is.EqualTo(result));
+        }
     }
 }

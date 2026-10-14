@@ -35,6 +35,8 @@ namespace ForjaDasMares
         public event System.Action<DungeonRoom> RoomCompleted;
         public System.Func<int, bool> ChestRewardRequested { get; set; }
         public System.Func<bool> ExitRewardRequested { get; set; }
+        public System.Func<int> RewardCoinsQuery { get; set; }
+        public int VisibleCoins => RewardCoinsQuery != null ? RewardCoinsQuery() : Coins;
         [SerializeField] string arenaSceneName = "ArenaTest";
         public void ConfigureArenaScene(string name) => arenaSceneName = name;
         public void Configure(DungeonGenerator map, EncounterController fights, HeroRoster player, ArenaSession reset, ArenaCamera follow, DungeonInteractionInput controls, TelegraphPool signs, BiomeDefinition[] data, Light sun)

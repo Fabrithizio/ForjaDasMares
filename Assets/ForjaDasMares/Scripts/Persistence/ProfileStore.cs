@@ -13,6 +13,7 @@ namespace ForjaDasMares
         public string Path { get; }
         public ProfileStore(string path) { Path = System.IO.Path.GetFullPath(path); }
         static string Hash(string value) { using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(value))).Replace("-", ""); }
+        static string EnvelopeHash(Envelope value) => Hash(value.version == 1 ? value.payload : "2|" + value.hasExpedition + "|" + value.hasLastResult + "|" + value.payload);
         public PlayerProfile Load(ProgressionCatalog catalog, out string notice)
         {
             notice = ""; if (!File.Exists(Path) && !File.Exists(Path + ".bak")) return null;
@@ -23,7 +24,7 @@ namespace ForjaDasMares
                 try
                 {
                     var envelope = JsonUtility.FromJson<Envelope>(File.ReadAllText(path, Encoding.UTF8));
-                    if (envelope == null || envelope.version < 1 || envelope.version > 2 || envelope.payload == null || Hash(envelope.payload) != envelope.checksum) throw new InvalidDataException("Checksum inválido.");
+                    if (envelope == null || envelope.version < 1 || envelope.version > 2 || envelope.payload == null || EnvelopeHash(envelope) != envelope.checksum) throw new InvalidDataException("Checksum inválido.");
                     var profile = JsonUtility.FromJson<PlayerProfile>(envelope.payload);
                     if (profile == null || profile.version < 1 || profile.version > 2) throw new InvalidDataException("Versão de salvamento não suportada.");
                     if (envelope.version == 1) ProfileSerialization.NormalizeLegacyNulls(profile);
@@ -41,7 +42,7 @@ namespace ForjaDasMares
         public void Save(PlayerProfile profile, ProgressionCatalog catalog)
         {
             Validate(profile, catalog); string payload = JsonUtility.ToJson(profile);
-            var envelope = new Envelope { payload = payload, checksum = Hash(payload), hasExpedition = profile.expedition != null, hasLastResult = profile.lastResult != null };
+            var envelope = new Envelope { payload = payload, hasExpedition = profile.expedition != null, hasLastResult = profile.lastResult != null }; envelope.checksum = EnvelopeHash(envelope);
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Path)); string temporary = Path + ".tmp";
             byte[] bytes = Encoding.UTF8.GetBytes(JsonUtility.ToJson(envelope, true));
             using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None)) { stream.Write(bytes, 0, bytes.Length); stream.Flush(true); }

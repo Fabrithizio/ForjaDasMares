@@ -53,7 +53,7 @@ namespace ForjaDasMares.Editor
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
-                scenes = File.Exists(DungeonInstaller.ScenePath) ? new[] { DungeonInstaller.ScenePath, ArenaBuilder.ScenePath } : new[] { ArenaBuilder.ScenePath },
+                scenes = File.Exists(ProgressionInstaller.DungeonScene) ? new[] { ProgressionInstaller.DungeonScene, ProgressionInstaller.ArenaScene, DungeonInstaller.ScenePath, ArenaBuilder.ScenePath } : File.Exists(DungeonInstaller.ScenePath) ? new[] { DungeonInstaller.ScenePath, ArenaBuilder.ScenePath } : new[] { ArenaBuilder.ScenePath },
                 locationPathName = output,
                 target = target,
                 options = BuildOptions.Development

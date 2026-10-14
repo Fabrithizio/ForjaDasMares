@@ -12,6 +12,7 @@ namespace ForjaDasMares
         Transform visible;
         float hitTime, victoryTime;
         public HeroState State { get; private set; }
+        public Transform Visible => visible;
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }

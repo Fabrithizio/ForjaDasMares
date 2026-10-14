@@ -6,11 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ForjaDasMares/Scenes/ArenaTest.unity
-    guid: b14d262086932d6459637f8aa6436d6d
+    path: Assets/ForjaDasMares/Scenes/ProgressionDungeon.unity
+    guid: b6c1f17f54a92794682bd2276dc983d8
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/ProgressionArena.unity
+    guid: abd2793cbf2be464385fdeac6213a6d0
   - enabled: 1
     path: Assets/ForjaDasMares/Scenes/DungeonTest.unity
     guid: 0788b4ff6dd67d14c9080b6c99a44a64
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/ArenaTest.unity
+    guid: b14d262086932d6459637f8aa6436d6d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

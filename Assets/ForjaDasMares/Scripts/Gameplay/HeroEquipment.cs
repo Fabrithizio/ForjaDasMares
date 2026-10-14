@@ -29,6 +29,8 @@ namespace ForjaDasMares
             motor.ApplyMovementAttributes(Stats.speed, Stats.cooldownMultiplier);
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;
             MainWeapon = main != null ? catalog.Find(main.definitionId) : null; var secondary = off != null ? catalog.Find(off.definitionId) : null;
+            var visual = heroes.GetComponent<HeroPresentation>().Visible;
+            if (visual != null) { mainVisual.transform.SetParent(visual, false); secondaryVisual.transform.SetParent(visual, false); }
             combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null);
             Visual(mainVisual, MainWeapon); Visual(secondaryVisual, secondary);
             // Keep the original geometric hero body/poses; hide its old weapon only when an item replaces it.

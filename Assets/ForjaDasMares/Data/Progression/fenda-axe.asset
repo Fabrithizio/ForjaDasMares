@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: fenda-axe
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: fenda-axe
+  displayName: Machado das Fendas
+  description: "Arco largo, golpe lento, duas m\xE3os. Guerreiro."
+  slot: 0
+  category: 1
+  compatibleHeroes: 1
+  minimumLevel: 1
+  twoHanded: 1
+  allowsOffHand: 0
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: 5fb93ee54c7f1cd42814d16a8eb10e45, type: 2}
+  bonuses:
+  - stat: 1
+    value: 0.03
+  frontalBlock: 0
+  color: {r: 0.8, g: 0.4, b: 0.2, a: 1}
+  visualScale: {x: 0.6, y: 0.15, z: 1}

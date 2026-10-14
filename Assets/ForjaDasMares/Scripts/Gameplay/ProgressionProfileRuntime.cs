@@ -23,5 +23,6 @@ namespace ForjaDasMares
             AudioListener.volume = service.Profile.options.volume; return current;
         }
         void OnDestroy() { if (current == this) current = null; }
+        void OnApplicationQuit() { if (Service?.Profile.expedition != null) Service.FinishExpedition(Service.Profile.expedition.runId, false, "Abandono"); }
     }
 }
