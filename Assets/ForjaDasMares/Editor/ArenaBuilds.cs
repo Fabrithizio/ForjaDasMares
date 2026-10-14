@@ -39,6 +39,16 @@ namespace ForjaDasMares.Editor
 
         static void Build(BuildTarget target, string output)
         {
+            // URP collects and strips resources using the Editor's active target.
+            // BuildPlayerOptions.target alone is insufficient after an Android build.
+            if (EditorUserBuildSettings.activeBuildTarget != target)
+            {
+                if (Application.isBatchMode)
+                    throw new InvalidOperationException($"Active build target is {EditorUserBuildSettings.activeBuildTarget}, expected {target}. Start Unity with -buildTarget {(target == BuildTarget.Android ? "Android" : "Win64")} before invoking this build method.");
+                if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target), target))
+                    throw new InvalidOperationException($"Could not activate build target {target}.");
+            }
+            Debug.Log($"ARENA_BUILD_TARGET target={target} active={EditorUserBuildSettings.activeBuildTarget}");
             if (!File.Exists(ArenaBuilder.ScenePath)) throw new FileNotFoundException(ArenaBuilder.ScenePath);
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
