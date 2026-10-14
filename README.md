@@ -4,7 +4,7 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 ## Executar
 
-Windows: versão de progressão0.5.0 em validação final. O ZIP de PC0.4.0 apresentou falta de recursos gráficos da URP;0.4.1 corrigiu a seleção da plataforma na compilação. Builds e testes atuais constam em Docs/PROGRESSO.md.
+Windows: versão de progressão0.5.0 validada no executável. Android0.5.0 gerado/assinado, sem teste físico nesta etapa. O ZIP de PC0.4.0 apresentou falta de recursos gráficos da URP;0.4.1 corrigiu a seleção da plataforma na compilação. Builds e testes atuais constam em Docs/PROGRESSO.md.
 
 Abra Assets/ForjaDasMares/Scenes/ProgressionDungeon.unity e pressione Play. Menu Forja das Mares → Open progression dungeon. VOLTAR A ARENA acessa ProgressionArena com equipamento/inventário; nessa arena, MASMORRA retorna ao percurso. ArenaTest e DungeonTest permanecem como referência e testes da base; F6 abre ArenaTest.
 
