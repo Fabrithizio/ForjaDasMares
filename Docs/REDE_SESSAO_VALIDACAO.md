@@ -30,3 +30,11 @@ O código de sala/IP atende sessões privadas. A identidade aleatória de recone
 Integração autoritativa de progressão/saques/equipagem, resultado e reaparecimento cooperativos; revisão das interações/recompensas simultâneas; sessão completa contra ondas/chefe; medição de tráfego e teste de latência; QA visual e teste físico PC–Android. Os quatro heróis usam dados-base no recorte atual. Inventário local0.5.0 continua funcional nas cenas ProgressionDungeon/ProgressionArena e não é convertido implicitamente em autoridade de rede.
 
 Snapshots limitados a48KiB, envio10Hz ajustável, entradas30Hz/rate limit45/s; interpolação das replicas. Há alocação limitada pela serialização JSON; otimização e medição fazem parte da continuação. Não alegar predição/reconciliação avançada, economia segura, convite real pela internet ou crossplay já testados. Interface completa, expansão e lançamento aguardam a etapa7, conforme ordem autorizada.
+
+## Continuação — coordenação das recompensas da autoridade
+
+Adicionado CoopRewardLedger, reutilizando ProfileService e ProfileStore. Se uma gravação falhar para parte do grupo, repetir o evento ou a conclusão não duplica os créditos já confirmados nos demais perfis. Regras de recompensa são referências do catálogo do host; pedidos com regra arbitrária e substituição de participante no meio da expedição são rejeitados. Caminhos de participante exigem GUID e permanecem sob o diretório informado.
+
+Seis testes novos foram executados e aprovados isoladamente: quatro participantes/boss/conclusão/reload; falha real de escrita e repetição de baú; falha parcial de conclusão; regra arbitrária/substituição de participante; derrota com metade de XP/moedas; proteção de caminho. XML: work/etapa7/reward-ledger-tests.xml. A suíte geral anterior78/78 foi aprovada antes desta adição; não alegar uma nova suíte geral de84 testes executada nesta revisão.
+
+Este coordenador ainda não está conectado aos eventos da sessão e à distribuição privada dos inventários. Portanto, recompensas cooperativas continuam parcialmente implementadas. Não marcar a etapa7 como finalizada; próximo bloco é a ponte host/perfis/eventos, replicação privada e teste do fluxo completo com quatro clientes.

@@ -251,3 +251,7 @@ Backup GitHub do bloco de código/cenas/dados/docs:73dfcb6731e62e752af6c5c81d28d
 
 ## Etapa7 — bloco de sessão privada validado, implementação continua
 Base72/72 e cena/protocolo6/6 PlayMode aprovados. Build Windows cooperativo separado gerado e executado:host+3 clientes, mesmo layout confirmado, quinto recusado, movimento/ataque remotos reais, morte do herói do host com equipe sobrevivente, saída/reconexão na mesma vaga e encerramento ao sair host. Logs da terceira execução sem exceções. Detalhes e limitações em REDE_SESSAO_VALIDACAO.md. Etapa7 ainda não concluída: faltam saques/progressão/reaparecimento completos, fluxo completo de PvE/chefe, medição/latência/QA visual. UGS implementado com guard de configuração, mas projeto não vinculado e internet/crossplay não testados. Interface completa e expansão seguem depois, sem pular etapas.
+
+Revisão geral posterior ao bloco de sessão: suíte PlayMode completa78/78 aprovada,0 falhas, XML work/etapa7/regression-78.xml. Nenhuma compilação permanece em execução após essa suíte. A etapa7 continua parcial pelas limitações já documentadas.
+
+Continuação do domínio de recompensas da etapa7: CoopRewardLedger e seis testes reais de persistência/deduplicação adicionados;6/6 aprovados em execução isolada. Ainda falta conectar o coordenador à sessão e replicar os perfis; nenhuma recompensa cooperativa integrada foi declarada pronta. Arquivos novos: Networking/CoopRewardLedger.cs e Networking/Tests/CoopRewardLedgerTests.cs, com metadados. Não houve mudança nas cenas, controles ou builds neste bloco.
