@@ -46,6 +46,7 @@ namespace ForjaDasMares.Networking.Editor
             if (!File.Exists(ScenePath)) throw new FileNotFoundException("Install coop scene first.");
             Directory.CreateDirectory("Builds/CoopWindows");
             PlayerSettings.bundleVersion = "0.6.1";
+            PlayerSettings.runInBackground = true;
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath, ForjaDasMares.Editor.ProgressionInstaller.DungeonScene, ForjaDasMares.Editor.ProgressionInstaller.ArenaScene }, locationPathName = "Builds/CoopWindows/ForjaDasMaresCoop.exe", target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
             Debug.Log("COOP_BUILD " + report.summary.result + " errors=" + report.summary.totalErrors);
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded) throw new System.InvalidOperationException("Coop build failed.");

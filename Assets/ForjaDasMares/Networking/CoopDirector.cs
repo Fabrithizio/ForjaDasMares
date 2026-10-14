@@ -388,6 +388,7 @@ namespace ForjaDasMares.Networking
             if (network.IsServer && progression != null && progression.Active) progression.Finish(false, "Sala encerrada");
             Freeze(); dungeon.Encounter.Cancel(); replica.Clear(); network.Shutdown(); handlers = false; SetInputBlocked(false);
             foreach (var seat in seats) { seat.connected = false; seat.identity = null; } connections.Clear(); localSlot = -1;
+            actors[0].Roster.Select(selectedHero);
             SetPhase(CoopPhase.Closed, "Sala encerrada. O progresso local anterior foi preservado.");
         }
         void OnDestroy()

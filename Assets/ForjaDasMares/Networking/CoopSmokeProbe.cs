@@ -56,17 +56,17 @@ namespace ForjaDasMares.Networking
                 if (command == "reconnect") session.JoinDirect("127.0.0.1", "TEST42", 7777);
                 if (command == "kill-host-player" && session.IsHost) session.Actor(0).Health.ApplyDamage(100000);
                 if (command == "revive-host-player" && session.IsHost) session.Actor(0).Health.Restore();
-                if (command == "chest" && session.IsHost)
+                if (command == "chest" && session.IsHost && session.Phase == CoopPhase.Playing)
                 {
                     var room = session.Dungeon.Generator.Rooms[3]; session.Dungeon.Enter(room);
                     for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room);
                     foreach (var item in room.interactions) if (item.Kind == DungeonInteractionKind.Chest)
                     { var actor = session.Actor(session.LocalSlot); actor.Motor.Teleport(item.transform.position + new Vector3(0, .06f, -1), Quaternion.identity); Debug.Log("COOP_PROBE_CHEST used=" + item.UseBy(actor.Health)); break; }
                 }
-                if (command == "defeat" && session.IsHost) for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.Actor(i).Health.ApplyDamage(100000);
-                if (command == "encounter" && session.IsHost)
+                if (command == "defeat" && session.IsHost && session.Phase == CoopPhase.Playing) for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.Actor(i).Health.ApplyDamage(100000);
+                if (command == "encounter" && session.IsHost && session.Phase == CoopPhase.Playing)
                 { var room = session.Dungeon.Generator.Rooms[1]; session.Dungeon.Enter(room); for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room); }
-                if (command == "clear-wave" && session.IsHost) foreach (var enemy in session.Dungeon.Encounter.Enemies.Actors) if (enemy.IsAlive) enemy.Health.ApplyDamage(100000);
+                if (command == "clear-wave" && session.IsHost && session.Phase == CoopPhase.Playing) foreach (var enemy in session.Dungeon.Encounter.Enemies.Actors) if (enemy.IsAlive) enemy.Health.ApplyDamage(100000);
                 if (command == "exit") Application.Quit();
                 Debug.Log("COOP_PROBE_CONTROL " + command);
             }
