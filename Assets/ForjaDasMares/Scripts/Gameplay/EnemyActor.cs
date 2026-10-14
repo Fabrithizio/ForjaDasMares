@@ -49,6 +49,14 @@ namespace ForjaDasMares
             live = false; recycleTime = 0; combat.Cancel(); brain.ClearTarget(); motor.Deactivate(); summoner = null;
             gameObject.SetActive(false);
         }
+        public void SetReplica(EnemyDefinition data, int hitPoints, int maximum, EnemyState state)
+        {
+            live = false; profile = data; recycleTime = 0;
+            brain.enabled = combat.enabled = motor.enabled = enabled = false;
+            motor.Deactivate(); gameObject.SetActive(true);
+            health.SetReplicaState(hitPoints, maximum);
+            presentation.ShowReplica(data, state, hitPoints > 0);
+        }
         void OnDestroy() { if (bound && health != null) health.Changed -= OnHealthChanged; }
     }
 }

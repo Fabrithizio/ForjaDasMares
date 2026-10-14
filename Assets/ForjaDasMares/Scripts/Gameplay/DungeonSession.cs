@@ -30,6 +30,9 @@ namespace ForjaDasMares
         public int Coins { get; private set; }
         public bool HasKey { get; private set; }
         public bool Finished { get; private set; }
+        public bool ExternallyDriven { get; set; }
+        public CombatParty Party { get; set; }
+        public bool HasLivingPlayers => Party != null ? Party.AnyAlive : heroes.Health.IsAlive;
         public DungeonInteractable Nearby { get; private set; }
         public event System.Action Generated;
         public event System.Action<DungeonRoom> RoomCompleted;
@@ -43,7 +46,7 @@ namespace ForjaDasMares
         { generator = map; encounter = fights; heroes = player; arena = reset; cameraFollow = follow; input = controls; warnings = signs; biomes = data; mainLight = sun; }
         void Awake() { encounter.Completed += EncounterWon; encounter.Failed += EncounterFailed; arena.Resetting += RequestReset; heroes.Changed += RequestReset; }
         void OnDestroy() { if (encounter != null) { encounter.Completed -= EncounterWon; encounter.Failed -= EncounterFailed; } if (arena != null) arena.Resetting -= RequestReset; if (heroes != null) heroes.Changed -= RequestReset; }
-        void Start() => Generate();
+        void Start() { if (!ExternallyDriven) Generate(); }
         void RequestReset() { if (!generating) regenerate = true; }
         public void Generate()
         {
@@ -59,6 +62,7 @@ namespace ForjaDasMares
         }
         void Update()
         {
+            if (ExternallyDriven) return;
             if (regenerate) { Generate(); return; }
             if (generating || Finished || generator.Rooms == null) return;
             detection -= Time.deltaTime;
@@ -77,7 +81,7 @@ namespace ForjaDasMares
         }
         public void Enter(DungeonRoom room)
         {
-            if (!heroes.Health.IsAlive || room == CurrentRoom) return;
+            if (!HasLivingPlayers || room == CurrentRoom) return;
             CurrentRoom = room;
             if (!room.entered)
             {
@@ -126,7 +130,36 @@ namespace ForjaDasMares
         }
         public void ExitDungeon() { TryExitDungeon(); }
         public bool TryExitDungeon()
-        { if (Finished || CurrentRoom == null || CurrentRoom.node.category != RoomCategory.Boss || !CurrentRoom.completed || !heroes.Health.IsAlive) return false; if (ExitRewardRequested != null && !ExitRewardRequested()) return false; Finished = true; encounter.Cancel(); heroes.Victory(); return true; }
+        { if (Finished || CurrentRoom == null || CurrentRoom.node.category != RoomCategory.Boss || !CurrentRoom.completed || !HasLivingPlayers) return false; if (ExitRewardRequested != null && !ExitRewardRequested()) return false; Finished = true; encounter.Cancel(); heroes.Victory(); return true; }
+        public DungeonReplicaState CaptureReplica()
+        {
+            var value = new DungeonReplicaState { room = CurrentRoom != null ? CurrentRoom.node.id : -1, hasKey = HasKey, finished = Finished };
+            if (generator.Rooms == null) return value; int interactionIndex = 0;
+            foreach (var room in generator.Rooms)
+            {
+                uint bit = 1u << room.node.id;
+                if (room.entered) value.entered |= bit; if (room.completed) value.completed |= bit;
+                if (room.objectiveComplete) value.objectives |= bit; if (room.encounterComplete) value.fights |= bit;
+                foreach (var item in room.interactions) { if (item.Used) value.interactions |= 1u << interactionIndex; interactionIndex++; }
+            }
+            for (int i = 0; i < generator.Doors.Count; i++) if (generator.Doors[i].IsClosed) value.doors |= 1u << i;
+            for (int i = 0; i < generator.Traps.Count; i++) if (generator.Traps[i].Disarmed) value.traps |= 1u << i;
+            return value;
+        }
+        public void ApplyReplica(DungeonReplicaState value)
+        {
+            if (!ExternallyDriven || generator.Rooms == null || value.room < 0 || value.room >= generator.Rooms.Length) return;
+            CurrentRoom = generator.Rooms[value.room]; HasKey = value.hasKey; Finished = value.finished; int interactionIndex = 0;
+            foreach (var room in generator.Rooms)
+            {
+                uint bit = 1u << room.node.id; room.entered = (value.entered & bit) != 0; room.completed = (value.completed & bit) != 0;
+                room.objectiveComplete = (value.objectives & bit) != 0; room.encounterComplete = (value.fights & bit) != 0;
+                foreach (var item in room.interactions) item.ApplyReplicaUsed((value.interactions & (1u << interactionIndex++)) != 0);
+            }
+            for (int i = 0; i < generator.Doors.Count; i++) generator.Doors[i].SetClosed((value.doors & (1u << i)) != 0);
+            for (int i = 0; i < generator.Traps.Count; i++) if ((value.traps & (1u << i)) != 0) generator.Traps[i].Disarm();
+            UpdateVisibility();
+        }
         public void NextBiome() { biomeIndex = (biomeIndex + 1) % biomes.Length; Generate(); }
         public void NextSeed() { seed = unchecked(seed + 1); Generate(); }
         public void ToggleFixed() { fixedMap = !fixedMap; Generate(); }

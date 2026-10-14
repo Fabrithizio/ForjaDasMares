@@ -1,0 +1,16 @@
+{
+  "name": "ForjaDasMares.Networking",
+  "rootNamespace": "ForjaDasMares.Networking",
+  "references": [
+    "ForjaDasMares.Runtime",
+    "Unity.Netcode.Runtime",
+    "Unity.Networking.Transport",
+    "Unity.Collections",
+    "Unity.Services.Core",
+    "Unity.Services.Authentication",
+    "Unity.Services.Multiplayer",
+    "Unity.ugui",
+    "Unity.InputSystem"
+  ],
+  "autoReferenced": true
+}

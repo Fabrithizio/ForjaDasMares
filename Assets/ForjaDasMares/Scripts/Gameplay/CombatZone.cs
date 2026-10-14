@@ -11,6 +11,7 @@ namespace ForjaDasMares
         float damageScale;
         int targets, geometry;
         bool armed;
+        public Color Tint => attack != null ? attack.color : Color.white;
         public bool OwnedBy(Health source) => gameObject.activeSelf && owner == source;
         void OnDisable() { owner = null; attack = null; resolver.Clear(); }
         public void Place(Vector3 point, float area, float lifetime, AttackDefinition data, Health source, int mask, int walls, bool trap, float scale = 1)

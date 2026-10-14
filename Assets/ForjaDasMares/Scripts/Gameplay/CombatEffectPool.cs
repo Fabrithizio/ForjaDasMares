@@ -9,6 +9,9 @@ namespace ForjaDasMares
         [SerializeField, Min(1)] int projectileCapacity = 32, zoneCapacity = 12;
         CombatProjectile[] projectiles;
         CombatZone[] zones;
+        public CombatProjectile[] Projectiles => projectiles;
+        public CombatZone[] Zones => zones;
+        public Material SharedMaterial => material;
         public int ActiveProjectiles { get { int count = 0; if (projectiles != null) foreach (var shot in projectiles) if (shot.gameObject.activeSelf) count++; return count; } }
         public int ActiveZones { get { int count = 0; if (zones != null) foreach (var zone in zones) if (zone.gameObject.activeSelf) count++; return count; } }
         public void Configure(Material sharedMaterial) => material = sharedMaterial;

@@ -17,7 +17,7 @@ namespace ForjaDasMares
         public void Configure(DungeonSession owner, DungeonRoom context, TelegraphPool signs, AttackDefinition data) { session = owner; room = context; warnings = signs; hit = data; timer = 1; }
         void Update()
         {
-            if (disarmed || session.CurrentRoom != room || !session.Heroes.Health.IsAlive) return;
+            if (disarmed || session.CurrentRoom != room || !session.HasLivingPlayers) return;
             if (signaling)
             {
                 warning -= Time.deltaTime; if (warning > 0) return;

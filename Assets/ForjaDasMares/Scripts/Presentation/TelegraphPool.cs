@@ -8,6 +8,7 @@ namespace ForjaDasMares
         [SerializeField] Material material;
         [SerializeField, Min(4)] int capacity = 24;
         Telegraph[] items;
+        public Telegraph[] Items => items;
         AudioClip warning;
         public int ActiveCount { get { int count = 0; if (items != null) foreach (var item in items) if (item.gameObject.activeSelf) count++; return count; } }
         public void Configure(Mesh circle, Mesh line, Material shared) { circleMesh = circle; lineMesh = line; material = shared; }

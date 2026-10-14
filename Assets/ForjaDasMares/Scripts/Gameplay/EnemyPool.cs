@@ -16,6 +16,7 @@ namespace ForjaDasMares
         public int Limit => limit;
         public EnemyActor[] Actors => actors;
         public int Capacity => actors != null ? actors.Length : 0;
+        public EnemyDefinition DefinitionAt(int index) => slots[index];
         public int ActiveCount { get { int count = 0; if (actors != null) foreach (var actor in actors) if (actor.IsAlive) count++; return count; } }
         public event Action<EnemyActor> Spawned, Died;
         public CombatParty Party { get; set; }

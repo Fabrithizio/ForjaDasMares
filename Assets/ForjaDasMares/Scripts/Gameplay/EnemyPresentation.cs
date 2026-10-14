@@ -18,6 +18,8 @@ namespace ForjaDasMares
             if (!bound) { actor.Health.Damaged += Hit; bound = true; }
             baseColor = data.color; flash = step = 0; model.localPosition = Vector3.zero; model.localRotation = Quaternion.identity; Paint(baseColor);
         }
+        public void ShowReplica(EnemyDefinition data, EnemyState state, bool alive)
+        { if (colors == null) Prepare(data); enabled = false; Paint(data.color); if (shield != null) shield.SetActive(data.kind == EnemyKind.Guardian && alive && state != EnemyState.Attack && state != EnemyState.Stunned); model.localRotation = Quaternion.Euler(!alive ? 80 : state == EnemyState.Attack ? -12 : 0, 0, 0); }
         void Hit() => flash = 0.12f;
         void Paint(Color value) { colors.SetColor("_BaseColor", value); colors.SetColor("_Color", value); foreach (var surface in surfaces) surface.SetPropertyBlock(colors); }
         void LateUpdate()

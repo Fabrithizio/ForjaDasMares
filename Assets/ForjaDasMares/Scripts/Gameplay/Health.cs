@@ -61,5 +61,8 @@ namespace ForjaDasMares
         { maximum = Mathf.Max(1, hitPoints); armor = Mathf.Clamp(reduction, 0, .75f); current = Mathf.Min(current, maximum); Changed?.Invoke(); }
         public bool Heal(int amount)
         { if (!IsAlive || amount <= 0 || current >= maximum) return false; current = Mathf.Min(maximum, current + amount); Changed?.Invoke(); return true; }
+        // Presentation-only replicas call this after an authenticated host snapshot.
+        public void SetReplicaState(int hitPoints, int capacity)
+        { int previous = current; maximum = Mathf.Clamp(capacity, 1, 100000); current = Mathf.Clamp(hitPoints, 0, maximum); if (previous > current) Damaged?.Invoke(); Changed?.Invoke(); }
     }
 }

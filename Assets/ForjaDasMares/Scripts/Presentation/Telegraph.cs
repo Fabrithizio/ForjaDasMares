@@ -15,6 +15,14 @@ namespace ForjaDasMares
         Color color;
         float remaining;
         public bool HasSound => cue != null;
+        public TelegraphShape Shape { get; private set; }
+        public Vector3 Point { get; private set; }
+        public Vector3 Direction { get; private set; }
+        public float Radius { get; private set; }
+        public float Length { get; private set; }
+        public float Arc { get; private set; }
+        public float Remaining => remaining;
+        public Color Tint => color;
         public void Prepare(Mesh round, Mesh rectangle, AudioClip warning)
         {
             circle = round; line = rectangle; cue = warning; filter = GetComponent<MeshFilter>(); body = GetComponent<Renderer>(); audio = GetComponent<AudioSource>(); properties = new MaterialPropertyBlock();
@@ -26,6 +34,7 @@ namespace ForjaDasMares
         {
             owner = source; color = tint; remaining = Mathf.Max(0.05f, duration); point.y = 0.035f;
             direction.y = 0; if (direction.sqrMagnitude < 0.01f) direction = Vector3.forward;
+            Shape = shape; Point = point; Direction = direction; Radius = radius; Length = length; Arc = arc;
             transform.SetPositionAndRotation(point, Quaternion.LookRotation(direction));
             if (shape == TelegraphShape.Cone)
             {
