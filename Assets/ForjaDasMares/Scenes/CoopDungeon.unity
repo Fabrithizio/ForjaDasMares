@@ -11665,6 +11665,8 @@ GameObject:
   - component: {fileID: 1955449257}
   - component: {fileID: 1955449258}
   - component: {fileID: 1955449256}
+  - component: {fileID: 1955449261}
+  - component: {fileID: 1955449260}
   m_Layer: 0
   m_Name: PrivateCoopSystems
   m_TagString: Untagged
@@ -11784,6 +11786,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1955449260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955449255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb2e3153ac1b564993523dd84f7068e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.CoopProfileChannel
+--- !u!114 &1955449261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955449255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3b58b0dde73c745a6b26d049d59532, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.CoopProgression
+  catalog: {fileID: 11400000, guid: fca3fc89fef0dfd48a5fcfc3d85d9876, type: 2}
+  revivalFraction: 0.5
 --- !u!1 &1966347422
 GameObject:
   m_ObjectHideFlags: 0
@@ -12336,6 +12364,7 @@ GameObject:
   - component: {fileID: 2011690893}
   - component: {fileID: 2011690892}
   - component: {fileID: 2011690891}
+  - component: {fileID: 2011690896}
   m_Layer: 0
   m_Name: CoopCanvas
   m_TagString: Untagged
@@ -12439,6 +12468,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &2011690896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011690890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6edf673913db74a4b8df2e926c10d3a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.CoopInventoryHud
+  director: {fileID: 1955449256}
 --- !u!1 &2027083644
 GameObject:
   m_ObjectHideFlags: 0

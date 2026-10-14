@@ -1,0 +1,23 @@
+# Progressão na sessão privada
+
+CoopProgression liga o catálogo existente ao host. CoopRewardLedger aplica os eventos reais de morte, vitória de sala, baú e conclusão a cada participante. Minions invocados não concedem recompensa. ProfileService/ProfileStore continuam responsáveis por validação, deduplicação e gravação transacional. CoopProfileChannel envia cada inventário somente ao seu dono; os outros jogadores recebem somente identificação visual da arma e estado de combate.
+
+Equipar, desequipar e descartar são intenções: o host verifica participante, IDs, slots, compatibilidade, vida, encontro/ação ativa e frequência. O cliente não envia dano, XP, moeda ou itens finais. Equipamentos afetam o HeroCombat/PlayerMotor/Health já existentes. Reabrir a inicialização remove assinaturas anteriores dos eventos. A janela de inventário bloqueia somente as entradas locais; a partida continua.
+
+Perfis cooperativos ficam em Application.persistentDataPath/PrivateCoopProfiles/{GUID}/progress-v2.json no host, separados do perfil offline. A identidade do dispositivo persiste em PlayerPrefs para reconectar após reiniciar o cliente. Reserva de90s durante a mesma sessão. Isso não é autenticação segura: quem conhecer um GUID e o código da sala pode tentar se passar pelo participante. Não utilizar essa identificação/economia em lançamento comercial sem backend autenticado. O arquivo do cliente nunca é importado como autoridade.
+
+Herói morto aguarda vitória da sala para reaparecer com50% de vida (ajustável); a posição procura NavMesh e cápsula sem colisão em pontos internos. Toda a equipe morta causa derrota. Saída normal do host finaliza a expedição como abandono; clientes encerram, sem migração. Queda abrupta pode deixar uma expedição salva incompleta: a próxima abertura no mesmo host finaliza como interrupção. Eventos ainda somente em memória durante falha de disco não têm garantia de sobreviver a encerramento forçado. Perfis já gravados não recebem crédito duplicado ao repetir uma transação parcialmente confirmada.
+
+## Testes e escopo
+
+Suíte geral89/89 aprovada, zero falhas; XML work/etapa7/regression-89.xml. Depois,17/17 de rede aprovados novamente com assertions adicionais de reload do save: work/etapa7/network-final-17.xml. Incluem seis de ledger, seis de protocolo/cena e cinco de integração: equipagem real/rejeição, baú/derrota sem duplicação, morte real do pool/recompensa, invulnerabilidade ausente ao reviver e três combates/objetivo/armadilha/chefe/saída/vitória salva com combate real. O teste de percurso da autoridade usa bot e teleporte entre salas; não representa teste humano de navegação ou vitória de quatro clientes remotos. A conectividade/navegação segue coberta pelos testes anteriores preservados.
+
+Protocolo2: clientes anteriores são recusados para evitar misturar schemas de equipamento/perfil. A build de QA0.6.1/code7 está em preparação. Para múltiplas instâncias no mesmo PC, fornecer -netIdentity com GUIDN diferente para cada processo; sem override, a identidade padrão persistente é compartilhada pelo mesmo usuário/dispositivo. Flags de probe e comandos administrativos de QA existem somente em Development Build/Editor e exigem -netProbe no lançamento; não são expostos por mensagens de rede.
+
+Serviços UGS continuam sem projectId vinculado. Não há convite pela internet validado nem autenticação comercial. Consultar REDE_PLANO_MIGRACAO.md para versões/requisitos e configuração de Authentication/Sessions/Lobby/Relay. Nenhuma chave secreta ou contratação foi feita. Cenas offline originais preservadas; composição ocorre somente em CoopDungeon.
+
+## Processos reais Windows0.6.1
+
+Host+3 clientes carregaram mapa e perfis pelo protocolo2. Goblin derrotado por ataques do cliente concedeu12XP por perfil; baú real adicionou10XP. Tentar o mesmo baú retornouFalse, XP permaneceu22. Derrota de QA salvou13 itens/11XP em cada perfil; quatro processos novos com os mesmos IDs/diretório restauraram os valores no lobby e nos respectivos espelhos privados. Quinto cliente recusado. Encerramento do host produziuClosed/0 nos clientes. Provas/logs em work/etapa7/four-final. O harness permite ações controladas de baú/derrota/ondas para verificar replicação; essas ações não comprovam jogabilidade humana da sessão inteira.
+
+Limites deste recorte: mapa cooperativo fixo de catacumbas/seed12345; outros biomas e geração procedural continuam disponíveis no modo local. Interface cooperativa mínima; entregas excedentes permanecem salvas no host, mas a tela de resgate completa pertence à próxima etapa de interface. Sem teste de latência artificial, profiling sustentado ou vitória humana com quatro jogadores. O APK desta revisão ainda está sendo compilado.

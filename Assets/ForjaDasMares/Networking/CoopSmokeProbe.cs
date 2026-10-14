@@ -56,6 +56,17 @@ namespace ForjaDasMares.Networking
                 if (command == "reconnect") session.JoinDirect("127.0.0.1", "TEST42", 7777);
                 if (command == "kill-host-player" && session.IsHost) session.Actor(0).Health.ApplyDamage(100000);
                 if (command == "revive-host-player" && session.IsHost) session.Actor(0).Health.Restore();
+                if (command == "chest" && session.IsHost)
+                {
+                    var room = session.Dungeon.Generator.Rooms[3]; session.Dungeon.Enter(room);
+                    for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room);
+                    foreach (var item in room.interactions) if (item.Kind == DungeonInteractionKind.Chest)
+                    { var actor = session.Actor(session.LocalSlot); actor.Motor.Teleport(item.transform.position + new Vector3(0, .06f, -1), Quaternion.identity); Debug.Log("COOP_PROBE_CHEST used=" + item.UseBy(actor.Health)); break; }
+                }
+                if (command == "defeat" && session.IsHost) for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.Actor(i).Health.ApplyDamage(100000);
+                if (command == "encounter" && session.IsHost)
+                { var room = session.Dungeon.Generator.Rooms[1]; session.Dungeon.Enter(room); for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room); }
+                if (command == "clear-wave" && session.IsHost) foreach (var enemy in session.Dungeon.Encounter.Enemies.Actors) if (enemy.IsAlive) enemy.Health.ApplyDamage(100000);
                 if (command == "exit") Application.Quit();
                 Debug.Log("COOP_PROBE_CONTROL " + command);
             }
@@ -63,10 +74,12 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
             report.sampleHp = sample != null ? sample.Health.Current : -1;
+            var profiles = session.GetComponent<CoopProgression>();
+            for (int i = 0; i < 4; i++) { var profile = session.IsHost ? profiles.Profile(i)?.Profile : i == session.LocalSlot ? session.GetComponent<CoopProfileChannel>().LocalProfile : null; if (profile == null) continue; report.xp[i] = profile.expedition?.experience ?? profile.experience; report.items[i] = profile.inventory.Count; }
             File.WriteAllText(Path.Combine(directory, "probe.json"), JsonUtility.ToJson(report, true));
         }
         [Serializable] sealed class ProbeReport
-        { public string phase, signature; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4]; }
+        { public string phase, signature; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

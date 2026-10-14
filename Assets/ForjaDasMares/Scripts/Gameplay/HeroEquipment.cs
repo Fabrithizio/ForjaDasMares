@@ -16,7 +16,12 @@ namespace ForjaDasMares
         public void Configure(HeroRoster roster, PlayerMotor player, HeroCombat attacks, MeshRenderer primary, MeshRenderer secondary)
         { heroes = roster; motor = player; combat = attacks; mainVisual = primary; secondaryVisual = secondary; }
         public void Initialize(ProfileService profile, ProgressionCatalog data)
-        { service = profile; catalog = data; heroes.Changed += HeroChanged; service.Changed += Refresh; HeroChanged(); }
+        {
+            heroes.Changed -= HeroChanged;
+            if (service != null) service.Changed -= Refresh;
+            service = profile; catalog = data; regeneration = 0;
+            heroes.Changed += HeroChanged; service.Changed += Refresh; HeroChanged();
+        }
         void HeroChanged() { signature = null; Refresh(); }
         void OnDestroy() { if (heroes != null) heroes.Changed -= HeroChanged; if (service != null) service.Changed -= Refresh; }
         public void Refresh()

@@ -13,6 +13,10 @@ namespace ForjaDasMares.Networking
         float refresh; readonly StringBuilder text = new StringBuilder(512);
         Font font;
         CoopCloud cloud; InputField cloudCode; Text cloudStatus; Button cloudHost, cloudJoin;
+        public RectTransform SafeRoot => root;
+        readonly System.Collections.Generic.List<RaycastResult> pointerHits = new System.Collections.Generic.List<RaycastResult>(16);
+        PointerEventData pointerData;
+        EventSystem pointerEvents;
         public void Configure(CoopDirector director, ArenaInput input) { session = director; controls = input; }
         void Start()
         {
@@ -29,20 +33,29 @@ namespace ForjaDasMares.Networking
             start = Button(menu.transform, "INICIAR PARTIDA", new Vector2(15, -314), 305, session.StartGame);
             status = Label(root, "", new Vector2(870, 110), new Vector2(385, -15), 20);
             party = Label(root, "", new Vector2(870, 130), new Vector2(385, -132), 20);
-            Button(root, "ENCERRAR / SAIR", new Vector2(15, -420), 190, session.Close);
-            Button(root, "JOGAR LOCAL", new Vector2(15, -472), 190, () => { session.Close(); UnityEngine.SceneManagement.SceneManager.LoadScene("ProgressionDungeon"); });
+            TopRight("ENCERRAR / SAIR", -15, session.Close);
+            TopRight("JOGAR LOCAL", -67, () => { session.Close(); UnityEngine.SceneManagement.SceneManager.LoadScene("ProgressionDungeon"); });
             touch = new GameObject("TouchControls", typeof(RectTransform)); touch.transform.SetParent(root, false); var tr = (RectTransform)touch.transform; tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.offsetMin = tr.offsetMax = Vector2.zero;
             var stick = new GameObject("MoveStick", typeof(RectTransform), typeof(Image), typeof(TouchMoveStick)); stick.transform.SetParent(touch.transform, false);
-            var sr = (RectTransform)stick.transform; sr.anchorMin = sr.anchorMax = sr.pivot = new Vector2(0, 0); sr.anchoredPosition = new Vector2(32, 35); sr.sizeDelta = new Vector2(160, 160); stick.GetComponent<Image>().color = new Color(.2f, .4f, .5f, .5f);
+            var sr = (RectTransform)stick.transform; sr.anchorMin = sr.anchorMax = new Vector2(0, 0); sr.pivot = Vector2.one * .5f; sr.anchoredPosition = new Vector2(112, 115); sr.sizeDelta = new Vector2(160, 160); stick.GetComponent<Image>().color = new Color(.2f, .4f, .5f, .5f);
             var thumb = new GameObject("Thumb", typeof(RectTransform), typeof(Image)); thumb.transform.SetParent(stick.transform, false); var th = (RectTransform)thumb.transform; th.sizeDelta = new Vector2(52, 52); thumb.GetComponent<Image>().raycastTarget = false; thumb.GetComponent<Image>().color = new Color(.7f, .9f, 1, .7f); stick.GetComponent<TouchMoveStick>().Configure(controls, th);
             TouchButton("ATAQUE", new Vector2(-150, 55), HeroButtons.Attack); TouchButton("ESQUIVA", new Vector2(-300, 55), HeroButtons.Dodge); TouchButton("HABILIDADE", new Vector2(-150, 130), HeroButtons.Special); TouchButton("INTERAGIR", new Vector2(-300, 130), HeroButtons.Interact);
-            touch.SetActive(Application.isMobilePlatform); controls.PointerBlocked = _ => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+            touch.SetActive(Application.isMobilePlatform); controls.PointerBlocked = PointerOverUi;
             cloud = session.GetComponent<CoopCloud>();
             cloudHost = Button(root, "CRIAR SALA INTERNET", new Vector2(385, -280), 280, () => cloud.Create());
             cloudJoin = Button(root, "ENTRAR POR CÓDIGO", new Vector2(690, -280), 280, () => cloud.Join(cloudCode.text));
             cloudCode = Field(root, "", new Vector2(385, -332), 280);
             cloudStatus = Label(root, "", new Vector2(870, 95), new Vector2(385, -385), 18);
         }
+        bool PointerOverUi(Vector2 position)
+        {
+            var events = EventSystem.current; if (events == null) return false;
+            if (pointerData == null || pointerEvents != events) { pointerEvents = events; pointerData = new PointerEventData(events); }
+            pointerData.Reset(); pointerData.position = position; pointerHits.Clear(); events.RaycastAll(pointerData, pointerHits);
+            return pointerHits.Count > 0;
+        }
+        void TopRight(string label, float y, UnityEngine.Events.UnityAction action)
+        { var rect = (RectTransform)Button(root, label, Vector2.zero, 190, action).transform; rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one; rect.anchoredPosition = new Vector2(-15, y); }
         void TouchButton(string name, Vector2 offset, HeroButtons action)
         { var button = Button(touch.transform, name, Vector2.zero, 135, () => session.Request(action)); var rect = (RectTransform)button.transform; rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1, 0); rect.anchoredPosition = offset; rect.sizeDelta = new Vector2(135, 65); }
         void Update()

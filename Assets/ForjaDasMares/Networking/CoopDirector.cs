@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.AI;
 namespace ForjaDasMares.Networking
 {
     [DefaultExecutionOrder(200)]
@@ -30,6 +31,8 @@ namespace ForjaDasMares.Networking
         readonly ActorFrame[] playerFrames = new ActorFrame[4];
         readonly List<ActorFrame> enemyFrames = new List<ActorFrame>(64);
         CombatParty party; CoopReplicaView replica;
+        CoopProgression progression; CoopProfileChannel profiles;
+        bool inputBlocked;
         uint sequence, tick; int localSlot = -1, selectedHero, biome;
         float inputClock, snapshotClock, roomClock;
         string identity = Guid.NewGuid().ToString("N");
@@ -57,6 +60,9 @@ namespace ForjaDasMares.Networking
         public CoopActor Actor(int slot) => slot >= 0 && slot < actors.Length ? actors[slot] : null;
         public NetworkManager Manager => network;
         public DungeonSession Dungeon => dungeon;
+        public bool IsConnected(int slot) => slot >= 0 && slot < 4 && seats[slot].connected;
+        public bool IsParticipant(int slot) => slot >= 0 && slot < 4 && seats[slot].identity != null && (seats[slot].connected || seats[slot].expires > Time.unscaledTime);
+        public bool TryGetSlot(ulong client, out int slot) => connections.TryGetValue(client, out slot);
         public event Action Changed;
         sealed class Seat { public string identity; public ulong client; public bool connected, loaded; public float expires, rateTime; public int commands; }
         public void Configure(NetworkManager manager, UnityTransport wire, DungeonSession map, ArenaSession reset, HeroRoster player, ArenaCamera camera, ArenaInput controls, DungeonInteractionInput interactions, CombatEffectPool pool, TelegraphPool signs)
@@ -80,15 +86,19 @@ namespace ForjaDasMares.Networking
             }
             for (int i = 0; i < dungeon.Encounter.Enemies.Capacity; i++) enemyFrames.Add(new ActorFrame { slot = i });
             replica = gameObject.AddComponent<CoopReplicaView>(); replica.Configure(dungeon.Encounter.Enemies, effects, warnings);
+            progression = GetComponent<CoopProgression>(); profiles = GetComponent<CoopProfileChannel>();
+            profiles.Configure(this, progression);
             network.ConnectionApprovalCallback = Approve;
             network.OnClientConnectedCallback += Connected; network.OnClientDisconnectCallback += Disconnected;
             ready = true;
             if (GetComponent<CoopCloud>() == null) gameObject.AddComponent<CoopCloud>();
             var args = Environment.GetCommandLineArgs();
             if (Arg(args, "-netProbe") != null && GetComponent<CoopSmokeProbe>() == null) gameObject.AddComponent<CoopSmokeProbe>();
-            identity = Arg(args, "-netIdentity") ?? identity;
+            string savedIdentity = PlayerPrefs.GetString("CoopParticipantIdentity", "");
+            if (!Guid.TryParseExact(savedIdentity, "N", out _)) { savedIdentity = Guid.NewGuid().ToString("N"); PlayerPrefs.SetString("CoopParticipantIdentity", savedIdentity); PlayerPrefs.Save(); }
+            identity = Arg(args, "-netIdentity") ?? savedIdentity;
             string mode = Arg(args, "-netMode");
-            if (mode == "host") HostDirect(Arg(args, "-netPin") ?? "TEST42", ParsePort(Arg(args, "-netPort")), false);
+            if (mode == "host") HostDirect(Arg(args, "-netPin") ?? "TEST42", ParsePort(Arg(args, "-netPort")), Arg(args, "-netLan") == "true");
             if (mode == "client") JoinDirect(Arg(args, "-netAddress") ?? "127.0.0.1", Arg(args, "-netPin") ?? "TEST42", ParsePort(Arg(args, "-netPort")));
             Changed?.Invoke();
         }
@@ -101,6 +111,7 @@ namespace ForjaDasMares.Networking
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.frame.v1", ReceiveFrame);
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.hero.v1", ReceiveHero);
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.ready.v1", ReceiveReady);
+            profiles.Bind();
             handlers = true;
         }
         public bool HostDirect(string pin, ushort port, bool lan = true)
@@ -143,6 +154,7 @@ namespace ForjaDasMares.Networking
             if (!returning) for (int i = 0; i < seats.Length; i++) if (seats[i].identity == null || !seats[i].connected && seats[i].expires <= Time.unscaledTime) { slot = i; break; }
             if (slot < 0) { response.Reason = "Sala cheia: máximo de quatro jogadores."; return; }
             foreach (var seat in seats) if (seat.connected && seat.identity == join.identity) { response.Reason = "Jogador já conectado."; return; }
+            if (!progression.Attach(slot, join.identity)) { response.Reason = progression.Error; return; }
             var claim = seats[slot]; claim.identity = join.identity; claim.client = request.ClientNetworkId; claim.connected = true; claim.commands = 0; claim.rateTime = Time.unscaledTime;
             connections[request.ClientNetworkId] = slot;
             if (!returning) actors[slot].Roster.Select(join.hero);
@@ -156,6 +168,8 @@ namespace ForjaDasMares.Networking
             if (client == network.LocalClientId) localSlot = slot;
             actors[slot].Commands.Clear(); actors[slot].gameObject.SetActive(true); actors[slot].SetAuthority(Phase == CoopPhase.Playing);
             party.Set(slot, actors[slot].Health);
+            profiles.Resend(slot);
+            if (Phase == CoopPhase.Playing && dungeon.CurrentRoom != null && !dungeon.CurrentRoom.Contains(actors[slot].transform.position)) PlaceInRoom(slot, dungeon.CurrentRoom);
             Debug.Log("COOP_CONNECTED slot=" + slot + " count=" + ConnectedCount); Changed?.Invoke();
         }
         void Disconnected(ulong client)
@@ -167,7 +181,7 @@ namespace ForjaDasMares.Networking
                 Debug.Log("COOP_DISCONNECTED slot=" + slot); Changed?.Invoke();
             }
             else if (!network.IsServer && client == network.LocalClientId && !closing)
-            { Freeze(); SetPhase(CoopPhase.Closed, "Conexão encerrada. O host não é migrado; retorne ao mesmo host para reconectar enquanto a reserva estiver válida. " + network.DisconnectReason); }
+            { Freeze(); foreach (var seat in seats) seat.connected = false; SetPhase(CoopPhase.Closed, "Conexão encerrada. O host não é migrado; retorne ao mesmo host para reconectar enquanto a reserva estiver válida. " + network.DisconnectReason); }
         }
         public void SelectHero(int index)
         {
@@ -188,6 +202,7 @@ namespace ForjaDasMares.Networking
             if (!network.IsServer || Phase != CoopPhase.Lobby || ConnectedCount == 0) return;
             SetPhase(CoopPhase.Loading, "Gerando a masmorra compartilhada…");
             dungeon.ConfigureTest(12345, true, biome); dungeon.Encounter.enabled = false; loadingDeadline = Time.unscaledTime + 30;
+            if (!progression.Begin()) { SetPhase(CoopPhase.Lobby, progression.Error); return; }
             for (int i = 0; i < actors.Length; i++) if (seats[i].connected)
             { seats[i].loaded = i == localSlot; actors[i].Roster.ResetHero(); actors[i].SetAuthority(false); actors[i].Motor.Teleport(arena.Spawn.position + Vector3.right * (i * .9f), Quaternion.identity); }
             follow.Configure(actors[localSlot].transform, 1 << 9); follow.Snap();
@@ -205,7 +220,8 @@ namespace ForjaDasMares.Networking
             byte[] bytes = Encoding.UTF8.GetBytes(dungeon.Generator.Layout.Signature()); using var writer = new FastBufferWriter(bytes.Length + 4, Allocator.Temp);
             writer.WriteValueSafe(bytes.Length); writer.WriteBytesSafe(bytes); network.CustomMessagingManager.SendNamedMessage("fdm.ready.v1", NetworkManager.ServerClientId, writer); localLoaded = true;
         }
-        public void Request(HeroButtons buttons) => touchButtons |= buttons;
+        public void SetInputBlocked(bool value) { inputBlocked = value; input.BlockCommands(value); touchButtons = HeroButtons.None; }
+        public void Request(HeroButtons buttons) { if (!inputBlocked) touchButtons |= buttons; }
         void Update()
         {
             if (!ready || !network.IsListening) return;
@@ -234,7 +250,7 @@ namespace ForjaDasMares.Networking
             {
                 roomClock -= Time.deltaTime;
                 if (roomClock <= 0) { roomClock = .08f; AdvanceRoomAndInteract(); }
-                if (!party.AnyAlive || dungeon.Encounter.State == EncounterState.Failed) { Freeze(); SetPhase(CoopPhase.Defeat, "Todos os heróis caíram. O host pode encerrar a sala."); }
+                if (!party.AnyAlive || dungeon.Encounter.State == EncounterState.Failed) { Freeze(); progression.Finish(false, "Derrota cooperativa"); SetPhase(CoopPhase.Defeat, "Todos os heróis caíram. Consulte o resultado e encerre a sala."); }
                 else if (dungeon.Finished) { Freeze(); SetPhase(CoopPhase.Victory, "Masmorra concluída pelo grupo."); }
             }
             snapshotClock -= Time.unscaledDeltaTime;
@@ -290,12 +306,26 @@ namespace ForjaDasMares.Networking
                         dungeon.Enter(room);
                         // One encounter controller: assemble the group inside before doors close.
                         for (int i = 0; i < actors.Length; i++) if (seats[i].connected)
-                            actors[i].Motor.Teleport(room.Center + new Vector3(-2 + i * 1.2f, .06f, -3), Quaternion.identity);
+                            PlaceInRoom(i, room);
                         break;
                     }
                 if (actor.Commands.TakeInteraction())
                     foreach (var item in dungeon.CurrentRoom.interactions) if ((item.transform.position - actor.transform.position).sqrMagnitude <= 4.41f && item.UseBy(actor.Health)) break;
             }
+        }
+        public bool PlaceInRoom(int slot, DungeonRoom room)
+        {
+            if (slot < 0 || slot >= 4 || room == null) return false;
+            // Sample the baked room navigation and check the actual capsule against walls/props.
+            for (int step = 0; step < 36; step++)
+            {
+                Vector3 desired = room.Center + new Vector3(-3 + (step + slot) % 6 * 1.2f, .06f, -3 + (step + slot) / 6 * 1.2f);
+                if (!NavMesh.SamplePosition(desired, out var hit, .65f, NavMesh.AllAreas) || !room.Contains(hit.position)) continue;
+                Vector3 point = hit.position + Vector3.up * .06f;
+                if (Physics.CheckCapsule(point + Vector3.up * .4f, point + Vector3.up * 1.45f, .34f, 1 << 9, QueryTriggerInteraction.Ignore)) continue;
+                actors[slot].Motor.Teleport(point, Quaternion.identity); return true;
+            }
+            Debug.LogError("No safe cooperative respawn point in room " + room.node.id); return false;
         }
         void Broadcast()
         {
@@ -307,6 +337,9 @@ namespace ForjaDasMares.Networking
             {
                 var actor = actors[i]; var value = playerFrames[i]; value.connected = seats[i].connected; value.hero = actor.Roster.Selected; Fill(value, actor.Health, actor.transform);
                 value.state = (int)actor.Presentation.State; value.animation = actor.Combat.NormalizedTime; value.specialCooldown = actor.Combat.SpecialCooldownRemaining; value.dodgeCooldown = actor.Motor.DodgeCooldownRemaining; frame.players.Add(value);
+                var profile = progression.Profile(i)?.Profile; var loadout = profile?.Loadout(actor.Roster.Current.heroId);
+                value.mainItem = profile?.Item(loadout?.items[0])?.definitionId;
+                value.secondaryItem = profile?.Item(loadout?.items[1])?.definitionId;
             }
             var enemies = dungeon.Encounter.Enemies.Actors;
             for (int i = 0; i < enemies.Length; i++) if (enemies[i].IsSpawned)
@@ -314,6 +347,7 @@ namespace ForjaDasMares.Networking
             replica.CaptureEffects(frame.effects); frame.world = dungeon.CaptureReplica();
             foreach (var link in connections)
             {
+                profiles.Sync(link.Key, link.Value);
                 if (link.Key == network.LocalClientId) continue; frame.localSlot = link.Value;
                 byte[] bytes = Encoding.UTF8.GetBytes(JsonUtility.ToJson(frame));
                 LastSnapshotBytes = bytes.Length;
@@ -341,7 +375,7 @@ namespace ForjaDasMares.Networking
             }
             if (update.room >= 0 && !localLoaded) SendReady();
             for (int i = 0; i < actors.Length; i++)
-            { var value = update.players[i]; seats[i].connected = value.connected; actors[i].gameObject.SetActive(value.connected); if (value.connected) actors[i].Apply(value); }
+            { var value = update.players[i]; seats[i].connected = value.connected; actors[i].gameObject.SetActive(value.connected); if (value.connected) { actors[i].Apply(value); actors[i].ApplyGear(value, progression.Catalog); } }
             if (follow.Target != actors[localSlot].transform) { follow.Configure(actors[localSlot].transform, 1 << 9); follow.Snap(); }
             replica.Apply(update); if (update.room >= 0) dungeon.ApplyReplica(update.world); selectedHero = update.players[localSlot].hero;
             var next = (CoopPhase)update.phase; if (Phase != next) SetPhase(next, next == CoopPhase.Playing ? "Sessão conectada: simulação validada pelo host." : next.ToString());
@@ -350,14 +384,18 @@ namespace ForjaDasMares.Networking
         void SetPhase(CoopPhase value, string text) { Phase = value; Message = text; Changed?.Invoke(); Debug.Log("COOP_PHASE " + value); }
         public void Close()
         {
-            if (closing) return; closing = true; Freeze(); dungeon.Encounter.Cancel(); replica.Clear(); network.Shutdown(); handlers = false;
+            if (closing) return; closing = true;
+            if (network.IsServer && progression != null && progression.Active) progression.Finish(false, "Sala encerrada");
+            Freeze(); dungeon.Encounter.Cancel(); replica.Clear(); network.Shutdown(); handlers = false; SetInputBlocked(false);
             foreach (var seat in seats) { seat.connected = false; seat.identity = null; } connections.Clear(); localSlot = -1;
             SetPhase(CoopPhase.Closed, "Sala encerrada. O progresso local anterior foi preservado.");
         }
         void OnDestroy()
         {
+            if (network != null && network.IsServer && progression != null && progression.Active) progression.Finish(false, "Aplicação encerrada");
             if (network == null) return; network.OnClientConnectedCallback -= Connected; network.OnClientDisconnectCallback -= Disconnected;
             if (network.IsListening) network.Shutdown();
         }
+        void OnApplicationQuit() { if (network != null && network.IsServer && progression != null && progression.Active) progression.Finish(false, "Aplicação encerrada"); }
     }
 }

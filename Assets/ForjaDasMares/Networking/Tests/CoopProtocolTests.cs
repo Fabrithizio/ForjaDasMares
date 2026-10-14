@@ -10,7 +10,7 @@ namespace ForjaDasMares.Networking.Tests
         {
             var join = new JoinIntent { identity = "11111111111111111111111111111111", pin = "TEST42", hero = 0 };
             Assert.IsTrue(CoopLimits.ValidJoin(join, 4)); join.protocol = 99; Assert.IsFalse(CoopLimits.ValidJoin(join, 4));
-            join.protocol = 1; join.hero = 4; Assert.IsFalse(CoopLimits.ValidJoin(join, 4));
+            join.protocol = CoopLimits.Protocol; join.hero = 4; Assert.IsFalse(CoopLimits.ValidJoin(join, 4));
             join.hero = 0; join.identity = "arbitrary-identity"; Assert.IsFalse(CoopLimits.ValidJoin(join, 4));
         }
         [Test] public void SnapshotRoundtripPreservesCollectionsMasksAndSlots()
