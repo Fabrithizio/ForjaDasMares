@@ -1,6 +1,6 @@
 # Arquivos do bloco cooperativo14/10/2026
 
-Comparação com checkpoint05dd6b9; A=criado, M=alterado. Metadados Unity incluídos. Builds/Library e saves privados ficam fora do Git. Este relatório também é um arquivo criado neste bloco.
+Comparação com checkpoint05dd6b9; A=criado, M=alterado. Metadados Unity incluídos. Builds/Library e saves privados ficam fora do Git.
 
 M	Assets/ForjaDasMares/Networking/CoopActor.cs
 M	Assets/ForjaDasMares/Networking/CoopDirector.cs
@@ -21,6 +21,8 @@ M	Assets/ForjaDasMares/Scenes/CoopDungeon.unity
 M	Assets/ForjaDasMares/Scripts/Gameplay/Health.cs
 M	Assets/ForjaDasMares/Scripts/Gameplay/HeroEquipment.cs
 M	Docs/ANDROID_TESTE_FISICO_2026-10-14.md
+M	Docs/ARQUITETURA.md
+A	Docs/ARQUIVOS_ETAPA7.md
 A	Docs/COOP_COMO_TESTAR.md
 M	Docs/PROGRESSO.md
 A	Docs/REDE_PROGRESSAO.md
