@@ -14,6 +14,7 @@ namespace ForjaDasMares
         [Header("Stable framing")]
         [SerializeField, Min(0f)] float obstructionReleaseDelay = 0.2f;
         [SerializeField, Min(0.05f)] float visibilityRadius = 0.3f;
+        [SerializeField, Range(0.15f, 0.75f)] float obstructionOpacity = 0.35f;
         [SerializeField, Min(0.01f)] float zoomOutTime = 0.28f;
         [SerializeField] LayerMask blockers;
         [SerializeField, Range(30f, 80f)] float verticalFieldOfView = 48f;
@@ -67,7 +68,7 @@ namespace ForjaDasMares
             else if (deltaTime > 0f) armDistance = Mathf.Min(safeDistance, Mathf.SmoothDamp(armDistance, safeDistance, ref armVelocity, zoomOutTime, Mathf.Infinity, deltaTime));
             transform.position = smoothedFocus + direction * armDistance;
             transform.rotation = Quaternion.LookRotation(-direction, Mathf.Abs(direction.y) > 0.999f ? Vector3.forward : Vector3.up);
-            occlusion.Update(transform.position, target.position, blockers, visibilityRadius, obstructionReleaseDelay, Time.unscaledTime);
+            occlusion.Update(transform.position, target.position, blockers, visibilityRadius, obstructionReleaseDelay, Time.unscaledTime, obstructionOpacity);
         }
         void OnDisable() => occlusion.Restore();
         void OnDestroy() => occlusion.Restore();

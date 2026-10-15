@@ -50,37 +50,61 @@ namespace ForjaDasMares.Tests
                 Assert.That(Vector3.Distance(rig.transform.position, focus), Is.EqualTo(distance).Within(.01f));
                 AssertSafe();
             }
-            Assert.IsTrue(obstacle.GetComponent<Renderer>().forceRenderingOff, "Occluding box must be hidden locally.");
+            Assert.That(obstacle.GetComponent<Renderer>().sharedMaterial.GetColor("_BaseColor").a, Is.EqualTo(.35f).Within(.01f));
         }
         [UnityTest] public IEnumerator ClearanceRestoresTheObstacleWithoutMovingTheCamera()
         {
-            Obstruct(); yield return null; yield return null;
-            var renderer = obstacle.GetComponent<Renderer>(); Assert.IsTrue(renderer.forceRenderingOff);
+            Obstruct(); var renderer = obstacle.GetComponent<Renderer>(); var original = renderer.sharedMaterial;
+            yield return null; yield return null; Assert.AreNotSame(original, renderer.sharedMaterial);
             Vector3 position = rig.transform.position;
             obstacle.transform.position += Vector3.right * 20f; Physics.SyncTransforms();
-            yield return new WaitForSecondsRealtime(.1f); Assert.IsTrue(renderer.forceRenderingOff, "Hold prevents flicker at the edge.");
-            yield return new WaitForSecondsRealtime(.3f); Assert.IsFalse(renderer.forceRenderingOff);
+            yield return new WaitForSecondsRealtime(.1f); Assert.AreNotSame(original, renderer.sharedMaterial, "Hold prevents flicker at the edge.");
+            yield return new WaitForSecondsRealtime(.3f); Assert.AreSame(original, renderer.sharedMaterial);
             Assert.That(Vector3.Distance(position, rig.transform.position), Is.LessThan(.01f));
         }
-        [UnityTest] public IEnumerator HiddenGeometryStillBlocksPhysicsAndRestoresOnDisable()
+        [UnityTest] public IEnumerator TranslucentGeometryStillBlocksPhysicsAndRestoresOnDisable()
         {
-            Obstruct(); yield return null; yield return null;
-            var renderer = obstacle.GetComponent<Renderer>(); Assert.IsTrue(renderer.forceRenderingOff);
+            Obstruct(); var renderer = obstacle.GetComponent<Renderer>(); var original = renderer.sharedMaterial;
+            yield return null; yield return null; Assert.AreNotSame(original, renderer.sharedMaterial);
             Assert.IsTrue(renderer.enabled); Assert.IsTrue(obstacle.GetComponent<Collider>().enabled);
             Assert.IsTrue(Physics.Linecast(rig.transform.position, target.transform.position + Vector3.up * .9f, 1 << 9));
-            follow.enabled = false; Assert.IsFalse(renderer.forceRenderingOff);
+            Assert.IsFalse(renderer.forceRenderingOff, "Geometry remains drawn, with alpha blending.");
+            Assert.That(renderer.sharedMaterial.GetColor("_BaseColor").a, Is.EqualTo(.35f).Within(.01f));
+            Assert.That(renderer.sharedMaterial.GetFloat("_ZWrite"), Is.Zero);
+            follow.enabled = false; Assert.AreSame(original, renderer.sharedMaterial);
         }
         [UnityTest] public IEnumerator DoesNotHideTheFloorOrRevealPreviouslyHiddenGeometry()
         {
             obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube); obstacle.layer = 9;
             obstacle.transform.position = target.transform.position + Vector3.down * .5f;
             obstacle.transform.localScale = new Vector3(30, 1, 30); Physics.SyncTransforms();
+            var floorMaterial = obstacle.GetComponent<Renderer>().sharedMaterial;
             yield return null; yield return null;
+            Assert.AreSame(floorMaterial, obstacle.GetComponent<Renderer>().sharedMaterial, "Floor must remain opaque.");
             Assert.IsFalse(obstacle.GetComponent<Renderer>().forceRenderingOff, "Floor must remain visible.");
             Object.Destroy(obstacle); yield return null;
             Obstruct(); obstacle.GetComponent<Renderer>().forceRenderingOff = true;
             yield return null; yield return null; follow.enabled = false;
             Assert.IsTrue(obstacle.GetComponent<Renderer>().forceRenderingOff, "Restore original renderer state.");
+        }
+        [UnityTest] public IEnumerator AllMaterialSlotsAreFadedWithoutChangingSharedAssets()
+        {
+            Obstruct(); var renderer = obstacle.GetComponent<Renderer>();
+            var a = new Material(Resources.Load<Material>("CameraOcclusionTransparent"));
+            var b = new Material(a); a.SetColor("_BaseColor", Color.red); b.SetColor("_BaseColor", Color.blue);
+            try
+            {
+                renderer.sharedMaterials = new[] { a, b }; yield return null; yield return null;
+                var faded = renderer.sharedMaterials;
+                Assert.That(faded.Length, Is.EqualTo(2));
+                for (int i = 0; i < 2; i++) Assert.That(faded[i].GetColor("_BaseColor").a, Is.EqualTo(.35f).Within(.01f));
+                Assert.That(a.GetColor("_BaseColor"), Is.EqualTo(Color.red)); Assert.That(b.GetColor("_BaseColor"), Is.EqualTo(Color.blue));
+                follow.enabled = false;
+                Assert.AreSame(a, renderer.sharedMaterials[0]); Assert.AreSame(b, renderer.sharedMaterials[1]);
+                yield return null;
+                Assert.IsTrue(faded[0] == null && faded[1] == null, "Temporary materials must be destroyed on disable.");
+            }
+            finally { Object.Destroy(a); Object.Destroy(b); }
         }
         [UnityTest] public IEnumerator SnapAtAnObstructedCornerStillFramesTheHero()
         {

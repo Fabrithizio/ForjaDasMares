@@ -331,3 +331,11 @@ Problema residual confirmado visualmente no Windows0.6.3: caixas ainda alteravam
 PlayMode99 casos:98 aprovados,0 falhas,1 ignorado por exigir projeto não vinculado. Seis testes de câmera incluem distância/ângulo constantes, restauração, piso, colisão e pausa. Windows0.6.4 compilou Succeeded/errors0 e menu foi observado após abrir executável novo. Atalho Online atualizado; saves preservados. Teste humano de enquadramento disponível. Android0.6.4 em preparação; não declarar aparelho atualizado neste checkpoint.
 
 Criados CameraOcclusion.cs/.meta e relatório CAMERA_ESTAVEL_2026-10-15.md. Alterados ArenaCamera.cs, CameraObstructionTests.cs, CoopInstaller.cs e documentação; versão de ProjectSettings acompanha build. Cenas, rede e combate não alterados. Revisão completa do jogo continua com as pendências anteriormente documentadas.
+
+### Semitransparência solicitada pelo titular —0.6.5
+
+Usuário aprovou o enquadramento estável de0.6.4 e pediu manter os obstáculos parcialmente visíveis. ArenaCamera expõe Obstruction Opacity padrão35%. CameraOcclusion usa materiais transparentes temporários/cache em vez de desligar desenho; mantém colliders e flags de visibilidade, restaura arrays originais e destrói cópias ao desativar/resetar. Template real Resources/CameraOcclusionTransparent.mat conserva variante URP/Lit transparente na build. Nenhuma alteração de combate/rede/cenas/saves.
+
+Dois passes específicos7/7 aprovados,0 falhas, último com assert de material do chão. Não repetida suíte ampla anterior99 casos depois deste ajuste. Windows0.6.5 compilado Succeeded/errors0, atalho Online atualizado e menu aberto observado. Aviso de Firewall exige escolha pessoal do titular; QA visual de gameplay não foi declarada concluída neste checkpoint. Android0.6.4 cancelado para incluir pedido; Android0.6.5 em compilação. Telefone não aparece mais no ADB, portanto teste físico novo está pendente.
+
+Arquivos: ArenaCamera.cs, CameraOcclusion.cs, CameraObstructionTests.cs, CoopInstaller.cs e documentação; novos Resources/CameraOcclusionTransparent.mat/.meta e CAMERA_TRANSPARENCIA_2026-10-15.md. Limitações de alpha blending/peça inteira/uma câmera e shaders futuros estão no relatório.

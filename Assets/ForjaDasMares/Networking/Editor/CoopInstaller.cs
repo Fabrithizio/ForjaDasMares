@@ -43,7 +43,7 @@ namespace ForjaDasMares.Networking.Editor
         public static void Windows()
         { BuildWindows("Builds/CoopWindows", "0.6.1"); }
         public static void InternetWindows()
-        { ValidateInternet(); BuildWindows("Builds/InternetWindows-0.6.4", "0.6.4"); }
+        { ValidateInternet(); BuildWindows("Builds/InternetWindows-0.6.5", "0.6.5"); }
         static void ValidateInternet()
         {
             var settings = AssetDatabase.LoadAssetAtPath<CoopInternetSettings>(CoopInternetSetup.SettingsPath);
@@ -64,7 +64,7 @@ namespace ForjaDasMares.Networking.Editor
         public static void Android()
         { BuildAndroid("Builds/CoopAndroid", "0.6.1", 7); }
         public static void InternetAndroid()
-        { ValidateInternet(); BuildAndroid("Builds/InternetAndroid-0.6.4", "0.6.4", 10); }
+        { ValidateInternet(); BuildAndroid("Builds/InternetAndroid-0.6.5", "0.6.5", 11); }
         static void BuildAndroid(string directory, string version, int versionCode)
         {
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android) throw new System.InvalidOperationException("Invoke Unity with -buildTarget Android.");

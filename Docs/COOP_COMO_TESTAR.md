@@ -2,7 +2,7 @@
 
 ## Abrir
 
-Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Internet vinculada com câmera revisada0.6.3: Builds/InternetWindows-0.6.4/ForjaDasMaresCoop.exe e Builds/InternetAndroid-0.6.3/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Atalho adicional Jogar ForjaDasMares Online na pasta Jogos utiliza save InternetCoopProfiles separado, para coexistir com a partida LAN antiga sem gravar sobre ela. Binários LAN0.6.1 continuam em CoopWindows/CoopAndroid. Preservar dados ao atualizar.
+Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Internet vinculada com câmera revisada0.6.3: Builds/InternetWindows-0.6.5/ForjaDasMaresCoop.exe e Builds/InternetAndroid-0.6.3/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Atalho adicional Jogar ForjaDasMares Online na pasta Jogos utiliza save InternetCoopProfiles separado, para coexistir com a partida LAN antiga sem gravar sobre ela. Binários LAN0.6.1 continuam em CoopWindows/CoopAndroid. Preservar dados ao atualizar.
 
 O modo local anterior continua em Builds/Windows/ForjaDasMares.exe e no botão JOGAR LOCAL. Cenas ArenaTest/DungeonTest preservadas. O cooperativo usa protocolo2: não misturar com APK0.6.0.
 
