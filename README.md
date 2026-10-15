@@ -49,3 +49,5 @@ Câmera atual0.6.5: obstáculos semitransparentes35%, sete testes específicos a
 ## Mapa de estilo — Galerias da Maré
 
 Variante local original0.6.6 em Assets/ForjaDasMares/Scenes/GaleriasDungeon.unity, com GaleriasArena para retorno. PC: Builds/GaleriasWindows-0.6.6/ForjaDasMaresGalerias.exe, atalho Jogar Galerias da Mare em Jogos. Perfil separado; mapa online anterior preservado. Peças geométricas provisórias salvas e substituíveis, combate/baús/chefe/progressão reais existentes. Não contém destruição de cenário nem integração online deste mapa. Testes, configuração e limites em Docs/MAPA_GALERIAS_2026-10-15.md.
+
+APK local separado deste mapa: Builds/GaleriasAndroid-0.6.6/ForjaDasMaresGalerias.apk (com.forjadasmares.galerias), produzido/assinado, sem teste físico desta revisão. Para compilar, usar GaleriasInstaller.Windows com Win64 ativo ou GaleriasInstaller.Android com Android ativo. Esses métodos mantêm o mapa online anterior separado.

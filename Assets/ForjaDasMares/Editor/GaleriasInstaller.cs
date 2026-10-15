@@ -143,7 +143,7 @@ namespace ForjaDasMares.Editor
                 Debug.Log("GALERIAS_BUILD "+target+" "+report.summary.result+" errors="+report.summary.totalErrors);
                 if(report.summary.result!=BuildResult.Succeeded)throw new InvalidOperationException("Galerias build failed. Inspect log.");
             }
-            finally { PlayerSettings.productName=previousName; PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,previousId); }
+            finally { PlayerSettings.productName=previousName; PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,previousId); AssetDatabase.SaveAssets(); }
         }
     }
 }

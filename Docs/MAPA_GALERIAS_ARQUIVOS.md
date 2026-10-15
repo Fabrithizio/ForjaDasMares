@@ -1,0 +1,89 @@
+# Arquivos do mapa Galerias da Maré
+
+Comparação com o checkpoint9fd187b, antes do pedido de mapa. A=criado, M=alterado. Inclui assets reais e seus metadados. Library/Temp/Logs/Builds e perfis de teste não são arquivos de desenvolvimento versionados.
+
+```text
+A	Assets/ForjaDasMares/Data/MapStyles.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/AmberMarkings.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/AmberMarkings.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Biome.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Biome.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/BlueStone.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/BlueStone.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/BossFloor.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/BossFloor.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ChestLid.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ChestLid.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/CorridorTiles.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/CorridorTiles.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Crate.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Crate.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/FloorTiles.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/FloorTiles.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Gate.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Gate.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Iron.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Iron.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Lantern.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Lantern.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LanternAmber.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LanternAmber.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LightTiles.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LightTiles.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LongWallX.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LongWallX.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LongWallZ.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/LongWallZ.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Boss.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Boss.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Combat.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Combat.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Entrance.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Entrance.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Event.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Event.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_HardCombat.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_HardCombat.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Rest.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Rest.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Trap.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Trap.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Treasure.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Room_Treasure.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/SandstoneFloor.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/SandstoneFloor.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ShortWallX.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ShortWallX.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ShortWallZ.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/ShortWallZ.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/StoneTrim.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/StoneTrim.mat.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Style.asset
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Style.asset.meta
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Wood.mat
+A	Assets/ForjaDasMares/Data/MapStyles/Galerias/Wood.mat.meta
+A	Assets/ForjaDasMares/Editor/GaleriasInstaller.cs
+A	Assets/ForjaDasMares/Editor/GaleriasInstaller.cs.meta
+A	Assets/ForjaDasMares/Editor/GaleriasMeshes.cs
+A	Assets/ForjaDasMares/Editor/GaleriasMeshes.cs.meta
+A	Assets/ForjaDasMares/Scenes/GaleriasArena.unity
+A	Assets/ForjaDasMares/Scenes/GaleriasArena.unity.meta
+A	Assets/ForjaDasMares/Scenes/GaleriasDungeon.unity
+A	Assets/ForjaDasMares/Scenes/GaleriasDungeon.unity.meta
+A	Assets/ForjaDasMares/Scripts/Data/DungeonStyleDefinition.cs
+A	Assets/ForjaDasMares/Scripts/Data/DungeonStyleDefinition.cs.meta
+M	Assets/ForjaDasMares/Scripts/Gameplay/DungeonGenerator.cs
+M	Assets/ForjaDasMares/Scripts/Gameplay/DungeonLayout.cs
+M	Assets/ForjaDasMares/Scripts/Gameplay/ProgressionSceneBridge.cs
+A	Assets/ForjaDasMares/Tests/PlayMode/GaleriasMapTests.cs
+A	Assets/ForjaDasMares/Tests/PlayMode/GaleriasMapTests.cs.meta
+A	Docs/MAPA_GALERIAS_2026-10-15.md
+M	Docs/PROGRESSO.md
+M	ProjectSettings/EditorBuildSettings.asset
+M	ProjectSettings/ProjectSettings.asset
+M	README.md
+A	Docs/MAPA_GALERIAS_ARQUIVOS.md
+```
+
+Builds reais: GaleriasWindows-0.6.6/ForjaDasMaresGalerias.exe e GaleriasAndroid-0.6.6/ForjaDasMaresGalerias.apk, dentro de Builds. Veja o relatório MAPA_GALERIAS_2026-10-15.md para testes, limitações e passos de abertura.

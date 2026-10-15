@@ -50,3 +50,14 @@ Geometria provisória original, sem texturas/modelos/animações finais. Caixas 
 Novos: Scripts/Data/DungeonStyleDefinition.cs, Editor/GaleriasInstaller.cs e GaleriasMeshes.cs, Tests/PlayMode/GaleriasMapTests.cs e metadados; Scenes/GaleriasDungeon.unity e GaleriasArena.unity/metadados; Data/MapStyles/Galerias (29 assets:11 meshes,8 materiais,8 salas, estilo e bioma, com metadados de arquivos/pastas); este relatório. Alterados: DungeonGenerator.cs (estilo opcional), DungeonLayout.cs (rota opcional), ProgressionSceneBridge.cs (destino configurável), EditorBuildSettings.asset, versões de ProjectSettings após build, README e PROGRESSO. Cenas antigas sem modificação.
 
 APK e fechamento de build serão acrescentados quando verificados.
+
+
+## Fechamento Android e fonte
+
+Android ARM64 gerado até projeto Gradle; empacotamento interno falhou no Java loopback conhecido. Gradle direto do projeto recém-gerado concluiu BUILD SUCCESSFUL48s. APK verificado por aapt/apksigner: com.forjadasmares.galerias,0.6.6/code12,min25,target35,assinatura v2. Arquivo real Builds/GaleriasAndroid-0.6.6/ForjaDasMaresGalerias.apk; SHA256 E55F102991AA944A827263575BDF0906D5FB6C643D2ECE132CAA7E9F5A05D500. Aplicativo separado do cooperativo, sem substituir seu pacote/saves. ADB não encontrou dispositivos: não houve instalação nem teste físico desta variante. Não é build de publicação.
+
+Identidade temporária de build do mapa foi retirada da configuração principal: productName voltou a Forja das Mares - Arena e Android ID voltou a com.forjadasmares.prototype; versão0.6.6/code12 ficou registrada. Acrescentado SaveAssets ao finally do builder para salvar a restauração. Script de Editor recompilado e instalador reexecutado, validando8 salas/bioma/estilo novamente sem erros. Essa última mudança é somente de ferramenta de build; não altera o código gameplay dos binários já gerados. Registros SSAO canônicos restaurados após terminar Android; configurações e cenas antigas preservadas.
+
+Fonte do mapa no GitHub d7b32f3 antes deste fechamento; todos os arquivos/metadados estão no backup, e o fechamento recebe checkpoint posterior. Lista detalhada em MAPA_GALERIAS_ARQUIVOS.md. Nenhum Editor/build permanece trabalhando após esta entrega; apenas a janela de teste do mapa foi mantida aberta.
+
+Classificação: **aprovado com limitações para um primeiro mapa local de estilo**. Cinco testes finais do mapa e smoke real de persistência passaram;99 testes da base já aprovados na regressão inicial. Visual parcialmente observado no executável, avaliação humana completa e Android físico pendentes. Arte/animações finais, cenário destrutível, profiling sustentado e cooperação neste mapa não foram marcados prontos.
