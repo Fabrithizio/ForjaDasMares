@@ -7,6 +7,7 @@
     "Unity.Networking.Transport",
     "Unity.Collections",
     "Unity.Services.Core",
+    "Unity.Services.Core.Environments",
     "Unity.Services.Authentication",
     "Unity.Services.Multiplayer",
     "Unity.ugui",
