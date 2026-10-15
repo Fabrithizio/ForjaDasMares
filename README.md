@@ -6,7 +6,7 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 Versão local de progressão0.5.0 preservada. Cooperativo0.6.1 foi testado em Windows/Android na LAN;0.6.2 inclui vínculo Unity Cloud e salas privadas por MPS/Lobby/Relay, já conectadas realmente entre Windows e moto g15 em Wi-Fi. A versão atual é de desenvolvimento, não aprovada para Play Store. Builds e evidências constam em Docs/PROGRESSO.md e Docs/REDE_INTERNET_2026-10-15.md.
 
-Para cooperativo, abrir Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Executável vinculado: Builds/InternetWindows-0.6.5/ForjaDasMaresCoop.exe; APK: Builds/InternetAndroid-0.6.3/ForjaDasMaresCoop.apk. Host usa CRIAR SALA INTERNET; cliente informa o código retornado no campo abaixo desse botão e usa ENTRAR POR CÓDIGO. Host inicia a partida após os jogadores entrarem. Não usar IP/código de LAN para entrar no Relay. Configuração e limites: Docs/INTERNET_E_PUBLICACAO.md. Sair do host encerra a partida; sem migração.
+Para cooperativo, abrir Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Executável vinculado: Builds/InternetWindows-0.6.5/ForjaDasMaresCoop.exe; APK: Builds/InternetAndroid-0.6.5/ForjaDasMaresCoop.apk. Host usa CRIAR SALA INTERNET; cliente informa o código retornado no campo abaixo desse botão e usa ENTRAR POR CÓDIGO. Host inicia a partida após os jogadores entrarem. Não usar IP/código de LAN para entrar no Relay. Configuração e limites: Docs/INTERNET_E_PUBLICACAO.md. Sair do host encerra a partida; sem migração.
 
 Abra Assets/ForjaDasMares/Scenes/ProgressionDungeon.unity e pressione Play. Menu Forja das Mares → Open progression dungeon. VOLTAR A ARENA acessa ProgressionArena com equipamento/inventário; nessa arena, MASMORRA retorna ao percurso. ArenaTest e DungeonTest permanecem como referência e testes da base; F6 abre ArenaTest.
 
@@ -43,3 +43,5 @@ No Editor, os menus de build ativam a plataforma correspondente antes de compila
 Backup contém Assets e .meta, Packages, ProjectSettings, código e documentação. Library, Temp, Logs e Builds ficam fora do Git. Para recuperar, clone/baixe o repositório e abra a pasta inteira na versão de Unity indicada, aguardando a resolução de pacotes. Não recupere somente os scripts, pois cenas/materials/configurações também são necessários.
 
 
+
+Câmera atual0.6.5: obstáculos semitransparentes35%, sete testes específicos aprovados; builds PC/Android geradas, Android físico desta revisão pendente. Ver Docs/CAMERA_TRANSPARENCIA_2026-10-15.md.
