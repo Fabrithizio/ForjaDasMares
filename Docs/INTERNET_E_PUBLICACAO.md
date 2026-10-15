@@ -12,13 +12,17 @@ Atualizado em15/10/2026. Este é um protótipo privado; não representa aprovaç
 6. Host: CRIAR SALA INTERNET. Cliente: copiar o código retornado e ENTRAR POR CÓDIGO. A sala é privada e comporta quatro pessoas contando o host. Relay evita exigir IP público ou abertura manual de portas no roteador.
 7. Validar em redes realmente distintas: PC na conexão fixa e Android em dados móveis, com consentimento do usuário para usar sua franquia. Não desativar Wi-Fi por automação. Registrar criar/entrar/combate/loot/resultado/saída/reconexão. Só depois classificar internet como testada.
 
-**Estado real:** conta/projeto ainda não vinculados; tela Unity Cloud abriu em login. Nenhuma chamada ao serviço real foi validada. O código não contém senhas, service-account keys ou tokens de servidor. A autenticação anônima cria identidade de teste; contas recuperáveis e validação de identidade na autoridade ainda precisam ser implementadas.
+**Vínculo criado em15/10/2026:** projeto ForjaDasMares, Project ID público `d8fae52c-f0ba-4d51-8e2b-faf465d77c7a`, organização4673123702332. Login concluído pelo titular; projeto separado criado no painel e identificadores inseridos em ProjectSettings. Build Windows0.6.2 em pasta InternetWindows compilada; a validação real do serviço está em execução e deve ser consultada no progresso antes de afirmar que internet funciona. Nenhuma assinatura paga contratada. A opção inicial do painel sobre projeto principalmente infantil permaneceu no padrão No; isso não substitui decisão de público/classificação/Data safety antes de publicar. O painel mostra pendências de Developer Data Settings na organização, a revisar com o titular.
+
+O código não contém senhas, service-account keys ou tokens de servidor. A autenticação anônima cria identidade de teste; contas recuperáveis e validação de identidade na autoridade ainda precisam ser implementadas.
 
 ## Como a configuração funciona
 
 CoopInternetSettings concentra apenas parâmetros públicos. CoopCloud lê o asset uma vez na criação, verifica GUID real do projeto e configuração válida, inicializa UGS com SetEnvironmentName, autentica e chama MPS com WithRelayNetwork. MaxPlayers4 permanece fixo pelo protocolo. Não modificar o ambiente durante uma sessão inicializada; reiniciar o processo após mudanças.
 
 O menu de configuração cria o asset se necessário, sem regravar a masmorra. Falta de vínculo produz mensagem e preserva o modo offline/LAN. Timeout/cancelamento fazem a limpeza existente. O SDK pode demorar a retornar de uma operação interna antes de observar cancelamento; não prometemos interrupção imediata. Não há migração do host. Sair do host encerra a partida com segurança conforme testes LAN; reconexão do SDK/Relay ainda exige teste real, não é comprovada pelo retorno direto em LAN.
+
+Builds vinculadas têm métodos separados `CoopInstaller.InternetWindows` e `InternetAndroid`, com validação da configuração antes de compilar, versão0.6.2/code8 e saídas InternetWindows/InternetAndroid. Não substituem automaticamente a versão LAN em execução. Continuam Development Build, target35 no Android, sem aprovação Play Store. Para QA com dois processos no mesmo PC, `-ugsProfile` isola a identidade anônima do SDK (somente Development Build/Editor). `-netProbe` + `-netCloudMode host`/`client` e `-netCloudCode` habilitam teste explícito do serviço real; o probe registra o código de sala apenas em arquivo local. Não publicar esses registros enquanto a sala estiver ativa.
 
 ## Caminho para servidor dedicado
 

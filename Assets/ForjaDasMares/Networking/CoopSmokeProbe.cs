@@ -15,6 +15,9 @@ namespace ForjaDasMares.Networking
             if (string.IsNullOrEmpty(directory)) { enabled = false; return; }
             session = GetComponent<CoopDirector>(); int.TryParse(Arg(args, "-netExpected"), out expected); if (expected == 0) expected = 4;
             Directory.CreateDirectory(directory); session.ProbeInput = true;
+            var cloud = session.GetComponent<CoopCloud>();
+            if (Arg(args, "-netCloudMode") == "host") cloud.Create();
+            if (Arg(args, "-netCloudMode") == "client") cloud.Join(Arg(args, "-netCloudCode"));
         }
         static string Arg(string[] args, string key) { for (int i = 0; i < args.Length - 1; i++) if (args[i] == key) return args[i + 1]; return null; }
         void Update()
@@ -71,6 +74,7 @@ namespace ForjaDasMares.Networking
                 Debug.Log("COOP_PROBE_CONTROL " + command);
             }
             var report = new ProbeReport { phase = session.Phase.ToString(), tick = session.LastTick, localSlot = session.LocalSlot, connected = session.ConnectedCount, snapshotBytes = session.LastSnapshotBytes, enemies = session.IsHost ? session.Dungeon.Encounter.Enemies.ActiveCount : session.AppliedEnemyCount, effects = session.AppliedEffectCount, time = elapsed };
+            var cloudState = session.GetComponent<CoopCloud>(); report.code = session.Pin; report.cloudMessage = cloudState.Message; report.cloudBusy = cloudState.Busy;
             for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
             report.sampleHp = sample != null ? sample.Health.Current : -1;
@@ -79,7 +83,7 @@ namespace ForjaDasMares.Networking
             File.WriteAllText(Path.Combine(directory, "probe.json"), JsonUtility.ToJson(report, true));
         }
         [Serializable] sealed class ProbeReport
-        { public string phase, signature; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4], xp = new int[4], items = new int[4]; }
+        { public string phase, signature, code, cloudMessage; public bool cloudBusy; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

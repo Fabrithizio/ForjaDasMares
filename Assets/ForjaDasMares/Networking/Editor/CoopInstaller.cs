@@ -41,26 +41,40 @@ namespace ForjaDasMares.Networking.Editor
             (hud.GetComponent<CoopInventoryHud>() ?? hud.gameObject.AddComponent<CoopInventoryHud>()).Configure(director);
         }
         public static void Windows()
+        { BuildWindows("Builds/CoopWindows", "0.6.1"); }
+        public static void InternetWindows()
+        { ValidateInternet(); BuildWindows("Builds/InternetWindows", "0.6.2"); }
+        static void ValidateInternet()
+        {
+            var settings = AssetDatabase.LoadAssetAtPath<CoopInternetSettings>(CoopInternetSetup.SettingsPath);
+            if (!CoopInternetSettings.HasLinkedProject(Application.cloudProjectId) || settings == null || !settings.IsValid)
+                throw new System.InvalidOperationException("Link the Unity Cloud project and configure Internet settings first.");
+        }
+        static void BuildWindows(string directory, string version)
         {
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64) throw new System.InvalidOperationException("Invoke Unity with -buildTarget Win64.");
             if (!File.Exists(ScenePath)) throw new FileNotFoundException("Install coop scene first.");
-            Directory.CreateDirectory("Builds/CoopWindows");
-            PlayerSettings.bundleVersion = "0.6.1";
+            Directory.CreateDirectory(directory);
+            PlayerSettings.bundleVersion = version;
             PlayerSettings.runInBackground = true;
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath, ForjaDasMares.Editor.ProgressionInstaller.DungeonScene, ForjaDasMares.Editor.ProgressionInstaller.ArenaScene }, locationPathName = "Builds/CoopWindows/ForjaDasMaresCoop.exe", target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath, ForjaDasMares.Editor.ProgressionInstaller.DungeonScene, ForjaDasMares.Editor.ProgressionInstaller.ArenaScene }, locationPathName = Path.Combine(directory, "ForjaDasMaresCoop.exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
             Debug.Log("COOP_BUILD " + report.summary.result + " errors=" + report.summary.totalErrors);
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded) throw new System.InvalidOperationException("Coop build failed.");
         }
         public static void Android()
+        { BuildAndroid("Builds/CoopAndroid", "0.6.1", 7); }
+        public static void InternetAndroid()
+        { ValidateInternet(); BuildAndroid("Builds/InternetAndroid", "0.6.2", 8); }
+        static void BuildAndroid(string directory, string version, int versionCode)
         {
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android) throw new System.InvalidOperationException("Invoke Unity with -buildTarget Android.");
             if (!File.Exists(ScenePath)) throw new FileNotFoundException("Install coop scene first.");
             PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)35;
-            PlayerSettings.bundleVersion = "0.6.1"; PlayerSettings.Android.bundleVersionCode = 7;
-            EditorUserBuildSettings.buildAppBundle = false; Directory.CreateDirectory("Builds/CoopAndroid");
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath, ForjaDasMares.Editor.ProgressionInstaller.DungeonScene, ForjaDasMares.Editor.ProgressionInstaller.ArenaScene }, locationPathName = "Builds/CoopAndroid/ForjaDasMaresCoop.apk", target = BuildTarget.Android, options = BuildOptions.Development });
+            PlayerSettings.bundleVersion = version; PlayerSettings.Android.bundleVersionCode = versionCode;
+            EditorUserBuildSettings.buildAppBundle = false; Directory.CreateDirectory(directory);
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath, ForjaDasMares.Editor.ProgressionInstaller.DungeonScene, ForjaDasMares.Editor.ProgressionInstaller.ArenaScene }, locationPathName = Path.Combine(directory, "ForjaDasMaresCoop.apk"), target = BuildTarget.Android, options = BuildOptions.Development });
             Debug.Log("COOP_ANDROID_BUILD " + report.summary.result + " errors=" + report.summary.totalErrors);
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded) throw new System.InvalidOperationException("Coop Android build failed. Inspect the log; preserve the generated Gradle project for toolchain diagnostics.");
         }

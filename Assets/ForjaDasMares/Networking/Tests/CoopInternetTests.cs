@@ -11,8 +11,16 @@ namespace ForjaDasMares.Networking.Tests
         {
             var settings = Resources.Load<CoopInternetSettings>(CoopInternetSettings.ResourceName);
             Assert.IsNotNull(settings); Assert.IsTrue(settings.IsValid);
-            Assert.AreEqual("production", settings.Environment); Assert.IsNull(settings.RelayRegion);
-            Assert.AreEqual(45, settings.ConnectionTimeoutSeconds);
+            var defaults = ScriptableObject.CreateInstance<CoopInternetSettings>();
+            try { Assert.AreEqual("production", defaults.Environment); Assert.IsNull(defaults.RelayRegion); Assert.AreEqual(45, defaults.ConnectionTimeoutSeconds); }
+            finally { Object.DestroyImmediate(defaults); }
+        }
+        [Test] public void ResumeOnlyMatchesTheRequestedSessionCode()
+        {
+            var resume = new CoopSessionResume { sessionId = "opaque-service-session-id", code = "ABC123" };
+            Assert.IsTrue(resume.Matches(" abc123 ")); Assert.IsFalse(resume.Matches("OTHER1"));
+            Assert.IsFalse(resume.Matches(null)); resume.sessionId = ""; Assert.IsFalse(resume.Matches("ABC123"));
+            resume.sessionId = new string('x', 129); Assert.IsFalse(resume.Matches("ABC123"));
         }
         [Test] public void MissingOrFakeProjectCannotEnableInternet()
         {
