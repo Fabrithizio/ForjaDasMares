@@ -6,7 +6,7 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 Versão local de progressão0.5.0 preservada. Cooperativo0.6.1 foi testado em Windows/Android na LAN;0.6.2 inclui vínculo Unity Cloud e salas privadas por MPS/Lobby/Relay, já conectadas realmente entre Windows e moto g15 em Wi-Fi. A versão atual é de desenvolvimento, não aprovada para Play Store. Builds e evidências constam em Docs/PROGRESSO.md e Docs/REDE_INTERNET_2026-10-15.md.
 
-Para cooperativo, abrir Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Executável vinculado: Builds/InternetWindows/ForjaDasMaresCoop.exe; APK: Builds/InternetAndroid/ForjaDasMaresCoop.apk. Host usa CRIAR SALA INTERNET; cliente informa o código retornado no campo abaixo desse botão e usa ENTRAR POR CÓDIGO. Host inicia a partida após os jogadores entrarem. Não usar IP/código de LAN para entrar no Relay. Configuração e limites: Docs/INTERNET_E_PUBLICACAO.md. Sair do host encerra a partida; sem migração.
+Para cooperativo, abrir Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Executável vinculado: Builds/InternetWindows-0.6.3/ForjaDasMaresCoop.exe; APK: Builds/InternetAndroid-0.6.3/ForjaDasMaresCoop.apk. Host usa CRIAR SALA INTERNET; cliente informa o código retornado no campo abaixo desse botão e usa ENTRAR POR CÓDIGO. Host inicia a partida após os jogadores entrarem. Não usar IP/código de LAN para entrar no Relay. Configuração e limites: Docs/INTERNET_E_PUBLICACAO.md. Sair do host encerra a partida; sem migração.
 
 Abra Assets/ForjaDasMares/Scenes/ProgressionDungeon.unity e pressione Play. Menu Forja das Mares → Open progression dungeon. VOLTAR A ARENA acessa ProgressionArena com equipamento/inventário; nessa arena, MASMORRA retorna ao percurso. ArenaTest e DungeonTest permanecem como referência e testes da base; F6 abre ArenaTest.
 
@@ -16,7 +16,7 @@ Quatro heróis originais, cinco arquétipos de inimigos, invocações limitadas,
 
 ## Verificação
 
-Regressão geral89/89 aprovada no checkpoint de integração cooperativa. Última suíte específica de rede/internet:21 casos,20 aprovados,0 falhas,1 ignorado por exigir projeto não vinculado. Quatro processos Windows/LAN e PC–Android físico testados; Relay real com combate, recompensa e retorno após encerrar processo também foi verificado. Esses testes não representam vitória humana completa com quatro jogadores, profiling sustentado ou redes/operadoras distintas. Históricos de testes locais/geração/auditoria continuam nos respectivos relatórios; consultar suas datas e limites.
+Revisão de câmera0.6.3: regressão97 casos,96 aprovados,0 falhas,1 ignorado; detalhes em Docs/CAMERA_CORRECAO_2026-10-15.md. Regressão geral89/89 aprovada no checkpoint anterior de integração cooperativa. Última suíte específica de rede/internet:21 casos,20 aprovados,0 falhas,1 ignorado por exigir projeto não vinculado. Quatro processos Windows/LAN e PC–Android físico testados; Relay real com combate, recompensa e retorno após encerrar processo também foi verificado. Esses testes não representam vitória humana completa com quatro jogadores, profiling sustentado ou redes/operadoras distintas. Históricos de testes locais/geração/auditoria continuam nos respectivos relatórios; consultar suas datas e limites.
 
 Estado dos pedidos: base local implementada; multiplayer em validação privada, interface completa parcial, expansão de conteúdo e revisão de lançamento pendentes. Ver Docs/ESTADO_DOS_PEDIDOS.md. Arte e animações finais, autenticação comercial, servidor dedicado e economia online segura ainda não foram entregues.
 

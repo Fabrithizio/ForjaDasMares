@@ -2,7 +2,7 @@
 
 ## Abrir
 
-Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Internet vinculada0.6.2: Builds/InternetWindows/ForjaDasMaresCoop.exe e Builds/InternetAndroid/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Atalho adicional Jogar ForjaDasMares Online na pasta Jogos utiliza save InternetCoopProfiles separado, para coexistir com a partida LAN antiga sem gravar sobre ela. Binários LAN0.6.1 continuam em CoopWindows/CoopAndroid. Preservar dados ao atualizar.
+Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Internet vinculada com câmera revisada0.6.3: Builds/InternetWindows-0.6.3/ForjaDasMaresCoop.exe e Builds/InternetAndroid-0.6.3/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Atalho adicional Jogar ForjaDasMares Online na pasta Jogos utiliza save InternetCoopProfiles separado, para coexistir com a partida LAN antiga sem gravar sobre ela. Binários LAN0.6.1 continuam em CoopWindows/CoopAndroid. Preservar dados ao atualizar.
 
 O modo local anterior continua em Builds/Windows/ForjaDasMares.exe e no botão JOGAR LOCAL. Cenas ArenaTest/DungeonTest preservadas. O cooperativo usa protocolo2: não misturar com APK0.6.0.
 
@@ -29,6 +29,6 @@ Mapa cooperativo deste recorte: catacumbas fixas/seed12345. Outros mapas/biomas 
 
 ## Builds e diagnóstico
 
-Menu Forja das Mares/Install private coop variant repara composição CoopDungeon quando necessário. Métodos vinculados0.6.2: ForjaDasMares.Networking.Editor.CoopInstaller.InternetWindows com destino ativo Win64; InternetAndroid com destino ativo Android. Esses métodos verificam vínculo/configuração e produzem builds de desenvolvimento em pastas separadas. Windows/Android antigos continuam disponíveis para QA LAN. Não executar dois Editores no mesmo projeto. Gradle interno apresenta erro Java NIO de loopback nesta máquina; montagem direta processual registrada no relatório. Não usar APK anterior como se fosse a revisão mais recente.
+Menu Forja das Mares/Install private coop variant repara composição CoopDungeon quando necessário. Métodos vinculados0.6.3: ForjaDasMares.Networking.Editor.CoopInstaller.InternetWindows com destino ativo Win64; InternetAndroid com destino ativo Android. Esses métodos verificam vínculo/configuração e produzem builds de desenvolvimento em pastas separadas. Windows/Android antigos continuam disponíveis para QA LAN. Não executar dois Editores no mesmo projeto. Gradle interno apresenta erro Java NIO de loopback nesta máquina; montagem direta processual registrada no relatório. Não usar APK anterior como se fosse a revisão mais recente.
 
 Logs Windows: Application.persistentDataPath/Player.log; Android: log do processo do próprio app via adb. Console deve permanecer disponível, sem ocultar exceções. Em caso de cenário preto/SSAO, confirmar destino Win64 ativo ao coletar recursos e os registros canônicos URPGlobalSettings. Configuração Android pode remover temporariamente dois registros SSAO do fonte; restaurar após sair do Editor, antes do próximo build Windows.
