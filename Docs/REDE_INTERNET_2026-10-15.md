@@ -37,4 +37,23 @@ Com o projeto vinculado,20 testes de rede executados:19 aprovados,0 falhas,1 ign
 - Baú real acionado administrativamente:22XP para ambos; segunda utilizaçãoFalse e22XP preservados. Derrota controlada:11XP e13 itens em cada perfil, resultado sincronizado. Não representa vitória humana de masmorra.
 - Sem Exception/Error nos logs examinados de host e cliente retornado. Testes reais não substituem os riscos comerciais de autenticação/host descritos no plano.
 
-Android com essa correção está em compilação; não foi declarado testado nesta revisão ainda.
+## Android físico0.6.2 e Relay
+
+APK IL2CPP/ARM64 gerado; Gradle interno repetiu falha Java NIO de loopback. Montagem direta com ajuste restrito ao processo concluiu BUILD SUCCESSFUL em1min. Assinatura v2 verificada; instalado-r preservando dados no moto g15. Versão0.6.2/code8/min25/target35, SHA256 `8DB2A3C83649CF1E8089AB64AA6002774F1C215843F0B09625EE493E8417F481`.
+
+- Telefone entrou pelo código Relay real do Windows, Lobby2/4 e depoisPlaying. Não usou IP de LAN. Android estava em Wi-Fi; o titular informou não ter dados móveis. Não executado teste entre operadoras/redes distintas.
+- Ataque por toque reduziu goblin36→10HP. Botões de habilidade/ataque seguintes eliminaram o restante,12XP no telefone. Host de QA não ataca. Inimigo causou dano ao host enquanto aguardávamos, que ficou40HP; não usamos invulnerabilidade.
+- Joystick moveu na autoridade de(0.90,-3.00) para(2.04,-2.22) emXZ. Capturas internet-combat.png/internet-play.png e JSONs em work/etapa7/relay-android/proof.
+- Aplicativo Android encerrado à força; host reconheceu queda. Reabrir e informar mesmo código recuperou vaga,140HP/12XP, Playing2/4.65s entre capturas pré/pós; imagem internet-return.png.
+- Baú administrativo concedeu22XP. Derrota controlada apareceu no Android com11XP,6moedas e uma Lâmina do Cais incomum; inventário13 itens. Imagem internet-result-final.png. Não representa derrota por combate humano ou vitória de masmorra.
+- Saída do host produziu conexão encerrada no telefone. Sem Exception/LogError nos registros próprios examinados. Sobreposição de textos/transparência fica para a etapa completa de UI; não é interface final.
+
+Evidências locais: work/android-qa e work/etapa7/relay-android no workspace Codex. Perfis de QA isolados; saves/códigos de sala/logs de autenticação não publicados no Git.
+
+## Estado de entrega
+
+**Aprovado com limitações para cooperação privada Relay Windows–Android em Wi-Fi**, além da LAN anterior. Sem aprovação comercial, servidor dedicado, migração de host, quatro clientes Relay, vitória humana completa com quatro pessoas, redes distintas ou profiling prolongado. Interface completa/expansão/lançamento pendentes.
+
+Após encerrar o Editor, inspecionados/restaurados os dois registros SSAO retirados temporariamente por Android. UnityConnectSettings voltou automaticamente ao valor anterior e não tem alteração persistida; o SDK runtime utiliza Project ID, comprovado pelas sessões reais.
+
+Atalho adicional Desktop/Jogos/Jogar ForjaDasMares Online.lnk usa InternetWindows0.6.2 com save separado InternetCoopProfiles. A partida LAN antiga estava emPlaying e foi preservada aberta. O perfil do novo atalho começa separado, sem apagar/importar o anterior. Abrir o executável diretamente usa o diretório padrão; para coexistir com LAN usar o atalho configurado. Git salva desenvolvimento, não os saves privados.

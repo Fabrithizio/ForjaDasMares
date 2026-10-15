@@ -147,3 +147,7 @@ As seções anteriores registram checkpoints históricos. O estado atual inclui 
 
 Evidência: regressão89/89, rede17/17 repetida nas últimas correções, quatro processos Windows com recompensa/reload e PC–moto g15 real com movimento/ataque/equipagem/reconexão/resultado/reaparecimento. Ver ANDROID_TESTE_FISICO_2026-10-14.md para distinguir controles físicos, bot de combate e mortes administrativas de QA. Não existe validação Relay/internet, quatro celulares ou lançamento. Builds finais0.6.1 Windows/Android foram produzidas; UI/arte final/profiling/expansão permanecem na fila autorizada.
 
+## Continuação15/10 — internet privada
+
+Vínculo Unity Cloud real configurado; builds Windows/Android0.6.2 conectadas pelo MPS/Lobby/Relay com combate, movimento, recompensa e retorno após encerrar processo, inclusive Android físico em Wi-Fi. CoopInternetSettings centraliza ambiente/região/timeout; CoopCloud persiste somente referência local de sessão por perfil SDK para usar ReconnectToSessionAsync quando o Lobby ainda mantém associação. Cache não autentica nem concede economia. Host continua simulação/persistência autoritativa do protótipo, sem migração ou servidor dedicado. Ler REDE_INTERNET_2026-10-15.md e INTERNET_E_PUBLICACAO.md para evidências, publicação e pontos reais de migração.21 testes específicos:20 aprovados,0 falhas,1 ignorado por exigir projeto não vinculado. A ressalva histórica de ausência de Relay acima foi superada apenas neste recorte; redes distintas/quatro clientes Relay/lançamento seguem sem validação.
+

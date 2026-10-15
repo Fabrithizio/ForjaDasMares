@@ -2,7 +2,7 @@
 
 ## Abrir
 
-Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Executável próprio: Builds/CoopWindows/ForjaDasMaresCoop.exe. APK de desenvolvimento ARM64: Builds/CoopAndroid/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Preservar o app/dados ao atualizar; não limpar armazenamento para instalar.
+Projeto Unity6000.3.26f1: Assets/ForjaDasMares/Scenes/CoopDungeon.unity. Compilar/abrir e pressionar Play. Internet vinculada0.6.2: Builds/InternetWindows/ForjaDasMaresCoop.exe e Builds/InternetAndroid/ForjaDasMaresCoop.apk, pacote com.forjadasmares.prototype. Atalho adicional Jogar ForjaDasMares Online na pasta Jogos utiliza save InternetCoopProfiles separado, para coexistir com a partida LAN antiga sem gravar sobre ela. Binários LAN0.6.1 continuam em CoopWindows/CoopAndroid. Preservar dados ao atualizar.
 
 O modo local anterior continua em Builds/Windows/ForjaDasMares.exe e no botão JOGAR LOCAL. Cenas ArenaTest/DungeonTest preservadas. O cooperativo usa protocolo2: não misturar com APK0.6.0.
 
@@ -23,12 +23,12 @@ Fornecer -netIdentity com GUIDN distinto para cada processo. Exemplo de argument
 
 ## Internet e limites
 
-Vincular um projeto real pela Unity Services usando sua conta/organização; configurar ambiente, Authentication e serviços Sessions/Lobby/Relay. Conferir quotas/termos/custos antes de habilitar cobrança. Ver REDE_PLANO_MIGRACAO.md. Os botões de internet executam o SDK, mas bloqueiam com mensagem quando projectId está vazio. Nenhuma chave secreta é exigida no cliente e nenhuma credencial deve ser enviada no chat. Este projeto ainda não tem vínculo; internet não foi validada.
+Projeto ForjaDasMares vinculado e ambiente production configurado. Host usa CRIAR SALA INTERNET; cliente informa o código retornado no campo abaixo desse botão e usa ENTRAR POR CÓDIGO; depois o host inicia. Não usar o campo TEST42 de LAN para o código Relay. Não é necessário abrir porta no roteador para Relay. Nenhuma chave secreta exigida no cliente. Teste real Windows–moto g15 em Wi-Fi e reconexão por código executados; detalhes e limites em REDE_INTERNET_2026-10-15.md. Redes distintas/operadoras não testadas porque o titular não tem dados móveis. Configuração para clones/outros ambientes, custos e futura publicação em INTERNET_E_PUBLICACAO.md.
 
 Mapa cooperativo deste recorte: catacumbas fixas/seed12345. Outros mapas/biomas continuam no modo local. Inventário/HUD são interfaces mínimas, sem afirmar que a etapa completa de UI foi entregue. Perfis cooperativos são armazenados no host, separados do save offline; backup do Git contém desenvolvimento, não esses saves privados. Host/identidade GUID não são segurança comercial de economia. Sem migração de host, matchmaking público ou monetização.
 
 ## Builds e diagnóstico
 
-Menu Forja das Mares/Install private coop variant repara composição CoopDungeon quando necessário. Métodos de build: ForjaDasMares.Networking.Editor.CoopInstaller.Windows com destino ativo Win64; Android com destino ativo Android. Não compilar dois Editores simultaneamente no mesmo projeto. Na máquina atual Gradle interno apresenta erro Java NIO de loopback: documentação do teste físico registra montagem direta, restrita ao processo. Nunca entregar APK anterior como se fosse a última compilação.
+Menu Forja das Mares/Install private coop variant repara composição CoopDungeon quando necessário. Métodos vinculados0.6.2: ForjaDasMares.Networking.Editor.CoopInstaller.InternetWindows com destino ativo Win64; InternetAndroid com destino ativo Android. Esses métodos verificam vínculo/configuração e produzem builds de desenvolvimento em pastas separadas. Windows/Android antigos continuam disponíveis para QA LAN. Não executar dois Editores no mesmo projeto. Gradle interno apresenta erro Java NIO de loopback nesta máquina; montagem direta processual registrada no relatório. Não usar APK anterior como se fosse a revisão mais recente.
 
 Logs Windows: Application.persistentDataPath/Player.log; Android: log do processo do próprio app via adb. Console deve permanecer disponível, sem ocultar exceções. Em caso de cenário preto/SSAO, confirmar destino Win64 ativo ao coletar recursos e os registros canônicos URPGlobalSettings. Configuração Android pode remover temporariamente dois registros SSAO do fonte; restaurar após sair do Editor, antes do próximo build Windows.
