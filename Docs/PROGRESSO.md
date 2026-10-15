@@ -281,3 +281,9 @@ Classificação deste bloco: aprovado com limitações para cooperação privada
 APK final das guardas montado com Gradle BUILD SUCCESSFUL29s, assinatura verificada, instalado-r no moto g15 e iniciado. SHA2569069C045C6B9AF3FFAED818EFABC0D293171C90D9A3CC321594C1DC8EC5A5F78, versão0.6.1/code7/min25/target35/ARM64. Windows final com guardas/background compilou Succeeded/errors0. Cliente final e host normal (sem-netProbe) conectados realmente2/4 em Lobby, sem exceção nos logs próprios examinados. Dados de QA ficaram em diretórios isolados; save offline anterior preservado. Criado atalho adicional Desktop/Jogos/Jogar ForjaDasMares Coop.lnk; atalho local anterior não mudou.
 
 Pacote de entrega será exportado em outputs/ForjaDasMares-Etapa7-LAN com PCZIP/APK/fonteZIP/guias/XMLs, acompanhado de hashes. Não representa fechamento da etapa de internet nem aprovação de lançamento. Nenhum Editor ou build continua em execução; somente host e aplicativo do telefone estão abertos para teste humano, aguardando INICIAR PARTIDA.
+
+### Complemento: teste com atraso e preparação para o usuário
+
+Dois executáveis Windows0.6.1 testados por proxy UDP local com75ms por sentido, jitter±20ms e perda2%. Movimento/ataque remoto, XP12, baú22XP, repetição sem duplicação, derrota11XP e encerramentoClosed confirmados. Nenhuma Exception/Error nos dois logs. Detalhes, limites e reprodução em REDE_LATENCIA_2026-10-14.md; proxy em Tools/QA/udp_latency.py. Sem mudança de C#/cenas/pacotes/builds, sem nova compilação necessária. Saves de QA isolados. Não equivale a ping de internet nem quatro jogadores sob perda.
+
+PC e moto g15 novamente observados em Lobby2/4 na sala normal para teste do usuário. A rodada ampla de bugs/mecânicas/melhorias ficou adiada conforme pedido; nenhuma etapa foi pulada. UGS sem vínculo continua impedindo concluir internet da etapa7. Classificação permanece aprovado com limitações para LAN, parcial para etapa7 global.
