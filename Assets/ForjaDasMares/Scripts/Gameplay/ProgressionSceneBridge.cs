@@ -8,6 +8,8 @@ namespace ForjaDasMares
     public sealed class ProgressionSceneBridge : MonoBehaviour
     {
         [SerializeField] ProgressionCatalog catalog;
+        [SerializeField] string dungeonSceneName = "ProgressionDungeon";
+        public void ConfigureDungeonScene(string sceneName) { if (string.IsNullOrWhiteSpace(sceneName)) throw new ArgumentException("Dungeon scene name is required."); dungeonSceneName = sceneName; }
         [SerializeField] HeroRoster heroes;
         [SerializeField] HeroEquipment equipment;
         [SerializeField] EncounterController encounter;
@@ -95,7 +97,7 @@ namespace ForjaDasMares
         public bool Unequip(EquipmentSlot slot) => CanManage && Service.Unequip(heroes.Current.heroId, slot);
         public void BlockCommands(bool value)
         { commands.BlockCommands(value); if (dungeon != null) dungeon.GetComponent<DungeonInteractionInput>().enabled = !value; }
-        public void OpenDungeon() { Abort(); SceneManager.LoadScene("ProgressionDungeon"); }
+        public void OpenDungeon() { Abort(); SceneManager.LoadScene(dungeonSceneName); }
         public void RestartExpedition() { if (dungeon != null) dungeon.Generate(); else arena.ResetArena(); }
     }
 }

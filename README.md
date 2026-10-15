@@ -45,3 +45,7 @@ Backup contém Assets e .meta, Packages, ProjectSettings, código e documentaç�
 
 
 Câmera atual0.6.5: obstáculos semitransparentes35%, sete testes específicos aprovados; builds PC/Android geradas, Android físico desta revisão pendente. Ver Docs/CAMERA_TRANSPARENCIA_2026-10-15.md.
+
+## Mapa de estilo — Galerias da Maré
+
+Variante local original0.6.6 em Assets/ForjaDasMares/Scenes/GaleriasDungeon.unity, com GaleriasArena para retorno. PC: Builds/GaleriasWindows-0.6.6/ForjaDasMaresGalerias.exe, atalho Jogar Galerias da Mare em Jogos. Perfil separado; mapa online anterior preservado. Peças geométricas provisórias salvas e substituíveis, combate/baús/chefe/progressão reais existentes. Não contém destruição de cenário nem integração online deste mapa. Testes, configuração e limites em Docs/MAPA_GALERIAS_2026-10-15.md.

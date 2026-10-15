@@ -18,12 +18,14 @@ namespace ForjaDasMares
         public Vector3 Center(int id) => new Vector3(rooms[id].coordinate.x * Spacing, 0, rooms[id].coordinate.y * Spacing);
         static readonly Vector2Int[] Directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
         static readonly RoomCategory[] Main = { RoomCategory.Entrance, RoomCategory.Combat, RoomCategory.Combat, RoomCategory.Event, RoomCategory.HardCombat, RoomCategory.Trap, RoomCategory.Boss };
-        public static DungeonLayout Generate(int seed, int maximumRooms, bool fixedMap)
+        public static DungeonLayout Generate(int seed, int maximumRooms, bool fixedMap, Vector2Int[] mainRoute = null)
         {
             maximumRooms = Mathf.Clamp(maximumRooms, 7, 12); var random = new System.Random(seed); var layout = new DungeonLayout();
             var positions = new List<Vector2Int> { Vector2Int.zero, Vector2Int.up };
             if (fixedMap) positions = new List<Vector2Int> { new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(2, 1), new Vector2Int(2, 2), new Vector2Int(1, 2), new Vector2Int(0, 2) };
-            else if (!Extend(positions, random)) throw new InvalidOperationException("Unable to generate connected main route.");
+            if (fixedMap && mainRoute != null && mainRoute.Length > 0)
+            { if (mainRoute.Length != Main.Length) throw new ArgumentException("A style route requires exactly seven rooms."); positions = new List<Vector2Int>(mainRoute); }
+            else if (!fixedMap && !Extend(positions, random)) throw new InvalidOperationException("Unable to generate connected main route.");
             for (int i = 0; i < Main.Length; i++) { layout.Add(positions[i], Main[i], i); if (i > 0) layout.Connect(i - 1, i); }
             for (int extra = 7; extra < maximumRooms; extra++)
             {

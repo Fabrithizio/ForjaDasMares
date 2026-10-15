@@ -11,6 +11,9 @@ namespace ForjaDasMares
         [SerializeField] RoomDefinition[] roomDefinitions;
         [SerializeField] NavMeshSurface normalNavigation, bossNavigation;
         [SerializeField] AttackDefinition trapAttack;
+        [SerializeField] DungeonStyleDefinition style;
+        public DungeonStyleDefinition Style => style;
+        public void ConfigureStyle(DungeonStyleDefinition value) => style = value;
         GameObject map;
         public DungeonLayout Layout { get; private set; }
         public DungeonRoom[] Rooms { get; private set; }
@@ -23,7 +26,7 @@ namespace ForjaDasMares
         public void Generate(DungeonSession session, BiomeDefinition biome, int seed, int maximum, bool fixedMap, TelegraphPool warnings)
         {
             if (map != null) { map.SetActive(false); Destroy(map); }
-            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = DungeonLayout.Generate(seed, maximum, fixedMap); Rooms = new DungeonRoom[Layout.rooms.Count];
+            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = DungeonLayout.Generate(seed, maximum, fixedMap, style != null ? style.mainRoute : null); Rooms = new DungeonRoom[Layout.rooms.Count];
             map = new GameObject("GeneratedDungeon_Seed_" + seed); map.transform.SetParent(transform);
             foreach (var node in Layout.rooms)
             {
@@ -68,8 +71,9 @@ namespace ForjaDasMares
         void BuildRoom(DungeonRoom room, RoomDefinition data, BiomeDefinition biome)
         {
             float half = data.size * 0.5f;
-            Piece("Floor", room.root.transform, new Vector3(0, -0.2f, 0), new Vector3(data.size + 0.2f, 0.4f, data.size + 0.2f), biome.floor, true, null, 8);
-            for (int x = -4; x <= 4; x += 4) for (int z = -4; z <= 4; z += 4) Piece("Tile", room.root.transform, new Vector3(x, 0.004f, z), new Vector3(3.8f, 0.008f, 3.8f), biome.decoration, false, null, 8);
+            var floor = Piece("Floor", room.root.transform, new Vector3(0, -0.2f, 0), new Vector3(data.size + 0.2f, 0.4f, data.size + 0.2f), biome.floor, true, null, 8);
+            if (style != null) Dress(floor, room.node.category == RoomCategory.Boss ? style.bossFloor : style.floor, biome.floor, biome.decoration, biome.accent);
+            else for (int x = -4; x <= 4; x += 4) for (int z = -4; z <= 4; z += 4) Piece("Tile", room.root.transform, new Vector3(x, 0.004f, z), new Vector3(3.8f, 0.008f, 3.8f), biome.decoration, false, null, 8);
             Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
             foreach (var direction in directions)
             {
@@ -83,34 +87,55 @@ namespace ForjaDasMares
                 else Wall(room.root.transform, normal * half, normal, data.size + 0.6f, data.wallHeight, biome.wall);
                 var socket = new GameObject("Socket_" + direction.x + "_" + direction.y).transform; socket.SetParent(room.root.transform, false); socket.localPosition = normal * half; socket.localRotation = Quaternion.LookRotation(normal);
             }
-            if (data.obstaclePositions != null) foreach (var position in data.obstaclePositions) Piece("Obstacle", room.root.transform, position + Vector3.up * 0.75f, new Vector3(1.2f, 1.5f, 1.2f), biome.wall, true);
+            if (data.obstaclePositions != null) foreach (var position in data.obstaclePositions)
+            {
+                var obstacle = Piece("Obstacle", room.root.transform, position + Vector3.up * .75f, new Vector3(1.2f, 1.5f, 1.2f), biome.wall, true);
+                if (style != null) Dress(obstacle, style.crate, style.wood, style.metal);
+            }
             foreach (Vector3 corner in new[] { new Vector3(-4.7f, 0, -4.7f), new Vector3(4.7f, 0, 4.7f) })
             {
-                Piece("BiomeDecoration_Placeholder", room.root.transform, corner + Vector3.up * biome.decorationScale.y, biome.decorationScale, biome.accent, false, biome.decorationMesh);
+                if (style != null) Dress(Piece("Lantern_GeometryPlaceholder", room.root.transform, corner + Vector3.up * 1.05f, new Vector3(.9f, 2.1f, .9f), style.metal, true), style.lantern, style.metal, style.glow);
+                else Piece("BiomeDecoration_Placeholder", room.root.transform, corner + Vector3.up * biome.decorationScale.y, biome.decorationScale, biome.accent, false, biome.decorationMesh);
                 var lamp = new GameObject("BiomeGlow", typeof(Light)); lamp.transform.SetParent(room.root.transform, false); lamp.transform.localPosition = corner + Vector3.up * 2.1f; var light = lamp.GetComponent<Light>(); light.type = LightType.Point; light.color = biome.light; light.range = 7; light.intensity = 2; light.shadows = LightShadows.None;
             }
         }
         void Wall(Transform parent, Vector3 position, Vector3 normal, float length, float height, Material material)
         {
             Vector3 scale = Mathf.Abs(normal.z) > 0.5f ? new Vector3(length, height, 0.35f) : new Vector3(0.35f, height, length);
-            Piece("Wall", parent, position + Vector3.up * height * 0.5f, scale, material, true);
+            var wall = Piece("Wall", parent, position + Vector3.up * height * .5f, scale, material, true);
+            if (style != null) Dress(wall, style.Wall(Mathf.Abs(normal.x) > .5f, length), material, style.stoneTrim);
         }
         void Corridor(DungeonRoom a, DungeonRoom b, BiomeDefinition biome)
         {
             var root = new GameObject("Corridor_" + a.node.id + "_" + b.node.id).transform; root.SetParent(map.transform); root.position = (a.Center + b.Center) * 0.5f;
             Vector3 direction = (b.Center - a.Center).normalized; root.rotation = Quaternion.LookRotation(direction);
-            Piece("Floor", root, new Vector3(0, -0.2f, 0), new Vector3(3.2f, 0.4f, 4.4f), biome.floor, true, null, 8);
-            for (int sign = -1; sign <= 1; sign += 2) Piece("SideWall", root, new Vector3(sign * 1.65f, 0.9f, 0), new Vector3(0.3f, 1.8f, 4.2f), biome.wall, true);
-            var door = Piece("EncounterDoor", root, new Vector3(0, 0.9f, 0), new Vector3(3, 1.8f, 0.35f), biome.accent, true).AddComponent<DungeonDoor>(); door.Configure(a.node.id, b.node.id); Doors.Add(door); a.doors.Add(door); b.doors.Add(door);
+            var floor = Piece("Floor", root, new Vector3(0, -.2f, 0), new Vector3(3.2f, .4f, 4.4f), biome.floor, true, null, 8);
+            if (style != null) Dress(floor, style.corridorFloor, biome.floor, biome.decoration, biome.accent);
+            for (int sign = -1; sign <= 1; sign += 2)
+            {
+                var side = Piece("SideWall", root, new Vector3(sign * 1.65f, .9f, 0), new Vector3(.3f, 1.8f, 4.2f), biome.wall, true);
+                if (style != null) Dress(side, style.shortWallZ, biome.wall, style.stoneTrim);
+            }
+            var barrier = Piece("EncounterDoor", root, new Vector3(0, .9f, 0), new Vector3(3, 1.8f, .35f), biome.accent, true);
+            if (style != null) Dress(barrier, style.gate, style.metal, style.wood);
+            var door = barrier.AddComponent<DungeonDoor>(); door.Configure(a.node.id, b.node.id); Doors.Add(door); a.doors.Add(door); b.doors.Add(door);
             var surfaces = new List<Renderer>(); foreach (var renderer in root.GetComponentsInChildren<Renderer>()) if (renderer.gameObject != door.gameObject) surfaces.Add(renderer);
             Corridors.Add(new DungeonCorridor { a = a.node.id, b = b.node.id, renderers = surfaces.ToArray() });
         }
         void Interaction(DungeonSession session, DungeonRoom room, DungeonInteractionKind kind, Vector3 position, BiomeDefinition biome)
         {
             var root = new GameObject(kind.ToString()).transform; root.SetParent(room.root.transform, false); root.localPosition = position;
-            Piece("Base", root, Vector3.up * 0.3f, new Vector3(1, 0.6f, 0.8f), biome.wall, kind != DungeonInteractionKind.Exit && kind != DungeonInteractionKind.Rest);
+            var body = Piece("Base", root, Vector3.up * .3f, new Vector3(1, .6f, .8f), biome.wall, kind != DungeonInteractionKind.Exit && kind != DungeonInteractionKind.Rest);
+            if (style != null && kind == DungeonInteractionKind.Chest) Dress(body, style.crate, style.wood, style.metal);
             var part = Piece("MovingPart", root, Vector3.up * (kind == DungeonInteractionKind.Chest ? 0.65f : 1), kind == DungeonInteractionKind.Chest ? new Vector3(1.05f, 0.15f, 0.85f) : new Vector3(0.35f, 0.8f, 0.35f), biome.accent, false, kind == DungeonInteractionKind.Rest ? cylinderMesh : null).transform;
+            if (style != null && kind == DungeonInteractionKind.Chest) Dress(part.gameObject, style.chestLid, style.wood, style.metal);
             var interaction = root.gameObject.AddComponent<DungeonInteractable>(); interaction.Configure(session, room, kind, part); room.interactions.Add(interaction);
+        }
+        static void Dress(GameObject target, Mesh mesh, params Material[] materials)
+        {
+            if (mesh == null) throw new InvalidOperationException("Dungeon style is missing a mesh for " + target.name);
+            target.GetComponent<MeshFilter>().sharedMesh = mesh;
+            target.GetComponent<MeshRenderer>().sharedMaterials = materials;
         }
         public bool ValidateNavigation(out string error)
         {

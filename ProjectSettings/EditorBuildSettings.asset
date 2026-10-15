@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ForjaDasMares/Scenes/CoopDungeon.unity
     guid: 68bc9c9388acc954284cadf559f7afb2
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/GaleriasDungeon.unity
+    guid: 90c09bb25a4529441be1b5e6c14c76b1
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/GaleriasArena.unity
+    guid: 63b21dc6169072344b8cf2864096509f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

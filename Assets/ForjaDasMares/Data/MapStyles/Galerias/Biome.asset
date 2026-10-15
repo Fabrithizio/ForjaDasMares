@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 327b400aa0a0fc543875cc7263981207, type: 3}
+  m_Name: Biome
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BiomeDefinition
+  biomeId: galerias-da-mare
+  displayName: "GALERIAS DA MARE \u2014 mapa de teste"
+  floor: {fileID: 2100000, guid: 45c71b9c80c54bb4baf11c492c9a81c9, type: 2}
+  wall: {fileID: 2100000, guid: d4e4acbf0ca56ec45a7a15e68b1fd643, type: 2}
+  accent: {fileID: 2100000, guid: 090d0e8260492784ab6164595b4ed8ce, type: 2}
+  decoration: {fileID: 2100000, guid: 966b5ef9338bb1947a7023e3a801ca91, type: 2}
+  ambient: {r: 0.43, g: 0.46, b: 0.5, a: 1}
+  light: {r: 1, g: 0.9, b: 0.75, a: 1}
+  background: {r: 0.025, g: 0.036, b: 0.05, a: 1}
+  decorationMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  decorationScale: {x: 0.5, y: 1.5, z: 0.5}
+  encountersByDepth:
+  - {fileID: 11400000, guid: 2188f9e5a08b1cd48a1c74abc047c9c8, type: 2}
+  - {fileID: 11400000, guid: b393dbabc456d2c499b5168ea788efe0, type: 2}
+  - {fileID: 11400000, guid: edf9e30e6cfae5742ba7b2df1a502f9d, type: 2}
+  boss: {fileID: 11400000, guid: 6a310b858d09d3041a4e8d653b429ad2, type: 2}
+  rewards: {fileID: 11400000, guid: 9f3da68de87a81e438b15cbbd2bcfbca, type: 2}

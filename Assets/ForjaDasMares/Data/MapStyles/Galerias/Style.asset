@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eacdcab5eff1db4fb54d48fe47c26eb, type: 3}
+  m_Name: Style
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.DungeonStyleDefinition
+  styleId: galerias-da-mare
+  mainRoute:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 1, y: 1}
+  - {x: 2, y: 1}
+  - {x: 2, y: 2}
+  - {x: 3, y: 2}
+  - {x: 3, y: 3}
+  floor: {fileID: 4300000, guid: 8fe3c22cbaef0364aa7a61a30abc3944, type: 2}
+  bossFloor: {fileID: 4300000, guid: 27a098655c359f642b144a0614f3a32e, type: 2}
+  corridorFloor: {fileID: 4300000, guid: 2397a71485f8a3a43adf826e1ca822b2, type: 2}
+  longWallX: {fileID: 4300000, guid: a7d28360413d3584b9c1dbc255b47460, type: 2}
+  longWallZ: {fileID: 4300000, guid: 8f26cc5a7ca524c4fbf801b2a0969996, type: 2}
+  shortWallX: {fileID: 4300000, guid: 4742b1a6f4be79042815b32b7258f0a7, type: 2}
+  shortWallZ: {fileID: 4300000, guid: 98033d9614de11c479ad272c109ec7cb, type: 2}
+  crate: {fileID: 4300000, guid: b705d51d636f2f7419d995860636aa10, type: 2}
+  lantern: {fileID: 4300000, guid: a4c088f753cc6814ca47d8fbffb64f96, type: 2}
+  gate: {fileID: 4300000, guid: 4a1063695aaaa5a4ca9c167ed8011880, type: 2}
+  chestLid: {fileID: 4300000, guid: b92cda86e2c53d240b51c805dd8edb85, type: 2}
+  stoneTrim: {fileID: 2100000, guid: 387d95a38dcc32947953ad77ed640bdb, type: 2}
+  wood: {fileID: 2100000, guid: 74588fefc1727e747a748cda75da60a7, type: 2}
+  metal: {fileID: 2100000, guid: 62f8139b01cada945a44091276dd27dd, type: 2}
+  glow: {fileID: 2100000, guid: 275e9da21325aee449c1383514ead6bd, type: 2}
