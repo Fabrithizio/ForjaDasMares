@@ -2,9 +2,13 @@
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
 
-## Mapa local Galerias — revisão0.6.8
+## Mapa local Galerias — revisão0.7.0, personagem Brasa
 
-Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.6.8/ForjaDasMaresGalerias.exe. APK separado Builds/GaleriasAndroid-0.6.8/ForjaDasMaresGalerias.apk instalado/testado no moto g15. Cena inicial GaleriasDungeon; câmera acompanha continuamente entre encontros e mantém obstáculos semitransparentes. Novo HUD rústico com vida/XP, objetivo, mochila/menu compactos, ícones originais, botões circulares e cooldowns no Android; dock com atalhos no PC. Ferramentas de seed/bioma/reset ficam no menu. Inventário/equipamentos/resultado/opções preservam as funções existentes.
+Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.0/ForjaDasMaresGalerias.exe. APK separado Builds/GaleriasAndroid-0.7.0/ForjaDasMaresGalerias.apk instalado/testado no moto g15. Cena inicial GaleriasDungeon; câmera acompanha continuamente entre encontros e mantém obstáculos semitransparentes. HUD rústico com vida/XP, objetivo, mochila/menu compactos, ícones originais, botões circulares e cooldowns no Android; dock com atalhos no PC. Ferramentas de seed/bioma/reset ficam no menu. Inventário/equipamentos/resultado/opções preservam as funções existentes.
+
+O guerreiro local usa agora o Brasa: primeiro modelo 3D autoral, rig de17 ossos e8 clipes básicos reais. Fonte editável em ArtSource/Characters/Brasa/Brasa.blend; atalho Jogos/Editar personagem Brasa abre o Blender portátil instalado em Area Dev/Ferramentas. Prévia Brasa_preview.png e gerador create_brasa.py acompanham a fonte. Outros heróis e cenas online conservam seus modelos atuais. Arte/animação ainda exigem acabamento, revisão dos pesos/poses e otimização dos13 materiais. Relatório e arquivos: Docs/BRASA_MODELO_2026-10-16.md.
+
+Validação0.7.0: Windows compilado sem erros e aberto; Android ARM64/code15 gerado por Gradle direto após falha local do Java no empacotador interno, instalado e executado. Testes focados26/26 aprovados; a rodada ampla anterior teve112 aprovados,1 falha de tempo no percurso cooperativo e1 ignorado. O mesmo percurso passou na repetição focada; a suíte inteira não foi repetida. Não houve teste online deste modelo ou profiling sustentado.
 
 Esta variante é local. O lobby online continua com apresentação própria e builds anteriores abaixo. Janelas já abertas conservam a versão antiga até reabrir o novo atalho. Tema definitivo, arte final e profiling continuam pendentes. Relatórios: Docs/HUD_RUSTICO_2026-10-16.md, Docs/CAMERA_CONTINUA_2026-10-15.md e Docs/MAPA_GALERIAS_2026-10-15.md.
 
