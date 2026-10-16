@@ -47,8 +47,8 @@ namespace ForjaDasMares
         void LateUpdate()
         {
             smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
-            if (Physics.CheckSphere(smoothedFocus, collisionRadius, blockers, QueryTriggerInteraction.Ignore))
-            { smoothedFocus = target.position + lookOffset; smoothVelocity = Vector3.zero; }
+            // This is a virtual tracking point, not the camera lens. Crossing a crate
+            // must not reset the spring and repeatedly snap the view to the player.
             ApplyPose(Time.deltaTime, false);
         }
         void ApplyPose(float deltaTime, bool snap)

@@ -123,10 +123,12 @@ namespace ForjaDasMares
         }
         void UpdateVisibility()
         {
-            foreach (var room in generator.Rooms) room.SetVisible(room == CurrentRoom || CurrentRoom.node.connections.Contains(room.node.id));
-            foreach (var corridor in generator.Corridors) corridor.SetVisible(corridor.a == CurrentRoom.node.id || corridor.b == CurrentRoom.node.id);
-            foreach (var door in generator.Doors) door.SetVisible(door.A == CurrentRoom.node.id || door.B == CurrentRoom.node.id || CurrentRoom.node.connections.Contains(door.A) || CurrentRoom.node.connections.Contains(door.B));
-            cameraFollow.SetFocusBounds(new Bounds(CurrentRoom.Center + Vector3.up * 0.9f, new Vector3(9, 100, 9)), true);
+            // Encounter boundaries affect combat and doors, never camera tracking.
+            // The bounded map stays visible; Unity performs normal frustum culling.
+            foreach (var room in generator.Rooms) room.SetVisible(true);
+            foreach (var corridor in generator.Corridors) corridor.SetVisible(true);
+            foreach (var door in generator.Doors) door.SetVisible(true);
+            cameraFollow.SetFocusBounds(default, false);
         }
         public void ExitDungeon() { TryExitDungeon(); }
         public bool TryExitDungeon()

@@ -52,6 +52,27 @@ namespace ForjaDasMares.Tests
             }
             Assert.That(obstacle.GetComponent<Renderer>().sharedMaterial.GetColor("_BaseColor").a, Is.EqualTo(.35f).Within(.01f));
         }
+        [UnityTest] public IEnumerator SmoothedFocusCrossingABoxNeverSnapsToThePlayer()
+        {
+            yield return null;
+            follow.enabled = false; follow.Snap();
+            Vector3 expectedFocus = target.transform.position + Vector3.up * .9f;
+            Vector3 arm = rig.transform.position - expectedFocus;
+            Vector3 expectedVelocity = Vector3.zero;
+            obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube); obstacle.layer = 9;
+            obstacle.transform.position = expectedFocus + Vector3.right * .8f;
+            obstacle.transform.localScale = new Vector3(.6f, 2f, 2f);
+            target.transform.position += Vector3.right * 2.5f; Physics.SyncTransforms();
+            for (int i = 0; i < 32; i++)
+            {
+                expectedFocus = Vector3.SmoothDamp(expectedFocus, target.transform.position + Vector3.up * .9f,
+                    ref expectedVelocity, .12f, Mathf.Infinity, Time.deltaTime);
+                follow.SendMessage("LateUpdate");
+                Assert.That(Vector3.Distance(rig.transform.position, expectedFocus + arm), Is.LessThan(.002f),
+                    "A virtual focus inside a box must not reset the follow spring.");
+                Assert.That(rig.transform.eulerAngles.x, Is.EqualTo(initialPitch).Within(.01f));
+            }
+        }
         [UnityTest] public IEnumerator ClearanceRestoresTheObstacleWithoutMovingTheCamera()
         {
             Obstruct(); var renderer = obstacle.GetComponent<Renderer>(); var original = renderer.sharedMaterial;

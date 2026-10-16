@@ -43,6 +43,23 @@ namespace ForjaDasMares.Tests
             }
             finally { for(int i=0;i<doors.Count;i++)doors[i].SetClosed(closed[i]); }
         }
+        [Test] public void RoomEntryKeepsTheSameCameraFocusAndContinuousScenery()
+        {
+            dungeon.enabled = false;
+            var follow = Object.FindFirstObjectByType<ArenaCamera>();
+            var motor = dungeon.Heroes.GetComponent<PlayerMotor>();
+            var rooms = dungeon.Generator.Rooms;
+            motor.Teleport(Vector3.Lerp(rooms[0].Center, rooms[1].Center, .5f) + Vector3.up * .06f, Quaternion.identity);
+            follow.Snap(); Vector3 before = follow.transform.position; Quaternion rotation = follow.transform.rotation;
+            dungeon.Enter(rooms[1]); follow.Snap();
+            Assert.That(Vector3.Distance(before, follow.transform.position), Is.LessThan(.001f),
+                "Changing the encounter room must not change the camera target.");
+            Assert.That(Quaternion.Angle(rotation, follow.transform.rotation), Is.LessThan(.001f));
+            foreach (var room in rooms) foreach (var renderer in room.renderers)
+                Assert.IsTrue(renderer.enabled, "Scenery must not pop when entering another room.");
+            foreach (var corridor in dungeon.Generator.Corridors) foreach (var renderer in corridor.renderers)
+                Assert.IsTrue(renderer.enabled, "Connected corridors remain visible.");
+        }
         [Test] public void SavedMeshesMaterialsAndSolidCratesArePresent()
         {
             int styled=0,crates=0; var style=dungeon.Generator.Style;
