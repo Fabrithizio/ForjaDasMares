@@ -2,6 +2,12 @@
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
 
+## Mapa local Galerias — revisão0.6.8
+
+Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.6.8/ForjaDasMaresGalerias.exe. APK separado Builds/GaleriasAndroid-0.6.8/ForjaDasMaresGalerias.apk instalado/testado no moto g15. Cena inicial GaleriasDungeon; câmera acompanha continuamente entre encontros e mantém obstáculos semitransparentes. Novo HUD rústico com vida/XP, objetivo, mochila/menu compactos, ícones originais, botões circulares e cooldowns no Android; dock com atalhos no PC. Ferramentas de seed/bioma/reset ficam no menu. Inventário/equipamentos/resultado/opções preservam as funções existentes.
+
+Esta variante é local. O lobby online continua com apresentação própria e builds anteriores abaixo. Janelas já abertas conservam a versão antiga até reabrir o novo atalho. Tema definitivo, arte final e profiling continuam pendentes. Relatórios: Docs/HUD_RUSTICO_2026-10-16.md, Docs/CAMERA_CONTINUA_2026-10-15.md e Docs/MAPA_GALERIAS_2026-10-15.md.
+
 ## Executar
 
 Versão local de progressão0.5.0 preservada. Cooperativo0.6.1 foi testado em Windows/Android na LAN;0.6.2 inclui vínculo Unity Cloud e salas privadas por MPS/Lobby/Relay, já conectadas realmente entre Windows e moto g15 em Wi-Fi. A versão atual é de desenvolvimento, não aprovada para Play Store. Builds e evidências constam em Docs/PROGRESSO.md e Docs/REDE_INTERNET_2026-10-15.md.

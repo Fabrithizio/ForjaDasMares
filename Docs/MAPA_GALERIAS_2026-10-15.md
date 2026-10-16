@@ -65,3 +65,7 @@ Classificação: **aprovado com limitações para um primeiro mapa local de esti
 ## Atualização: Android físico verificado
 
 Após reconectar o moto g15, APK0.6.6 instalado e teste físico realizado: joystick, primeiro combate, portas, esquiva, colisão e semitransparência observados. Substitui a pendência de instalação acima; demais limites permanecem. Ver GALERIAS_ANDROID_2026-10-15.md para resultados e evidências. Nenhuma alteração de código nesta verificação.
+
+## Revisão0.6.8
+
+Builds/atalho/Android atualizados para0.6.8. Correção do salto atrás de caixas e foco contínuo entre encontros; cenário deixa de ser ocultado pela sala lógica. HUD rústico compacto para masmorras locais PC/Android. Não houve redesenho da geometria em percurso orgânico nem integração deste mapa ao online. Consulte CAMERA_CONTINUA_2026-10-15.md e HUD_RUSTICO_2026-10-16.md.

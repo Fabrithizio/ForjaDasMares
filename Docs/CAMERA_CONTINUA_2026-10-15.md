@@ -28,3 +28,7 @@ Mapas são limitados a12 salas nesta arquitetura; manter toda a decoração/luze
 ## Checkpoint da regressão
 
 Após a correção: suíte completa107 casos,106 aprovados,0 falhas,1 ignorado por exigir projeto sem vínculo Unity Cloud. XML work/galerias/camera-fixed-regression.xml. Os dois novos casos passaram. A execução em batch registrou avisos nativos JobTempAlloc durante trocas de cenas/NavMesh; não houve falha de teste, mas a origem desses avisos exige profiling separado e não foi declarada resolvida. Builds0.6.7 aguardam integração do HUD solicitada pelo titular durante esta correção; executáveis antigos continuam0.6.6/0.6.5.
+
+## Entrega com HUD0.6.8
+
+Correção incluída nas builds reais GaleriasWindows/Android-0.6.8. Após HUD, duas rodadas específicas17/17 aprovadas; final hud-final-tests.xml inclui os8 testes de câmera e6 do mapa, além dos3 do HUD. Android final instalado/testado fisicamente; apresentação de semitransparência e acompanhamento observada na revisão0.6.7, controles repetidos na0.6.8. Não foi alegada comparação em vídeo quadro a quadro. Executável Windows0.6.8 passou write/read de persistência; revisão visual PC exige fechar pessoalmente aviso Firewall. Demais resultados/limites em HUD_RUSTICO_2026-10-16.md.
