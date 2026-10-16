@@ -32,6 +32,8 @@ namespace ForjaDasMares
         float poll;
         bool closeRequested;
         public bool IsOpen => overlay != null && overlay.activeSelf;
+        public ProgressionSceneBridge Bridge => bridge;
+        public void RegisterHitArea(RectTransform rect) { if (rect != null && !hitAreas.Contains(rect)) hitAreas.Add(rect); }
         public void Configure(ProgressionSceneBridge game, Canvas target, ArenaInput input, InputActionAsset controls)
         { bridge = game; canvas = target; commands = input; actions = controls; }
         void Awake()
@@ -174,11 +176,12 @@ namespace ForjaDasMares
         RectTransform Rect(Transform parent, string name, Vector2 position, Vector2 size, Vector2? anchor = null)
         { var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>(); rect.SetParent(parent, false); rect.anchorMin = rect.anchorMax = rect.pivot = anchor ?? new Vector2(0, 1); rect.anchoredPosition = position; rect.sizeDelta = size; return rect; }
         Text Label(Transform parent, string name, Vector2 position, Vector2 size, int font = 18, Vector2? anchor = null)
-        { var value = Rect(parent, name, position, size, anchor).gameObject.AddComponent<Text>(); value.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); value.fontSize = font; value.color = Color.white; value.raycastTarget = false; value.horizontalOverflow = HorizontalWrapMode.Wrap; labels.Add(value); sizes.Add(font); return value; }
+        { var value = Rect(parent, name, position, size, anchor).gameObject.AddComponent<Text>(); value.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); value.fontSize = font; value.color = RusticHudTheme.Parchment; value.raycastTarget = false; value.horizontalOverflow = HorizontalWrapMode.Wrap; labels.Add(value); sizes.Add(font); return value; }
         Button Button(Transform parent, string name, Vector2 position, Vector2 size, string text, UnityEngine.Events.UnityAction action, Vector2? anchor = null)
         {
             var rect = Rect(parent, name, position, size, anchor); var image = rect.gameObject.AddComponent<Image>(); image.color = new Color(.14f, .25f, .34f, .98f);
             var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image; if (action != null) button.onClick.AddListener(action);
+            RusticHudTheme.Skin(button);
             var label = Label(rect, "Label", Vector2.zero, size, 18); label.text = text; label.alignment = TextAnchor.MiddleCenter; hitAreas.Add(rect); return button;
         }
         void Build()
@@ -188,7 +191,7 @@ namespace ForjaDasMares
             Button(canvas.transform, "RunResult", new Vector2(15, -355), new Vector2(190, 40), "RESULTADO", () => Show(Page.Result));
             Button(canvas.transform, "ProfileOptions", new Vector2(15, -400), new Vector2(190, 40), "OPÇÕES", () => Show(Page.Options));
             overlay = Rect(canvas.transform, "InventoryOverlay", Vector2.zero, Vector2.zero).gameObject; var shade = overlay.AddComponent<Image>(); shade.color = new Color(.015f, .025f, .045f, .96f); var full = (RectTransform)overlay.transform; full.anchorMin = Vector2.zero; full.anchorMax = Vector2.one; full.offsetMin = full.offsetMax = Vector2.zero;
-            panel = Rect(overlay.transform, "InventoryPanel", Vector2.zero, new Vector2(1120, 650), Vector2.one * .5f); panel.gameObject.AddComponent<Image>().color = new Color(.035f, .06f, .085f);
+            panel = Rect(overlay.transform, "InventoryPanel", Vector2.zero, new Vector2(1120, 650), Vector2.one * .5f); RusticHudTheme.Panel(panel, RusticHudTheme.Ink, 22);
             title = Label(panel, "Heading", new Vector2(20, -12), new Vector2(900, 32), 22);
             closeButton = Button(panel, "Close", new Vector2(990, -12), new Vector2(110, 35), "FECHAR", Close);
             for (int i = 0; i < 6; i++) { Page tab = (Page)i; Button(panel, "Tab_" + tab, new Vector2(20 + i * 181, -56), new Vector2(175, 42), PageName(tab), () => Tab(tab)); }
@@ -200,7 +203,7 @@ namespace ForjaDasMares
             discard = Button(panel, "DiscardItem", new Vector2(930, -525), new Vector2(165, 42), "DESCARTAR", DiscardRequest);
             resultSummary = Label(panel, "ResultSummary", new Vector2(20, -535), new Vector2(525, 100), 17); message = Label(panel, "Feedback", new Vector2(570, -578), new Vector2(525, 62), 17);
             confirmation = Rect(panel, "ConfirmDiscard", Vector2.zero, new Vector2(1120, 650), Vector2.one * .5f).gameObject; confirmation.AddComponent<Image>().color = new Color(.015f, .02f, .025f, .95f);
-            var dialog = Rect(confirmation.transform, "Dialog", Vector2.zero, new Vector2(570, 220), Vector2.one * .5f); dialog.gameObject.AddComponent<Image>().color = new Color(.12f, .07f, .08f);
+            var dialog = Rect(confirmation.transform, "Dialog", Vector2.zero, new Vector2(570, 220), Vector2.one * .5f); RusticHudTheme.Panel(dialog, RusticHudTheme.Surface, 22);
             Label(dialog, "Question", new Vector2(25, -25), new Vector2(525, 80), 22).text = "Descartar o item selecionado permanentemente?\nEsta ação exige confirmação.";
             confirmButton = Button(dialog, "Confirm", new Vector2(25, -130), new Vector2(245, 55), "SIM, DESCARTAR", ConfirmDiscard);
             cancelButton = Button(dialog, "Cancel", new Vector2(295, -130), new Vector2(245, 55), "CANCELAR", () => { pendingDiscard = null; confirmation.SetActive(false); });

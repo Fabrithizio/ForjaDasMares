@@ -1,0 +1,49 @@
+using UnityEngine;
+using UnityEngine.UI;
+namespace ForjaDasMares
+{
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass }
+    public sealed class HudIcon : MaskableGraphic
+    {
+        public HudSymbol symbol;
+        void Line(VertexHelper vh, Vector2 a, Vector2 b, float width = 2.2f)
+        {
+            Rect rect = rectTransform.rect; float scale = Mathf.Min(rect.width, rect.height) / 32;
+            a = rect.center + a * scale; b = rect.center + b * scale;
+            Vector2 normal = new Vector2(-(b - a).y, (b - a).x).normalized * width * scale * .5f;
+            int i = vh.currentVertCount;
+            vh.AddVert(a + normal, color, Vector2.zero); vh.AddVert(b + normal, color, Vector2.zero);
+            vh.AddVert(b - normal, color, Vector2.zero); vh.AddVert(a - normal, color, Vector2.zero);
+            vh.AddTriangle(i, i + 1, i + 2); vh.AddTriangle(i, i + 2, i + 3);
+        }
+        void Ring(VertexHelper vh, float radius)
+        { for (int i = 0; i < 24; i++) { float a = i * Mathf.PI / 12, b = (i + 1) * Mathf.PI / 12; Line(vh, new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius, new Vector2(Mathf.Cos(b), Mathf.Sin(b)) * radius, 1.5f); } }
+        protected override void OnPopulateMesh(VertexHelper vh)
+        {
+            vh.Clear();
+            switch (symbol)
+            {
+                case HudSymbol.Sword:
+                    Line(vh, new Vector2(-10,-11), new Vector2(10,11),3); Line(vh,new Vector2(-8,-1),new Vector2(1,-9));
+                    Line(vh,new Vector2(2,9),new Vector2(10,11)); Line(vh,new Vector2(10,11),new Vector2(9,3)); break;
+                case HudSymbol.Rune:
+                    Line(vh,new Vector2(4,13),new Vector2(-7,1),3); Line(vh,new Vector2(-7,1),new Vector2(6,1),3);
+                    Line(vh,new Vector2(6,1),new Vector2(-4,-13),3); break;
+                case HudSymbol.Dodge:
+                    for(int i=0;i<2;i++){float x=i*11-7;Line(vh,new Vector2(x-5,-10),new Vector2(x+4,0),3);Line(vh,new Vector2(x+4,0),new Vector2(x-5,10),3);}break;
+                case HudSymbol.Bag:
+                    Line(vh,new Vector2(-10,-11),new Vector2(10,-11));Line(vh,new Vector2(-10,-11),new Vector2(-9,7));Line(vh,new Vector2(10,-11),new Vector2(9,7));
+                    Line(vh,new Vector2(-9,7),new Vector2(9,7));Line(vh,new Vector2(-5,7),new Vector2(-4,12));Line(vh,new Vector2(-4,12),new Vector2(4,12));Line(vh,new Vector2(4,12),new Vector2(5,7));Line(vh,new Vector2(-7,0),new Vector2(7,0));break;
+                case HudSymbol.Hero:
+                    Line(vh,new Vector2(-10,8),new Vector2(0,13));Line(vh,new Vector2(0,13),new Vector2(10,8));Line(vh,new Vector2(10,8),new Vector2(8,-8));
+                    Line(vh,new Vector2(8,-8),new Vector2(0,-13));Line(vh,new Vector2(0,-13),new Vector2(-8,-8));Line(vh,new Vector2(-8,-8),new Vector2(-10,8));Line(vh,new Vector2(-6,2),new Vector2(6,2));Line(vh,new Vector2(0,2),new Vector2(0,-7));break;
+                case HudSymbol.Menu:
+                    for(int i=-1;i<=1;i++)Line(vh,new Vector2(-10,i*7),new Vector2(10,i*7),2.8f);break;
+                case HudSymbol.Interact:
+                    Ring(vh,11);Line(vh,new Vector2(0,-5),new Vector2(0,5));Line(vh,new Vector2(-5,0),new Vector2(5,0));break;
+                case HudSymbol.Compass:
+                    Ring(vh,12);Line(vh,new Vector2(5,7),new Vector2(-5,-7));Line(vh,new Vector2(-5,-7),new Vector2(-2,5));Line(vh,new Vector2(-2,5),new Vector2(5,7));break;
+            }
+        }
+    }
+}

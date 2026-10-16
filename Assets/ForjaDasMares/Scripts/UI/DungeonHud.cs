@@ -10,6 +10,11 @@ namespace ForjaDasMares
         float timer;
         float fullWidth;
         void Awake() => fullWidth = HealthBarGeometry.Initialize(bossFill);
+        void Start()
+        {
+            gameObject.AddComponent<RusticDungeonHud>().Configure(session, GetComponent<Canvas>(), GetComponent<ProgressionHud>());
+            enabled = false;
+        }
         static readonly string[] RoomNames = { "Entrada", "Combate", "Combate dificil", "Tesouro", "Descanso", "Evento", "Armadilha", "Chefe" };
         public void Configure(DungeonSession game, Text heading, Text health, Text progress, Text prompt, Text bossLabel, Image fill)
         { session = game; title = heading; hero = health; status = progress; interaction = prompt; bossText = bossLabel; bossFill = fill; }
