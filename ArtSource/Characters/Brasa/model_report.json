@@ -1,0 +1,16 @@
+{
+  "vertices": 7898,
+  "triangles": 15262,
+  "bones": 17,
+  "actions": {
+    "Idle": 48,
+    "Walk": 24,
+    "Attack": 24,
+    "Skill": 32,
+    "Dodge": 18,
+    "Hit": 12,
+    "Dead": 30,
+    "Victory": 48
+  },
+  "materials": 13
+}

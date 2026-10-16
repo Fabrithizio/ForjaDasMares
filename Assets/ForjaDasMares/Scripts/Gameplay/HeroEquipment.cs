@@ -11,10 +11,18 @@ namespace ForjaDasMares
         ProgressionCatalog catalog;
         string signature;
         float regeneration;
+        Vector3 mainRestPosition, offRestPosition;
+        Quaternion mainRestRotation, offRestRotation;
+        void Awake() => CaptureRestPose();
+        void CaptureRestPose()
+        {
+            if(mainVisual!=null){mainRestPosition=mainVisual.transform.localPosition;mainRestRotation=mainVisual.transform.localRotation;}
+            if(secondaryVisual!=null){offRestPosition=secondaryVisual.transform.localPosition;offRestRotation=secondaryVisual.transform.localRotation;}
+        }
         public StatSnapshot Stats { get; private set; }
         public EquipmentDefinition MainWeapon { get; private set; }
         public void Configure(HeroRoster roster, PlayerMotor player, HeroCombat attacks, MeshRenderer primary, MeshRenderer secondary)
-        { heroes = roster; motor = player; combat = attacks; mainVisual = primary; secondaryVisual = secondary; }
+        { heroes = roster; motor = player; combat = attacks; mainVisual = primary; secondaryVisual = secondary; CaptureRestPose(); }
         public void Initialize(ProfileService profile, ProgressionCatalog data)
         {
             heroes.Changed -= HeroChanged;
@@ -35,13 +43,29 @@ namespace ForjaDasMares
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;
             MainWeapon = main != null ? catalog.Find(main.definitionId) : null; var secondary = off != null ? catalog.Find(off.definitionId) : null;
             var visual = heroes.GetComponent<HeroPresentation>().Visible;
-            if (visual != null) { mainVisual.transform.SetParent(visual, false); secondaryVisual.transform.SetParent(visual, false); }
+            if (visual != null)
+            {
+                var model = visual.GetComponentInChildren<HeroModelView>(true);
+                Mount(mainVisual,model!=null?model.PrimarySocket:visual,model!=null,mainRestPosition,mainRestRotation);
+                Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation);
+            }
             combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null);
             Visual(mainVisual, MainWeapon); Visual(secondaryVisual, secondary);
             // Keep the original geometric hero body/poses; hide its old weapon only when an item replaces it.
-            foreach (Transform root in heroes.transform) if (root.name.StartsWith("HeroVisual_")) foreach (Transform part in root)
+            foreach (Transform root in heroes.transform) if (root.name.StartsWith("HeroVisual_"))
+            {
+                var model=root.GetComponentInChildren<HeroModelView>(true);
+                if(model!=null){model.ShowDefaultWeapon(MainWeapon==null);continue;}
+                foreach (Transform part in root)
                 if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(MainWeapon == null);
                 else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
+            }
+        }
+        static void Mount(MeshRenderer visual,Transform parent,bool socket,Vector3 restPosition,Quaternion restRotation)
+        {
+            if(visual==null||parent==null)return;visual.transform.SetParent(parent,false);
+            visual.transform.localPosition=socket?new Vector3(0,-.3f,0):restPosition;
+            visual.transform.localRotation=socket?Quaternion.Euler(90,0,0):restRotation;
         }
         static void Visual(MeshRenderer renderer, EquipmentDefinition weapon)
         {

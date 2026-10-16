@@ -5,6 +5,8 @@
 /UserSettings/
 /Builds/
 /Recordings/
+/ArtSource/**/*.blend1
+/ArtSource/**/*.blend2
 .vs/
 *.csproj
 *.sln
