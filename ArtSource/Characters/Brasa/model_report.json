@@ -3,14 +3,18 @@
   "triangles": 15262,
   "bones": 17,
   "actions": {
-    "Idle": 48,
-    "Walk": 24,
-    "Attack": 24,
-    "Skill": 32,
-    "Dodge": 18,
-    "Hit": 12,
-    "Dead": 30,
-    "Victory": 48
+    "Idle": 49,
+    "Walk": 25,
+    "Attack": 25,
+    "Attack2": 25,
+    "Attack3": 25,
+    "Charged": 33,
+    "Skill": 33,
+    "Super": 41,
+    "Dodge": 19,
+    "Hit": 13,
+    "Dead": 31,
+    "Victory": 49
   },
   "materials": 13
 }

@@ -24,6 +24,7 @@ namespace ForjaDasMares
         public event Action Changed;
         public event Action Damaged;
         public event Action<Vector3, float> Impact;
+        public event Action<Health> DealtHit;
         void Awake() { defense = defenseSource as IHitDefense; Restore(); }
         void Update()
         {
@@ -45,6 +46,7 @@ namespace ForjaDasMares
             if (attack.control != ControlEffect.None && attack.controlDuration > 0f)
             { rooted = attack.control == ControlEffect.Root; slow = Mathf.Clamp(attack.slowMultiplier, 0.05f, 1f); controlTime = attack.controlDuration; Changed?.Invoke(); }
             if (attack.knockback > 0) Impact?.Invoke(direction, attack.knockback);
+            if (source != null) source.DealtHit?.Invoke(this);
             return true;
         }
         public bool ApplyDamage(int damage)

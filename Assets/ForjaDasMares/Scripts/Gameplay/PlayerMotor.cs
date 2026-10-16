@@ -28,6 +28,7 @@ namespace ForjaDasMares
 
         public float Speed => speed;
         public bool IsDodging => dodgeRemaining > 0f && !charge;
+        public float DodgeProgress => IsDodging ? Mathf.Clamp01(1-dodgeRemaining/Mathf.Max(.05f,dodgeDuration)) : 0;
         public bool IsCharging => dodgeRemaining > 0f && charge;
         public bool IsInvulnerable => IsDodging && dodgeDuration - dodgeRemaining >= invulnerableStart && dodgeDuration - dodgeRemaining < invulnerableEnd;
         public bool FacingLocked => facingLock > 0f || IsCharging;

@@ -203,10 +203,24 @@ skin_bones={name:skin.vertex_groups.new(name=name) for name in bones if name in 
 def segment_distance(point,start,end):
     a,b=Vector(start),Vector(end);d=b-a;t=max(0,min(1,(point-a).dot(d)/d.length_squared))
     return (point-(a+d*t)).length
+def smooth_range(low,high,value):
+    t=max(0,min(1,(value-low)/(high-low)));return t*t*(3-2*t)
+# Spatially continuous anatomical weights. Central chest belongs to the spine,
+# never to a nearby arm/neck merely because its bone segment is closer.
 for vertex in skin.data.vertices:
-    candidates=sorted((segment_distance(vertex.co,bones[name][0],bones[name][1]),name) for name in skin_bones)[:2]
-    weights=[1/(distance+.025)**4 for distance,name in candidates];total=sum(weights)
-    for (distance,name),weight in zip(candidates,weights):skin_bones[name].add([vertex.index],weight/total,'REPLACE')
+    x,y,z=vertex.co;side='R' if x>=0 else 'L'
+    arm_weight=smooth_range(.29,.45,abs(x))
+    forearm=1-smooth_range(1.10,1.25,z)
+    hips=1-smooth_range(1.01,1.18,z)
+    neck=smooth_range(1.51,1.72,z)*(1-smooth_range(.12,.24,abs(x)))
+    weights={'Hips':(1-arm_weight)*hips,
+             'Spine':(1-arm_weight)*(1-hips)*(1-neck),
+             'Neck':(1-arm_weight)*(1-hips)*neck,
+             'UpperArm.'+side:arm_weight*(1-forearm),
+             'Forearm.'+side:arm_weight*forearm}
+    total=sum(weights.values())
+    for name,weight in weights.items():
+        if weight>0:skin_bones[name].add([vertex.index],weight/total,'REPLACE')
 parts.append(skin)
 def join_objects(objects,name):
     bpy.ops.object.select_all(action='DESELECT')
@@ -224,43 +238,92 @@ def rotate(name,angles):
     b.rotation_quaternion=rest.conjugated()@Euler(angles,'XYZ').to_quaternion()@rest
 def pose_reset():
     for b in arm.pose.bones:b.location=(0,0,0);b.rotation_quaternion=Quaternion();b.scale=(1,1,1)
-actions={};lengths={'Idle':48,'Walk':24,'Attack':24,'Skill':32,'Dodge':18,'Hit':12,'Dead':30,'Victory':48}
+# Coherent ready pose, exact looping endpoints and distinct attacks.
+# Positive world-X bends a shin back; the previous negative bend inverted knees.
+def ready():
+    rotate('UpperArm.R',(-.24,0,-.10));rotate('UpperArm.L',(-.12,0,.08))
+    rotate('Forearm.R',(-.28,0,0));rotate('Forearm.L',(-.16,0,0))
+
+def ease(x):
+    x=max(0,min(1,x));return x*x*(3-2*x)
+
+def envelope(t,contact=.3):
+    if t<.16:return ease(t/.16),0
+    if t<contact:return 1,ease((t-.16)/(contact-.16))
+    return 1-ease((t-contact)/(1-contact)),1-ease((t-contact)/(1-contact))
+
+def animate_pose(name,t):
+    pose_reset();ready();wave=math.sin(t*math.tau)
+    if name=='Idle':
+        rotate('Spine',(.012*wave,0,0));rotate('Head',(0,0,.012*wave))
+    elif name=='Walk':
+        # Analytic two-segment legs: stance foot stays on the floor and only
+        # the swinging foot lifts. The knee always bends toward the front.
+        hip_z=.98-.04+.004*math.cos(t*math.tau*2)
+        arm.pose.bones['Hips'].location.y=hip_z-.98
+        for sign,side in [(-1,'L'),(1,'R')]:
+            cycle=(t+(0 if side=='L' else .5))%1
+            if cycle<.5:
+                ankle_y=-.18+.36*cycle*2;ankle_z=.14
+            else:
+                u=(cycle-.5)*2;ankle_y=.18-.36*ease(u);ankle_z=.14+.09*math.sin(math.pi*u)
+            dy,dz=ankle_y,ankle_z-hip_z;distance=math.hypot(dy,dz)
+            along=(.44**2-.4**2+distance**2)/(2*distance)
+            height=math.sqrt(max(0,.44**2-along**2))
+            knee_y=dy/distance*along+dz/distance*height
+            knee_z=hip_z+dz/distance*along-dy/distance*height
+            thigh=math.atan2(knee_y,hip_z-knee_z)
+            shin=math.atan2(ankle_y-knee_y,knee_z-ankle_z)
+            rotate('Thigh.'+side,(thigh,0,0));rotate('Shin.'+side,(shin-thigh,0,0));rotate('Foot.'+side,(-shin,0,0))
+            swing=wave*sign
+            rotate('UpperArm.'+side,(-.18+swing*.22,0,-sign*.08));rotate('Forearm.'+side,(-.22,0,0))
+        rotate('Spine',(-.035,0,.035*wave));rotate('Head',(.02,0,-.02*wave))
+    elif name in ['Attack','Attack2','Attack3','Charged','Skill','Super']:
+        impact=.5 if name in ['Charged','Super','Skill'] else .3
+        anticipation,strike=envelope(t,impact)
+        turn=-1 if name=='Attack2' else 1
+        overhead=name in ['Attack3','Charged','Skill','Super']
+        if overhead:
+            rotate('UpperArm.R',(-.24-1.45*anticipation+.95*strike,.08,-.10+.28*strike))
+            rotate('Forearm.R',(-.28-.68*anticipation+.65*strike,0,0))
+            rotate('Spine',(-.12*anticipation+.25*strike,0,-.16*anticipation+.22*strike))
+            rotate('UpperArm.L',(-.12-.55*anticipation+.35*strike,0,.08))
+        else:
+            rotate('UpperArm.R',(-.24-.65*anticipation+.2*strike,.14*anticipation,-.10+turn*(-.65*anticipation+1.25*strike)))
+            rotate('Forearm.R',(-.28-.35*anticipation+.24*strike,0,0))
+            rotate('Spine',(.09*strike,0,turn*(-.22*anticipation+.48*strike)))
+            rotate('UpperArm.L',(-.12-.20*strike,0,.08-.20*strike))
+        rotate('Head',(.04*strike,0,.10*anticipation-.12*strike))
+        rotate('Thigh.L',(-.10*strike,0,0));rotate('Shin.L',(.13*strike,0,0))
+        if name=='Super':
+            rotate('UpperArm.L',(-.12-1.0*anticipation+.7*strike,0,.08-.3*anticipation))
+            arm.pose.bones['Hips'].location.y=-.09*anticipation+.09*strike
+    elif name=='Dodge':
+        pulse=math.sin(math.pi*t)
+        rotate('Spine',(-.35*pulse,0,0))
+        for side in ['L','R']:
+            rotate('Thigh.'+side,(-.45*pulse,0,0));rotate('Shin.'+side,(.65*pulse,0,0))
+        arm.pose.bones['Hips'].location.y=-.12*pulse
+    elif name=='Hit':
+        pulse=math.sin(math.pi*t);rotate('Spine',(.22*pulse,0,.07*pulse));rotate('Head',(.08*pulse,0,0))
+    elif name=='Dead':
+        fall=ease(t/.8);rotate('Hips',(-1.48*fall,0,.08*fall));arm.pose.bones['Hips'].location.y=-.77*fall
+        rotate('UpperArm.R',(-.25*fall,0,.55*fall));rotate('Head',(.18*fall,0,0))
+    elif name=='Victory':
+        raised=math.sin(math.pi*t)**2
+        rotate('UpperArm.R',(-.24-1.85*raised,0,-.1));rotate('Forearm.R',(-.28-.25*raised,0,0))
+        rotate('Spine',(-.06*raised,0,.025*wave));rotate('Head',(-.1*raised,0,0))
+
+actions={};lengths={'Idle':49,'Walk':25,'Attack':25,'Attack2':25,'Attack3':25,'Charged':33,'Skill':33,'Super':41,'Dodge':19,'Hit':13,'Dead':31,'Victory':49}
 arm.animation_data_create()
 for name,length in lengths.items():
     action=bpy.data.actions.new(name);action.use_fake_user=True;arm.animation_data.action=action;actions[name]=action
-    for frame in range(1,length+1,2):
-        t=(frame-1)/(length-1);wave=math.sin(t*math.tau);pose_reset()
-        if name=='Idle':
-            rotate('Spine',(.012*wave,0,0));rotate('Head',(0,0,.025*wave));rotate('UpperArm.R',(.018*wave,0,0))
-        elif name=='Walk':
-            for sign,side in [(-1,'L'),(1,'R')]:
-                swing=math.sin(t*math.tau)*sign
-                rotate('Thigh.'+side,(swing*.62,0,0));rotate('Shin.'+side,(-max(0,swing)*.70,0,0))
-                rotate('UpperArm.'+side,(-swing*.34,0,0));rotate('Forearm.'+side,(-.13,0,0))
-            arm.pose.bones['Hips'].location.y=.025*(1-math.cos(t*math.tau*2));rotate('Spine',(.055,0,.05*wave))
-        elif name in ['Attack','Skill']:
-            wind=math.sin(math.pi*min(t/.4,1));strike=math.sin(math.pi*max(0,(t-.35)/.65))
-            rotate('UpperArm.R',(-1.1*wind-1.0*strike,.12,-.45*wind+.65*strike));rotate('Forearm.R',(-.6*wind-.2*strike,0,0))
-            rotate('Spine',(.15*strike,0,-.32*wind+.50*strike));rotate('Head',(0,0,.15*wind-.2*strike))
-            if name=='Skill':rotate('UpperArm.L',(-.8*wind,0,-.4*wind));rotate('Thigh.L',(-.2*strike,0,0))
-        elif name=='Dodge':
-            pulse=math.sin(math.pi*t);rotate('Hips',(.4*pulse,0,0));rotate('Spine',(.45*pulse,0,0))
-            for side in ['L','R']:rotate('Thigh.'+side,(-.2*pulse,0,0));rotate('Shin.'+side,(-.45*pulse,0,0))
-        elif name=='Hit':
-            pulse=math.sin(math.pi*t);rotate('Spine',(-.3*pulse,0,.12*pulse));rotate('Head',(-.1*pulse,0,0))
-        elif name=='Dead':
-            fall=min(1,t*1.8);rotate('Hips',(-1.45*fall,0,.15*fall));arm.pose.bones['Hips'].location.y=-.78*fall
-            rotate('UpperArm.R',(-.3*fall,0,.4*fall));rotate('Head',(.2*fall,0,0))
-        elif name=='Victory':
-            raise_arm=min(1,t*4);rotate('UpperArm.R',(-2.25*raise_arm,0,-.1));rotate('Forearm.R',(-.25*raise_arm,0,0))
-            rotate('Spine',(-.08*raise_arm,0,.04*wave));rotate('Head',(-.12*raise_arm,0,.04*wave))
-        for b in arm.pose.bones:
-            b.keyframe_insert(data_path='rotation_quaternion',frame=frame,group=b.name)
-            b.keyframe_insert(data_path='location',frame=frame,group=b.name)
-    # An explicit final key gives every imported action its documented duration.
-    for b in arm.pose.bones:
-        b.keyframe_insert(data_path='rotation_quaternion',frame=length,group=b.name)
-        b.keyframe_insert(data_path='location',frame=length,group=b.name)
+    # Every frame is keyed; endpoints are evaluated rather than copying frame N-1.
+    for frame in range(1,length+1):
+        t=(frame-1)/(length-1);animate_pose(name,t)
+        for bone in arm.pose.bones:
+            bone.keyframe_insert(data_path='rotation_quaternion',frame=frame,group=bone.name)
+            bone.keyframe_insert(data_path='location',frame=frame,group=bone.name)
 arm.animation_data.action=actions['Idle'];bpy.context.scene.frame_set(1)
 bpy.ops.object.select_all(action='DESELECT')
 for obj in [arm,body,sword]:obj.select_set(True)

@@ -25,12 +25,17 @@ namespace ForjaDasMares
         Text[] labels;
         int[] baseSizes;
         bool largeText;
+        RectTransform superFill;
+        Text superLabel, chargeLabel;
+        Button superButton;
+        ArenaInput input;
         public RectTransform SafeRoot => safe;
         public bool MenuOpen => menu != null && menu.gameObject.activeSelf;
         public void Configure(DungeonSession game, Canvas target, ProgressionHud progression)
         {
             session = game; canvas = target; inventory = progression; bridge = progression != null ? progression.Bridge : null;
             combat = session.Heroes.GetComponent<HeroCombat>(); motor = session.Heroes.GetComponent<PlayerMotor>();
+            input = session.Heroes.GetComponent<ArenaInput>();
             foreach (var button in canvas.GetComponentsInChildren<Button>(true)) legacy[button.name] = button;
             Build(); labels = safe.GetComponentsInChildren<Text>(true); baseSizes = new int[labels.Length];
             for (int i = 0; i < labels.Length; i++) baseSizes[i] = labels[i].fontSize;
@@ -76,6 +81,13 @@ namespace ForjaDasMares
             healthFill=Bar(card,"HealthFill",new Vector2(80,-57),new Vector2(212,15),new Color(.61f,.20f,.16f));
             healthText=Label(card,"Health",new Vector2(0,1),new Vector2(80,-77),new Vector2(212,20),"",14);
             xpFill=Bar(card,"ExperienceFill",new Vector2(15,-98),new Vector2(278,4),RusticHudTheme.Gold);
+            if(combat.EnhancedControls)
+            {
+                var power=RusticHudTheme.Rect(safe,"PowerCard",new Vector2(0,1),new Vector2(18,-132),new Vector2(308,54));RusticHudTheme.Panel(power,RusticHudTheme.Ink,14);
+                superLabel=Label(power,"SuperLabel",new Vector2(0,1),new Vector2(14,-7),new Vector2(280,23),"",13);
+                superFill=Bar(power,"SuperFill",new Vector2(14,-37),new Vector2(280,8),new Color(1,.57f,.14f));
+                chargeLabel=Label(safe,"ChargeLabel",new Vector2(0,1),new Vector2(24,-190),new Vector2(310,25),"Segure ataque: combo + golpe pesado",12);
+            }
             var quest=RusticHudTheme.Rect(safe,"ExpeditionCard",new Vector2(.5f,1),new Vector2(0,-18),new Vector2(340,74));RusticHudTheme.Panel(quest,RusticHudTheme.Ink);
             RusticHudTheme.Icon(quest,HudSymbol.Compass,new Vector2(0,.5f),new Vector2(12,0),28);
             location=Label(quest,"Location",new Vector2(0,1),new Vector2(52,-10),new Vector2(275,22),"",15);location.color=RusticHudTheme.Gold;
@@ -119,26 +131,39 @@ namespace ForjaDasMares
                     var text=stick.Find("MoveLabel");if(text!=null)text.gameObject.SetActive(false);
                     var thumb=(RectTransform)stick.Find("StickThumb");thumb.GetComponent<Image>().enabled=false;var knob=RusticHudTheme.Panel(thumb,new Color(.47f,.41f,.28f,.84f),28);knob.raycastTarget=false;
                     StyleTouch((RectTransform)touch.Find("TouchAttack"),new Vector2(-100,100),98,HudSymbol.Sword,"Ataque");
+                    ConfigureHold(touch.Find("TouchAttack").gameObject);
                     StyleTouch((RectTransform)touch.Find("TouchDodge"),new Vector2(-212,72),78,HudSymbol.Dodge,"Esquiva");
                     StyleTouch((RectTransform)touch.Find("TouchSpecial"),new Vector2(-210,174),78,HudSymbol.Rune,"Habilidade");
                 }
             }
             if(mobile)
             {
+                if(combat.EnhancedControls)
+                {
+                    superButton=Action(safe,"SuperAttack",new Vector2(1,0),new Vector2(-310,110),new Vector2(78,78),"SUPER",()=>input.RequestSuper());
+                    StyleTouch((RectTransform)superButton.transform,new Vector2(-310,110),78,HudSymbol.Rune,"SUPER");
+                }
                 if(legacy.TryGetValue("Interact",out interact))
                 { interact.transform.SetParent(safe,false);interact.gameObject.SetActive(true);StyleTouch((RectTransform)interact.transform,new Vector2(-96,219),66,HudSymbol.Interact,"Interagir");Register((RectTransform)interact.transform); }
             }
             else
             {
-                var dock=RusticHudTheme.Rect(safe,"ActionDock",new Vector2(.5f,0),new Vector2(0,18),new Vector2(324,88));RusticHudTheme.Panel(dock,RusticHudTheme.Ink,20);
-                PcAction(dock,"BasicAttack",HudSymbol.Sword,"Ataque","Mouse",18,()=>combat.TryAttack());
+                var dock=RusticHudTheme.Rect(safe,"ActionDock",new Vector2(.5f,0),new Vector2(0,18),new Vector2(combat.EnhancedControls?426:324,88));RusticHudTheme.Panel(dock,RusticHudTheme.Ink,20);
+                var attackButton=PcAction(dock,"BasicAttack",HudSymbol.Sword,"Segure","Mouse",18,()=>combat.TryAttack());
+                attackButton.onClick.RemoveAllListeners();ConfigureHold(attackButton.gameObject);
                 PcAction(dock,"Special",HudSymbol.Rune,"Habilidade","E",120,()=>combat.TrySpecial());
                 PcAction(dock,"Dodge",HudSymbol.Dodge,"Esquiva","Espaço",222,()=>motor.TryDodge(motor.Commands.Move));
+                if(combat.EnhancedControls)superButton=PcAction(dock,"SuperAttack",HudSymbol.Rune,"Super","Q",324,()=>input.RequestSuper());
                 Label(safe,"KeyboardHint",new Vector2(0,0),new Vector2(18,18),new Vector2(320,22),"WASD mover  ·  I mochila  ·  Tab herói",12).color=RusticHudTheme.Muted;
             }
         }
-        void PcAction(Transform parent,string name,HudSymbol icon,string caption,string key,float x,UnityAction action)
-        {var button=Action(parent,name,new Vector2(0,0),new Vector2(x,10),new Vector2(84,66),"",action);RusticHudTheme.Icon(button.transform,icon,Vector2.one*.5f,new Vector2(-18,9),27);Label(button.transform,"Key",new Vector2(1,1),new Vector2(-8,-5),new Vector2(42,22),key,11,TextAnchor.MiddleRight);Label(button.transform,"Caption",new Vector2(.5f,0),new Vector2(0,5),new Vector2(82,20),caption,12,TextAnchor.MiddleCenter);var cd=Label(button.transform,"Cooldown",Vector2.one*.5f,new Vector2(18,5),new Vector2(35,25),"",14,TextAnchor.MiddleCenter);if(name=="Special")specialTime=cd;else if(name=="Dodge")dodgeTime=cd;}
+        Button PcAction(Transform parent,string name,HudSymbol icon,string caption,string key,float x,UnityAction action)
+        {var button=Action(parent,name,new Vector2(0,0),new Vector2(x,10),new Vector2(84,66),"",action);RusticHudTheme.Icon(button.transform,icon,Vector2.one*.5f,new Vector2(-18,9),27);Label(button.transform,"Key",new Vector2(1,1),new Vector2(-8,-5),new Vector2(42,22),key,11,TextAnchor.MiddleRight);Label(button.transform,"Caption",new Vector2(.5f,0),new Vector2(0,5),new Vector2(82,20),caption,12,TextAnchor.MiddleCenter);var cd=Label(button.transform,"Cooldown",Vector2.one*.5f,new Vector2(18,5),new Vector2(35,25),"",14,TextAnchor.MiddleCenter);if(name=="Special")specialTime=cd;else if(name=="Dodge")dodgeTime=cd;return button;}
+        void ConfigureHold(GameObject button)
+        {
+            var old=button.GetComponent<UnityEngine.InputSystem.OnScreen.OnScreenButton>();if(old!=null)old.enabled=false;
+            var held=button.GetComponent<HoldAttackButton>()??button.AddComponent<HoldAttackButton>();held.Configure(input);
+        }
         void StyleTouch(RectTransform rect,Vector2 position,float size,HudSymbol symbol,string caption)
         {
             Position(rect,new Vector2(1,0),position,Vector2.one*size,Vector2.one*.5f);
@@ -162,11 +187,19 @@ namespace ForjaDasMares
             bool menuVisible=MenuOpen||tools.gameObject.activeSelf;
             if(mobileControls!=null)mobileControls.SetActive(Application.isMobilePlatform&&!menuVisible);
             if(interact!=null)interact.gameObject.SetActive(!menuVisible);
+            if(superButton!=null)superButton.gameObject.SetActive(!menuVisible);
             UpdateSafeArea();refresh-=Time.unscaledDeltaTime;if(refresh<=0){refresh=.1f;Refresh();}
         }
         void Refresh()
         {
             var heroes=session.Heroes;var health=heroes.Health;heroName.text=heroes.Current.displayName;portrait.color=heroes.Current.color;
+            if(superFill!=null)
+            {
+                superFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,276*combat.SuperProgress);
+                superLabel.text=combat.SuperReady?"SUPER PRONTO  ·  "+(Application.isMobilePlatform?"toque SUPER":"Q / SUPER"):"BRASA INTERIOR  ·  "+Mathf.RoundToInt(combat.SuperProgress*100)+"%";
+                chargeLabel.text=combat.IsSuper?"RUPTURA DE BRASA!":combat.SuperQueued?"Super preparado · terminando o golpe":combat.IsHeavy?"GOLPE PESADO!":combat.ChargeProgress>.05f?"Carregando golpe  ·  "+Mathf.RoundToInt(combat.ChargeProgress*100)+"%":"Segure ataque: combo + golpe pesado";
+                if(superButton!=null)superButton.interactable=combat.SuperReady&&health.IsAlive;
+            }
             healthText.text=health.Current+" / "+health.Maximum+"  VIDA";healthFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,208f*health.Current/Mathf.Max(1,health.Maximum));
             var room=session.CurrentRoom;location.text=session.Biome.displayName.Replace(" — mapa de teste","");
             objective.text=session.Finished?"Expedição concluída":!health.IsAlive?"Você caiu · reinicie pelo menu":room==null?"Preparando o caminho…":room.completed?"Caminho livre · continue explorando":room.encounter!=null&&!room.encounterComplete?"Derrote os inimigos para avançar":room.node.category==RoomCategory.Trap?"Desative a armadilha":room.node.category==RoomCategory.Event?"Ative o cristal da passagem":"Explore e interaja";

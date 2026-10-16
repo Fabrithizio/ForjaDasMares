@@ -228,7 +228,7 @@ namespace ForjaDasMares.Networking
             int hero = input.TakeHeroSlot(); if (hero >= 0) SelectHero(hero); if (input.TakeNextHero()) SelectHero((selectedHero + 1) % HeroCount);
             if (Phase == CoopPhase.Playing && localSlot >= 0)
             {
-                if (input.TakeAttack()) touchButtons |= HeroButtons.Attack;
+                if (input.TakeAttack() || input.AttackHeld) touchButtons |= HeroButtons.Attack;
                 if (input.TakeDodge()) touchButtons |= HeroButtons.Dodge;
                 if (input.TakeSpecial()) touchButtons |= HeroButtons.Special;
                 if (interaction.TakeInteraction()) touchButtons |= HeroButtons.Interact;

@@ -126,16 +126,16 @@ namespace ForjaDasMares.Editor
         {
             if(EditorUserBuildSettings.activeBuildTarget!=target)throw new InvalidOperationException("Start Unity with -buildTarget "+(target==BuildTarget.Android?"Android":"Win64"));
             if(!File.Exists(DungeonScene)||!File.Exists(ArenaScene))throw new InvalidOperationException("Create Galerias map first.");
-            string folder=target==BuildTarget.Android?"Builds/GaleriasAndroid-0.7.0":"Builds/GaleriasWindows-0.7.0"; Directory.CreateDirectory(folder);
+            string folder=target==BuildTarget.Android?"Builds/GaleriasAndroid-0.7.1":"Builds/GaleriasWindows-0.7.1"; Directory.CreateDirectory(folder);
             string previousName=PlayerSettings.productName;
             string previousId=PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
             try
             {
-                PlayerSettings.productName="Forja das Mares - Galerias"; PlayerSettings.bundleVersion="0.7.0";
+                PlayerSettings.productName="Forja das Mares - Galerias"; PlayerSettings.bundleVersion="0.7.1";
                 if(target==BuildTarget.Android)
                 {
                     PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP); PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;
-                    PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35; PlayerSettings.Android.bundleVersionCode=15; EditorUserBuildSettings.buildAppBundle=false;
+                    PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35; PlayerSettings.Android.bundleVersionCode=16; EditorUserBuildSettings.buildAppBundle=false;
                     PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.forjadasmares.galerias");
                 }
                 else PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone,ScriptingImplementation.Mono2x);

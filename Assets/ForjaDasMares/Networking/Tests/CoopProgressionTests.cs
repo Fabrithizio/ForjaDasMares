@@ -67,6 +67,9 @@ namespace ForjaDasMares.Networking.Tests
             { var item = channel.LocalProfile.inventory.Find(i => i.definitionId == id); channel.Request(CoopInventoryAction.Equip, item.instanceId, progression.Catalog.Find(id).slot); }
             session.StartGame(); yield return null; yield return null; session.SetInputBlocked(true);
             actor.Motor.enabled = actor.Combat.enabled = false;
+            var navigation = new UnityEngine.AI.NavMeshPath(); var corners = new Vector3[32];
+            var filter = new UnityEngine.AI.NavMeshQueryFilter { agentTypeID = 0, areaMask = UnityEngine.AI.NavMesh.AllAreas };
+            float pathClock = 0; int corner = 0, cornerCount = 0, reportedRoom = -1; EnemyActor pathTarget = null;
             for (int id = 1; id <= 6; id++)
             {
                 var room = session.Dungeon.Generator.Rooms[id]; session.Dungeon.Enter(room); Assert.IsTrue(session.PlaceInRoom(0, room));
@@ -81,6 +84,22 @@ namespace ForjaDasMares.Networking.Tests
                         Vector3 delta = nearest.transform.position - actor.transform.position; delta.y = 0; float distance = delta.magnitude; Vector3 direction = delta.normalized;
                         if (!actor.Motor.FacingLocked && direction.sqrMagnitude > .1f) actor.transform.rotation = Quaternion.LookRotation(direction);
                         travel = distance > 2.1f ? direction : distance < 1.4f ? -direction : Vector3.zero;
+                        // The regression bot previously pushed straight into crates for100s.
+                        // Follow real navigation around blocked sightlines; keep collisions,
+                        // combat, health, rewards and all victory assertions intact.
+                        pathClock -= Time.deltaTime;
+                        if (Physics.Linecast(actor.transform.position + Vector3.up, nearest.transform.position + Vector3.up, 1 << 9, QueryTriggerInteraction.Ignore))
+                        {
+                            if (pathClock <= 0 || pathTarget != nearest)
+                            {
+                                pathClock = .25f; pathTarget = nearest; cornerCount = 0; corner = 1;
+                                if (UnityEngine.AI.NavMesh.CalculatePath(actor.transform.position, nearest.transform.position, filter, navigation) && navigation.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+                                    cornerCount = navigation.GetCornersNonAlloc(corners);
+                                if (reportedRoom != id) { reportedRoom = id; Debug.Log("COOP_TEST_BOT_OBSTACLE_PATH room=" + id + " corners=" + cornerCount + " actor=" + actor.transform.position + " target=" + nearest.transform.position); }
+                            }
+                            while (corner < cornerCount && Vector3.Distance(actor.transform.position, corners[corner]) < .35f) corner++;
+                            if (corner < cornerCount) { travel = corners[corner] - actor.transform.position; travel.y = 0; travel.Normalize(); }
+                        }
                         bool warning = nearest.Combat.WarningRemaining > 0 && (nearest.Combat.CurrentBossAttack == BossAttackKind.GroundMarks || nearest.Combat.WarningRemaining < .45f && distance < 4);
                         if (warning) { travel = Vector3.Cross(Vector3.up, direction); if (nearest.Combat.WarningRemaining < .3f) actor.Motor.TryDodge(Vector2.right); }
                         if (distance < actor.Combat.BasicAttack.range - .1f) actor.Combat.TryAttack(); if (distance < 3.2f) actor.Combat.TrySpecial();

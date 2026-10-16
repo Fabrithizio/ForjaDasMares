@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace ForjaDasMares
 {
     [DefaultExecutionOrder(-200)]
-    public sealed class ArenaInput : MonoBehaviour, IHeroCommands
+    public sealed class ArenaInput : MonoBehaviour, IHeroCommands, IContinuousCombatCommands
     {
         [SerializeField] InputActionAsset actions;
         InputActionAsset runtimeActions;
@@ -14,7 +14,14 @@ namespace ForjaDasMares
         bool specialPending, nextPending, damagePending, victoryPending, touchHeld;
         int heroSlot = -1;
         Vector2 touchMove;
-        bool blocked;
+        bool blocked, deviceAttackHeld, uiAttackHeld, superPending;
+        InputAction superAction;
+        public bool AttackHeld => !blocked && (deviceAttackHeld || uiAttackHeld);
+        public bool CombatBlocked => blocked;
+        public void SetUiAttackHeld(bool held) { if(!blocked && held && !uiAttackHeld) attackPending=true; uiAttackHeld = !blocked && held; }
+        public void RequestAttack() { if(!blocked) attackPending=true; }
+        public void RequestSuper() { if(!blocked) superPending = true; }
+        public bool TakeSuper() { bool value = !blocked && superPending; superPending = false; return value; }
         public System.Predicate<Vector2> PointerBlocked { get; set; }
         public void BlockCommands(bool value) { blocked = value; ClearRequests(); }
         public InputActionAsset Actions => actions;
@@ -35,6 +42,10 @@ namespace ForjaDasMares
             pointer.performed += OnPoint;
             move.performed += OnMove;
             gameplay.FindAction("Attack", true).performed += OnAttack;
+            gameplay.FindAction("Attack", true).canceled += _ => deviceAttackHeld = false;
+            superAction = gameplay.FindAction("Super");
+            if(superAction == null) { superAction = gameplay.AddAction("Super", InputActionType.Button); superAction.AddBinding("<Keyboard>/q"); superAction.AddBinding("<Gamepad>/rightShoulder"); }
+            superAction.performed += _ => RequestSuper();
             gameplay.FindAction("Dodge", true).performed += OnDodge;
             gameplay.FindAction("Reset", true).performed += OnReset;
             BindOptional("Special", () => specialPending = true);
@@ -53,10 +64,10 @@ namespace ForjaDasMares
         void OnPoint(InputAction.CallbackContext _) => pointerMode = !Application.isMobilePlatform;
         void OnMove(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; }
         void OnAttack(InputAction.CallbackContext context)
-        { if (context.control.device is Mouse && PointerBlocked != null && PointerBlocked(PointerPosition)) return; if (context.control.device is Gamepad) pointerMode = false; attackPending = true; }
+        { if (context.control.device is Mouse && PointerBlocked != null && PointerBlocked(PointerPosition)) return; if (context.control.device is Gamepad) pointerMode = false; attackPending = true; deviceAttackHeld = true; }
         void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
         void OnReset(InputAction.CallbackContext _) => resetPending = true;
-        void ClearRequests() { attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }
+        void ClearRequests() { deviceAttackHeld = uiAttackHeld = superPending = false; attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }
         public bool TakeAttack() { bool value = !blocked && attackPending; attackPending = false; return value; }
         public bool TakeDodge() { bool value = !blocked && dodgePending; dodgePending = false; return value; }
         public bool TakeReset() { bool value = !blocked && resetPending; resetPending = false; return value; }

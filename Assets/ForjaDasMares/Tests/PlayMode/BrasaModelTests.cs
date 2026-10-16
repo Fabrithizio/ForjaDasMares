@@ -40,7 +40,7 @@ namespace ForjaDasMares.Tests
             Vector3 hand=model.PrimarySocket.position;
             model.Animator.Play("Base Layer.Walk",0,.75f);model.Animator.Update(0);
             Assert.That(Vector3.Distance(hand,model.PrimarySocket.position),Is.GreaterThan(.02f),"A real walk clip must move the skeleton.");
-            model.Animate(HeroState.Attack,.25f,0,true);model.Animator.Update(0);hand=model.PrimarySocket.position;
+            model.Animate(HeroState.Attack,.25f,0,true);model.Animator.Update(.08f);hand=model.PrimarySocket.position;
             model.Animate(HeroState.Attack,.75f,0,true);model.Animator.Update(0);
             Assert.That(Vector3.Distance(hand,model.PrimarySocket.position),Is.GreaterThan(.02f));
             Assert.That(Vector3.Distance(actor,heroes.transform.position),Is.LessThan(.001f));Assert.That(heroes.Health.Current,Is.EqualTo(hp));
@@ -62,6 +62,40 @@ namespace ForjaDasMares.Tests
             Assert.That(model.PrimarySocket.childCount,Is.GreaterThan(0));Assert.IsTrue(bridge.Unequip(EquipmentSlot.MainHand));Assert.IsTrue(model.DefaultWeapon.activeSelf);
             heroes.Select(1);yield return null;Assert.IsNull(heroes.GetComponent<HeroPresentation>().Visible.GetComponentInChildren<HeroModelView>(true));
             heroes.Select(0);yield return null;Assert.IsTrue(model.gameObject.activeInHierarchy);Assert.IsTrue(model.DefaultWeapon.activeSelf);
+        }
+        [UnityTest] public IEnumerator OnlyOneBodyRemainsVisibleAfterEquipmentAndHeroChanges()
+        {
+            for(int i=0;i<4;i++)
+            {
+                heroes.Select(1);yield return null;heroes.Select(0);yield return null;
+                var visible=heroes.GetComponent<HeroPresentation>().Visible;
+                Assert.That(visible.GetComponentsInChildren<HeroModelView>(true).Length,Is.EqualTo(1));
+                foreach(string name in new[]{"Body_Placeholder","Head_Placeholder","FacingMarker","GreatSword"})Assert.IsFalse(visible.Find(name).gameObject.activeInHierarchy,"Legacy overlap: "+name);
+                int bodies=0;foreach(var skin in visible.GetComponentsInChildren<SkinnedMeshRenderer>())if(skin.sharedMesh.vertexCount>1000)bodies++;
+                Assert.That(bodies,Is.EqualTo(1),"Exactly one body skin must render.");
+                foreach(var renderer in visible.GetComponentsInChildren<MeshRenderer>())Assert.IsFalse(renderer.name=="Body_Placeholder"||renderer.name=="Head_Placeholder");
+            }
+        }
+        [Test] public void ComboHeavyAndSuperUseSeparateClipsWithFiniteSkinDeformation()
+        {
+            heroes.GetComponent<HeroPresentation>().enabled=false;
+            var baked=new Mesh();
+            for(int variant=0;variant<5;variant++)
+            {
+                model.Animate(variant==4?HeroState.Skill:HeroState.Attack,.5f,0,true,variant,variant+1,.3f);model.Animator.Update(.1f);
+                string name=new[]{"Attack","Attack2","Attack3","Charged","Super"}[variant];
+                Assert.IsTrue(model.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer."+name),name);
+                foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {skin.BakeMesh(baked);Assert.That(baked.bounds.size.magnitude,Is.LessThan(6),"Exploding or duplicated displaced skin: "+name);Assert.IsFalse(float.IsNaN(baked.bounds.center.x));}
+            }
+            Object.DestroyImmediate(baked);
+        }
+        [UnityTest] public IEnumerator HoldingACombatPoseDoesNotRestartAnAnimatorTransitionEveryFrame()
+        {
+            heroes.GetComponent<HeroPresentation>().enabled=false;
+            for(int i=0;i<30;i++){model.Animate(HeroState.Attack,.5f,0,true,1,42,.25f);yield return null;}
+            yield return new WaitForSeconds(.12f);
+            Assert.IsFalse(model.Animator.IsInTransition(0));Assert.IsTrue(model.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Attack2"));
         }
     }
 }

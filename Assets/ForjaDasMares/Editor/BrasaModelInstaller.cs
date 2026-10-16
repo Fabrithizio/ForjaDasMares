@@ -14,7 +14,7 @@ namespace ForjaDasMares.Editor
         public const string ControllerPath=Root+"Brasa.controller";
         [Serializable] sealed class Palette { public Entry[] materials; }
         [Serializable] sealed class Entry { public string name;public float[] color;public float roughness,metallic; }
-        static readonly string[] Names={"Idle","Walk","Attack","Skill","Dodge","Hit","Dead","Victory"};
+        static readonly string[] Names={"Idle","Walk","Attack","Skill","Dodge","Hit","Dead","Victory","Attack2","Attack3","Charged","Super"};
         [MenuItem("Forja das Mares/Characters/Install Brasa in Galerias")]
         public static void Apply()
         {
@@ -53,17 +53,20 @@ namespace ForjaDasMares.Editor
             if(!controller.parameters.Any(p=>p.name=="State"))controller.AddParameter("State",AnimatorControllerParameterType.Int);
             if(!controller.parameters.Any(p=>p.name=="Speed"))controller.AddParameter("Speed",AnimatorControllerParameterType.Float);
             if(!controller.parameters.Any(p=>p.name=="Alive"))controller.AddParameter("Alive",AnimatorControllerParameterType.Bool);
+            if(!controller.parameters.Any(p=>p.name=="ActionTime"))controller.AddParameter("ActionTime",AnimatorControllerParameterType.Float);
             var machine=controller.layers[0].stateMachine;
+            foreach(var transition in machine.anyStateTransitions)machine.RemoveAnyStateTransition(transition);
             for(int i=0;i<Names.Length;i++)
             {
                 var clip=clips.SingleOrDefault(c=>c.name==Names[i]);
                 if(clip==null||AnimationUtility.GetCurveBindings(clip).Length==0)throw new InvalidOperationException("Missing real bone clip: "+Names[i]);
                 var state=machine.states.Select(s=>s.state).FirstOrDefault(s=>s.name==Names[i])??machine.AddState(Names[i],new Vector3(240*(i%4),100*(i/4),0));
                 state.motion=clip;
+                state.writeDefaultValues=true;
+                state.timeParameterActive=Names[i].StartsWith("Attack")||Names[i]=="Skill"||Names[i]=="Charged"||Names[i]=="Super"||Names[i]=="Dodge"||Names[i]=="Hit";
+                if(state.timeParameterActive)state.timeParameter="ActionTime";
                 if(i==0)machine.defaultState=state;
                 if(i==1){state.speedParameter="Speed";state.speedParameterActive=true;}
-                if(!machine.anyStateTransitions.Any(t=>t.destinationState==state))
-                {var transition=machine.AddAnyStateTransition(state);transition.hasExitTime=false;transition.duration=.06f;transition.canTransitionToSelf=false;transition.AddCondition(AnimatorConditionMode.Equals,i,"State");}
             }
             EditorUtility.SetDirty(controller);AssetDatabase.SaveAssets();
             var prefabRoot=new GameObject("Brasa_Model");
@@ -87,11 +90,42 @@ namespace ForjaDasMares.Editor
                 var visual=heroes.transform.Find("HeroVisual_warrior");if(visual==null)throw new InvalidOperationException("Existing warrior root missing.");
                 foreach(string name in new[]{"Body_Placeholder","Head_Placeholder","FacingMarker","GreatSword"})
                 {var old=visual.Find(name);if(old!=null)old.gameObject.SetActive(false);}
-                if(visual.Find("Brasa_Model")==null)
-                {var instance=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath));instance.transform.SetParent(visual,false);}
+                // SaveAsPrefabAsset adopts the filename "Brasa". Find the actual component,
+                // not a transient object name; previous name checks appended overlapping skins.
+                var views=visual.GetComponentsInChildren<HeroModelView>(true);
+                HeroModelView keep=null;
+                foreach(var view in views)
+                {
+                    if(view.transform.parent!=visual||PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(view.gameObject)!=PrefabPath)
+                        throw new InvalidOperationException("Unexpected authored model; inspect before replacing.");
+                    if(keep==null)keep=view;
+                    else UnityEngine.Object.DestroyImmediate(view.gameObject);
+                }
+                if(keep==null)
+                {var instance=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath));instance.transform.SetParent(visual,false);keep=instance.GetComponent<HeroModelView>();}
+                keep.name="Brasa_Model";keep.gameObject.SetActive(true);
+                if(visual.GetComponentsInChildren<HeroModelView>(true).Length!=1)throw new InvalidOperationException("Duplicate Brasa skin.");
+                var combat=heroes.GetComponent<HeroCombat>();combat.ConfigureFlow(Flow());EditorUtility.SetDirty(combat);
+                string ribbonPath="Assets/ForjaDasMares/Data/MapStyles/Galerias/CombatRibbon.mat";
+                var ribbon=AssetDatabase.LoadAssetAtPath<Material>(ribbonPath);
+                if(ribbon==null){ribbon=new Material(Shader.Find("Universal Render Pipeline/Unlit"));AssetDatabase.CreateAsset(ribbon,ribbonPath);}
+                var feedback=heroes.GetComponent<HeroPowerFeedback>()??heroes.gameObject.AddComponent<HeroPowerFeedback>();feedback.Configure(combat,ribbon);EditorUtility.SetDirty(feedback);
                 EditorSceneManager.SaveScene(scene);
             }
-            AssetDatabase.SaveAssets();Debug.Log("BRASA_MODEL_READY scenes=2 clips=8 originalPlaceholderReferences=preserved");
+            AssetDatabase.SaveAssets();Debug.Log("BRASA_MODEL_READY scenes=2 clips=12 singlePresentationOwner=true combatFlow=ready");
+        }
+        static CombatFlowDefinition Flow()
+        {
+            const string path="Assets/ForjaDasMares/Data/MapStyles/Galerias/CombatFlow.asset";
+            var flow=AssetDatabase.LoadAssetAtPath<CombatFlowDefinition>(path);
+            if(flow==null){flow=ScriptableObject.CreateInstance<CombatFlowDefinition>();AssetDatabase.CreateAsset(flow,path);}
+            const string strikePath="Assets/ForjaDasMares/Data/MapStyles/Galerias/BrasaRupture.asset";
+            var strike=AssetDatabase.LoadAssetAtPath<AttackDefinition>(strikePath);
+            if(strike==null)
+            {
+                strike=ScriptableObject.CreateInstance<AttackDefinition>();strike.damage=120;strike.range=5.4f;strike.arc=360;strike.windup=.45f;strike.recovery=.9f;strike.knockback=6;strike.color=new Color(1,.5f,.08f);AssetDatabase.CreateAsset(strike,strikePath);
+            }
+            flow.superAttack=strike;EditorUtility.SetDirty(flow);return flow;
         }
         static Transform Find(Transform root,string name)
         {if(root.name==name)return root;foreach(Transform child in root){var found=Find(child,name);if(found!=null)return found;}return null;}

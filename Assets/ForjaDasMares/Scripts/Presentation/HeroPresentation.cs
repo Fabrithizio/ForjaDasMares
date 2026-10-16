@@ -26,6 +26,13 @@ namespace ForjaDasMares
         {
             for (int i = 0; i < models.Length; i++) models[i].gameObject.SetActive(i == slot);
             visible = models[Mathf.Clamp(slot, 0, models.Length - 1)]; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();
+            if(visibleView != null)
+            {
+                foreach(var view in visible.GetComponentsInChildren<HeroModelView>(true))if(view!=visibleView)view.gameObject.SetActive(false);
+                // Legacy referenced parts stay serialized but must never draw over the skin.
+                foreach(string name in new[]{"Body_Placeholder","Head_Placeholder","FacingMarker","GreatSword"})
+                { var part=visible.Find(name);if(part!=null)part.gameObject.SetActive(false); }
+            }
         }
         public void ShowVictory() { if (health.IsAlive) victoryTime = 2; }
         public void ResetPose() { hitTime = victoryTime = 0; if (visible != null) { visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity; } }
@@ -37,7 +44,8 @@ namespace ForjaDasMares
             if (visibleView != null)
             {
                 visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity;
-                visibleView.Animate(State, ReplicaMode ? replicaAnimation : combat.NormalizedTime, motor.PlanarVelocity.magnitude, health.IsAlive);
+                float time=ReplicaMode?replicaAnimation:State==HeroState.Dodge?motor.DodgeProgress:State==HeroState.Hit?1-hitTime/.2f:combat.NormalizedTime;
+                visibleView.Animate(State, time, motor.PlanarVelocity.magnitude, health.IsAlive, ReplicaMode?0:combat.AnimationVariant, ReplicaMode?0:combat.ActionVersion, ReplicaMode?.25f:combat.ImpactTime);
                 return;
             }
             float bob = State == HeroState.Walk ? Mathf.Sin(Time.time * 16) * 0.05f : State == HeroState.Victory ? Mathf.Abs(Mathf.Sin(Time.time * 8)) * 0.25f : 0;
