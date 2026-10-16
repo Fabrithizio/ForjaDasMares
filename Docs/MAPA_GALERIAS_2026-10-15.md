@@ -61,3 +61,7 @@ Identidade temporária de build do mapa foi retirada da configuração principal
 Fonte do mapa no GitHub d7b32f3 antes deste fechamento; todos os arquivos/metadados estão no backup, e o fechamento recebe checkpoint posterior. Lista detalhada em MAPA_GALERIAS_ARQUIVOS.md. Nenhum Editor/build permanece trabalhando após esta entrega; apenas a janela de teste do mapa foi mantida aberta.
 
 Classificação: **aprovado com limitações para um primeiro mapa local de estilo**. Cinco testes finais do mapa e smoke real de persistência passaram;99 testes da base já aprovados na regressão inicial. Visual parcialmente observado no executável, avaliação humana completa e Android físico pendentes. Arte/animações finais, cenário destrutível, profiling sustentado e cooperação neste mapa não foram marcados prontos.
+
+## Atualização: Android físico verificado
+
+Após reconectar o moto g15, APK0.6.6 instalado e teste físico realizado: joystick, primeiro combate, portas, esquiva, colisão e semitransparência observados. Substitui a pendência de instalação acima; demais limites permanecem. Ver GALERIAS_ANDROID_2026-10-15.md para resultados e evidências. Nenhuma alteração de código nesta verificação.
