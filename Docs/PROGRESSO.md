@@ -365,3 +365,7 @@ Dois defeitos relatados reproduzidos por testes: salto do pivô virtual em caixa
 ### HUD rústico — checkpoint PC0.6.7
 
 Novos RoundedHudGraphic/HudIcon/RusticHudTheme/RusticDungeonHud e teste RusticHudTests com metas; DungeonHud e ProgressionHud integrados à apresentação compacta, ícones originais e painéis arredondados. Vida/XP/ouro/objetivo reais, mochila/menu, controles existentes reaproveitados, cooldowns, toque em safe area, ferramentas de teste recolhidas. Tema verde/cobre/pergaminho provisório. Sem assets externos/licenças adicionados. Primeira rodada identificou Graphic duplicado; resolvido por superfície filha. Última17/17 aprovada,0 falhas. Windows0.6.7 compilado e aberto; Firewall exige ação pessoal e limita revisão visual. Android compilando. HUD local de masmorras PC/Android; lobby online continua apresentação própria. Não declarar teste físico novo ou profiling. Relatório HUD_RUSTICO_2026-10-16.md.
+
+### Refinamento do HUD0.6.8 — testes e Windows
+
+QA físico0.6.7 no moto g15 confirmou renderização, menu/inventário, seleção/comparação de item, fechamento, joystick, semitransparência e acionamento da habilidade com cooldown. Identificados e corrigidos trilho XP sem preenchimento vertical e controles aparecendo sob menu. Última rodada17/17 passou, novo assert de altura positiva. Windows0.6.8 real compilado Succeeded/errors0; atalho atualizado preservando argumentos/perfil. Android0.6.8/code14 em preparação. Nenhum novo teste online ou medição sustentada. Câmera/UI fonte protegida no GitHub; relatório HUD_RUSTICO_2026-10-16.md.

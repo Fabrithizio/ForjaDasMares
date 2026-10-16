@@ -16,6 +16,7 @@ namespace ForjaDasMares
         RectTransform safe, menu, tools, healthFill, xpFill, bossFill;
         Text heroName, healthText, levelText, location, objective, money, loot, prompt, bossName, specialTime, dodgeTime;
         GameObject bossPanel;
+        GameObject mobileControls;
         HudIcon portrait;
         Button interact;
         readonly Dictionary<string, Button> legacy = new Dictionary<string, Button>();
@@ -58,7 +59,7 @@ namespace ForjaDasMares
         {
             var background=RusticHudTheme.Rect(parent,name+"Track",new Vector2(0,1),position,size);
             var track=RusticHudTheme.Panel(background,new Color(.025f,.035f,.028f),size.y*.5f);track.border=.5f;
-            var fill=RusticHudTheme.Rect(background,name,new Vector2(0,.5f),new Vector2(2,0),new Vector2(size.x-4,size.y-4));
+            var fill=RusticHudTheme.Rect(background,name,new Vector2(0,.5f),new Vector2(2,0),new Vector2(size.x-4,Mathf.Max(2,size.y-4)));
             var graphic=RusticHudTheme.Panel(fill,color,size.y*.5f);graphic.border=0;return fill;
         }
         void Build()
@@ -109,6 +110,7 @@ namespace ForjaDasMares
             var touch=canvas.transform.Find("TouchControls_Minimal");
             if(touch!=null)
             {
+                mobileControls=touch.gameObject;
                 touch.SetParent(safe,false);var rect=(RectTransform)touch;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;touch.gameObject.SetActive(mobile);
                 if(mobile)
                 {
@@ -154,7 +156,14 @@ namespace ForjaDasMares
         public void ToggleMenu(){bool open=!MenuOpen;tools.gameObject.SetActive(false);menu.gameObject.SetActive(open);}
         void UpdateSafeArea()
         {if(safe==null)return;Rect area=Screen.safeArea;safe.anchorMin=new Vector2(area.xMin/Mathf.Max(1,Screen.width),area.yMin/Mathf.Max(1,Screen.height));safe.anchorMax=new Vector2(area.xMax/Mathf.Max(1,Screen.width),area.yMax/Mathf.Max(1,Screen.height));safe.offsetMin=safe.offsetMax=Vector2.zero;}
-        void Update(){if(session==null)return;UpdateSafeArea();refresh-=Time.unscaledDeltaTime;if(refresh<=0){refresh=.1f;Refresh();}}
+        void Update()
+        {
+            if(session==null)return;
+            bool menuVisible=MenuOpen||tools.gameObject.activeSelf;
+            if(mobileControls!=null)mobileControls.SetActive(Application.isMobilePlatform&&!menuVisible);
+            if(interact!=null)interact.gameObject.SetActive(!menuVisible);
+            UpdateSafeArea();refresh-=Time.unscaledDeltaTime;if(refresh<=0){refresh=.1f;Refresh();}
+        }
         void Refresh()
         {
             var heroes=session.Heroes;var health=heroes.Health;heroName.text=heroes.Current.displayName;portrait.color=heroes.Current.color;

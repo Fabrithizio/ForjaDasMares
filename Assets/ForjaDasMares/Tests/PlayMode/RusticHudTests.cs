@@ -23,6 +23,7 @@ namespace ForjaDasMares.Tests
         {
             Assert.NotNull(hud);Assert.IsFalse(hud.MenuOpen);
             var root=hud.SafeRoot;Assert.IsTrue(root.Find("HeroCard").gameObject.activeInHierarchy);
+            Assert.That(((RectTransform)root.Find("HeroCard/ExperienceFillTrack/ExperienceFill")).rect.height,Is.GreaterThan(0),"Thin XP bars must still have a visible fill.");
             root.Find("HudMenu").GetComponent<Button>().onClick.Invoke();Assert.IsTrue(hud.MenuOpen);
             root.Find("AdventureMenu/Menu_Inventory").GetComponent<Button>().onClick.Invoke();Assert.IsTrue(inventory.IsOpen);Assert.IsFalse(hud.MenuOpen);
             inventory.Close();Assert.IsFalse(inventory.IsOpen);

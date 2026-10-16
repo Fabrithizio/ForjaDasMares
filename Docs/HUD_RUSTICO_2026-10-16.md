@@ -35,3 +35,15 @@ Resultados de compilação/testes/builds e capturas serão acrescentados ao conc
 Primeira rodada17 casos:8 aprovados/9 falhas, por tentativa de adicionar dois Graphic ao mesmo objeto de botão. Corrigido com superfície filha e Image original preservada/desativada. Rodada seguinte17/17 aprovada,0 falhas (work/galerias/hud-fixed-tests.xml). Inclui8 testes de câmera,6 do mapa e3 de HUD. Suíte ampla107 anterior é da correção de câmera antes do HUD; não foi apresentada como repetida depois desta interface.
 
 Build Windows0.6.7 real: GALERIAS_BUILD StandaloneWindows64 Succeeded/errors0. Executável aberto com perfil QA separado; captura mostra composição nova, mas aviso de Firewall cobre parte da tela e precisa de resposta pessoal. Sem confirmação de revisão visual completa neste checkpoint. Android em compilação. Janelas de inventário e controles de toque aguardam capturas da build final.
+
+## Revisão física e refinamento0.6.8
+
+APK0.6.7/code13/ARM64 assinado v2 instalado-r realmente no moto g15 e executado. HUD, menu, inventário e seleção/comparação de item observados por toques ADB; fechamento, joystick, semitransparência e habilidade com cooldown5s observados. Log próprio sem exceções Unity/falhas fatais examinadas. Evidências work/galerias/hud-android-main/menu/inventory2/compare/moved/combat.png e hud-android-067-device.log. Não é uma sessão humana completa.
+
+Revisão visual encontrou preenchimento de XP com altura0 no trilho fino e sobreposição de controles sob menu. Corrigida altura mínima2 e controles móveis recolhidos durante menu/ferramentas, liberando o dedo capturado pelo joystick. Novo assert de altura no teste. Última rodada17/17 aprovada,0 falhas (hud-final-tests.xml). Builds finais avançam para0.6.8/code14 para distinguir o refinamento;0.6.7 fica apenas como checkpoint de QA. Salvamento do binário Windows0.6.7 também passou write/read em perfis isolados:13itens/5XP/5moedas/armadura/max160/opções.
+
+## Como testar no PC e no celular
+
+Abra o atalho Desktop/Jogos/Jogar Galerias da Mare.lnk (atualizado para0.6.8) ou a cena GaleriasDungeon. No celular, abra Forja das Mares - Galerias, aplicativo separado do online. Caminhe junto a caixas/paredes e atravesse o corredor: câmera deve manter ângulo e seguir o jogador. Toque em Mochila fora de combate, selecione um item para comparar atributos, feche e volte a mover. Abra Menu, teste Opções e Ferramentas de teste; no Android, os controles de combate se recolhem enquanto esse menu está aberto. Use habilidade/esquiva e confira segundos de cooldown. Texto ampliado fica na aba Opções existente. Não use descarte sem intenção: preservada confirmação explícita.
+
+Windows final0.6.8 compilado Succeeded/errors0. Build real em Builds/GaleriasWindows-0.6.8/ForjaDasMaresGalerias.exe. Android final está em compilação neste checkpoint; o aparelho tem0.6.7 de QA até a instalação final. Aviso de Firewall requer ação pessoal; autorização do usuário não altera a proibição da ferramenta de atuar em permissões de segurança.
