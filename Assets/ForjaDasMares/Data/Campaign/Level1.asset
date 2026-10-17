@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CampaignLevel
   levelId: campaign-1
   displayName: "01 \xB7 Estrada das Cinzas"
-  description: "Catacumbas \xB7 grupo de 2 a 4 \xB7 placas e flechas"
+  description: "Catacumbas \xB7 solo ou grupo de 1 a 4 \xB7 placas e flechas"
   seed: 17411
   biomeIndex: 0
   route:

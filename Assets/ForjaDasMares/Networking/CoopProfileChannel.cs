@@ -16,6 +16,7 @@ namespace ForjaDasMares.Networking
         readonly int[] sent = new int[4];
         readonly int[] wireSequence = new int[4];
         readonly float[] lastRequest = new float[4];
+        readonly float[] lastResync=new float[4];float initialRetry;
         CoopProfileFrame local;
         public PlayerProfile LocalProfile => director.Manager.IsServer && director.LocalSlot >= 0 ? authority.Profile(director.LocalSlot)?.Profile : local?.profile;
         public string Message { get; private set; }
@@ -26,8 +27,23 @@ namespace ForjaDasMares.Networking
         public void Bind()
         {
             Array.Clear(sent, 0, sent.Length); Array.Clear(wireSequence, 0, wireSequence.Length); local = null;
+            initialRetry=0;Array.Clear(lastResync,0,lastResync.Length);
             director.Manager.CustomMessagingManager.RegisterNamedMessageHandler("fdm.profile.v1", Receive);
             director.Manager.CustomMessagingManager.RegisterNamedMessageHandler("fdm.inventory.v1", ReceiveIntent);
+            director.Manager.CustomMessagingManager.RegisterNamedMessageHandler("fdm.profile.request.v1",ReceiveInitialRequest);
+        }
+        void Update()
+        {
+            if(director==null||director.Manager.IsServer||!director.Manager.IsConnectedClient||director.LocalSlot<0||local!=null)return;
+            initialRetry-=Time.unscaledDeltaTime;if(initialRetry>0)return;initialRetry=1.5f;
+            using var writer=new FastBufferWriter(4,Allocator.Temp);writer.WriteValueSafe(CoopLimits.Protocol);
+            director.Manager.CustomMessagingManager.SendNamedMessage("fdm.profile.request.v1",NetworkManager.ServerClientId,writer,NetworkDelivery.ReliableSequenced);
+        }
+        void ReceiveInitialRequest(ulong sender,FastBufferReader reader)
+        {
+            if(!director.Manager.IsServer||!director.TryGetSlot(sender,out int slot)||reader.Length-reader.Position!=4||Time.unscaledTime-lastResync[slot]<1)return;
+            reader.ReadValueSafe(out int protocol);if(protocol!=CoopLimits.Protocol)return;
+            lastResync[slot]=Time.unscaledTime;Resend(slot);
         }
         public void Resend(int slot) => sent[slot] = 0;
         public void Sync(ulong client, int slot)

@@ -241,8 +241,8 @@ namespace ForjaDasMares.Networking
             reader.ReadValueSafe(out int count); if (count <= 0 || count > 512 || count != reader.Length - reader.Position) return;
             byte[] bytes = new byte[count]; reader.ReadBytesSafe(ref bytes, count);
             if (Encoding.UTF8.GetString(bytes) != dungeon.Generator.Layout.Signature()) { network.DisconnectClient(sender, "Layout incompatível."); return; }
-            seats[slot].loaded = true; Debug.Log("COOP_MAP_READY slot=" + slot);
-            if(Phase==CoopPhase.Playing){party.Set(slot,actors[slot].Health);actors[slot].SetAuthority(true);}
+            seats[slot].loaded = true;profiles.Resend(slot); Debug.Log("COOP_MAP_READY slot=" + slot);
+            if(Phase==CoopPhase.Playing){if(!PlaceInRoom(slot,dungeon.CurrentRoom)){network.DisconnectClient(sender,"Sem ponto seguro de entrada.");return;}party.Set(slot,actors[slot].Health);actors[slot].SetAuthority(true);}
         }
         void SendReady()
         {
