@@ -23,6 +23,8 @@ Escolha a fase e use PROCURAR GRUPO DESTA FASE. O jogo procura uma sala pública
 
 Progresso significa setores concluídos, excluindo a entrada. Aos20% ou mais, nenhuma nova pessoa entra, mesmo com código; reconexão de participante já reservado é diferente e continua disponível. Quem chega recebe o mapa/estado atual e recompensas futuras, sem receber retroativamente os baús já abertos.
 
+Cada participante mantém sua vaga durante a tentativa, inclusive ao desconectar por mais de90s, para voltar ao mesmo perfil sem duplicar o save. O limite4 inclui essas reservas: não é possível substituir indefinidamente jogadores na mesma tentativa. O retorno depende de a sessão do serviço ainda existir; saída do host encerra tudo. Nas variantes cooperativas antigas, a reserva continua seguindo a janela antiga.
+
 AMIGOS E CONVITES guarda neste aparelho até6 nomes e códigos compartilhados. Toque num convite salvo para conectar. Não existe ainda conta de amigo, presença online ou convite remoto automático; o código expira quando o host fecha a sala.
 
 ## Controles e desafios

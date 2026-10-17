@@ -66,7 +66,7 @@ namespace ForjaDasMares.Networking.Editor
                 string path=DataRoot+"Level"+(tier+1)+".asset";var level=AssetDatabase.LoadAssetAtPath<CampaignLevel>(path);
                 if(level!=null){result[tier]=level;continue;}
                 level=ScriptableObject.CreateInstance<CampaignLevel>();level.levelId="campaign-"+(tier+1);level.displayName=names[tier];level.seed=17411+tier*331;level.biomeIndex=tier;
-                level.description=tier==0?"Catacumbas · grupo de 2 a 4 · placas e flechas":tier==1?"Floresta subterrânea · arqueiros e emboscadas":"Fortaleza vulcânica · invocadores e corredores de risco";
+                level.description=tier==0?"Catacumbas · solo ou grupo de 1 a 4 · placas e flechas":tier==1?"Floresta subterrânea · arqueiros e emboscadas":"Fortaleza vulcânica · invocadores e corredores de risco";
                 int count=12+tier*3;level.route=new Vector2Int[count];level.categories=new RoomCategory[count];
                 for(int i=0;i<count;i++){int row=i/4,x=i%4;level.route[i]=new Vector2Int(row%2==0?x:3-x,row);level.categories[i]=i==0?RoomCategory.Entrance:i==count-1?RoomCategory.Boss:i==count-2?RoomCategory.Rest:i%6==2?RoomCategory.Event:i%6==4?RoomCategory.Trap:i%7==6?RoomCategory.Treasure:i%3==0?RoomCategory.HardCombat:RoomCategory.Combat;}
                 level.plateHold=1.5f+tier*.6f;level.dartInterval=4.2f-tier*.5f;

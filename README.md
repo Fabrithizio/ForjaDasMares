@@ -2,15 +2,15 @@
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
 
-## Campanha online — revisão0.8.0
+## Campanha — revisão0.8.1
 
-**Revisão seguinte0.8.1:** início solo em todos os mapas, bônus temporário de10% em vida/dano, placas sequenciais no solo e sala privada que o host pode abrir para grupos. Novas pessoas entram na mesma fase até antes de20% de setores concluídos, inclusive com a partida iniciada. Tela inicial com campanha, agenda local de convites, volume e saída confirmada. Relatório atual: [campanha solo e entrada em andamento](Docs/CAMPANHA_SOLO_2026-10-17.md); [instruções atualizadas](Docs/CAMPANHA_COMO_JOGAR.md). Caminhos0.8.0 e evidências abaixo são históricos, preservados; use o atalho atualizado para0.8.1 quando a validação final estiver registrada.
+Início solo em todos os mapas, bônus temporário de10% em vida/dano, placas sequenciais no solo e sala privada que o host pode abrir para grupos. Novas pessoas entram na mesma fase até antes de20% de setores concluídos, inclusive com a partida iniciada. Tela inicial com campanha, agenda local de convites, volume e saída confirmada. Relatório atual: [campanha solo e entrada em andamento](Docs/CAMPANHA_SOLO_2026-10-17.md); [instruções atualizadas](Docs/CAMPANHA_COMO_JOGAR.md).
 
-Mapa com três fases de12/15/18 setores, grupo de2–4, sala privada por código e busca de sala pública aguardando parceiros na mesma fase. Placas simultâneas para dois heróis, flechas com aviso, névoa exterior e mochila inicial vazia com equipamentos ao redor da prévia3D. O grupo pode voltar ao mapa após o resultado e iniciar outra fase sem trocar de código. Saves antigos preservados; progresso da campanha fica no host.
+Três fases de12/15/18 setores,1–4 participantes por tentativa (incluindo reservas). Placas simultâneas em grupo, flechas com aviso, névoa exterior e mochila inicial vazia com equipamentos ao redor da prévia3D. O grupo pode voltar ao mapa após o resultado e iniciar outra fase sem trocar de código. Saves antigos preservados; progresso fica no host. Não há conta global ou lista de amigos autenticados: a agenda guarda códigos compartilhados neste aparelho.
 
-Windows: `Builds/CampaignWindows-0.8.0/ForjaDasMaresCampanha.exe`; cena `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Consulte [como jogar em dupla](Docs/CAMPANHA_COMO_JOGAR.md) e [relatório de implementação e limites](Docs/CAMPANHA_2026-10-17.md). Builds não são incluídas no Git.
+Windows: `Builds/CampaignWindows-0.8.1/ForjaDasMaresCampanha.exe`; Android: `Builds/CampaignAndroid-0.8.1/ForjaDasMaresCampanha.apk`; cena `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Use o atalho Jogar Campanha Forja das Mares em Desktop/Jogos. Builds não são incluídas no Git.
 
-Compilação Windows sem erros; regressão ampla137 aprovados/1 ignorado/0 falhas, depois39/39 e13/13 testes focados. Descoberta pública, combate, baú sem duplicação, resgate, reconexão e troca de fases exercitados entre dois processos Windows reais pelo Relay. Conclusões de teste foram administrativas, sem alegar vitória humana completa. Validação física da campanha Android, quatro jogadores e redes distintas ainda pendentes. Esta revisão não é lançamento comercial nem aprovação para Play Store; as seções abaixo documentam variantes anteriores preservadas.
+Revisão0.8.1:34 casos de rede,33 aprovados/1 ignorado/0 falhas. Testes reais Windows/Relay e PC–moto g15 por Wi-Fi, com instalação0.8.1/code19, navegação por toque, movimento, mochila antes de recompensas e prévia3D. Relatório registra bugs encontrados/corrigidos e quais fluxos foram repetidos após cada alteração. Quatro dispositivos, redes distintas, vitórias humanas completas e desempenho sustentado continuam pendentes. Não é lançamento comercial nem aprovação para Play Store. Regressão ampla137/138 e testes39/39 e13/13 pertencem ao checkpoint0.8.0 anterior, preservado em Docs/CAMPANHA_2026-10-17.md; não foram apresentados como repetição integral na0.8.1.
 
 ## Mapa local Galerias — revisão0.7.2, locomoção do Brasa
 
