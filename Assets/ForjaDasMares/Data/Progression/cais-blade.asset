@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: cais-blade
   displayName: "L\xE2mina do Cais"
+  icon: {fileID: 21300000, guid: e62fd945de5cda84e938ed352dae7669, type: 3}
   description: "Cortes alternados; aceita escudo. Guerreiro e Cavaleiro R\xFAnico."
   slot: 0
   category: 0
@@ -23,8 +24,9 @@ MonoBehaviour:
   allowsOffHand: 1
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: ba1fa7f62a6d2f340acd964965e7eead, type: 2}
-  - {fileID: 11400000, guid: 35a3e05e80bdd98418b40539e32fe782, type: 2}
+  - {fileID: 11400000, guid: f471ad39594e89147ad5a137600d0bd5, type: 2}
+  - {fileID: 11400000, guid: bd84cf9574fc07b448627587353b5019, type: 2}
+  - {fileID: 11400000, guid: 30f8e134a6593714b9a63bda4f972482, type: 2}
   bonuses:
   - stat: 1
     value: 0.04

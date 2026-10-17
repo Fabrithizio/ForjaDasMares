@@ -15,8 +15,9 @@ namespace ForjaDasMares
     {
         public readonly List<DungeonNode> rooms = new List<DungeonNode>(12);
         public const float Spacing = 16;
+        public float WorldSpacing {get;private set;}=Spacing;
         public int BossId {get;private set;} = 6;
-        public Vector3 Center(int id) => new Vector3(rooms[id].coordinate.x * Spacing, 0, rooms[id].coordinate.y * Spacing);
+        public Vector3 Center(int id) => new Vector3(rooms[id].coordinate.x * WorldSpacing, 0, rooms[id].coordinate.y * WorldSpacing);
         static readonly Vector2Int[] Directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
         static readonly RoomCategory[] Main = { RoomCategory.Entrance, RoomCategory.Combat, RoomCategory.Combat, RoomCategory.Event, RoomCategory.HardCombat, RoomCategory.Trap, RoomCategory.Boss };
         public static DungeonLayout Generate(int seed, int maximumRooms, bool fixedMap, Vector2Int[] mainRoute = null)
@@ -42,10 +43,10 @@ namespace ForjaDasMares
             }
             if (!layout.Validate(maximumRooms, out string error)) throw new InvalidOperationException(error); return layout;
         }
-        public static DungeonLayout Campaign(Vector2Int[] route,RoomCategory[] categories)
+        public static DungeonLayout Campaign(Vector2Int[] route,RoomCategory[] categories,float spacing=Spacing)
         {
             if(route==null||categories==null||route.Length!=categories.Length||route.Length<2||route.Length>24)throw new ArgumentException("Invalid campaign route.");
-            var layout=new DungeonLayout{BossId=route.Length-1};
+            var layout=new DungeonLayout{BossId=route.Length-1,WorldSpacing=Mathf.Clamp(spacing,16,44)};
             for(int i=0;i<route.Length;i++){layout.Add(route[i],categories[i],i);if(i>0)layout.Connect(i-1,i);}
             if(!layout.Validate(24,out string error))throw new InvalidOperationException(error);
             return layout;

@@ -11,15 +11,17 @@ namespace ForjaDasMares
         Color baseColor;
         float flash, step;
         bool bound;
+        EnemyModelMotion segmentedMotion;
         public void Configure(EnemyActor owner, Transform body, Renderer[] renderers, GameObject guard) { actor = owner; model = body; surfaces = renderers; shield = guard; }
         public void Prepare(EnemyDefinition data)
         {
             if (colors == null) colors = new MaterialPropertyBlock();
             if (!bound) { actor.Health.Damaged += Hit; bound = true; }
             baseColor = data.color; flash = step = 0; model.localPosition = Vector3.zero; model.localRotation = Quaternion.identity; Paint(baseColor);
+            enabled=true;segmentedMotion=model.GetComponent<EnemyModelMotion>();if(segmentedMotion!=null)segmentedMotion.ClearReplicaState();
         }
         public void ShowReplica(EnemyDefinition data, EnemyState state, bool alive)
-        { if (colors == null) Prepare(data); enabled = false; Paint(data.color); if (shield != null) shield.SetActive(data.kind == EnemyKind.Guardian && alive && state != EnemyState.Attack && state != EnemyState.Stunned); model.localRotation = Quaternion.Euler(!alive ? 80 : state == EnemyState.Attack ? -12 : 0, 0, 0); }
+        { if (colors == null) Prepare(data);if(segmentedMotion!=null)segmentedMotion.SetReplicaState(state); enabled = false; Paint(data.color); if (shield != null) shield.SetActive(data.kind == EnemyKind.Guardian && alive && state != EnemyState.Attack && state != EnemyState.Stunned); model.localRotation = Quaternion.Euler(!alive ? 80 : state == EnemyState.Attack ? -12 : 0, 0, 0); }
         void Hit() => flash = 0.12f;
         void Paint(Color value) { colors.SetColor("_BaseColor", value); colors.SetColor("_Color", value); foreach (var surface in surfaces) surface.SetPropertyBlock(colors); }
         void LateUpdate()

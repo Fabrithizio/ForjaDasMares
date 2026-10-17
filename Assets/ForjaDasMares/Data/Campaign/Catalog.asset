@@ -101,10 +101,10 @@ MonoBehaviour:
     allowSecondaryWeapon: 0
   enemy:
     rewardId: Inimigo
-    experience: 3
+    experience: 1
     coins: 1
     guaranteedItems: 0
-    itemChance: 0.015
+    itemChance: 0.025
     minimumRarity: 0
   boss:
     rewardId: Chefe
@@ -131,6 +131,13 @@ MonoBehaviour:
     rewardId: "Vit\xF3ria"
     experience: 90
     coins: 20
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  miniboss:
+    rewardId: miniboss
+    experience: 12
+    coins: 8
     guaranteedItems: 1
     itemChance: 0
     minimumRarity: 1

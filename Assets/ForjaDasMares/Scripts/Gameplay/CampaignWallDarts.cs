@@ -12,7 +12,8 @@ namespace ForjaDasMares
         public void Configure(CampaignRun owner,DungeonSession map,DungeonRoom context,int lane,CampaignLevel data)
         {
             run=owner;session=map;room=context;level=data;offset=lane*.65f;
-            start=room.Center+new Vector3(-5.15f,.8f,-.5f+lane*1.25f);end=start+Vector3.right*10.3f;direction=Vector3.right;last=start;
+            float half=map.OpenLandscape?room.walkableHalf:5.15f;
+            start=room.Center+new Vector3(-half,.8f,-.5f+lane*1.25f);end=start+Vector3.right*(half*2);direction=Vector3.right;last=start;
             warning=Line("Warning_DodgeTheLane",new Color(1,.22f,.08f),.045f,2);warning.SetPosition(0,start);warning.SetPosition(1,end);
             arrow=Line("Arrow_OriginalPlaceholder",new Color(1,.83f,.3f),.075f,4);
         }
@@ -24,13 +25,13 @@ namespace ForjaDasMares
         }
         void Update()
         {
-            bool active=run.Running&&session.CurrentRoom==room&&!(room.node.category==RoomCategory.Trap&&room.objectiveComplete);
+            bool active=run.Running&&(session.CurrentRoom==room||session.OpenLandscape&&room.entered)&&!(room.node.category==RoomCategory.Trap&&room.objectiveComplete);
             if(!active){warning.enabled=arrow.enabled=false;return;}
             float clock=run.Clock+offset;int next=Mathf.FloorToInt(clock/level.dartInterval);float time=Mathf.Repeat(clock,level.dartInterval);
             if(cycle!=next){cycle=next;damage.Clear();last=start;blocked=false;}
             warning.enabled=time<1.1f;
-            float distance=(time-1.1f)*9;
-            bool flying=distance>=0&&distance<10.3f&&!blocked;arrow.enabled=flying;
+            float distance=(time-1.1f)*(session.OpenLandscape?20:9);
+            bool flying=distance>=0&&distance<Vector3.Distance(start,end)&&!blocked;arrow.enabled=flying;
             if(!flying)return;
             Vector3 point=start+direction*distance;
             if(Physics.Linecast(last,point,1<<9,QueryTriggerInteraction.Ignore)){blocked=true;arrow.enabled=false;return;}

@@ -8,6 +8,7 @@ namespace ForjaDasMares
         public static readonly Color Ink = new Color(.065f,.079f,.067f,.96f), Surface = new Color(.13f,.15f,.12f,.96f);
         public static readonly Color Copper = new Color(.65f,.47f,.28f), Gold = new Color(.91f,.74f,.43f), Parchment = new Color(.95f,.90f,.78f), Muted = new Color(.65f,.70f,.61f);
         public static string RarityName(ItemRarity value)=>value==ItemRarity.Common?"Comum":value==ItemRarity.Uncommon?"Incomum":value==ItemRarity.Rare?"Raro":value==ItemRarity.Epic?"Épico":"Lendário";
+        public static string SlotName(EquipmentSlot value)=>value==EquipmentSlot.MainHand?"Arma principal":value==EquipmentSlot.OffHand?"Mão secundária":value==EquipmentSlot.Armor?"Armadura":value==EquipmentSlot.Accessory?"Acessório":"Artefato";
         public static RectTransform Rect(Transform parent,string name,Vector2 anchor,Vector2 position,Vector2 size)
         { var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=r.pivot=anchor;r.anchoredPosition=position;r.sizeDelta=size;return r; }
         public static RoundedHudGraphic Panel(RectTransform rect,Color color,float radius=14)

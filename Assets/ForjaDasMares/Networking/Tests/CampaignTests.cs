@@ -25,7 +25,7 @@ namespace ForjaDasMares.Networking.Tests
                 Assert.AreEqual(RoomCategory.Boss,layout.rooms[layout.BossId].category);
                 int events=0,traps=0,combats=0;foreach(var category in data.categories){if(category==RoomCategory.Event)events++;if(category==RoomCategory.Trap)traps++;if(category==RoomCategory.Combat||category==RoomCategory.HardCombat)combats++;}
                 Assert.That(events,Is.GreaterThanOrEqualTo(2));Assert.That(traps,Is.GreaterThanOrEqualTo(1));Assert.That(combats,Is.GreaterThanOrEqualTo(4));
-                Assert.That(data.normal.maximumPcEnemies,Is.LessThanOrEqualTo(10));Assert.That(data.dartInterval,Is.GreaterThan(2.5f));
+                Assert.That(data.normal.maximumPcEnemies,Is.LessThanOrEqualTo(24));Assert.That(data.normal.maximumMobileEnemies,Is.LessThanOrEqualTo(20));Assert.That(data.dartInterval,Is.GreaterThan(2.5f));
             }
         }
         [Test] public void ProgressBeforeMapGenerationIsZeroAndSafeForSessionAdvertising()
@@ -108,7 +108,7 @@ namespace ForjaDasMares.Networking.Tests
             var frame=new WorldFrame{campaignLevel=2,campaign=new CampaignSnapshot{clock=12.5f,occupied=3,progress=new[]{.4f,1f}}};
             frame.players.Add(new ActorFrame{variant=2,actionVersion=12,impact=.3f});
             var copy=JsonUtility.FromJson<WorldFrame>(JsonUtility.ToJson(frame));Assert.AreEqual(2,copy.campaignLevel);Assert.AreEqual(.4f,copy.campaign.progress[0]);Assert.AreEqual(2,copy.players[0].variant);
-            Assert.AreEqual(5,CoopLimits.Protocol);
+            Assert.AreEqual(6,CoopLimits.Protocol);
         }
         [UnityTest] public IEnumerator SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent()
         {

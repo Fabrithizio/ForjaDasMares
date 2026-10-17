@@ -52,7 +52,7 @@ namespace ForjaDasMares
             if (!confirmed) { Message = "Confirme o descarte."; return false; }
             if (Profile.Item(itemId) == null) return false;
             foreach (var set in Profile.loadouts) foreach (var id in set.items) if (id == itemId) { Message = "Desequipe de todos os heróis antes de descartar."; return false; }
-            return Transaction(next => next.inventory.RemoveAll(item => item.instanceId == itemId), "Item descartado.");
+            return Transaction(next => {next.inventory.RemoveAll(item => item.instanceId == itemId);next.expedition?.items.RemoveAll(item=>item.instanceId==itemId);}, "Item descartado.");
         }
         public bool ClaimDelivery(string id)
         {
@@ -72,10 +72,10 @@ namespace ForjaDasMares
         {
             if (!catalog.IsRewardRule(rule)) return false;
             var run = Profile.expedition;
-            if (run == null || run.runId != runId || run.events.Contains(eventId) || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128 || run.events.Count >= 512) return false;
+            if (run == null || run.runId != runId || run.events.Contains(eventId) || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128 || run.events.Count >= 2048) return false;
             var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed));
             int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
-            if ((rule == catalog.enemy||rule==catalog.supplies) && loot.Count + run.items.Count > capacity) loot.Clear();
+            if ((rule == catalog.enemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
             if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
             return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot); }, "Recompensa registrada: " + rule.rewardId);
         }
@@ -86,11 +86,19 @@ namespace ForjaDasMares
             {
                 var run = next.expedition; int xp = victory ? run.experience : run.experience / 2, coins = victory ? run.coins : run.coins / 2;
                 next.experience = Mathf.Min(1000000, next.experience + xp); next.coins = Mathf.Min(100000000, next.coins + coins);
-                foreach (var item in run.items) { if (next.inventory.Count < catalog.inventoryCapacity) next.inventory.Add(item); else next.deliveries.Add(item); }
+                foreach (var item in run.items)
+                {
+                    if(next.inventory.Count>=catalog.inventoryCapacity&&Equipped(next,item.instanceId))
+                    {var stored=next.inventory.Find(value=>!Equipped(next,value.instanceId));if(stored!=null){next.inventory.Remove(stored);next.deliveries.Add(stored);}}
+                    if (next.inventory.Count < catalog.inventoryCapacity) next.inventory.Add(item);
+                    else {next.deliveries.Add(item);foreach(var set in next.loadouts)for(int slot=0;slot<set.items.Length;slot++)if(set.items[slot]==item.instanceId)set.items[slot]=null;}
+                }
                 if (xp > 0 || coins > 0 || run.items.Count > 0 || outcome != "Abandono" && outcome != "Aplicação interrompida")
                     next.lastResult = new ExpeditionResult { runId = run.runId, location = run.location, outcome = outcome, experience = xp, coins = coins, items = run.items };
                 next.completedRuns.Add(run.runId); if (next.completedRuns.Count > 256) next.completedRuns.RemoveAt(0); next.expedition = null;
             }, victory ? "Vitória! Recompensas salvas." : "Expedição encerrada: itens guardados, metade de XP/moedas.");
         }
+        static bool Equipped(PlayerProfile profile,string id)
+        {foreach(var set in profile.loadouts)foreach(var equipped in set.items)if(equipped==id)return true;return false;}
     }
 }

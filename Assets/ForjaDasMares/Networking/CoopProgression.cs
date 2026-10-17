@@ -99,7 +99,7 @@ namespace ForjaDasMares.Networking
         {
             if (!director.Manager.IsServer || !Active || !spawned.TryGetValue(actor, out int id)) return;
             spawned.Remove(actor); if (actor.Profile.kind == EnemyKind.Minion) return;
-            Enqueue("enemy:" + id, actor.Profile.kind == EnemyKind.Boss ? catalog.boss : catalog.enemy); TryFlush();
+            Enqueue("enemy:" + id, actor.Profile.miniboss?catalog.miniboss:actor.Profile.kind == EnemyKind.Boss ? catalog.boss : catalog.enemy); TryFlush();
         }
         void RoomWon(DungeonRoom room)
         {
@@ -146,7 +146,7 @@ namespace ForjaDasMares.Networking
             var actor = director.Actor(slot); var state = director.Dungeon.Encounter.State;
             return actor != null && director.IsConnected(slot) && actor.Health.IsAlive && !actor.Combat.IsBusy
                 && director.Phase != CoopPhase.Loading && director.Phase != CoopPhase.Connecting
-                && state != EncounterState.Spawning && state != EncounterState.Fighting && actor.Combat.Pool.ActiveProjectiles == 0 && actor.Combat.Pool.ActiveZones == 0;
+                && (state != EncounterState.Spawning && state != EncounterState.Fighting || director.Dungeon.OpenLandscape&&!director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position,12)) && actor.Combat.Pool.ActiveProjectiles == 0 && actor.Combat.Pool.ActiveZones == 0;
         }
         void Update()
         {

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: Enemy_eco-forja
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: wild-eco-forja
+  displayName: Eco da Forja
+  kind: 4
+  prefab: {fileID: 2718782572202943899, guid: b761d06d49b075f4eaed692c1eba4979, type: 3}
+  maximumHealth: 68
+  poolCapacity: 6
+  armor: 0
+  speed: 2.8
+  acceleration: 24
+  height: 1.7
+  radius: 0.32
+  agentTypeId: 0
+  detectionRange: 24
+  forgetRange: 36
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 8
+  retreatRange: 5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: e8b3b5cfe1dd5a04c9484c947a4daafb, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0
+  staggerDuration: 0.12
+  summonedEnemy: {fileID: 11400000, guid: b1d5af50e01559c42b12021913e92d60, type: 2}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 0}
+  miniboss: 0
+  color: {r: 0.8, g: 0.25, b: 0.75, a: 1}

@@ -15,6 +15,7 @@ namespace ForjaDasMares
         public DungeonStyleDefinition Style => style;
         public void ConfigureStyle(DungeonStyleDefinition value) => style = value;
         CampaignLevel campaign;
+        public bool OpenLandscape=>campaign!=null&&campaign.openLandscape;
         public void ConfigureCampaign(CampaignLevel level){campaign=level;}
         GameObject map;
         public DungeonLayout Layout { get; private set; }
@@ -28,13 +29,13 @@ namespace ForjaDasMares
         public void Generate(DungeonSession session, BiomeDefinition biome, int seed, int maximum, bool fixedMap, TelegraphPool warnings)
         {
             if (map != null) { map.SetActive(false); Destroy(map); }
-            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = campaign!=null ? DungeonLayout.Campaign(campaign.route,campaign.categories) : DungeonLayout.Generate(seed, maximum, fixedMap, style != null ? style.mainRoute : null); Rooms = new DungeonRoom[Layout.rooms.Count];
+            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = campaign!=null ? DungeonLayout.Campaign(campaign.route,campaign.categories,OpenLandscape?campaign.sectorSize+4:DungeonLayout.Spacing) : DungeonLayout.Generate(seed, maximum, fixedMap, style != null ? style.mainRoute : null); Rooms = new DungeonRoom[Layout.rooms.Count];
             map = new GameObject("GeneratedDungeon_Seed_" + seed); map.transform.SetParent(transform);
             foreach (var node in Layout.rooms)
             {
                 RoomDefinition data = roomDefinitions[(int)node.category];
                 var root = new GameObject("Room_" + node.id + "_" + node.category); root.transform.SetParent(map.transform); root.transform.position = Layout.Center(node.id);
-                var room = new DungeonRoom { node = node, root = root }; Rooms[node.id] = room;
+                var room = new DungeonRoom { node = node, root = root,walkableHalf=OpenLandscape?campaign.sectorSize*.5f-.5f:4.8f }; Rooms[node.id] = room;
                 BuildRoom(room, data, biome);
                 int difficulty = node.depth <= 1 ? 0 : node.depth <= 2 ? 1 : 2;
                 if (node.category == RoomCategory.Combat || node.category == RoomCategory.HardCombat) room.encounter = biome.encountersByDepth[Mathf.Min(difficulty, biome.encountersByDepth.Length - 1)];
@@ -47,7 +48,8 @@ namespace ForjaDasMares
                     room.cooperativeObjective=node.category==RoomCategory.Event;
                 }
                 room.objectiveComplete = node.category != RoomCategory.Event && node.category != RoomCategory.Trap;
-                room.spawnPoints = new[] { root.transform.position + new Vector3(-3, 0.06f, 2), root.transform.position + new Vector3(3, 0.06f, 2), root.transform.position + new Vector3(0, 0.06f, 3) };
+                float spawnSpread=OpenLandscape?campaign.sectorSize*.3f:3;
+                room.spawnPoints = new[] { room.Center + new Vector3(-spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,-spawnSpread),room.Center+new Vector3(-spawnSpread,.06f,-spawnSpread) };
                 if (node.category == RoomCategory.Treasure || node.category == RoomCategory.Event) Interaction(session, room, DungeonInteractionKind.Chest, new Vector3(-2, 0, -2), biome);
                 if (node.category == RoomCategory.Event && campaign==null) Interaction(session, room, DungeonInteractionKind.Crystal, new Vector3(2, 0, -1), biome);
                 if (node.category == RoomCategory.Rest) Interaction(session, room, DungeonInteractionKind.Rest, Vector3.zero, biome);
@@ -79,8 +81,9 @@ namespace ForjaDasMares
         }
         void BuildRoom(DungeonRoom room, RoomDefinition data, BiomeDefinition biome)
         {
-            float half = data.size * 0.5f;
-            var floor = Piece("Floor", room.root.transform, new Vector3(0, -0.2f, 0), new Vector3(data.size + 0.2f, 0.4f, data.size + 0.2f), biome.floor, true, null, 8);
+            float size=OpenLandscape?campaign.sectorSize:data.size,doorWidth=OpenLandscape?campaign.passageWidth:data.doorWidth;
+            float half = size * 0.5f;
+            var floor = Piece("Floor", room.root.transform, new Vector3(0, -0.2f, 0), new Vector3(size + 0.2f, 0.4f, size + 0.2f), biome.floor, true, null, 8);
             if (style != null) Dress(floor, room.node.category == RoomCategory.Boss ? style.bossFloor : style.floor, biome.floor, biome.decoration, biome.accent);
             else for (int x = -4; x <= 4; x += 4) for (int z = -4; z <= 4; z += 4) Piece("Tile", room.root.transform, new Vector3(x, 0.004f, z), new Vector3(3.8f, 0.008f, 3.8f), biome.decoration, false, null, 8);
             Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
@@ -90,16 +93,24 @@ namespace ForjaDasMares
                 Vector3 normal = new Vector3(direction.x, 0, direction.y), side = Vector3.Cross(Vector3.up, normal);
                 if (door)
                 {
-                    float length = half - data.doorWidth * 0.5f;
-                    for (int sign = -1; sign <= 1; sign += 2) Wall(room.root.transform, normal * half + side * (sign * (data.doorWidth * 0.5f + length * 0.5f)), normal, length, data.wallHeight, biome.wall);
+                    float length = half - doorWidth * 0.5f;
+                    for (int sign = -1; sign <= 1; sign += 2) Wall(room.root.transform, normal * half + side * (sign * (doorWidth * 0.5f + length * 0.5f)), normal, length, data.wallHeight, biome.wall);
                 }
-                else Wall(room.root.transform, normal * half, normal, data.size + 0.6f, data.wallHeight, biome.wall);
+                else Wall(room.root.transform, normal * half, normal, size + 0.6f, data.wallHeight, biome.wall);
                 var socket = new GameObject("Socket_" + direction.x + "_" + direction.y).transform; socket.SetParent(room.root.transform, false); socket.localPosition = normal * half; socket.localRotation = Quaternion.LookRotation(normal);
             }
             if (data.obstaclePositions != null) foreach (var position in data.obstaclePositions)
             {
                 var obstacle = Piece("Obstacle", room.root.transform, position + Vector3.up * .75f, new Vector3(1.2f, 1.5f, 1.2f), biome.wall, true);
                 if (style != null) Dress(obstacle, style.crate, style.wood, style.metal);
+            }
+            if(OpenLandscape)for(int i=0;i<6;i++)
+            {
+                float angle=(i*60+room.node.id*19)*Mathf.Deg2Rad;var point=new Vector3(Mathf.Cos(angle)*half*.65f,0,Mathf.Sin(angle)*half*.65f);
+                var rock=Piece("LandscapeCover_"+i,room.root.transform,point+Vector3.up*.7f,new Vector3(1.5f+(i%2),1.4f,1.4f),biome.wall,true);
+                if(campaign.coverModels!=null&&campaign.coverModels.Length>0)
+                {rock.GetComponent<MeshFilter>().sharedMesh=null;var cover=Instantiate(campaign.coverModels[(i+room.node.id)%campaign.coverModels.Length],rock.transform);cover.transform.localPosition=new Vector3(0,-.5f,0);cover.transform.localRotation=Quaternion.Euler(0,i*37,0);cover.transform.localScale=Vector3.one;}
+                else if(style!=null)Dress(rock,style.crate,style.wood,style.metal);
             }
             foreach (Vector3 corner in new[] { new Vector3(-4.7f, 0, -4.7f), new Vector3(4.7f, 0, 4.7f) })
             {
@@ -118,16 +129,17 @@ namespace ForjaDasMares
         {
             var root = new GameObject("Corridor_" + a.node.id + "_" + b.node.id).transform; root.SetParent(map.transform); root.position = (a.Center + b.Center) * 0.5f;
             Vector3 direction = (b.Center - a.Center).normalized; root.rotation = Quaternion.LookRotation(direction);
-            var floor = Piece("Floor", root, new Vector3(0, -.2f, 0), new Vector3(3.2f, .4f, 4.4f), biome.floor, true, null, 8);
+            float width=OpenLandscape?campaign.passageWidth:3.2f;
+            var floor = Piece("Floor", root, new Vector3(0, -.2f, 0), new Vector3(width, .4f, 4.4f), biome.floor, true, null, 8);
             if (style != null) Dress(floor, style.corridorFloor, biome.floor, biome.decoration, biome.accent);
             for (int sign = -1; sign <= 1; sign += 2)
             {
-                var side = Piece("SideWall", root, new Vector3(sign * 1.65f, .9f, 0), new Vector3(.3f, 1.8f, 4.2f), biome.wall, true);
+                var side = Piece("SideWall", root, new Vector3(sign * (width*.5f+.05f), .9f, 0), new Vector3(.3f, 1.8f, 4.2f), biome.wall, true);
                 if (style != null) Dress(side, style.shortWallZ, biome.wall, style.stoneTrim);
             }
-            var barrier = Piece("EncounterDoor", root, new Vector3(0, .9f, 0), new Vector3(3, 1.8f, .35f), biome.accent, true);
+            var barrier = Piece("EncounterDoor", root, new Vector3(0, .9f, 0), new Vector3(width-.2f, 1.8f, .35f), biome.accent, true);
             if (style != null) Dress(barrier, style.gate, style.metal, style.wood);
-            var door = barrier.AddComponent<DungeonDoor>(); door.Configure(a.node.id, b.node.id); Doors.Add(door); a.doors.Add(door); b.doors.Add(door);
+            var door = barrier.AddComponent<DungeonDoor>(); door.Configure(a.node.id, b.node.id);if(OpenLandscape)barrier.GetComponent<Renderer>().enabled=false; Doors.Add(door); a.doors.Add(door); b.doors.Add(door);
             var surfaces = new List<Renderer>(); foreach (var renderer in root.GetComponentsInChildren<Renderer>()) if (renderer.gameObject != door.gameObject) surfaces.Add(renderer);
             Corridors.Add(new DungeonCorridor { a = a.node.id, b = b.node.id, renderers = surfaces.ToArray() });
         }

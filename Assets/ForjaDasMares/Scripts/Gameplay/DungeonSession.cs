@@ -21,6 +21,9 @@ namespace ForjaDasMares
         bool regenerate, generating;
         float detection;
         public DungeonRoom CurrentRoom { get; private set; }
+        DungeonRoom activeEncounterRoom;
+        public bool OpenLandscape=>generator.OpenLandscape;
+        public DungeonRoom FightRoom=>activeEncounterRoom;
         public DungeonGenerator Generator => generator;
         public HeroRoster Heroes => heroes;
         public EncounterController Encounter => encounter;
@@ -50,7 +53,7 @@ namespace ForjaDasMares
         void RequestReset() { if (!generating) regenerate = true; }
         public void Generate()
         {
-            generating = true; regenerate = false; encounter.Cancel(); heroes.ResetHero(); Coins = 0; HasKey = Finished = false; Nearby = null;
+            generating = true; regenerate = false; encounter.Cancel();activeEncounterRoom=null; heroes.ResetHero(); Coins = 0; HasKey = Finished = false; Nearby = null;
             generator.Generate(this, Biome, seed, maximumRooms, fixedMap, warnings);
             RenderSettings.ambientLight = Biome.ambient; mainLight.color = Biome.light; Camera.main.backgroundColor = Biome.background;
             CurrentRoom = generator.Rooms[0]; CurrentRoom.entered = CurrentRoom.completed = CurrentRoom.encounterComplete = true;
@@ -81,18 +84,20 @@ namespace ForjaDasMares
         }
         public void Enter(DungeonRoom room)
         {
-            if (!HasLivingPlayers || room == CurrentRoom) return;
+            if (!HasLivingPlayers || room == null || room == CurrentRoom && (!OpenLandscape || room.encounter==null || room.encounterComplete || activeEncounterRoom!=null)) return;
             CurrentRoom = room;
             if (!room.entered)
             {
                 room.entered = true;
-                if (room.encounter != null) { encounter.SetSpawnPoints(room.spawnPoints); encounter.Begin(room.encounter, false); }
-                else room.encounterComplete = true;
+                if (room.encounter != null && (!OpenLandscape||activeEncounterRoom==null)) { activeEncounterRoom=room;encounter.SetSpawnPoints(room.spawnPoints); encounter.Begin(room.encounter, false); }
+                else if(room.encounter==null) room.encounterComplete = true;
                 TryComplete(room);
             }
+            else if(OpenLandscape&&room.encounter!=null&&!room.encounterComplete&&activeEncounterRoom==null)
+            {activeEncounterRoom=room;encounter.SetSpawnPoints(room.spawnPoints);encounter.Begin(room.encounter,false);}
             RefreshDoors(); UpdateVisibility();
         }
-        void EncounterWon() { if (CurrentRoom == null) return; CurrentRoom.encounterComplete = true; TryComplete(CurrentRoom); }
+        void EncounterWon() { var room=activeEncounterRoom??CurrentRoom;activeEncounterRoom=null;if(room==null)return;room.encounterComplete=true;TryComplete(room); }
         void EncounterFailed() { RefreshDoors(); }
         void TryComplete(DungeonRoom room)
         {
@@ -118,7 +123,7 @@ namespace ForjaDasMares
             {
                 var a = generator.Rooms[door.A]; var b = generator.Rooms[door.B];
                 bool key = (!a.entered && a.node.category == RoomCategory.Treasure || !b.entered && b.node.category == RoomCategory.Treasure) && !HasKey;
-                door.SetClosed(a.Locked || b.Locked || key || !(a.completed || b.completed));
+                door.SetClosed(!OpenLandscape&&(a.Locked || b.Locked || key || !(a.completed || b.completed)));
             }
         }
         void UpdateVisibility()
@@ -132,7 +137,7 @@ namespace ForjaDasMares
         }
         public void ExitDungeon() { TryExitDungeon(); }
         public bool TryExitDungeon()
-        { if (Finished || CurrentRoom == null || CurrentRoom.node.category != RoomCategory.Boss || !CurrentRoom.completed || !HasLivingPlayers) return false; if (ExitRewardRequested != null && !ExitRewardRequested()) return false; Finished = true; encounter.Cancel(); heroes.Victory(); return true; }
+        { if (Finished || CurrentRoom == null || CurrentRoom.node.category != RoomCategory.Boss || !CurrentRoom.completed || !HasLivingPlayers) return false; if(OpenLandscape)foreach(var room in generator.Rooms)if((room.encounter!=null||room.cooperativeObjective||room.node.category==RoomCategory.Trap)&&!room.completed)return false; if (ExitRewardRequested != null && !ExitRewardRequested()) return false; Finished = true; encounter.Cancel(); heroes.Victory(); return true; }
         public DungeonReplicaState CaptureReplica()
         {
             var value = new DungeonReplicaState { room = CurrentRoom != null ? CurrentRoom.node.id : -1, hasKey = HasKey, finished = Finished };

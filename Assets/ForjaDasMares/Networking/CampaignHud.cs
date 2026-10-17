@@ -144,7 +144,7 @@ namespace ForjaDasMares.Networking
                 combat.text+="\n"+campaign.Adventure.Objective;
                 string nearby=campaign.Adventure.NearbyLabel(local?.Health);if(nearby.Length>0)combat.text+="\n"+nearby;
             }
-            foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.IsAlive&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\nCHEFE · "+enemy.Health.Current+" / "+enemy.Health.Maximum;break;}
+            foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive&&enemy.Profile!=null&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\n"+(enemy.Profile.miniboss?"ELITE · ":"CHEFE · ")+enemy.Profile.displayName+" · "+enemy.Health.Current+" / "+enemy.Health.Maximum;break;}
         }
         static Text Label(Transform p,string s,float x,float y,float w,float h,int font)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,font);
         static Button Button(Transform p,string n,float x,float y,float w,float h,string s,UnityEngine.Events.UnityAction a)=>RusticHudTheme.Button(p,n,new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,a);

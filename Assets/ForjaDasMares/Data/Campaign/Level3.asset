@@ -37,14 +37,25 @@ MonoBehaviour:
   - {x: 0, y: 4}
   - {x: 1, y: 4}
   categories: 000000000100000005000000020000000600000001000000030000000100000005000000020000000600000001000000020000000300000005000000020000000400000007000000
-  normal: {fileID: 11400000, guid: 812d18de775e04d40a815f8c5624dcc3, type: 2}
-  hard: {fileID: 11400000, guid: a1ce775c432c8994fa53f410e431682b, type: 2}
-  boss: {fileID: 11400000, guid: d1f3ac63ede454b4d8fad156918cef6e, type: 2}
+  normal: {fileID: 11400000, guid: 1688a55d546070842977604073178fce, type: 2}
+  hard: {fileID: 11400000, guid: 5302522dc588d394495419874a341670, type: 2}
+  boss: {fileID: 11400000, guid: fc4af2ea039edcb469e30bedc604e6c8, type: 2}
   adventure: {fileID: 11400000, guid: 0d8c7bf2560451e419fd50f1a213039f, type: 2}
   combatVariants:
-  - {fileID: 11400000, guid: 4bcd45ef6abb3794db8f303289559024, type: 2}
-  - {fileID: 11400000, guid: 3f706461cc9405544a5dc6e1024af2a1, type: 2}
-  - {fileID: 11400000, guid: 1ad551e9b546b4743a59142d6dd582b7, type: 2}
+  - {fileID: 11400000, guid: 1688a55d546070842977604073178fce, type: 2}
+  - {fileID: 11400000, guid: acb2a59e34786e348ba1390aad991c22, type: 2}
+  - {fileID: 11400000, guid: 4a29a68e040f14a45b79849ae01965c9, type: 2}
+  openLandscape: 1
+  sectorSize: 32
+  passageWidth: 18
+  coverModels:
+  - {fileID: 919132149155446097, guid: 366e0eb4ad1b4c54389dcb284c4c3ec3, type: 3}
+  - {fileID: 919132149155446097, guid: b9e0db3c275f21045b69d56cd0412f39, type: 3}
+  - {fileID: 919132149155446097, guid: 1c472db86ae594a42bc20feb2b992253, type: 3}
+  hitSound: {fileID: 8300000, guid: deb970fccc62abc4098980f16ed14143, type: 3}
+  crateSound: {fileID: 8300000, guid: 833936f090ad240459dbf5d4b00e3041, type: 3}
+  healSound: {fileID: 8300000, guid: 69931c5937c48f14e90251b59e6f65f6, type: 3}
+  lootSound: {fileID: 8300000, guid: ff3c004127839874b91d592e6aed87de, type: 3}
   plateHold: 2.7
   dartInterval: 3.1999998
   dartAttack: {fileID: 11400000, guid: c73db792ec3118c4da9d3e0a3187ac39, type: 2}

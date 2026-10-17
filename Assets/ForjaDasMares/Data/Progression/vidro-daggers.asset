@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: vidro-daggers
   displayName: Presas de Vidro
+  icon: {fileID: 21300000, guid: beba059dab61c124c85da2b9e71deef3, type: 3}
   description: "Dois golpes intencionais por a\xE7\xE3o, curto alcance. Patrulheiro;
     outra adaga pode ocupar a secund\xE1ria."
   slot: 0
@@ -24,8 +25,9 @@ MonoBehaviour:
   allowsOffHand: 1
   twinStrike: 1
   attacks:
-  - {fileID: 11400000, guid: c8af97cde8d6af643953ab2b36996803, type: 2}
-  - {fileID: 11400000, guid: 2a1cda8632056a14c9b5d69bf2fb5c55, type: 2}
+  - {fileID: 11400000, guid: ece97807b39080d4e8fb3b92d423c0f3, type: 2}
+  - {fileID: 11400000, guid: bc70304f59ccf0d469e68979aaf9688f, type: 2}
+  - {fileID: 11400000, guid: fae93f38aa4226244b21bff8147ec9a2, type: 2}
   bonuses:
   - stat: 5
     value: 0.04

@@ -4,7 +4,9 @@ namespace ForjaDasMares
     [CreateAssetMenu(menuName="Forja/Campaign adventure")]
     public sealed class CampaignAdventureDefinition : ScriptableObject
     {
-        [Range(1,3)] public int suppliesPerSector=2;
+        [Range(1,5)] public int suppliesPerSector=2;
+        [Range(0,40)] public int supplyHealing=18;
+        public GameObject supplyModel,sealModel,fountainModel;
         [Range(10,100)] public int supplyHealth=24;
         [Range(30,250)] public int sealHealth=65;
         [Range(1,3)] public int sealGoal=3;

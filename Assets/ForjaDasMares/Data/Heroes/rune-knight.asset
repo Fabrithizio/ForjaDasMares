@@ -31,5 +31,6 @@ MonoBehaviour:
   attacks:
   - {fileID: 11400000, guid: 7ca2182e8c273fc498d008659acb8b3b, type: 2}
   special: {fileID: 11400000, guid: 9453f65fd34042741b02d4c3c92a9c6b, type: 2}
+  onlineFlow: {fileID: 11400000, guid: 34c6d917c6c1a7c478e3dbb1767a209a, type: 2}
   color: {r: 0.3, g: 0.65, b: 1, a: 1}
   visualSlot: 3

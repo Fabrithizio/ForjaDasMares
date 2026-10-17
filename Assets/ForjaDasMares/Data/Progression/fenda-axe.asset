@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: fenda-axe
   displayName: Machado das Fendas
+  icon: {fileID: 21300000, guid: 177e4de4eb7cfc6478c16f9139214237, type: 3}
   description: "Arco largo, golpe lento, duas m\xE3os. Guerreiro."
   slot: 0
   category: 1
@@ -23,7 +24,9 @@ MonoBehaviour:
   allowsOffHand: 0
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: 5fb93ee54c7f1cd42814d16a8eb10e45, type: 2}
+  - {fileID: 11400000, guid: f4f7a0bc9fb1bc847a996d2717ab4e8d, type: 2}
+  - {fileID: 11400000, guid: 6aa82ed6452b9454082c8860d5cb7950, type: 2}
+  - {fileID: 11400000, guid: c07f4541aeb3a2749a704226d9155faa, type: 2}
   bonuses:
   - stat: 1
     value: 0.03

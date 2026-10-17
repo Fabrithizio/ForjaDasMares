@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     [Serializable] public sealed class CampaignSnapshot
-    {public float clock,completion;public bool solo;public int wave;public uint occupied;public float[] progress;public AdventureSnapshot adventure;}
+    {public float clock,completion;public bool solo;public int wave,defeated,planned;public uint occupied;public float[] progress;public AdventureSnapshot adventure;}
     public sealed class CampaignRun : MonoBehaviour
     {
         [SerializeField] DungeonSession dungeon;
@@ -31,6 +31,7 @@ namespace ForjaDasMares
         public int Selected {get;private set;}
         public float Clock {get;private set;}
         int replicaWave=1;
+        int replicaDefeated,replicaPlanned;
         public int Count=>levels.Length;
         public CampaignLevel Level=>levels[Selected];
         public CampaignLevel At(int index)=>levels[Mathf.Clamp(index,0,levels.Length-1)];
@@ -39,6 +40,8 @@ namespace ForjaDasMares
         {
             get
             {
+                if(dungeon.Encounter.State==EncounterState.Spawning||dungeon.Encounter.State==EncounterState.Fighting||!Authority&&replicaPlanned>replicaDefeated)
+                    return "Horda · onda "+(Authority?dungeon.Encounter.WaveNumber:replicaWave)+" · "+(Authority?dungeon.Encounter.DefeatedCount:replicaDefeated)+" / "+(Authority?dungeon.Encounter.PlannedCount:replicaPlanned)+" derrotados";
                 foreach(var puzzle in puzzles)if(puzzle.Room==dungeon.CurrentRoom&&!puzzle.Solved)
                     return Solo?"Solo: ative as duas placas em sequência · "+Mathf.RoundToInt(puzzle.Progress*100)+"%":"Dois heróis nas placas · "+puzzle.Occupants+"/2 · "+Mathf.RoundToInt(puzzle.Progress*100)+"%";
                 return dungeon.CurrentRoom!=null&&dungeon.CurrentRoom.encounter!=null&&!dungeon.CurrentRoom.completed?"Derrotem a onda "+(Authority?dungeon.Encounter.WaveNumber:replicaWave)+" e protejam o grupo":"Explorem · F / Interagir para baús, alavancas e saída";
@@ -87,6 +90,7 @@ namespace ForjaDasMares
         public CampaignSnapshot Capture()
         {
             snapshot.clock=Clock;snapshot.wave=dungeon.Encounter.WaveNumber;snapshot.occupied=0;snapshot.solo=Solo;snapshot.completion=Completion;
+            snapshot.defeated=dungeon.Encounter.DefeatedCount;snapshot.planned=dungeon.Encounter.PlannedCount;
             for(int i=0;i<puzzles.Count;i++){snapshot.progress[i]=puzzles[i].Progress;snapshot.occupied|=(uint)puzzles[i].Mask<<(i*2);}
             snapshot.adventure=Adventure?.Capture();
             return snapshot;
@@ -96,6 +100,7 @@ namespace ForjaDasMares
             if(value==null||value.progress==null||value.progress.Length!=puzzles.Count||float.IsNaN(value.clock)||float.IsInfinity(value.clock))return;
             Adventure?.Apply(value.adventure);
             Clock=Mathf.Max(0,value.clock);replicaWave=Mathf.Max(1,value.wave);Solo=value.solo;replicaCompletion=Mathf.Clamp01(value.completion);
+            replicaDefeated=Mathf.Max(0,value.defeated);replicaPlanned=Mathf.Max(0,value.planned);
             for(int i=0;i<puzzles.Count;i++)puzzles[i].Apply(value.progress[i],(int)(value.occupied>>(i*2))&3);
         }
     }
@@ -128,7 +133,7 @@ namespace ForjaDasMares
         }
         public void Tick(float delta)
         {
-            if(session.CurrentRoom!=Room||Solved)return;
+            if((!session.OpenLandscape&&session.CurrentRoom!=Room)||Solved)return;
             if(wasSolo!=Solo){held=0;soloMask=0;wasSolo=Solo;}
             Mask=0;occupants[0]=occupants[1]=null;
             if(session.Party!=null)for(int p=0;p<4;p++)

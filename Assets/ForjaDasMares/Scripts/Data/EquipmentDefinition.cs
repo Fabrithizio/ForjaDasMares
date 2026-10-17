@@ -17,6 +17,7 @@ namespace ForjaDasMares
     public sealed class EquipmentDefinition : ScriptableObject
     {
         public string itemId, displayName;
+        public Sprite icon;
         [TextArea] public string description;
         public EquipmentSlot slot;
         public WeaponCategory category = WeaponCategory.None;

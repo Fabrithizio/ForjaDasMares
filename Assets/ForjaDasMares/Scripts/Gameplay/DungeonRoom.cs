@@ -20,7 +20,8 @@ namespace ForjaDasMares
         public Vector3[] spawnPoints;
         public bool entered, completed, objectiveComplete, encounterComplete, cooperativeObjective;
         public Vector3 Center => root.transform.position;
-        public bool Contains(Vector3 point, float half = 4.8f) => Mathf.Abs(point.x - Center.x) <= half && Mathf.Abs(point.z - Center.z) <= half;
+        public float walkableHalf=4.8f;
+        public bool Contains(Vector3 point, float half = -1) => Mathf.Abs(point.x - Center.x) <= (half<0?walkableHalf:half) && Mathf.Abs(point.z - Center.z) <= (half<0?walkableHalf:half);
         public bool Locked => entered && !completed && (encounter != null || cooperativeObjective);
         public void SetVisible(bool value)
         {

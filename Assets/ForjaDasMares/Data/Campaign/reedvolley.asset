@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: reedvolley
   displayName: Salva de Junco
+  icon: {fileID: 21300000, guid: b13a9b0fe1ed0ab4e8c855a9e3aaa8cb, type: 3}
   description: "Tr\xEAs flechas em leque: cobertura ampla, cada flecha causa menos
     dano."
   slot: 0
@@ -24,7 +25,9 @@ MonoBehaviour:
   allowsOffHand: 0
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: ca811268b4d8abf47a793ccdea2dd8fc, type: 2}
+  - {fileID: 11400000, guid: 0610b053a5b89f9478c03d14572d64e5, type: 2}
+  - {fileID: 11400000, guid: c959fc4fa483617458cf77241ee76841, type: 2}
+  - {fileID: 11400000, guid: bd490c089c2a00c42acd2845060d15fe, type: 2}
   bonuses:
   - stat: 4
     value: 0.03

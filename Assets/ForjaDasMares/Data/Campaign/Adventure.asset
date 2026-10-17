@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcebba9b58b4d1e91f9dd06ec0ffdd2, type: 3}
   m_Name: Adventure
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CampaignAdventureDefinition
-  suppliesPerSector: 2
+  suppliesPerSector: 3
+  supplyHealing: 22
+  supplyModel: {fileID: 919132149155446097, guid: a65bf59d2041e60449a4fbd20e520ca0, type: 3}
+  sealModel: {fileID: 919132149155446097, guid: f3cc2cc50eee67c4886c631403585865, type: 3}
+  fountainModel: {fileID: 919132149155446097, guid: 3f03665f1fe0bea40a4c6c25a4fd8768, type: 3}
   supplyHealth: 24
   sealHealth: 65
   sealGoal: 3

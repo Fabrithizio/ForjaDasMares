@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: wavecleaver
   displayName: "Corta-Mar\xE9"
+  icon: {fileID: 21300000, guid: e62fd945de5cda84e938ed352dae7669, type: 3}
   description: "Golpes largos para abrir espa\xE7o entre hordas."
   slot: 0
   category: 0
@@ -23,8 +24,9 @@ MonoBehaviour:
   allowsOffHand: 1
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: f2eb688d1e09b374cb41ed9a46d5c91e, type: 2}
-  - {fileID: 11400000, guid: 09238980a4c74e6409cd590d6a454d4f, type: 2}
+  - {fileID: 11400000, guid: ead72ee5bd2be0942a85df49c1583985, type: 2}
+  - {fileID: 11400000, guid: edc2bd937f4577c43889f0b6d5a1d43b, type: 2}
+  - {fileID: 11400000, guid: a670b6a178002ed45ae53db83f5f58fa, type: 2}
   bonuses:
   - stat: 1
     value: 0.04

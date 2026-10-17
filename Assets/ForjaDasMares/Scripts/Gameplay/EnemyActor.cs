@@ -30,6 +30,7 @@ namespace ForjaDasMares
         public bool Activate(EnemyDefinition data, Vector3 position, Health target, EnemyPool registry, CombatEffectPool shots, TelegraphPool warnings, int targets, int geometry, EnemyActor owner)
         {
             Bind(); live = false; profile = data; pool = registry; summoner = owner; recycleTime = 0;
+            brain.enabled=combat.enabled=motor.enabled=enabled=true;
             transform.SetPositionAndRotation(position, Quaternion.identity);
             guard.Configure(brain); health.ConfigureDefense(guard); health.Configure(data.maximumHealth, CombatFaction.Enemy, data.armor);
             motor.Prepare(data); combat.Prepare(this, target, registry, shots, warnings, targets, geometry); brain.Prepare(this, target, geometry); presentation.Prepare(data);

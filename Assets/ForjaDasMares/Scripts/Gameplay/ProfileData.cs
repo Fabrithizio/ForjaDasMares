@@ -36,7 +36,7 @@ namespace ForjaDasMares
         public ExpeditionData expedition;
         public ExpeditionResult lastResult;
         public LocalOptions options = new LocalOptions();
-        public ItemInstance Item(string id) { foreach (var item in inventory) if (item.instanceId == id) return item; return null; }
+        public ItemInstance Item(string id) {if(string.IsNullOrEmpty(id))return null; foreach (var item in inventory) if (item.instanceId == id) return item; if(expedition!=null)foreach(var item in expedition.items)if(item.instanceId==id)return item;return null; }
         public HeroLoadout Loadout(string heroId) { foreach (var set in loadouts) if (set.heroId == heroId) return set; return null; }
     }
     internal static class ProfileSerialization

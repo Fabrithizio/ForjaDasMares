@@ -16,6 +16,7 @@ namespace ForjaDasMares
         }
         readonly List<Piece> pieces = new List<Piece>(32);
         readonly Dictionary<Renderer, Piece> lookup = new Dictionary<Renderer, Piece>();
+        readonly Dictionary<Collider,Renderer[]> groups=new Dictionary<Collider,Renderer[]>();
         readonly Dictionary<Material, Material> materials = new Dictionary<Material, Material>();
         readonly RaycastHit[] hits = new RaycastHit[128];
         Material template;
@@ -47,8 +48,14 @@ namespace ForjaDasMares
             for (int i = 0; i < count; i++)
             {
                 var collider = hits[i].collider; hits[i] = default;
-                var renderer = collider.GetComponent<Renderer>() ?? collider.GetComponentInParent<Renderer>();
-                if (renderer == null || renderer.forceRenderingOff || !renderer.enabled) continue;
+                if(!groups.TryGetValue(collider,out var renderers))
+                {renderers=collider.GetComponentsInChildren<Renderer>();if(renderers.Length==0){var parent=collider.GetComponentInParent<Renderer>();renderers=parent!=null?new[]{parent}:System.Array.Empty<Renderer>();}groups.Add(collider,renderers);}
+                foreach(var renderer in renderers)Fade(renderer,now);
+            }
+        }
+        void Fade(Renderer renderer,float now)
+        {
+                if (renderer == null || renderer.forceRenderingOff || !renderer.enabled) return;
                 if (!lookup.TryGetValue(renderer, out var piece))
                 {
                     var original = renderer.sharedMaterials;
@@ -59,7 +66,6 @@ namespace ForjaDasMares
                 }
                 piece.lastSeen = now;
                 if (!piece.applied) { renderer.sharedMaterials = piece.translucent; piece.applied = true; }
-            }
         }
         Material Transparent(Material source)
         {
@@ -91,7 +97,7 @@ namespace ForjaDasMares
         public void Restore()
         {
             foreach (var piece in pieces) if (piece.renderer != null && piece.applied) piece.renderer.sharedMaterials = piece.original;
-            pieces.Clear(); lookup.Clear();
+            pieces.Clear(); lookup.Clear();groups.Clear();
             foreach (var pair in materials) if (pair.Value != null) Object.Destroy(pair.Value);
             materials.Clear(); opacity = -1f;
         }

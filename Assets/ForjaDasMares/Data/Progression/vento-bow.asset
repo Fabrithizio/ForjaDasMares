@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: vento-bow
   displayName: Arco do Vento Oco
+  icon: {fileID: 21300000, guid: b13a9b0fe1ed0ab4e8c855a9e3aaa8cb, type: 3}
   description: "Flecha r\xE1pida de longo alcance; duas m\xE3os. Patrulheiro."
   slot: 0
   category: 3
@@ -23,7 +24,9 @@ MonoBehaviour:
   allowsOffHand: 0
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: a062e77631cf3e44e9e5d36708b340f7, type: 2}
+  - {fileID: 11400000, guid: b55410f0214928a4f8a670bf97a327d7, type: 2}
+  - {fileID: 11400000, guid: 5ca3cdcf520b9524686c35ee2c20ca37, type: 2}
+  - {fileID: 11400000, guid: a5f33a2f64ce7fd4e90f0f749405fc31, type: 2}
   bonuses:
   - stat: 4
     value: 0.03

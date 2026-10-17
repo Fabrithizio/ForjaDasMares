@@ -350,7 +350,7 @@ namespace ForjaDasMares.Networking
             {
                 if (!actor.gameObject.activeSelf || !actor.Motor.enabled || !actor.Health.IsAlive) continue;
                 foreach (var room in dungeon.Generator.Rooms)
-                    if (room != dungeon.CurrentRoom && room.Contains(actor.transform.position) && (Campaign==null||PartyInside(room)))
+                    if ((room != dungeon.CurrentRoom||dungeon.OpenLandscape) && room.Contains(actor.transform.position) && (Campaign==null||dungeon.OpenLandscape||PartyInside(room)))
                     {
                         dungeon.Enter(room);
                         // One encounter controller: assemble the group inside before doors close.
@@ -361,7 +361,7 @@ namespace ForjaDasMares.Networking
                 if (actor.Commands.TakeInteraction())
                 {
                     if(Campaign!=null&&(TryReviveAlly(actor)||Campaign.Adventure!=null&&Campaign.Adventure.TryUse(actor.Health)))continue;
-                    foreach (var item in dungeon.CurrentRoom.interactions) if ((item.transform.position - actor.transform.position).sqrMagnitude <= 4.41f && item.UseBy(actor.Health)) break;
+                    foreach(var sector in dungeon.Generator.Rooms)if(sector.Contains(actor.transform.position))foreach (var item in sector.interactions) if ((item.transform.position - actor.transform.position).sqrMagnitude <= 4.41f && item.UseBy(actor.Health)) break;
                 }
             }
         }

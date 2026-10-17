@@ -30,7 +30,7 @@ namespace ForjaDasMares
             {
                 var room=dungeon.Generator.Rooms[i];
                 if(i>0&&room.node.category!=RoomCategory.Boss)
-                    for(int j=0;j<Mathf.Clamp(data.suppliesPerSector,1,3)&&props.Count<40;j++)Add(room,AdventurePropKind.Supply,j);
+                    for(int j=0;j<Mathf.Clamp(data.suppliesPerSector,1,5)&&props.Count<40;j++)Add(room,AdventurePropKind.Supply,j);
                 for(int n=0;n<seals;n++)if(i==2+(dungeon.Generator.Rooms.Length-4)*n/seals)
                 {if(Add(room,AdventurePropKind.Seal,3))sealTotal++;}
                 for(int n=0;n<wells;n++)if(i==1+(dungeon.Generator.Rooms.Length-3)*(n+1)/(wells+1))Add(room,AdventurePropKind.Fountain,4);
@@ -45,8 +45,9 @@ namespace ForjaDasMares
             for(int attempt=0;attempt<12;attempt++)
             {
                 float angle=(socket*101+attempt*137+run.Level.seed%31)*Mathf.Deg2Rad;
-                Vector3 desired=room.Center+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*(2.7f+attempt%2*.5f);
-                if(!NavMesh.SamplePosition(desired,out var hit,.45f,NavMesh.AllAreas)||!room.Contains(hit.position,3.8f))continue;
+                float radius=dungeon.OpenLandscape?room.walkableHalf*(.45f+(attempt%3)*.15f):2.7f+attempt%2*.5f;
+                Vector3 desired=room.Center+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius;
+                if(!NavMesh.SamplePosition(desired,out var hit,.45f,NavMesh.AllAreas)||!room.Contains(hit.position,dungeon.OpenLandscape?room.walkableHalf-1:3.8f))continue;
                 Vector3 point=hit.position;
                 if(Physics.CheckBox(point+Vector3.up*.6f,new Vector3(.6f,.55f,.6f),Quaternion.identity,1<<9,QueryTriggerInteraction.Ignore))continue;
                 bool overlap=false;foreach(var p in props)if((p.transform.position-point).sqrMagnitude<2.25f){overlap=true;break;}
@@ -66,7 +67,15 @@ namespace ForjaDasMares
             if(run==null||!run.Running||!run.Authority)return;
             timer-=Time.deltaTime;if(timer>0)return;timer=.15f;
             foreach(var p in props)if(p.Kind==AdventurePropKind.Supply&&!p.Health.IsAlive&&!p.Claimed)
+            {
+                if(!p.HealingGranted)
+                {
+                    Health chosen=null;float fraction=1;
+                    for(int i=0;i<4;i++){var hp=dungeon.Party?.Get(i);if(hp==null||!hp.IsAlive||!hp.gameObject.activeInHierarchy||(hp.transform.position-p.transform.position).sqrMagnitude>64||Physics.Linecast(p.transform.position+Vector3.up,hp.transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore))continue;float value=(float)hp.Current/hp.Maximum;if(value<fraction){fraction=value;chosen=hp;}}
+                    if(chosen!=null)chosen.Heal(data.supplyHealing);p.HealingGranted=true;
+                }
                 p.Claimed=run.SideRewardRequested!=null&&run.SideRewardRequested(p.Id,false);
+            }
             if(!rewarded&&sealTotal>0&&SealCount==sealTotal)
                 rewarded=run.SideRewardRequested!=null&&run.SideRewardRequested(1000,true);
         }
@@ -81,7 +90,7 @@ namespace ForjaDasMares
             if(!CanDamage(player)||dungeon.Encounter.State==EncounterState.Spawning||dungeon.Encounter.State==EncounterState.Fighting)return false;
             foreach(var p in props)
             {
-                if(p.Kind!=AdventurePropKind.Fountain||p.Claimed||p.Room!=dungeon.CurrentRoom||(p.transform.position-player.transform.position).sqrMagnitude>4.41f)continue;
+                if(p.Kind!=AdventurePropKind.Fountain||p.Claimed||!dungeon.OpenLandscape&&p.Room!=dungeon.CurrentRoom||(p.transform.position-player.transform.position).sqrMagnitude>4.41f)continue;
                 if(Physics.Linecast(player.transform.position+Vector3.up,p.transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore))continue;
                 bool healed=false;
                 for(int i=0;i<4;i++)
@@ -116,6 +125,7 @@ namespace ForjaDasMares
         public DungeonRoom Room {get;private set;}
         public int Id {get;private set;}
         public bool Claimed {get;set;}
+        public bool HealingGranted {get;set;}
         public void Configure(CampaignAdventure adventure,DungeonRoom room,AdventurePropKind kind,int id,CampaignAdventureDefinition data,BiomeDefinition biome)
         {
             owner=adventure;Room=room;Kind=kind;Id=id;block=new MaterialPropertyBlock();
@@ -125,8 +135,11 @@ namespace ForjaDasMares
             visual.layer=CampaignAdventure.PropLayer;model=visual.transform;core=visual.GetComponent<Renderer>();core.sharedMaterial=biome.accent;
             if(kind==AdventurePropKind.Fountain){visual.GetComponent<Collider>().enabled=false;Destroy(visual.GetComponent<Collider>());}
             color=kind==AdventurePropKind.Supply?new Color(.47f,.28f,.12f):kind==AdventurePropKind.Seal?data.sealColor:data.healingColor;
+            var source=kind==AdventurePropKind.Supply?data.supplyModel:kind==AdventurePropKind.Seal?data.sealModel:data.fountainModel;
+            if(source!=null){core.GetComponent<MeshFilter>().sharedMesh=null;var instance=Instantiate(source,model);instance.transform.localPosition=Vector3.down*.55f;instance.transform.localRotation=Quaternion.identity;instance.transform.localScale=Vector3.one;}
             for(int i=0;i<2;i++)
             {
+                if(source!=null)break;
                 var band=GameObject.CreatePrimitive(PrimitiveType.Cube);band.name="Trim";band.transform.SetParent(model,false);band.transform.localPosition=new Vector3(0,i==0?-.33f:.33f,0);band.transform.localScale=new Vector3(1.06f,.12f,1.06f);
                 band.GetComponent<Renderer>().sharedMaterial=biome.wall;band.GetComponent<Collider>().enabled=false;Destroy(band.GetComponent<Collider>());
             }

@@ -153,8 +153,19 @@ namespace ForjaDasMares
         }
         void ResolveSuper()
         {
-            resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true,strikeScale);
-            pool.PlaceZone(transform.position,currentAttack.range,.45f,currentAttack,health,targets,geometry,false);
+            if(currentAttack.shape==AttackShape.Projectile)
+            {
+                for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)
+                {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;pool.Shoot(origin.position+facing*.05f,Quaternion.Euler(0,angle,0)*facing,currentAttack,health,targets,geometry,strikeScale);}
+            }
+            else resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true,strikeScale);
+            if(flow.superProtection>0)
+            {
+                health.Protect(flow.superProtection,flow.protectionDuration);
+                int count=Physics.OverlapSphereNonAlloc(transform.position,currentAttack.range,nearbyAllies,allies,QueryTriggerInteraction.Ignore);
+                for(int i=0;i<count;i++){var ally=nearbyAllies[i].GetComponentInParent<Health>();if(ally!=null&&ally.Faction==health.Faction&&ally.IsAlive&&!Physics.Linecast(origin.position,ally.transform.position+Vector3.up,geometry,QueryTriggerInteraction.Ignore))ally.Protect(flow.superProtection,flow.protectionDuration);}
+            }
+            pool.PlaceZone(transform.position,currentAttack.shape==AttackShape.Projectile?2.5f:currentAttack.range,.45f,currentAttack,health,targets,geometry,false);
         }
         void ResolveSpecial()
         {

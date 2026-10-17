@@ -36,6 +36,10 @@ namespace ForjaDasMares
                 }
         }
         public void SetLimit(int maximum) => limit = Mathf.Clamp(maximum, 1, Capacity);
+        public bool HasAvailableSlot(EnemyDefinition data)
+        {for(int i=0;i<actors.Length;i++)if(slots[i]==data&&!actors[i].IsSpawned)return true;return false;}
+        public bool ThreatNear(Vector3 point,float radius)
+        {foreach(var actor in actors)if(actor.gameObject.activeInHierarchy&&actor.Health.IsAlive&&(actor.transform.position-point).sqrMagnitude<radius*radius)return true;return false;}
         public EnemyActor TrySpawn(EnemyDefinition data, Vector3 desired, EnemyActor summoner = null)
         {
             if (ActiveCount >= limit || data == null || !HasLivingPlayers) return null;

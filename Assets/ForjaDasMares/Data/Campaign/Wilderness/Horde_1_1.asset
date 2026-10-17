@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f72c24a1a2308e54d8a5be9031510b19, type: 3}
+  m_Name: Horde_1_1
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EncounterDefinition
+  encounterId: wild-1-1
+  displayName: "Escaramu\xE7a 2"
+  waves:
+  - displayName: "Refor\xE7os 1"
+    entries:
+    - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+      count: 8
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+      count: 4
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
+      count: 1
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 898a37b267407f74ba60c37a79a87dd2, type: 2}
+      count: 1
+      delay: 0.28
+    completion: 0
+    delayBefore: 2
+    survivalDuration: 20
+  - displayName: "Refor\xE7os 2"
+    entries:
+    - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+      count: 8
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+      count: 4
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
+      count: 1
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 898a37b267407f74ba60c37a79a87dd2, type: 2}
+      count: 1
+      delay: 0.28
+    completion: 0
+    delayBefore: 2
+    survivalDuration: 20
+  - displayName: "Refor\xE7os 3"
+    entries:
+    - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+      count: 8
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+      count: 4
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
+      count: 1
+      delay: 0.28
+    - enemy: {fileID: 11400000, guid: 898a37b267407f74ba60c37a79a87dd2, type: 2}
+      count: 1
+      delay: 0.28
+    completion: 0
+    delayBefore: 2
+    survivalDuration: 20
+  maximumMobileEnemies: 20
+  maximumPcEnemies: 24

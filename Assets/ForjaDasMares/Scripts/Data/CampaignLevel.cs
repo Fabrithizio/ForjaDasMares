@@ -12,6 +12,11 @@ namespace ForjaDasMares
         public EncounterDefinition normal,hard,boss;
         public CampaignAdventureDefinition adventure;
         public EncounterDefinition[] combatVariants;
+        public bool openLandscape;
+        [Range(20,40)] public float sectorSize=28;
+        [Range(8,20)] public float passageWidth=14;
+        public GameObject[] coverModels;
+        public AudioClip hitSound,crateSound,healSound,lootSound;
         [Range(1,5)] public float plateHold=1.5f;
         [Range(1.5f,6)] public float dartInterval=4;
         public AttackDefinition dartAttack;

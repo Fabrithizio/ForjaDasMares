@@ -13,5 +13,7 @@ namespace ForjaDasMares
         [Min(1)] public int hitsForSuper = 16;
         [Min(.1f)] public float superInputBuffer = 1.5f;
         public AttackDefinition superAttack;
+        [Range(0,.7f)] public float superProtection;
+        [Range(0,8)] public float protectionDuration;
     }
 }

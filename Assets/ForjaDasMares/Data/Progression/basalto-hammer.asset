@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: basalto-hammer
   displayName: Martelo de Basalto
+  icon: {fileID: 21300000, guid: 0abd7df1275583042a3f536afbeae62b, type: 3}
   description: "Impacto circular pr\xF3ximo e forte empurr\xE3o. Duas m\xE3os."
   slot: 0
   category: 2
@@ -23,7 +24,9 @@ MonoBehaviour:
   allowsOffHand: 0
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: 7a4b26395cb3a6149a4b583de89ba9eb, type: 2}
+  - {fileID: 11400000, guid: a85a192bdaecab14a93f979d1480e804, type: 2}
+  - {fileID: 11400000, guid: 0ffc4473a43e6bc44b216cb4a386d8f5, type: 2}
+  - {fileID: 11400000, guid: b0bb273d646340c4db7315900c0d6cfb, type: 2}
   bonuses:
   - stat: 2
     value: 4

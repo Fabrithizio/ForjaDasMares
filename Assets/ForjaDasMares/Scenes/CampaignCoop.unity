@@ -1562,13 +1562,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyPool
   definitions:
-  - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
-  - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
-  - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
-  - {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
-  - {fileID: 11400000, guid: 4c7207346e9621e48aaf434fc739a063, type: 2}
-  - {fileID: 11400000, guid: b1d5af50e01559c42b12021913e92d60, type: 2}
-  - {fileID: 11400000, guid: f1b488f9a19732044b3e607f6fffce62, type: 2}
+  - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+  - {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
+  - {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+  - {fileID: 11400000, guid: 898a37b267407f74ba60c37a79a87dd2, type: 2}
+  - {fileID: 11400000, guid: ab6e6a3660c1c574cb4e8c7a17857f4f, type: 2}
+  - {fileID: 11400000, guid: ae33d7de38a12d544833bdc9824ebc2c, type: 2}
+  - {fileID: 11400000, guid: 910f86e4622d1f747b7885a4165bd971, type: 2}
+  - {fileID: 11400000, guid: ee4ee37f7edb2c8438567c64fdacb9c5, type: 2}
+  - {fileID: 11400000, guid: a48ac5ef464c1b546b55d4d10a623129, type: 2}
+  - {fileID: 11400000, guid: a045d2a15ae0730429f0a37bf88ca35a, type: 2}
   heroes: {fileID: 60716055}
   projectiles: {fileID: 1414071814}
   warnings: {fileID: 1919940724}

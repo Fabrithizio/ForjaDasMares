@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: centelha-book
   displayName: "C\xF3dice das Tr\xEAs Centelhas"
+  icon: {fileID: 21300000, guid: 3a8a48670de46eb41a8c38b00f034220, type: 3}
   description: "Tr\xEAs proj\xE9teis em leque: cada um encerra ao primeiro impacto.
     Arcanista."
   slot: 0
@@ -24,7 +25,9 @@ MonoBehaviour:
   allowsOffHand: 1
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: 27d5055f43dd45a41bc7ce413b6c3cc7, type: 2}
+  - {fileID: 11400000, guid: 5a8aa4e4b8e040f4c88b0e2de19dd8c6, type: 2}
+  - {fileID: 11400000, guid: 0023122bfff35f24a97ad477804d4b0d, type: 2}
+  - {fileID: 11400000, guid: a45ae756549c8514983b194ee13c2411, type: 2}
   bonuses:
   - stat: 6
     value: 0.05

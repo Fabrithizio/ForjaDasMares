@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: mare-orb
   displayName: "Orbe da Mar\xE9 Morta"
+  icon: {fileID: 21300000, guid: c74b1bf797b1d3e43aba47d90e3ae9ad, type: 3}
   description: "Proj\xE9til lento, explos\xE3o maior e raiz breve; menor cad\xEAncia.
     Arcanista."
   slot: 0
@@ -24,7 +25,9 @@ MonoBehaviour:
   allowsOffHand: 1
   twinStrike: 0
   attacks:
-  - {fileID: 11400000, guid: ce0cbe1b6d0d36346a05132c01636b9f, type: 2}
+  - {fileID: 11400000, guid: 83d27f5bfd20c9a4995efd26f01c7a91, type: 2}
+  - {fileID: 11400000, guid: 84b2b498959fe58458f6ec3fb260a7f8, type: 2}
+  - {fileID: 11400000, guid: fb4b597eda580d74580b9266ba81f2b4, type: 2}
   bonuses:
   - stat: 7
     value: 0.08

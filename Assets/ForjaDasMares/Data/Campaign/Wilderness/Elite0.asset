@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: Elite0
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: elite-0
+  displayName: Malho do Breu
+  kind: 6
+  prefab: {fileID: 242480854351914776, guid: cc9d9036adda23f40b0d7f714fb0ba76, type: 3}
+  maximumHealth: 320
+  poolCapacity: 1
+  armor: 0.08
+  speed: 2.8
+  acceleration: 24
+  height: 2.1
+  radius: 0.5
+  agentTypeId: -1372625422
+  detectionRange: 24
+  forgetRange: 36
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: a5629ea535d8aac4ea300005258ce3eb, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 1
+  staggerDuration: 0
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 11400000, guid: 9c5e25a43ad6b7c468960b324ebb67eb, type: 2}
+  miniboss: 1
+  color: {r: 0.8, g: 0.4, b: 0.18, a: 1}

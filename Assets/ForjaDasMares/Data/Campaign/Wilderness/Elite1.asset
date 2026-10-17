@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: Elite1
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  enemyId: elite-1
+  displayName: "Or\xE1culo das Ra\xEDzes"
+  kind: 6
+  prefab: {fileID: 4305809080390475470, guid: 2a61909bddb4ab34883c3fc1911c85cb, type: 3}
+  maximumHealth: 220
+  poolCapacity: 1
+  armor: 0.08
+  speed: 2.8
+  acceleration: 24
+  height: 2.1
+  radius: 0.5
+  agentTypeId: -1372625422
+  detectionRange: 24
+  forgetRange: 36
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: 0fad216a1c0a9ba4583903e7bcab1fca, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 1
+  staggerDuration: 0
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 11400000, guid: 5ff1538b83bd52148b0eb77a57b6e231, type: 2}
+  miniboss: 1
+  color: {r: 0.8, g: 0.4, b: 0.18, a: 1}

@@ -65,7 +65,7 @@ namespace ForjaDasMares
             if (profile.expedition != null)
             {
                 var run = profile.expedition;
-                if (string.IsNullOrWhiteSpace(run.runId) || catalog.Hero(run.heroId) == null || run.items == null || run.events == null || run.items.Count > catalog.expeditionCapacity || run.events.Count > 512 || run.experience < 0 || run.experience > 100000 || run.coins < 0 || run.coins > 1000000) throw new InvalidDataException("Expedição inválida.");
+                if (string.IsNullOrWhiteSpace(run.runId) || catalog.Hero(run.heroId) == null || run.items == null || run.events == null || run.items.Count > catalog.expeditionCapacity || run.events.Count > 2048 || run.experience < 0 || run.experience > 100000 || run.coins < 0 || run.coins > 1000000) throw new InvalidDataException("Expedição inválida.");
                 foreach (var item in run.items) Item(item, catalog, ids);
                 var events = new HashSet<string>(); foreach (var id in run.events) if (string.IsNullOrWhiteSpace(id) || id.Length > 128 || !events.Add(id)) throw new InvalidDataException("Evento duplicado ou inválido.");
             }

@@ -24,6 +24,8 @@ namespace ForjaDasMares
         public EncounterDefinition[] Presets => presets;
         public int WaveNumber => waveIndex + 1;
         public int Seals { get; private set; }
+        public int DefeatedCount {get;private set;}
+        public int PlannedCount {get;private set;}
         public EnemyActor Boss => boss;
         public event Action Started, Completed, Failed;
         public void Configure(EnemyPool pool, HeroRoster player, ArenaSession reset, EncounterDefinition[] data, Transform[] sockets)
@@ -37,6 +39,7 @@ namespace ForjaDasMares
         {
             if (resetPlayer) arena.ResetArena(); else Cancel();
             current = data; waveIndex = entryIndex = spawnedInEntry = spawnSequence = bossReward = 0; bossSpawned = bossDefeated = false; boss = null;
+            DefeatedCount=PlannedCount=0;if(current!=null&&current.waves!=null)foreach(var wave in current.waves)foreach(var entry in wave.entries)PlannedCount+=entry.count;
             if (current == null || current.waves == null || current.waves.Length == 0) { Fail(); return; }
             enemies.SetLimit(Application.isMobilePlatform ? data.maximumMobileEnemies : data.maximumPcEnemies);
             NextWave();
@@ -64,7 +67,7 @@ namespace ForjaDasMares
                     else
                     {
                         // Full pools wait for space; invalid geometry fails visibly instead of granting a false victory.
-                        timer = 0.2f; if (enemies.ActiveCount < enemies.Limit) spawnFailureTime += 0.2f;
+                        timer = 0.2f; if (enemies.ActiveCount < enemies.Limit && enemies.HasAvailableSlot(entry.enemy)) spawnFailureTime += 0.2f;
                         if (spawnFailureTime > 8) { Debug.LogError("Encounter could not place its configured enemy.", this); Fail(); return; }
                     }
                 }
@@ -76,8 +79,8 @@ namespace ForjaDasMares
             }
         }
         void Spawned(EnemyActor actor) { if (actor.Profile.kind == EnemyKind.Boss) { boss = actor; bossSpawned = true; } }
-        void Died(EnemyActor actor) { if (actor == boss) { bossDefeated = true; bossReward = actor.Profile.boss.rewardSeals; } }
+        void Died(EnemyActor actor) {if(actor.Summoner==null)DefeatedCount++; if (actor == boss) { bossDefeated = true; bossReward = actor.Profile.boss.rewardSeals; } }
         void Fail() { State = EncounterState.Failed; enemies.Clear(); boss = null; Failed?.Invoke(); }
-        public void Cancel() { State = EncounterState.Ready; current = null; boss = null; bossReward = 0; enemies.Clear(); }
+        public void Cancel() { State = EncounterState.Ready; current = null; boss = null; bossReward = 0;PlannedCount=DefeatedCount=0; enemies.Clear(); }
     }
 }

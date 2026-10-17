@@ -11,7 +11,7 @@ namespace ForjaDasMares
         public bool Used { get; private set; }
         public string Label => Used ? "" : Kind == DungeonInteractionKind.Chest ? "ABRIR BAU" : Kind == DungeonInteractionKind.Crystal ? "ATIVAR CRISTAL / CHAVE" : Kind == DungeonInteractionKind.Rest ? "DESCANSAR" : Kind == DungeonInteractionKind.TrapLever ? "DESLIGAR ARMADILHA" : "SAIR DA MASMORRA";
         public void Configure(DungeonSession owner, DungeonRoom context, DungeonInteractionKind kind, Transform part) { session = owner; room = context; Kind = kind; movingPart = part; }
-        public bool CanUse => isActiveAndEnabled && !Used && session.CurrentRoom == room && session.HasLivingPlayers && (Kind != DungeonInteractionKind.Exit || room.completed);
+        public bool CanUse => isActiveAndEnabled && !Used && (session.OpenLandscape||session.CurrentRoom == room) && session.HasLivingPlayers && (Kind != DungeonInteractionKind.Exit || room.completed);
         public bool Use() => UseBy(session.Heroes.Health);
         public bool UseBy(Health player)
         {
