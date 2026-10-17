@@ -1,3 +1,7 @@
+# Atualização 0.8.2
+
+PC: atalho Jogar Campanha Forja das Mares. Android: enviar como Documento o APK em `Área de Trabalho/Jogos/Enviar para meu irmao/ForjaDasMares-0.8.2-Android.apk`. Crie a sala no PC e compartilhe o código; convidado usa Campanha → Entrar pelo código. Prefira entrar antes de iniciar. Na fase: código no alto e botão MENU para grupo, convite, opções e saída. Menu não pausa o online. Amigos são agenda local de convites.
+
 # Campanha 0.8.1 — solo e cooperativo
 
 ## Abrir

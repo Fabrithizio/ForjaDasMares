@@ -63,9 +63,13 @@ namespace ForjaDasMares.Networking
         }
         void SelectEquipped(int slot)
         {deliveries=false;var actor=director.Actor(director.LocalSlot);var set=channel.LocalProfile?.Loadout(actor.Roster.Current.heroId);selected=set!=null?set.items[slot]:null;pendingDiscard=null;Refresh();}
+        public bool IsOpen=>overlay!=null&&overlay.activeSelf;
+        public void OpenInventory()=>Show(false);
+        public void CloseInventory(){if(IsOpen)Close();}
         void Show(bool result)
         {
             if (channel.LocalProfile == null || director.LocalSlot < 0) return;
+            GetComponent<CampaignSessionMenu>()?.Close();
             results = result; deliveries=false; selected = pendingDiscard = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); director.SetInputBlocked(true); Refresh();
         }
         Button TopRight(Transform parent,string label,float y,UnityEngine.Events.UnityAction action)

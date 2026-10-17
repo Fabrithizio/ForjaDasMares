@@ -139,5 +139,26 @@ namespace ForjaDasMares.Networking.Tests
             Find("Settings").onClick.Invoke();float prior=AudioListener.volume;Find("VolumeDown").onClick.Invoke();Assert.That(AudioListener.volume,Is.LessThanOrEqualTo(prior));Find("VolumeUp").onClick.Invoke();
             Find("Campaign").onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);Assert.IsFalse(hud.AtHome);
         }
+        [UnityTest] public IEnumerator SessionMenuKeepsSimulationRunningShowsCodeAndCoordinatesInventory()
+        {
+            Assert.IsTrue(session.HostDirect("HUDTEST",7797,false));yield return null;
+            var hud=UnityEngine.Object.FindFirstObjectByType<CampaignHud>();
+            var menu=hud.GetComponent<CampaignSessionMenu>();var inventory=hud.GetComponent<CoopInventoryHud>();
+            Assert.NotNull(menu);float scale=Time.timeScale;menu.Open();Assert.IsTrue(menu.IsOpen);Assert.AreEqual(scale,Time.timeScale);
+            bool codeFound=false;foreach(var text in hud.GetComponentsInChildren<UnityEngine.UI.Text>())if(text.text.Contains("HUDTEST"))codeFound=true;
+            Assert.IsTrue(codeFound);
+            UnityEngine.UI.Button Find(string name){foreach(var b in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(b.name==name)return b;return null;}
+            Find("SettingsTab").onClick.Invoke();float prior=AudioListener.volume;Find("VolumeDown").onClick.Invoke();Assert.That(AudioListener.volume,Is.LessThanOrEqualTo(prior));Find("VolumeUp").onClick.Invoke();
+            Find("FriendsTab").onClick.Invoke();Assert.IsTrue(Find("CopyFriendInvite").gameObject.activeInHierarchy);
+            inventory.OpenInventory();Assert.IsTrue(inventory.IsOpen);Assert.IsFalse(menu.IsOpen);
+            menu.Open();Assert.IsTrue(menu.IsOpen);Assert.IsFalse(inventory.IsOpen);
+            Find("Leave").onClick.Invoke();Assert.IsTrue(Find("ConfirmLeave").gameObject.activeInHierarchy);
+            Find("CancelLeave").onClick.Invoke();Assert.IsTrue(menu.IsOpen);Assert.AreEqual(CoopPhase.Lobby,session.Phase);
+            menu.Close();Assert.IsFalse(menu.IsOpen);Assert.AreEqual(scale,Time.timeScale);
+            session.StartGame();yield return new WaitForSecondsRealtime(.2f);
+            foreach(var text in hud.GetComponentsInChildren<UnityEngine.UI.Text>())if(text.text.Contains("SALA  HUDTEST"))codeFound=true;
+            Assert.IsTrue(codeFound);menu.Open();yield return null;Assert.AreEqual(CoopPhase.Playing,session.Phase);Assert.AreEqual(scale,Time.timeScale);
+            menu.Close();
+        }
     }
 }

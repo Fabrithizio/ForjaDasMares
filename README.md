@@ -1,3 +1,7 @@
+## Campanha 0.8.2 — HUD e convite em jogo
+
+Código visível, menu de sessão e APK para testes privados: [relatório](Docs/HUD_E_COMPARTILHAMENTO_2026-10-17.md). Builds em `Builds/CampaignWindows-0.8.2` e `Builds/CampaignAndroid-0.8.2`; binários locais não estão versionados.
+
 ﻿# Forja das Marés — protótipo de ação e masmorras
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
