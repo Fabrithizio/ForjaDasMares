@@ -80,6 +80,7 @@ namespace ForjaDasMares.Networking
             if(inventoryButton!=null)
             {
                 inventoryButton.interactable=director.LocalSlot>=0;
+                if(director.Campaign!=null){var campaignHud=GetComponent<CampaignHud>();inventoryButton.gameObject.SetActive(campaignHud==null||!campaignHud.AtHome);}
                 if(director.Campaign!=null)resultButton.gameObject.SetActive(director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
             }
             if (overlay == null || !overlay.activeSelf) return;

@@ -20,7 +20,14 @@ namespace ForjaDasMares.Networking
     public sealed class CoopCloud : MonoBehaviour
     {
         CoopDirector director; ISession session; CancellationTokenSource operation;
-        bool busy, disposing,advertising;string testPool="";
+        bool busy, disposing,advertising,advertDirty;float advertClock;string advertKey="";string testPool="";
+        public bool PublicRoom=>session!=null&&!session.IsPrivate;
+        public bool CanChangeVisibility=>session!=null&&session.IsHost&&director.Campaign!=null;
+        public void ToggleVisibility()
+        {
+            if(!CanChangeVisibility||Busy)return;
+            var host=session.AsHost();host.IsPrivate=!host.IsPrivate;advertDirty=true;
+        }
         CoopInternetSettings settings;
         public bool Busy => busy || disposing || advertising;
         string ResumeKey => "CoopCloudResume." + Application.cloudProjectId + "." + settings.Environment + "." + AuthenticationService.Instance.Profile;
@@ -59,7 +66,7 @@ namespace ForjaDasMares.Networking
                 try{return await MultiplayerService.Instance.JoinSessionByIdAsync(candidate.Id,new JoinSessionOptions(),cancellation);}
                 catch(SessionException error){Message="A vaga mudou; procurando outro grupo: "+error.Error;}
             }
-            Message="Nenhum grupo aguardando: criando uma sala aberta desta fase.";
+            Message="Nenhum grupo disponível: criando uma sala aberta desta fase.";
             return await MultiplayerService.Instance.CreateSessionAsync(CampaignOptions(false),cancellation);
         }
         async Task Open(bool host, string code,bool find=false)
@@ -94,7 +101,7 @@ namespace ForjaDasMares.Networking
                     PlayerPrefs.Save();
                 }
                 operation.Token.ThrowIfCancellationRequested();
-                director.CompleteCloudConnection(session.Code,session.IsPrivate); Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
+                director.CompleteCloudConnection(session.Code,session.IsPrivate);advertDirty=true; Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
             }
             catch (Exception error)
             { Message = error is OperationCanceledException ? "Conexão cancelada ou tempo esgotado." : "Falha nos serviços: " + error.Message; director.Close(); await DisposeSession(); }
@@ -125,14 +132,21 @@ namespace ForjaDasMares.Networking
                 owner.SetProperty("campaign",new SessionProperty(CampaignKey,VisibilityPropertyOptions.Public,PropertyIndex.String1));
                 await owner.SavePropertiesAsync();
             }
-            catch(Exception error){Message="Não foi possível atualizar o anúncio da sala: "+error.Message;}
+            catch(Exception error){advertDirty=true;advertClock=3;Message="Não foi possível atualizar o anúncio da sala: "+error.Message;}
             finally{advertising=false;}
         }
         void Changed()
         {
-            if(director.Phase==CoopPhase.Loading)_=SaveCampaignAdvert(true);
-            if(director.Phase==CoopPhase.Lobby)_=SaveCampaignAdvert(false);
+            advertDirty=true;
             if(director.Phase==CoopPhase.Closed){operation?.Cancel();_=DisposeSession();}
+        }
+        void Update()
+        {
+            if(session==null||!session.IsHost||director.Campaign==null||busy||disposing||advertising)return;
+            advertClock-=Time.unscaledDeltaTime;if(advertClock>0)return;advertClock=1;
+            bool locked=director.Phase!=CoopPhase.Lobby&&!director.CanAdmitNewPlayer||director.ConnectedCount>=4;
+            string key=CampaignKey+":"+locked+":"+session.IsPrivate;
+            if(!advertDirty&&key==advertKey)return;advertDirty=false;advertKey=key;_=SaveCampaignAdvert(locked);
         }
         public void Cancel() { operation?.Cancel(); director.Close(); }
         async Task DisposeSession()

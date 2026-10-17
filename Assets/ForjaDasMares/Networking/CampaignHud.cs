@@ -6,7 +6,9 @@ namespace ForjaDasMares.Networking
     {
         CoopDirector director;CoopCloud cloud;ArenaInput controls;CampaignRun campaign;
         RectTransform root,healthFill;GameObject map,side,touch,backdrop,vitals,objective;Text title,details,state,party,combat;InputField code;
-        Button create,find,join,start,hero,leave,copyInvite;
+        Button create,find,join,start,hero,leave,copyInvite,visibility,liveVisibility,homeButton;
+        GameObject home;
+        public bool AtHome {get;private set;}=true;
         readonly Button[] nodes=new Button[3];float refresh;uint cleared;
         public void Build(RectTransform parent,CoopDirector owner,ArenaInput input)
         {
@@ -28,11 +30,12 @@ namespace ForjaDasMares.Networking
                 var text=nodes[i].GetComponentInChildren<Text>();text.fontSize=18;RusticHudTheme.Icon(nodes[i].transform,HudSymbol.Compass,new Vector2(.5f,0),new Vector2(0,6),26);
             }
             Label(background,"1  →  2  →  3",40,-535,790,40,22);
-            Label(background,"Duas a quatro pessoas · inimigos, baús, placas simultâneas e flechas com aviso.\nTrês fases liberadas para testes. O host guarda o progresso do grupo.",40,-585,790,55,16);
+            Label(background,"Uma a quatro pessoas · solo com +10% vida e dano.\nSala aberta recebe parceiros até 20% da fase. O host guarda o progresso.",40,-585,790,55,16);
             var panel=RusticHudTheme.Rect(content,"CampaignSession",new Vector2(0,1),new Vector2(900,-25),new Vector2(350,655));side=panel.gameObject;RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
             title=Label(panel,"",20,-15,310,55,23);details=Label(panel,"",20,-72,310,85,16);
             hero=Button(panel,"Hero",20,-165,310,42,"HERÓI",()=>director.SelectHero((director.SelectedHero+1)%director.HeroCount));
             create=Button(panel,"Private",20,-220,310,48,"CRIAR SALA PRIVADA",()=>cloud.Create());
+            visibility=Button(panel,"Visibility",20,-220,310,48,"ABRIR SALA PARA GRUPOS",()=>cloud.ToggleVisibility());
             find=Button(panel,"FindGroup",20,-278,310,48,"PROCURAR GRUPO DESTA FASE",()=>cloud.FindCampaignGroup());
             code=Field(panel,20,-340,310,44);
             join=Button(panel,"JoinCode",20,-395,310,44,"ENTRAR PELO CÓDIGO",()=>cloud.Join(code.text));
@@ -46,6 +49,8 @@ namespace ForjaDasMares.Networking
             combat=Label(goal,"",15,-10,430,120,16);
             leave=RusticHudTheme.Button(root,"CampaignLeave",new Vector2(1,1),new Vector2(-20,-20),new Vector2(190,44),"SAIR DA SALA",director.Close);
             copyInvite=RusticHudTheme.Button(root,"CopyInvite",new Vector2(1,1),new Vector2(-220,-20),new Vector2(160,44),"COPIAR CÓDIGO",()=>{if(!string.IsNullOrEmpty(director.Pin))GUIUtility.systemCopyBuffer=director.Pin;});
+            liveVisibility=RusticHudTheme.Button(root,"LiveVisibility",new Vector2(1,1),new Vector2(-20,-75),new Vector2(390,44),"ABRIR SALA",()=>cloud.ToggleVisibility());
+            homeButton=RusticHudTheme.Button(root,"HomeButton",new Vector2(1,0),new Vector2(-20,20),new Vector2(200,44),"INÍCIO",()=>AtHome=true);
             touch=RusticHudTheme.Rect(root,"CampaignControls",Vector2.zero,Vector2.zero,Vector2.zero).gameObject;
             var tr=(RectTransform)touch.transform;tr.anchorMax=Vector2.one;tr.offsetMin=tr.offsetMax=Vector2.zero;
             if(Application.isMobilePlatform)
@@ -61,6 +66,8 @@ namespace ForjaDasMares.Networking
                 var dock=RusticHudTheme.Rect(touch.transform,"DesktopDock",new Vector2(.5f,0),new Vector2(0,20),new Vector2(650,70));dock.pivot=new Vector2(.5f,0);RusticHudTheme.Panel(dock,RusticHudTheme.Ink);
                 Label(dock,"WASD · mover    Mouse · segure para atacar    Espaço · esquiva\nE · habilidade       F · interagir       Mochila · equipar fora do combate",15,-8,620,55,17);
             }
+            var homeRect=RusticHudTheme.Rect(root,"InitialScreen",Vector2.zero,Vector2.zero,Vector2.zero);homeRect.anchorMax=Vector2.one;homeRect.offsetMin=homeRect.offsetMax=Vector2.zero;home=homeRect.gameObject;
+            home.AddComponent<CampaignHome>().Build(homeRect,director,()=>AtHome=false);
         }
         void Touch(string label,float x,float y,HeroButtons action,bool held)
         {
@@ -72,7 +79,10 @@ namespace ForjaDasMares.Networking
             if(root==null)return;refresh-=Time.unscaledDeltaTime;if(refresh>0)return;refresh=.12f;
             bool active=director.Phase==CoopPhase.Playing;
             bool offline=director.Phase==CoopPhase.Offline||director.Phase==CoopPhase.Closed;
+            if(!offline)AtHome=false;
+            home.SetActive(AtHome);homeButton.gameObject.SetActive(offline&&!AtHome);
             backdrop.SetActive(!active);vitals.SetActive(active);objective.SetActive(active);map.SetActive(!active);side.SetActive(!active);party.gameObject.SetActive(active);combat.gameObject.SetActive(active);touch.SetActive(active);
+            if(AtHome){map.SetActive(false);side.SetActive(false);}
             title.text=campaign.Level.displayName;details.text=campaign.Level.description+"\nSeleção do host: fase "+(campaign.Selected+1);
             for(int i=0;i<3;i++)
             {
@@ -89,9 +99,13 @@ namespace ForjaDasMares.Networking
             }
             hero.GetComponentInChildren<Text>().text="HERÓI · "+director.HeroName;hero.interactable=offline||director.Phase==CoopPhase.Lobby;
             create.gameObject.SetActive(offline);find.gameObject.SetActive(offline);join.gameObject.SetActive(offline);code.gameObject.SetActive(offline);
+            visibility.gameObject.SetActive(!offline&&director.IsHost);visibility.interactable=cloud.CanChangeVisibility&&!cloud.Busy;
+            string visibilityLabel=cloud.PublicRoom?"TORNAR SALA PRIVADA":"ABRIR SALA PARA GRUPOS";
+            visibility.GetComponentInChildren<Text>().text=visibilityLabel;liveVisibility.GetComponentInChildren<Text>().text=visibilityLabel;
+            liveVisibility.gameObject.SetActive(active&&director.IsHost);liveVisibility.interactable=cloud.CanChangeVisibility&&!cloud.Busy;
             create.interactable=find.interactable=join.interactable=offline&&!cloud.Busy&&!director.Manager.IsListening;
-            start.gameObject.SetActive(!offline);start.interactable=director.IsHost&&!cloud.Busy&&(director.Phase==CoopPhase.Lobby&&director.ConnectedCount>=2||director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
-            start.GetComponentInChildren<Text>().text=director.Phase==CoopPhase.Lobby?"INICIAR COM O GRUPO":"CONTINUAR CAMPANHA";
+            start.gameObject.SetActive(!offline);start.interactable=director.IsHost&&!cloud.Busy&&(director.Phase==CoopPhase.Lobby&&director.ConnectedCount>=1||director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
+            start.GetComponentInChildren<Text>().text=director.Phase==CoopPhase.Lobby?(director.ConnectedCount==1?"INICIAR SOLO · +10%":"INICIAR COM O GRUPO"):"CONTINUAR CAMPANHA";
             state.text=offline?cloud.Message:director.Message+"\nCódigo: "+director.Pin+"\nGrupo "+director.ConnectedCount+"/4"+(director.ConnectedCount<2?" · aguardando parceiro":"");
             string allies="";for(int i=0;i<4;i++)if(director.IsConnected(i)){var actor=director.Actor(i);allies+=(i==director.LocalSlot?"VOCÊ":"ALIADO "+(i+1))+" · "+actor.Roster.Current.displayName+"\n"+actor.Health.Current+" / "+actor.Health.Maximum+" VIDA\n";}
             party.text=allies;
@@ -100,7 +114,7 @@ namespace ForjaDasMares.Networking
             if(profile!=null)cleared=profile.campaignCleared;
             for(int i=0;i<3;i++)nodes[i].GetComponentInChildren<Text>().text=campaign.At(i).displayName+"\n\n"+((cleared&(1u<<i))!=0?"CONCLUÍDA":i==0?"INICIAL":i==1?"VETERANO":"DESAFIADOR");
             combat.text=campaign.Level.displayName+"\n"+campaign.Objective+(profile!=null?"\nMoedas: "+(profile.expedition?.coins??profile.coins)+" · saque: "+(profile.expedition?.items.Count??0):"");
-            if(active&&director.ConnectedCount<2)combat.text="Parceiro desconectado: retorne ao mesmo código em até 90s.\nAs placas exigem dois heróis vivos.";
+            if(active)combat.text+="\nProgresso: "+Mathf.FloorToInt(campaign.Completion*100)+"%"+(campaign.Solo?" · SOLO +10% VIDA / DANO":"")+(campaign.Completion>=.2f?" · novas entradas encerradas":" · pode receber parceiros");
             foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.IsAlive&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\nCHEFE · "+enemy.Health.Current+" / "+enemy.Health.Maximum;break;}
         }
         static Text Label(Transform p,string s,float x,float y,float w,float h,int font)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,font);

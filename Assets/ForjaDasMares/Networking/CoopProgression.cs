@@ -38,15 +38,17 @@ namespace ForjaDasMares.Networking
         public ProfileService Profile(int slot) => slot >= 0 && slot < profiles.Length ? profiles[slot] : null;
         public string SavePath(int slot) => CoopRewardLedger.ParticipantPath(directory, identities[slot]);
         public int Revision(int slot) => slot >= 0 && slot < revisions.Length ? revisions[slot] : 0;
-        public bool Attach(int slot, string identity)
+        public bool Attach(int slot, string identity,int hero=-1)
         {
             if (ledger == null) return false;
-            if (identities[slot] == identity && profiles[slot] != null) return true;
-            if (Active) { Error = "Não é possível trocar participante na expedição."; return false; }
+            if (identities[slot] == identity && profiles[slot] != null && (!Active||ledger.Profile(slot)==profiles[slot])) return true;
+            if (Active && (ledger.Profile(slot)!=null||hero<0||hero>=director.HeroCount)) { Error = "Vaga reservada nesta expedição."; return false; }
+            if(Active&&!TryFlush())return false;
             try
             {
                 var profile = new ProfileService(catalog, new ProfileStore(CoopRewardLedger.ParticipantPath(directory, identity)));
                 if (profile.Profile.expedition != null && !profile.FinishExpedition(profile.Profile.expedition.runId, false, "Aplicação interrompida")) { Error = profile.Message; return false; }
+                if(Active&&!ledger.Join(slot,profile,director.Actor(slot).Roster.Current.heroId,director.Dungeon.Biome.displayName)){Error=ledger.Error??"Falha ao registrar participante.";return false;}
                 if (profiles[slot] != null && callbacks[slot] != null) profiles[slot].Changed -= callbacks[slot];
                 profiles[slot] = profile; identities[slot] = identity; revisions[slot]++;
                 callbacks[slot] = () => revisions[slot]++; profile.Changed += callbacks[slot]; ledger.Assign(slot, profile);

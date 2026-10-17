@@ -59,6 +59,14 @@ namespace ForjaDasMares.Networking
 #endif
         CampaignRun campaign;
         public CampaignRun Campaign=>campaign;
+        public bool CanAdmitNewPlayer => Campaign!=null&&Phase==CoopPhase.Playing&&Campaign.Completion<.2f;
+        void UpdateSoloBonus()
+        {
+            if(Campaign==null)return;
+            Campaign.Solo=ConnectedCount==1;
+            for(int i=0;i<4;i++)
+            {var gear=actors[i]?.GetComponent<HeroEquipment>();if(gear!=null)gear.SetCampaignSolo(seats[i].connected&&Campaign.Solo);}
+        }
         public int HeroCount => template.Count;
         public string HeroName => actors[localSlot >= 0 ? localSlot : 0].Roster.Current.displayName;
         public int ConnectedCount { get { int value = 0; foreach (var seat in seats) if (seat.connected) value++; return value; } }
@@ -155,12 +163,13 @@ namespace ForjaDasMares.Networking
             int slot = -1;
             for (int i = 0; i < seats.Length; i++) if (seats[i].identity == join.identity && !seats[i].connected && seats[i].expires > Time.unscaledTime) { slot = i; break; }
             bool returning = slot >= 0;
-            if (!returning && Phase != CoopPhase.Offline && Phase != CoopPhase.Lobby && Phase != CoopPhase.Connecting) { response.Reason = "Partida em andamento; apenas reconexão."; return; }
-            if (!returning) for (int i = 0; i < seats.Length; i++) if (seats[i].identity == null || !seats[i].connected && seats[i].expires <= Time.unscaledTime) { slot = i; break; }
+            if (!returning && Phase != CoopPhase.Offline && Phase != CoopPhase.Lobby && Phase != CoopPhase.Connecting && !CanAdmitNewPlayer) { response.Reason = "Entrada encerrada: fase com 20% ou mais de progresso."; return; }
+            if (!returning) for (int i = 0; i < seats.Length; i++) if (seats[i].identity == null || Phase!=CoopPhase.Playing&&!seats[i].connected && seats[i].expires <= Time.unscaledTime) { slot = i; break; }
             if (slot < 0) { response.Reason = "Sala cheia: máximo de quatro jogadores."; return; }
             foreach (var seat in seats) if (seat.connected && seat.identity == join.identity) { response.Reason = "Jogador já conectado."; return; }
-            if (!progression.Attach(slot, join.identity)) { response.Reason = progression.Error; return; }
-            var claim = seats[slot]; claim.identity = join.identity; claim.client = request.ClientNetworkId; claim.connected = true; claim.commands = 0; claim.rateTime = Time.unscaledTime;
+            if(!returning)actors[slot].Roster.Select(join.hero);
+            if (!progression.Attach(slot, join.identity,join.hero)) { response.Reason = progression.Error; return; }
+            var claim = seats[slot]; claim.identity = join.identity; claim.client = request.ClientNetworkId; claim.connected = true;claim.loaded=false;claim.expires=Time.unscaledTime+30; claim.commands = 0; claim.rateTime = Time.unscaledTime;
             connections[request.ClientNetworkId] = slot;
             if (!returning) actors[slot].Roster.Select(join.hero);
             response.Approved = true;
@@ -171,10 +180,11 @@ namespace ForjaDasMares.Networking
             // NGO approves its own host synchronously before this callback.
             if (!connections.TryGetValue(client, out int slot)) return;
             if (client == network.LocalClientId) localSlot = slot;
-            actors[slot].Commands.Clear(); actors[slot].gameObject.SetActive(true); actors[slot].SetAuthority(Phase == CoopPhase.Playing);
-            party.Set(slot, actors[slot].Health);
+            actors[slot].Commands.Clear(); actors[slot].gameObject.SetActive(true); actors[slot].SetAuthority(false);
+            party.Set(slot, Phase==CoopPhase.Playing?null:actors[slot].Health);
+            UpdateSoloBonus();
             profiles.Resend(slot);
-            if (Phase == CoopPhase.Playing && dungeon.CurrentRoom != null && !dungeon.CurrentRoom.Contains(actors[slot].transform.position)) PlaceInRoom(slot, dungeon.CurrentRoom);
+            if (Phase == CoopPhase.Playing && dungeon.CurrentRoom != null) PlaceInRoom(slot, dungeon.CurrentRoom);
             Debug.Log("COOP_CONNECTED slot=" + slot + " count=" + ConnectedCount); Changed?.Invoke();
         }
         void Disconnected(ulong client)
@@ -183,7 +193,7 @@ namespace ForjaDasMares.Networking
             {
                 connections.Remove(client); seats[slot].connected = false; seats[slot].expires = Time.unscaledTime + reconnectWindow;
                 actors[slot].Commands.Clear(); actors[slot].SetAuthority(false); actors[slot].gameObject.SetActive(false); party.Set(slot, null);
-                Debug.Log("COOP_DISCONNECTED slot=" + slot); Changed?.Invoke();
+                UpdateSoloBonus();Debug.Log("COOP_DISCONNECTED slot=" + slot); Changed?.Invoke();
             }
             else if (!network.IsServer && client == network.LocalClientId && !closing)
             { Freeze(); foreach (var seat in seats) seat.connected = false; SetPhase(CoopPhase.Closed, "Conexão encerrada. O host não é migrado; retorne ao mesmo host para reconectar enquanto a reserva estiver válida. " + network.DisconnectReason); }
@@ -215,7 +225,6 @@ namespace ForjaDasMares.Networking
         public void StartGame()
         {
             if (!network.IsServer || Phase != CoopPhase.Lobby || ConnectedCount == 0) return;
-            if(Campaign!=null&&ConnectedCount<2){Message="Esta campanha exige pelo menos dois jogadores. Convide alguém pelo código ou procure um grupo.";return;}
             expedition++;
             if(Campaign!=null){Campaign.Authority=true;Campaign.Prepare(Campaign.Selected);biome=Campaign.Level.biomeIndex;}
             SetPhase(CoopPhase.Loading, "Gerando a masmorra compartilhada…");
@@ -223,6 +232,7 @@ namespace ForjaDasMares.Networking
             if (!progression.Begin()) { SetPhase(CoopPhase.Lobby, progression.Error); return; }
             for (int i = 0; i < actors.Length; i++) if (seats[i].connected)
             { seats[i].loaded = i == localSlot; actors[i].Roster.ResetHero(); actors[i].SetAuthority(false); actors[i].Motor.Teleport(arena.Spawn.position + Vector3.right * (i * .9f), Quaternion.identity); }
+            UpdateSoloBonus();for(int i=0;i<4;i++)if(seats[i].connected)actors[i].Health.Restore();
             follow.Configure(actors[localSlot].transform, 1 << 9); follow.Snap();
         }
         void ReceiveReady(ulong sender, FastBufferReader reader)
@@ -232,6 +242,7 @@ namespace ForjaDasMares.Networking
             byte[] bytes = new byte[count]; reader.ReadBytesSafe(ref bytes, count);
             if (Encoding.UTF8.GetString(bytes) != dungeon.Generator.Layout.Signature()) { network.DisconnectClient(sender, "Layout incompatível."); return; }
             seats[slot].loaded = true; Debug.Log("COOP_MAP_READY slot=" + slot);
+            if(Phase==CoopPhase.Playing){party.Set(slot,actors[slot].Health);actors[slot].SetAuthority(true);}
         }
         void SendReady()
         {
@@ -267,6 +278,7 @@ namespace ForjaDasMares.Networking
             }
             if (Phase == CoopPhase.Playing)
             {
+                for(int i=0;i<4;i++)if(seats[i].connected&&!seats[i].loaded&&Time.unscaledTime>seats[i].expires)network.DisconnectClient(seats[i].client,"Mapa não confirmado a tempo.");
                 roomClock -= Time.deltaTime;
                 if (roomClock <= 0) { roomClock = .08f; AdvanceRoomAndInteract(); }
                 if (!party.AnyAlive || dungeon.Encounter.State == EncounterState.Failed) { Freeze(); progression.Finish(false, "Derrota cooperativa"); SetPhase(CoopPhase.Defeat, "Todos os heróis caíram. Consulte o resultado e encerre a sala."); }
@@ -311,14 +323,14 @@ namespace ForjaDasMares.Networking
         }
         void Accept(int slot, uint serial, Vector2 move, Vector2 aim, HeroButtons buttons)
         {
-            var actor = actors[slot]; if (!seats[slot].connected || !actor.Health.IsAlive || !actor.Commands.Accept(serial, move, aim, buttons)) return;
+            var actor = actors[slot]; if (!seats[slot].connected || !seats[slot].loaded || !actor.Health.IsAlive || !actor.Commands.Accept(serial, move, aim, buttons)) return;
             if (!actor.Motor.FacingLocked && aim.sqrMagnitude > .01f) actor.transform.rotation = Quaternion.LookRotation(new Vector3(aim.x, 0, aim.y));
         }
         void AdvanceRoomAndInteract()
         {
             foreach (var actor in actors)
             {
-                if (!actor.gameObject.activeSelf || !actor.Health.IsAlive) continue;
+                if (!actor.gameObject.activeSelf || !actor.Motor.enabled || !actor.Health.IsAlive) continue;
                 foreach (var room in dungeon.Generator.Rooms)
                     if (room != dungeon.CurrentRoom && room.Contains(actor.transform.position) && (Campaign==null||PartyInside(room)))
                     {
@@ -349,7 +361,7 @@ namespace ForjaDasMares.Networking
         }
         bool PartyInside(DungeonRoom room)
         {
-            foreach(var actor in actors)if(actor.gameObject.activeSelf&&actor.Health.IsAlive&&!room.Contains(actor.transform.position))return false;
+            foreach(var actor in actors)if(actor.gameObject.activeSelf&&actor.Motor.enabled&&actor.Health.IsAlive&&!room.Contains(actor.transform.position))return false;
             return true;
         }
         public bool PlaceInRoom(int slot, DungeonRoom room)

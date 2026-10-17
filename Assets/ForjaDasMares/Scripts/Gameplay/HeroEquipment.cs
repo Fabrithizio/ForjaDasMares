@@ -11,6 +11,16 @@ namespace ForjaDasMares
         ProgressionCatalog catalog;
         string signature;
         float regeneration;
+        bool campaignSolo;
+        public bool CampaignSolo => campaignSolo;
+        public void SetCampaignSolo(bool value)
+        {
+            if(campaignSolo==value)return;
+            int capacity=heroes.Health.Maximum, hp=heroes.Health.Current;
+            campaignSolo=value;signature=null;Refresh();
+            // Preserve the health ratio, rounding down: joining/leaving cannot heal the player.
+            heroes.Health.SetReplicaState(Mathf.FloorToInt((float)hp*heroes.Health.Maximum/Mathf.Max(1,capacity)),heroes.Health.Maximum);
+        }
         Vector3 mainRestPosition, offRestPosition;
         Quaternion mainRestRotation, offRestRotation;
         void Awake() => CaptureRestPose();
@@ -38,7 +48,9 @@ namespace ForjaDasMares
             var profile = service.Profile; var loadout = profile.Loadout(heroes.Current.heroId);
             string state = heroes.Current.heroId + ":" + profile.experience + ":" + (loadout != null ? string.Join(",", loadout.items) : "");
             if (state == signature) return; signature = state;
-            Stats = ProgressionStats.Calculate(heroes.Current, profile, catalog); heroes.Health.ApplyAttributes(Stats.maximumHealth, Stats.defense); heroes.Health.ConfigureDefense(this);
+            var calculated=ProgressionStats.Calculate(heroes.Current, profile, catalog);
+            if(campaignSolo){calculated.maximumHealth=Mathf.RoundToInt(calculated.maximumHealth*1.1f);calculated.damageMultiplier*=1.1f;}
+            Stats=calculated;heroes.Health.ApplyAttributes(Stats.maximumHealth, Stats.defense); heroes.Health.ConfigureDefense(this);
             motor.ApplyMovementAttributes(Stats.speed, Stats.cooldownMultiplier);
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;
             MainWeapon = main != null ? catalog.Find(main.definitionId) : null; var secondary = off != null ? catalog.Find(off.definitionId) : null;

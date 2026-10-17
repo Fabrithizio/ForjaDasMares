@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     [Serializable] public sealed class CampaignSnapshot
-    {public float clock;public int wave;public uint occupied;public float[] progress;}
+    {public float clock,completion;public bool solo;public int wave;public uint occupied;public float[] progress;}
     public sealed class CampaignRun : MonoBehaviour
     {
         [SerializeField] DungeonSession dungeon;
@@ -13,6 +13,18 @@ namespace ForjaDasMares
         readonly CampaignSnapshot snapshot=new CampaignSnapshot();
         public bool Authority {get;set;}
         public bool Running {get;set;}
+        public bool Solo {get;set;}
+        float replicaCompletion;
+        public float Completion
+        {
+            get
+            {
+                if(!Authority)return replicaCompletion;
+                int count=0,total=0;foreach(var room in dungeon.Generator.Rooms)
+                {if(room.node.category==RoomCategory.Entrance)continue;total++;if(room.completed)count++;}
+                return total==0?0:(float)count/total;
+            }
+        }
         public int Selected {get;private set;}
         public float Clock {get;private set;}
         int replicaWave=1;
@@ -25,7 +37,7 @@ namespace ForjaDasMares
             get
             {
                 foreach(var puzzle in puzzles)if(puzzle.Room==dungeon.CurrentRoom&&!puzzle.Solved)
-                    return "Dois heróis nas placas · "+puzzle.Occupants+"/2 · "+Mathf.RoundToInt(puzzle.Progress*100)+"%";
+                    return Solo?"Solo: ative as duas placas em sequência · "+Mathf.RoundToInt(puzzle.Progress*100)+"%":"Dois heróis nas placas · "+puzzle.Occupants+"/2 · "+Mathf.RoundToInt(puzzle.Progress*100)+"%";
                 return dungeon.CurrentRoom!=null&&dungeon.CurrentRoom.encounter!=null&&!dungeon.CurrentRoom.completed?"Derrotem a onda "+(Authority?dungeon.Encounter.WaveNumber:replicaWave)+" e protejam o grupo":"Explorem juntos · E / Interagir para baús, alavancas e saída";
             }
         }
@@ -38,7 +50,7 @@ namespace ForjaDasMares
         {
             if(!Running)return;
             Clock+=Time.deltaTime;
-            if(Authority)foreach(var puzzle in puzzles)puzzle.Tick(Time.deltaTime);
+            if(Authority)foreach(var puzzle in puzzles){puzzle.Solo=Solo;puzzle.Tick(Time.deltaTime);}
         }
         void Build()
         {
@@ -70,14 +82,14 @@ namespace ForjaDasMares
         }
         public CampaignSnapshot Capture()
         {
-            snapshot.clock=Clock;snapshot.wave=dungeon.Encounter.WaveNumber;snapshot.occupied=0;
+            snapshot.clock=Clock;snapshot.wave=dungeon.Encounter.WaveNumber;snapshot.occupied=0;snapshot.solo=Solo;snapshot.completion=Completion;
             for(int i=0;i<puzzles.Count;i++){snapshot.progress[i]=puzzles[i].Progress;snapshot.occupied|=(uint)puzzles[i].Mask<<(i*2);}
             return snapshot;
         }
         public void Apply(CampaignSnapshot value)
         {
             if(value==null||value.progress==null||value.progress.Length!=puzzles.Count||float.IsNaN(value.clock)||float.IsInfinity(value.clock))return;
-            Clock=Mathf.Max(0,value.clock);replicaWave=Mathf.Max(1,value.wave);
+            Clock=Mathf.Max(0,value.clock);replicaWave=Mathf.Max(1,value.wave);Solo=value.solo;replicaCompletion=Mathf.Clamp01(value.completion);
             for(int i=0;i<puzzles.Count;i++)puzzles[i].Apply(value.progress[i],(int)(value.occupied>>(i*2))&3);
         }
     }
@@ -88,6 +100,8 @@ namespace ForjaDasMares
         readonly Health[] occupants=new Health[2];
         MaterialPropertyBlock block;
         float held;
+        bool wasSolo;int soloMask;
+        public bool Solo {get;set;}
         public DungeonRoom Room {get;private set;}
         public float Progress=>Mathf.Clamp01(held/level.plateHold);
         public bool Solved=>Room.objectiveComplete;
@@ -109,6 +123,7 @@ namespace ForjaDasMares
         public void Tick(float delta)
         {
             if(session.CurrentRoom!=Room||Solved)return;
+            if(wasSolo!=Solo){held=0;soloMask=0;wasSolo=Solo;}
             Mask=0;occupants[0]=occupants[1]=null;
             if(session.Party!=null)for(int p=0;p<4;p++)
             {
@@ -119,7 +134,9 @@ namespace ForjaDasMares
                     if(offset.sqrMagnitude<=.85f*.85f&&occupants[i]==null){occupants[i]=hp;Mask|=1<<i;}
                 }
             }
-            bool valid=Mask==3&&occupants[0]!=occupants[1];
+            if(Solo)soloMask|=Mask;else soloMask=0;
+            bool valid=Solo?soloMask==3:Mask==3&&occupants[0]!=occupants[1];
+            if(Solo)Mask=soloMask;
             held=valid?Mathf.Min(level.plateHold,held+Mathf.Max(0,delta)):Mathf.Max(0,held-delta*2);
             if(held>=level.plateHold)session.CompleteObjective(Room,true);
             Paint();

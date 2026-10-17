@@ -7,6 +7,7 @@ namespace ForjaDasMares.Networking
         readonly ProgressionCatalog catalog;
         readonly ProfileService[] profiles = new ProfileService[4];
         readonly string[] runs = new string[4];
+        readonly System.Collections.Generic.HashSet<string> completedEvents=new System.Collections.Generic.HashSet<string>();
         bool active;
         public bool Active => active;
         public string Error { get; private set; }
@@ -21,7 +22,7 @@ namespace ForjaDasMares.Networking
         public bool Begin(string[] heroIds, string location)
         {
             if (active || heroIds == null || heroIds.Length != profiles.Length) return false;
-            Error = null;
+            Error = null;completedEvents.Clear();
             for (int i = 0; i < profiles.Length; i++)
             {
                 if (profiles[i] == null) continue;
@@ -42,10 +43,17 @@ namespace ForjaDasMares.Networking
             }
             active = participating; return participating;
         }
+        public bool Join(int slot,ProfileService profile,string heroId,string location)
+        {
+            if(!active||slot<0||slot>=4||profile==null||profiles[slot]!=null||runs[slot]!=null||catalog.Hero(heroId)==null)return false;
+            if(!profile.BeginExpedition(heroId,location)){Error=profile.Message;return false;}
+            profiles[slot]=profile;runs[slot]=profile.Profile.expedition.runId;return true;
+        }
         public bool Grant(string eventId, RewardRule rule, int seed)
         {
             if (!active || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128) return false;
             if (rule != catalog.enemy && rule != catalog.room && rule != catalog.chest && rule != catalog.boss && rule != catalog.completion) return false;
+            if(completedEvents.Contains(eventId))return true;
             Error = null;
             for (int i = 0; i < profiles.Length; i++)
             {
@@ -57,7 +65,7 @@ namespace ForjaDasMares.Networking
                 int playerSeed = unchecked(seed * 397 ^ i * 7919);
                 if (!profiles[i].Grant(runs[i], eventId, rule, playerSeed)) { Error = profiles[i].Message; return false; }
             }
-            return true;
+            completedEvents.Add(eventId);return true;
         }
         public bool Finish(bool victory, string outcome)
         {

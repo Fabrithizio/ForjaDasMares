@@ -37,11 +37,17 @@ namespace ForjaDasMares.Networking.Tests
                 foreach(var room in session.Dungeon.Generator.Rooms)if(room.cooperativeObjective)Assert.IsFalse(room.objectiveComplete);
             }
         }
-        [UnityTest] public IEnumerator CampaignStartsWithNoTestItemsAndRequiresTwoPlayers()
+        [UnityTest] public IEnumerator CampaignStartsSoloWithEmptyBagAndTenPercentBonus()
         {
             Assert.IsTrue(session.HostDirect("CMPTEST",7792,false));yield return null;
             Assert.AreEqual(0,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
-            Assert.NotNull(session.Actor(0).Combat.BasicAttack);session.StartGame();Assert.AreEqual(CoopPhase.Lobby,session.Phase);
+            Assert.NotNull(session.Actor(0).Combat.BasicAttack);session.StartGame();yield return null;
+            Assert.AreEqual(CoopPhase.Playing,session.Phase);var gear=session.Actor(0).GetComponent<HeroEquipment>();
+            var normal=ProgressionStats.Calculate(session.Actor(0).Roster.Current,session.GetComponent<CoopProgression>().Profile(0).Profile,session.GetComponent<CoopProgression>().Catalog);
+            Assert.AreEqual(Mathf.RoundToInt(normal.maximumHealth*1.1f),gear.Stats.maximumHealth);Assert.AreEqual(normal.damageMultiplier*1.1f,gear.Stats.damageMultiplier,.0001f);
+            session.Actor(0).Health.ApplyDamage(30);float before=(float)session.Actor(0).Health.Current/session.Actor(0).Health.Maximum;
+            for(int i=0;i<5;i++){gear.SetCampaignSolo(false);gear.SetCampaignSolo(true);}
+            Assert.That((float)session.Actor(0).Health.Current/session.Actor(0).Health.Maximum,Is.LessThanOrEqualTo(before));
         }
         [UnityTest] public IEnumerator TwoDistinctLivingHeroesMustHoldSeparatePlatesAndUnlockTheDoors()
         {
@@ -90,7 +96,38 @@ namespace ForjaDasMares.Networking.Tests
             var frame=new WorldFrame{campaignLevel=2,campaign=new CampaignSnapshot{clock=12.5f,occupied=3,progress=new[]{.4f,1f}}};
             frame.players.Add(new ActorFrame{variant=2,actionVersion=12,impact=.3f});
             var copy=JsonUtility.FromJson<WorldFrame>(JsonUtility.ToJson(frame));Assert.AreEqual(2,copy.campaignLevel);Assert.AreEqual(.4f,copy.campaign.progress[0]);Assert.AreEqual(2,copy.players[0].variant);
-            Assert.AreEqual(3,CoopLimits.Protocol);
+            Assert.AreEqual(4,CoopLimits.Protocol);
+        }
+        [UnityTest] public IEnumerator SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent()
+        {
+            Assert.IsTrue(session.HostDirect("CMPSOLO",7796,false));yield return null;session.StartGame();yield return null;
+            var pair=run.Puzzles[0];session.Dungeon.Enter(pair.Room);pair.Solo=true;var actor=session.Actor(0);
+            actor.Motor.Teleport(pair.Point(0)+Vector3.up*.06f,Quaternion.identity);pair.Tick(.2f);Assert.IsFalse(pair.Solved);
+            actor.Motor.Teleport(pair.Point(1)+Vector3.up*.06f,Quaternion.identity);pair.Tick(2);Assert.IsTrue(pair.Solved);
+            Assert.IsTrue(session.CanAdmitNewPlayer);
+            int target=Mathf.CeilToInt((run.Level.route.Length-1)*.2f);int marked=0;
+            foreach(var room in session.Dungeon.Generator.Rooms)if(room.node.category!=RoomCategory.Entrance){room.completed=true;if(++marked>=target)break;}
+            Assert.That(run.Completion,Is.GreaterThanOrEqualTo(.2f));Assert.IsFalse(session.CanAdmitNewPlayer);
+        }
+        [Test] public void LateParticipantReceivesOnlyFutureRewardsAndCannotReplayPastEvents()
+        {
+            var catalog=session.GetComponent<CoopProgression>().Catalog;
+            ProfileService Profile()=>new ProfileService(catalog,new ProfileStore(Path.Combine(Application.temporaryCachePath,"LateJoin",Guid.NewGuid().ToString("N"),"profile.json")));
+            var host=Profile();var late=Profile();var ledger=new CoopRewardLedger(catalog);ledger.Assign(0,host);
+            Assert.IsTrue(ledger.Begin(new[]{"warrior",null,null,null},"Campaign"));Assert.IsTrue(ledger.Grant("past",catalog.room,1));
+            Assert.IsTrue(ledger.Join(1,late,"warrior","Campaign"));Assert.IsTrue(ledger.Grant("past",catalog.room,1));Assert.AreEqual(0,late.Profile.expedition.experience);
+            Assert.IsTrue(ledger.Grant("future",catalog.room,2));Assert.AreEqual(catalog.room.experience,late.Profile.expedition.experience);
+            Assert.IsFalse(ledger.Join(1,Profile(),"warrior","Campaign"));Assert.IsTrue(ledger.Finish(true,"Victory"));
+        }
+        [UnityTest] public IEnumerator HomeCampaignFriendsAndSettingsUseRealNavigation()
+        {
+            yield return null;var hud=UnityEngine.Object.FindFirstObjectByType<CampaignHud>();Assert.IsTrue(hud.AtHome);
+            var home=hud.GetComponentInChildren<CampaignHome>();Assert.NotNull(home);
+            UnityEngine.UI.Button Find(string name){foreach(var button in home.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name==name)return button;return null;}
+            Find("Friends").onClick.Invoke();Assert.IsTrue(Find("SaveInvite").gameObject.activeInHierarchy);
+            foreach(var button in home.GetComponentsInChildren<UnityEngine.UI.Button>())if(button.name=="Back"){button.onClick.Invoke();break;}
+            Find("Settings").onClick.Invoke();float prior=AudioListener.volume;Find("VolumeDown").onClick.Invoke();Assert.That(AudioListener.volume,Is.LessThanOrEqualTo(prior));Find("VolumeUp").onClick.Invoke();
+            Find("Campaign").onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);Assert.IsFalse(hud.AtHome);
         }
     }
 }

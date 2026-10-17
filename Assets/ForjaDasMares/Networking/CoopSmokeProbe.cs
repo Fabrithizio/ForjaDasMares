@@ -58,6 +58,13 @@ namespace ForjaDasMares.Networking
             {
                 string command = File.ReadAllText(control).Trim(); File.Delete(control);
                 if(command=="manual")session.ProbeInput=false;
+                if(command=="quiet"){session.ProbeInput=true;session.ProbeMove=Vector2.zero;spawned=true;}
+                if(command=="publish"&&session.IsHost)session.GetComponent<CoopCloud>().ToggleVisibility();
+                if(command=="admission-limit"&&session.IsHost&&session.Campaign!=null)
+                {
+                    int completed=0,target=Mathf.CeilToInt((session.Campaign.Level.route.Length-1)*.2f);
+                    foreach(var room in session.Dungeon.Generator.Rooms)if(room.node.category!=RoomCategory.Entrance){room.completed=true;if(++completed>=target)break;}
+                }
                 if (command == "start" && session.IsHost) session.StartGame();
                 if (command == "disconnect") session.Close();
                 if (command == "reconnect") session.JoinDirect("127.0.0.1", "TEST42", 7777);
@@ -93,6 +100,8 @@ namespace ForjaDasMares.Networking
             }
             var report = new ProbeReport { phase = session.Phase.ToString(), tick = session.LastTick, localSlot = session.LocalSlot, connected = session.ConnectedCount, snapshotBytes = session.LastSnapshotBytes, enemies = session.IsHost ? session.Dungeon.Encounter.Enemies.ActiveCount : session.AppliedEnemyCount, effects = session.AppliedEffectCount, time = elapsed };
             var cloudState = session.GetComponent<CoopCloud>(); report.code = session.Pin; report.cloudMessage = cloudState.Message; report.cloudBusy = cloudState.Busy;
+            report.publicRoom=cloudState.PublicRoom;report.solo=session.Campaign!=null&&session.Campaign.Solo;report.completion=session.Campaign!=null?session.Campaign.Completion:0;
+            for(int i=0;i<4;i++)report.maximum[i]=session.Actor(i).Health.Maximum;
             for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
             report.sampleHp = sample != null ? sample.Health.Current : -1;
@@ -101,7 +110,7 @@ namespace ForjaDasMares.Networking
             File.WriteAllText(Path.Combine(directory, "probe.json"), JsonUtility.ToJson(report, true));
         }
         [Serializable] sealed class ProbeReport
-        { public string phase, signature, code, cloudMessage; public bool cloudBusy; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4], xp = new int[4], items = new int[4]; }
+        { public string phase, signature, code, cloudMessage; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }
