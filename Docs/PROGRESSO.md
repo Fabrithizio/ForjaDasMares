@@ -413,3 +413,6 @@ Auditados clipe curto e substituição das pernas pelos ataques. Nova corrida, c
 
 
 Checkpoint Windows0.7.2: rodada final32/32 aprovada, incluindo corrida/lateral rápido e regressão de golpes; compilação Windows Succeeded/errors0. Atalho atualizado e build aberta no perfil original (nível5/53XP/112ouro observados). Postura/entrada de movimento conferidas; sem erros de referência/Animator no log examinado. Android em compilação; aparelho bloqueado, teste físico depende de desbloqueio pessoal. Não há medição sustentada de FPS nem teste online novo.
+
+
+Fechamento0.7.2: fonte e arte protegidas no GitHub2f2d31e. APK real51.782.174bytes, SHA256 0B0DAD351222CA661E3A044E0DF9307CD176C9786F3A5DED8D68FD4E7B075C77, ARM64/code17/assinaturav2. Empacotador interno Android falhou por conexão loopback Java/errors4 após compilação nativa; Gradle direto concluiu BUILD SUCCESSFUL in57s/exit0. Instalado-r Success no moto g15; versão instalada0.7.2/code17 confirmada. Celular ainda bloqueado (keyguard showing=true), portanto não houve teste visual dessa revisão nem medição de FPS no aparelho. PC continua aberto, atalho aponta0.7.2,32 testes focados passaram; qualidade artística final e teste prolongado permanecem em revisão. Relatório BRASA_MOVIMENTO_2026-10-16.md lista arquivos/procedimentos/limitações. Identidade principal e URP preservadas; versão/code atualizados.

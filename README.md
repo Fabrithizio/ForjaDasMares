@@ -4,7 +4,7 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 ## Mapa local Galerias — revisão0.7.2, locomoção do Brasa
 
-Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.2/ForjaDasMaresGalerias.exe, compilado sem erros. Cena inicial GaleriasDungeon. Android0.7.1/code16 foi instalado/testado no moto g15; revisão0.7.2 em preparação neste checkpoint. Câmera contínua e obstáculos semitransparentes, HUD rústico, mochila/equipamentos/opções existentes preservados.
+Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.2/ForjaDasMaresGalerias.exe, compilado sem erros. Cena inicial GaleriasDungeon. APK Builds/GaleriasAndroid-0.7.2/ForjaDasMaresGalerias.apk (ARM64/code17) gerado, assinatura validada e instalado no moto g15; teste visual0.7.2 aguarda desbloqueio do aparelho. A revisão0.7.1 anterior foi executada nele. Câmera contínua e obstáculos semitransparentes, HUD rústico, mochila/equipamentos/opções existentes preservados.
 
 Brasa possui fonte original Blender,17 ossos e13 clipes reais. Correção de cópias sobrepostas, ataque segurado, pesado e barra SUPER em0.7.1;0.7.2 separa tronco/pernas, calibra passada pela distância real, adiciona corrida e apoios com IK, além de postura parada com respiração. Não há root motion nem mudança de velocidade/collider do jogador. Testes focados finais32/32 aprovados; isso não é validação artística final ou garantia de FPS em todos os aparelhos.
 
