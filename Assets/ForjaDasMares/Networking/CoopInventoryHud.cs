@@ -112,6 +112,7 @@ namespace ForjaDasMares.Networking
             {
                 var definition = channel.Catalog.Find(value.definitionId); var before = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog);
                 var after = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog, selected, definition.slot, true);
+                if(director.Campaign!=null&&director.Campaign.Solo){before=ProgressionStats.WithSoloBonus(before);after=ProgressionStats.WithSoloBonus(after);}
                 detail.text = definition.displayName + "\n" + definition.description + "\n\nVida " + before.maximumHealth + " → " + after.maximumHealth + "\nDano ×" + before.damageMultiplier.ToString("F2") + " → ×" + after.damageMultiplier.ToString("F2") + "\nVelocidade " + before.speed.ToString("F1") + " → " + after.speed.ToString("F1");
                 if (!ProgressionStats.CanEquip(profile, channel.Catalog, actor.Roster.Current.heroId, value, definition.slot, out string reason)) detail.text += "\n" + reason;
                 var loadout = profile.Loadout(actor.Roster.Current.heroId); if (loadout != null) for (int i = 0; i < loadout.items.Length; i++) if (loadout.items[i] == selected) detail.text += "\nEQUIPADO: " + (EquipmentSlot)i;

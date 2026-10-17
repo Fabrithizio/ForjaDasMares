@@ -4,6 +4,8 @@ Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Platafo
 
 ## Campanha online — revisão0.8.0
 
+**Revisão seguinte0.8.1:** início solo em todos os mapas, bônus temporário de10% em vida/dano, placas sequenciais no solo e sala privada que o host pode abrir para grupos. Novas pessoas entram na mesma fase até antes de20% de setores concluídos, inclusive com a partida iniciada. Tela inicial com campanha, agenda local de convites, volume e saída confirmada. Relatório atual: [campanha solo e entrada em andamento](Docs/CAMPANHA_SOLO_2026-10-17.md); [instruções atualizadas](Docs/CAMPANHA_COMO_JOGAR.md). Caminhos0.8.0 e evidências abaixo são históricos, preservados; use o atalho atualizado para0.8.1 quando a validação final estiver registrada.
+
 Mapa com três fases de12/15/18 setores, grupo de2–4, sala privada por código e busca de sala pública aguardando parceiros na mesma fase. Placas simultâneas para dois heróis, flechas com aviso, névoa exterior e mochila inicial vazia com equipamentos ao redor da prévia3D. O grupo pode voltar ao mapa após o resultado e iniciar outra fase sem trocar de código. Saves antigos preservados; progresso da campanha fica no host.
 
 Windows: `Builds/CampaignWindows-0.8.0/ForjaDasMaresCampanha.exe`; cena `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Consulte [como jogar em dupla](Docs/CAMPANHA_COMO_JOGAR.md) e [relatório de implementação e limites](Docs/CAMPANHA_2026-10-17.md). Builds não são incluídas no Git.

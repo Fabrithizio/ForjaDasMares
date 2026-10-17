@@ -49,7 +49,7 @@ namespace ForjaDasMares
             string state = heroes.Current.heroId + ":" + profile.experience + ":" + (loadout != null ? string.Join(",", loadout.items) : "");
             if (state == signature) return; signature = state;
             var calculated=ProgressionStats.Calculate(heroes.Current, profile, catalog);
-            if(campaignSolo){calculated.maximumHealth=Mathf.RoundToInt(calculated.maximumHealth*1.1f);calculated.damageMultiplier*=1.1f;}
+            if(campaignSolo)calculated=ProgressionStats.WithSoloBonus(calculated);
             Stats=calculated;heroes.Health.ApplyAttributes(Stats.maximumHealth, Stats.defense); heroes.Health.ConfigureDefense(this);
             motor.ApplyMovementAttributes(Stats.speed, Stats.cooldownMultiplier);
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;

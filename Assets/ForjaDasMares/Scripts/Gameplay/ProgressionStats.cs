@@ -8,6 +8,8 @@ namespace ForjaDasMares
     }
     public static class ProgressionStats
     {
+        public static StatSnapshot WithSoloBonus(StatSnapshot value)
+        {value.maximumHealth=Mathf.RoundToInt(value.maximumHealth*1.1f);value.damageMultiplier*=1.1f;return value;}
         public static float ModifierLimit(ItemStat stat) => StatModifier.Limit(stat);
         public static int RequiredExperience(int level) => 60 + 35 * (level - 1);
         public static int Level(int total, int maximum = 20) { int level = 1; while (level < maximum && total >= RequiredExperience(level)) { total -= RequiredExperience(level); level++; } return level; }

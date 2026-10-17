@@ -20,6 +20,7 @@ namespace ForjaDasMares
             get
             {
                 if(!Authority)return replicaCompletion;
+                if(dungeon==null||dungeon.Generator==null||dungeon.Generator.Rooms==null)return 0;
                 int count=0,total=0;foreach(var room in dungeon.Generator.Rooms)
                 {if(room.node.category==RoomCategory.Entrance)continue;total++;if(room.completed)count++;}
                 return total==0?0:(float)count/total;
@@ -38,7 +39,7 @@ namespace ForjaDasMares
             {
                 foreach(var puzzle in puzzles)if(puzzle.Room==dungeon.CurrentRoom&&!puzzle.Solved)
                     return Solo?"Solo: ative as duas placas em sequência · "+Mathf.RoundToInt(puzzle.Progress*100)+"%":"Dois heróis nas placas · "+puzzle.Occupants+"/2 · "+Mathf.RoundToInt(puzzle.Progress*100)+"%";
-                return dungeon.CurrentRoom!=null&&dungeon.CurrentRoom.encounter!=null&&!dungeon.CurrentRoom.completed?"Derrotem a onda "+(Authority?dungeon.Encounter.WaveNumber:replicaWave)+" e protejam o grupo":"Explorem juntos · E / Interagir para baús, alavancas e saída";
+                return dungeon.CurrentRoom!=null&&dungeon.CurrentRoom.encounter!=null&&!dungeon.CurrentRoom.completed?"Derrotem a onda "+(Authority?dungeon.Encounter.WaveNumber:replicaWave)+" e protejam o grupo":"Explorem · F / Interagir para baús, alavancas e saída";
             }
         }
         public void Configure(DungeonSession owner,CampaignLevel[] data){dungeon=owner;levels=data;}

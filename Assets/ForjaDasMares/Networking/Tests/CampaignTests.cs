@@ -26,6 +26,8 @@ namespace ForjaDasMares.Networking.Tests
                 Assert.That(data.normal.maximumPcEnemies,Is.LessThanOrEqualTo(10));Assert.That(data.dartInterval,Is.GreaterThan(2.5f));
             }
         }
+        [Test] public void ProgressBeforeMapGenerationIsZeroAndSafeForSessionAdvertising()
+        {run.Authority=true;Assert.AreEqual(0,run.Completion);}
         [UnityTest] public IEnumerator EveryCampaignMapBakesConnectedNavigationAndCreatesPuzzlesAndMist()
         {
             for(int i=0;i<3;i++)

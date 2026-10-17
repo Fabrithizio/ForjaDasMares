@@ -106,7 +106,7 @@ namespace ForjaDasMares.Networking
             create.interactable=find.interactable=join.interactable=offline&&!cloud.Busy&&!director.Manager.IsListening;
             start.gameObject.SetActive(!offline);start.interactable=director.IsHost&&!cloud.Busy&&(director.Phase==CoopPhase.Lobby&&director.ConnectedCount>=1||director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
             start.GetComponentInChildren<Text>().text=director.Phase==CoopPhase.Lobby?(director.ConnectedCount==1?"INICIAR SOLO · +10%":"INICIAR COM O GRUPO"):"CONTINUAR CAMPANHA";
-            state.text=offline?cloud.Message:director.Message+"\nCódigo: "+director.Pin+"\nGrupo "+director.ConnectedCount+"/4"+(director.ConnectedCount<2?" · aguardando parceiro":"");
+            state.text=offline?cloud.Message:"Sala "+(cloud.PublicRoom?"aberta para grupos":"privada")+" · "+director.Phase+"\nCódigo: "+director.Pin+"\nGrupo "+director.ConnectedCount+"/4"+(director.ConnectedCount==1?" · pode jogar solo":"");
             string allies="";for(int i=0;i<4;i++)if(director.IsConnected(i)){var actor=director.Actor(i);allies+=(i==director.LocalSlot?"VOCÊ":"ALIADO "+(i+1))+" · "+actor.Roster.Current.displayName+"\n"+actor.Health.Current+" / "+actor.Health.Maximum+" VIDA\n";}
             party.text=allies;
             var local=director.Actor(director.LocalSlot);healthFill.sizeDelta=new Vector2(local!=null&&local.Health.Maximum>0?300f*local.Health.Current/local.Health.Maximum:0,16);
