@@ -20,14 +20,17 @@ namespace ForjaDasMares.Networking
     public sealed class CoopCloud : MonoBehaviour
     {
         CoopDirector director; ISession session; CancellationTokenSource operation;
-        bool busy, disposing;
+        bool busy, disposing,advertising;string testPool="";
         CoopInternetSettings settings;
-        public bool Busy => busy || disposing;
+        public bool Busy => busy || disposing || advertising;
         string ResumeKey => "CoopCloudResume." + Application.cloudProjectId + "." + settings.Environment + "." + AuthenticationService.Instance.Profile;
         public bool Configured => CoopInternetSettings.HasLinkedProject(Application.cloudProjectId) && settings != null && settings.IsValid;
         public string Message { get; private set; } = "UGS não vinculado: configure o projeto para salas pela internet.";
         void Awake()
         {
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            var flags=System.Environment.GetCommandLineArgs();for(int i=0;i<flags.Length-1;i++)if(flags[i]=="-campaignTestPool"&&flags[i+1].Length<=32)testPool="-qa-"+flags[i+1];
+#endif
             settings = Resources.Load<CoopInternetSettings>(CoopInternetSettings.ResourceName);
             director = GetComponent<CoopDirector>(); director.Changed += Changed;
             if (Configured) Message = "Internet preparada — ambiente: " + settings.Environment + ". Crie uma sala ou entre por código.";
@@ -35,7 +38,7 @@ namespace ForjaDasMares.Networking
         public async void Create() { await Open(true, null); }
         public async void Join(string code) { await Open(false, code); }
         public async void FindCampaignGroup(){await Open(false,null,true);}
-        public string CampaignKey=>"fdm-campaign-p"+CoopLimits.Protocol+"-l"+(director.Campaign!=null?director.Campaign.Selected:0);
+        public string CampaignKey=>"fdm-campaign-p"+CoopLimits.Protocol+"-l"+(director.Campaign!=null?director.Campaign.Selected:0)+testPool;
         public SessionOptions CampaignOptions(bool privateRoom)
         {
             var options=new SessionOptions{MaxPlayers=4,IsPrivate=privateRoom,Name=director.Campaign!=null?director.Campaign.Level.displayName:"Forja das Marés"};
@@ -81,7 +84,7 @@ namespace ForjaDasMares.Networking
                 operation.Token.ThrowIfCancellationRequested();
                 if (!AuthenticationService.Instance.IsSignedIn) await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 operation.Token.ThrowIfCancellationRequested();
-                director.PrepareCloudConnection();
+                director.PrepareCloudConnection(find);
                 session = find ? await FindCampaign(operation.Token) : host
                     ? await MultiplayerService.Instance.CreateSessionAsync(CampaignOptions(true), operation.Token)
                     : await JoinOrResume(code.Trim().ToUpperInvariant(), operation.Token);
@@ -91,7 +94,7 @@ namespace ForjaDasMares.Networking
                     PlayerPrefs.Save();
                 }
                 operation.Token.ThrowIfCancellationRequested();
-                director.CompleteCloudConnection(session.Code); Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
+                director.CompleteCloudConnection(session.Code,session.IsPrivate); Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
             }
             catch (Exception error)
             { Message = error is OperationCanceledException ? "Conexão cancelada ou tempo esgotado." : "Falha nos serviços: " + error.Message; director.Close(); await DisposeSession(); }
@@ -112,13 +115,25 @@ namespace ForjaDasMares.Networking
             }
             return await MultiplayerService.Instance.JoinSessionByCodeAsync(code, new JoinSessionOptions(), cancellation);
         }
-        async Task LockCampaignSession()
+        async Task SaveCampaignAdvert(bool locked)
         {
-            var current=session;if(current==null||!current.IsHost||director.Campaign==null)return;
-            try{var owner=current.AsHost();owner.IsLocked=true;await owner.SavePropertiesAsync();}
-            catch(Exception error){Message="Partida iniciada; não foi possível atualizar o anúncio: "+error.Message;}
+            var current=session;if(current==null||!current.IsHost||director.Campaign==null||advertising)return;
+            advertising=true;
+            try
+            {
+                var owner=current.AsHost();owner.IsLocked=locked;
+                owner.SetProperty("campaign",new SessionProperty(CampaignKey,VisibilityPropertyOptions.Public,PropertyIndex.String1));
+                await owner.SavePropertiesAsync();
+            }
+            catch(Exception error){Message="Não foi possível atualizar o anúncio da sala: "+error.Message;}
+            finally{advertising=false;}
         }
-        void Changed() { if(director.Phase==CoopPhase.Loading)_=LockCampaignSession(); if (director.Phase == CoopPhase.Closed) { operation?.Cancel(); _ = DisposeSession(); } }
+        void Changed()
+        {
+            if(director.Phase==CoopPhase.Loading)_=SaveCampaignAdvert(true);
+            if(director.Phase==CoopPhase.Lobby)_=SaveCampaignAdvert(false);
+            if(director.Phase==CoopPhase.Closed){operation?.Cancel();_=DisposeSession();}
+        }
         public void Cancel() { operation?.Cancel(); director.Close(); }
         async Task DisposeSession()
         {

@@ -33,6 +33,7 @@ namespace ForjaDasMares.Networking
         CombatParty party; CoopReplicaView replica;
         CoopProgression progression; CoopProfileChannel profiles;
         bool inputBlocked;
+        int expedition,loadedExpedition=-1;
         uint sequence, tick; int localSlot = -1, selectedHero, biome;
         float inputClock, snapshotClock, roomClock;
         string identity = Guid.NewGuid().ToString("N");
@@ -134,15 +135,15 @@ namespace ForjaDasMares.Networking
             if (!network.StartClient()) { SetPhase(CoopPhase.Closed, "Não foi possível iniciar a conexão."); return false; }
             BindMessages(); SetPhase(CoopPhase.Connecting, "Conectando à sala privada…"); return true;
         }
-        public void PrepareConnection() { closing = false; cloudMode = localLoaded = false; sequence = tick = 0; localSlot = -1; inputClock = snapshotClock = 0; handlers = false; }
-        public void PrepareCloudConnection()
+        public void PrepareConnection() { closing = false; cloudMode = localLoaded = false; expedition=0;loadedExpedition=-1; sequence = tick = 0; localSlot = -1; inputClock = snapshotClock = 0; handlers = false; }
+        public void PrepareCloudConnection(bool constrainCampaign=false)
         {
             PrepareConnection(); cloudMode = true; Pin = "";
-            network.NetworkConfig.ConnectionData = Encoding.UTF8.GetBytes(JsonUtility.ToJson(new JoinIntent { identity = identity, pin = "", hero = selectedHero, campaign=Campaign!=null }));
+            network.NetworkConfig.ConnectionData = Encoding.UTF8.GetBytes(JsonUtility.ToJson(new JoinIntent { identity = identity, pin = "", hero = selectedHero, campaign=Campaign!=null,campaignLevel=constrainCampaign&&Campaign!=null?Campaign.Selected:-1 }));
             SetPhase(CoopPhase.Connecting, "Conectando pelo Relay…");
         }
-        public void CompleteCloudConnection(string code)
-        { Pin = code; BindMessages(); if (network.IsHost) SetPhase(CoopPhase.Lobby, "Sala privada pela internet. Compartilhe o código " + code); }
+        public void CompleteCloudConnection(string code,bool privateRoom=true)
+        { Pin = code; BindMessages(); if (network.IsHost) SetPhase(CoopPhase.Lobby, (privateRoom?"Sala privada pela internet. Código ":"Grupo aberto desta fase. Código ") + code); }
         void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             response.CreatePlayerObject = false; response.Pending = false; response.Approved = false;
@@ -150,7 +151,7 @@ namespace ForjaDasMares.Networking
             JoinIntent join;
             try { join = JsonUtility.FromJson<JoinIntent>(Encoding.UTF8.GetString(request.Payload)); }
             catch (Exception) { response.Reason = "Pedido inválido."; return; }
-            if (!CoopLimits.ValidJoin(join, template.Count) || join.campaign!=(Campaign!=null) || join.pin != (cloudMode ? "" : Pin)) { response.Reason = "Código ou versão incompatível."; return; }
+            if (!CoopLimits.ValidJoin(join, template.Count) || join.campaign!=(Campaign!=null) || join.campaignLevel>=0&&(Campaign==null||join.campaignLevel!=Campaign.Selected) || join.pin != (cloudMode ? "" : Pin)) { response.Reason = "Código ou versão incompatível."; return; }
             int slot = -1;
             for (int i = 0; i < seats.Length; i++) if (seats[i].identity == join.identity && !seats[i].connected && seats[i].expires > Time.unscaledTime) { slot = i; break; }
             bool returning = slot >= 0;
@@ -203,13 +204,19 @@ namespace ForjaDasMares.Networking
         }
         public void SelectCampaignLevel(int index)
         {
-            if(Campaign==null||network.IsListening||index<0||index>=Campaign.Count)return;
+            if(Campaign==null||network.IsListening&&!(network.IsServer&&Phase==CoopPhase.Lobby)||index<0||index>=Campaign.Count)return;
             Campaign.Select(index);Changed?.Invoke();
+        }
+        public void ReturnToCampaignMap()
+        {
+            if(Campaign==null||!network.IsServer||Phase!=CoopPhase.Victory&&Phase!=CoopPhase.Defeat)return;
+            Freeze();dungeon.Encounter.Cancel();SetPhase(CoopPhase.Lobby,"Grupo mantido. O host pode escolher a próxima fase e iniciar com o mesmo código.");
         }
         public void StartGame()
         {
             if (!network.IsServer || Phase != CoopPhase.Lobby || ConnectedCount == 0) return;
             if(Campaign!=null&&ConnectedCount<2){Message="Esta campanha exige pelo menos dois jogadores. Convide alguém pelo código ou procure um grupo.";return;}
+            expedition++;
             if(Campaign!=null){Campaign.Authority=true;Campaign.Prepare(Campaign.Selected);biome=Campaign.Level.biomeIndex;}
             SetPhase(CoopPhase.Loading, "Gerando a masmorra compartilhada…");
             dungeon.ConfigureTest(Campaign!=null?Campaign.Level.seed:12345, true, biome); dungeon.Encounter.enabled = false; loadingDeadline = Time.unscaledTime + 30;
@@ -254,7 +261,7 @@ namespace ForjaDasMares.Networking
                 if (loaded)
                 {
                     dungeon.Encounter.enabled = true; foreach (var actor in actors) if (actor.gameObject.activeSelf) actor.SetAuthority(true);
-                    SetPhase(CoopPhase.Playing, "Masmorra cooperativa. E para interagir; grupo reunido ao entrar em cada sala."); Debug.Log("COOP_STARTED signature=" + dungeon.Generator.Layout.Signature());
+                    SetPhase(CoopPhase.Playing, Campaign!=null?"Campanha cooperativa. F para interagir; entrem juntos nos setores.":"Masmorra cooperativa. F para interagir; grupo reunido ao entrar em cada sala."); Debug.Log("COOP_STARTED signature=" + dungeon.Generator.Layout.Signature());
                 }
                 else if (Time.unscaledTime > loadingDeadline) { Close(); Message = "Um cliente não confirmou o mapa a tempo. Sala encerrada."; return; }
             }
@@ -362,7 +369,7 @@ namespace ForjaDasMares.Networking
         void Broadcast()
         {
             if (!handlers) BindMessages(); frame.tick = ++tick; frame.phase = (int)Phase; frame.seed = dungeon.Seed; frame.fixedMap = dungeon.FixedMap; frame.biome = biome;
-            frame.campaignLevel=Campaign!=null?Campaign.Selected:-1;frame.campaign=Campaign!=null&&dungeon.Generator.Layout!=null?Campaign.Capture():null;
+            frame.expedition=expedition;frame.campaignLevel=Campaign!=null?Campaign.Selected:-1;frame.campaign=Campaign!=null&&dungeon.Generator.Layout!=null?Campaign.Capture():null;
             frame.room = dungeon.CurrentRoom != null ? dungeon.CurrentRoom.node.id : -1; frame.signature = dungeon.Generator.Layout != null ? dungeon.Generator.Layout.Signature() : "";
             frame.encounter = (int)dungeon.Encounter.State; frame.finished = dungeon.Finished; frame.hasKey = dungeon.HasKey;
             frame.players.Clear(); frame.enemies.Clear(); frame.effects.Clear();
@@ -403,8 +410,9 @@ namespace ForjaDasMares.Networking
             if(Campaign!=null)Campaign.Select(update.campaignLevel);
             tick = update.tick; localSlot = update.localSlot;replicaEncounter=update.encounter;
             LastSnapshotBytes = length; AppliedEnemyCount = update.enemies.Count; AppliedEffectCount = update.effects.Count;
-            if (update.room >= 0 && (dungeon.Generator.Layout == null || dungeon.Generator.Layout.Signature() != update.signature))
+            if (update.room >= 0 && (dungeon.Generator.Layout == null || dungeon.Generator.Layout.Signature() != update.signature||loadedExpedition!=update.expedition))
             {
+                localLoaded=false;loadedExpedition=update.expedition;
                 SetPhase(CoopPhase.Loading, "Carregando o mapa da autoridade…"); if(Campaign!=null)Campaign.Prepare(update.campaignLevel); dungeon.ConfigureTest(update.seed, update.fixedMap, update.biome);
                 if (dungeon.Generator.Layout.Signature() != update.signature) { Close(); Message = "Layout incompatível: conexão encerrada."; return; }
                 foreach (var trap in dungeon.Generator.Traps) trap.enabled = false;

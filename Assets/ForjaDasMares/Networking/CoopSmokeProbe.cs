@@ -25,8 +25,9 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             elapsed += Time.unscaledDeltaTime;
-            if (session.IsHost && session.Phase == CoopPhase.Lobby && session.ConnectedCount >= expected)
+            if (session.IsHost && session.Phase == CoopPhase.Lobby && session.ConnectedCount >= expected && !session.GetComponent<CoopCloud>().Busy)
             { lobby += Time.unscaledDeltaTime; if (lobby > 3) session.StartGame(); }
+            if(session.Phase!=CoopPhase.Lobby)lobby=0;
             if (session.Phase == CoopPhase.Playing && session.LocalSlot >= 0)
             {
                 var actor = session.Actor(session.LocalSlot); if (playing == 0) initial = actor.transform.position;
@@ -56,6 +57,7 @@ namespace ForjaDasMares.Networking
             if (File.Exists(control))
             {
                 string command = File.ReadAllText(control).Trim(); File.Delete(control);
+                if(command=="manual")session.ProbeInput=false;
                 if (command == "start" && session.IsHost) session.StartGame();
                 if (command == "disconnect") session.Close();
                 if (command == "reconnect") session.JoinDirect("127.0.0.1", "TEST42", 7777);
@@ -63,7 +65,9 @@ namespace ForjaDasMares.Networking
                 if (command == "revive-host-player" && session.IsHost) session.Actor(0).Health.Restore();
                 if (command == "chest" && session.IsHost && session.Phase == CoopPhase.Playing)
                 {
-                    var room = session.Dungeon.Generator.Rooms[3]; session.Dungeon.Enter(room);
+                    var room = session.Dungeon.Generator.Rooms[3];
+                    if(session.Campaign!=null)foreach(var candidate in session.Dungeon.Generator.Rooms)if(candidate.node.category==RoomCategory.Event){room=candidate;break;}
+                    session.Dungeon.Enter(room);
                     for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room);
                     foreach (var item in room.interactions) if (item.Kind == DungeonInteractionKind.Chest)
                     { var actor = session.Actor(session.LocalSlot); actor.Motor.Teleport(item.transform.position + new Vector3(0, .06f, -1), Quaternion.identity); Debug.Log("COOP_PROBE_CHEST used=" + item.UseBy(actor.Health)); break; }
@@ -74,6 +78,16 @@ namespace ForjaDasMares.Networking
                 if(command=="rescue-check"&&session.IsHost&&session.Phase==CoopPhase.Playing&&session.ConnectedCount>=2)
                 {var fallen=session.Actor(1);fallen.Health.ApplyDamage(100000);session.Actor(0).Motor.Teleport(fallen.transform.position+Vector3.right*.9f,Quaternion.identity);session.Request(HeroButtons.Interact);}
                 if (command == "clear-wave" && session.IsHost && session.Phase == CoopPhase.Playing) foreach (var enemy in session.Dungeon.Encounter.Enemies.Actors) if (enemy.IsAlive) enemy.Health.ApplyDamage(100000);
+                if(command=="win-campaign"&&session.IsHost&&session.Campaign!=null&&session.Phase==CoopPhase.Playing)
+                {
+                    session.Dungeon.Encounter.Cancel();DungeonRoom boss=null;
+                    foreach(var room in session.Dungeon.Generator.Rooms){room.entered=room.completed=room.objectiveComplete=room.encounterComplete=true;if(room.node.category==RoomCategory.Boss)boss=room;}
+                    session.Dungeon.Enter(boss);
+                    foreach(var item in boss.interactions)if(item.Kind==DungeonInteractionKind.Exit)
+                    {var actor=session.Actor(0);actor.Motor.Teleport(item.transform.position+new Vector3(0,.06f,-1),Quaternion.identity);Debug.Log("ADMIN_CAMPAIGN_EXIT "+item.UseBy(actor.Health));break;}
+                }
+                if(command=="continue-campaign"&&session.IsHost&&session.Campaign!=null)
+                {session.ReturnToCampaignMap();session.SelectCampaignLevel((session.Campaign.Selected+1)%session.Campaign.Count);}
                 if (command == "exit") Application.Quit();
                 Debug.Log("COOP_PROBE_CONTROL " + command);
             }

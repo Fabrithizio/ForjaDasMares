@@ -33,9 +33,9 @@ namespace ForjaDasMares
             bool flying=distance>=0&&distance<10.3f&&!blocked;arrow.enabled=flying;
             if(!flying)return;
             Vector3 point=start+direction*distance;
+            if(Physics.Linecast(last,point,1<<9,QueryTriggerInteraction.Ignore)){blocked=true;arrow.enabled=false;return;}
             if(run.Authority)
             {
-                if(Physics.Linecast(last,point,1<<9,QueryTriggerInteraction.Ignore)){blocked=true;arrow.enabled=false;return;}
                 float length=Vector3.Distance(last,point);int steps=Mathf.Max(1,Mathf.CeilToInt(length/.3f));
                 for(int i=1;i<=steps;i++)damage.Area(Vector3.Lerp(last,point,(float)i/steps),.46f,direction,360,level.dartAttack,null,1<<11,1<<9,false);
             }

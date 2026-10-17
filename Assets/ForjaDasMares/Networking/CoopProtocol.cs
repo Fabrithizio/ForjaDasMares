@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ForjaDasMares.Networking
 {
     public enum CoopPhase { Offline, Connecting, Lobby, Loading, Playing, Defeat, Victory, Closed }
-    [Serializable] public sealed class JoinIntent { public int protocol = CoopLimits.Protocol; public string identity, pin; public int hero; public bool campaign; }
+    [Serializable] public sealed class JoinIntent { public int protocol = CoopLimits.Protocol; public string identity, pin; public int hero; public bool campaign;public int campaignLevel=-1; }
     [Serializable] public sealed class ActorFrame
     {
         public int slot, hero, kind, hp, maximum, state; public bool connected;
@@ -20,7 +20,7 @@ namespace ForjaDasMares.Networking
     {
         public uint tick; public int phase, localSlot, seed, biome, room, encounter;
         public bool fixedMap, hasKey, finished; public string signature;
-        public int campaignLevel=-1;public CampaignSnapshot campaign;
+        public int campaignLevel=-1;public int expedition;public CampaignSnapshot campaign;
         public DungeonReplicaState world;
         public List<ActorFrame> players = new List<ActorFrame>(4);
         public List<ActorFrame> enemies = new List<ActorFrame>(24);
