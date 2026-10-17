@@ -2,6 +2,14 @@
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
 
+## Campanha online — revisão0.8.0
+
+Mapa com três fases de12/15/18 setores, grupo de2–4, sala privada por código e busca de sala pública aguardando parceiros na mesma fase. Placas simultâneas para dois heróis, flechas com aviso, névoa exterior e mochila inicial vazia com equipamentos ao redor da prévia3D. O grupo pode voltar ao mapa após o resultado e iniciar outra fase sem trocar de código. Saves antigos preservados; progresso da campanha fica no host.
+
+Windows: `Builds/CampaignWindows-0.8.0/ForjaDasMaresCampanha.exe`; cena `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Consulte [como jogar em dupla](Docs/CAMPANHA_COMO_JOGAR.md) e [relatório de implementação e limites](Docs/CAMPANHA_2026-10-17.md). Builds não são incluídas no Git.
+
+Compilação Windows sem erros; regressão ampla137 aprovados/1 ignorado/0 falhas, depois39/39 e13/13 testes focados. Descoberta pública, combate, baú sem duplicação, resgate, reconexão e troca de fases exercitados entre dois processos Windows reais pelo Relay. Conclusões de teste foram administrativas, sem alegar vitória humana completa. Validação física da campanha Android, quatro jogadores e redes distintas ainda pendentes. Esta revisão não é lançamento comercial nem aprovação para Play Store; as seções abaixo documentam variantes anteriores preservadas.
+
 ## Mapa local Galerias — revisão0.7.2, locomoção do Brasa
 
 Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.2/ForjaDasMaresGalerias.exe, compilado sem erros. Cena inicial GaleriasDungeon. APK Builds/GaleriasAndroid-0.7.2/ForjaDasMaresGalerias.apk (ARM64/code17) gerado, assinatura validada e instalado no moto g15; teste visual0.7.2 aguarda desbloqueio do aparelho. A revisão0.7.1 anterior foi executada nele. Câmera contínua e obstáculos semitransparentes, HUD rústico, mochila/equipamentos/opções existentes preservados.
