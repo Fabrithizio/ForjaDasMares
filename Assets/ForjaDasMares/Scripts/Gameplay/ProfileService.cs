@@ -70,13 +70,13 @@ namespace ForjaDasMares
         }
         public bool Grant(string runId, string eventId, RewardRule rule, int seed)
         {
-            if (rule != catalog.enemy && rule != catalog.boss && rule != catalog.chest && rule != catalog.room && rule != catalog.completion) return false;
+            if (!catalog.IsRewardRule(rule)) return false;
             var run = Profile.expedition;
             if (run == null || run.runId != runId || run.events.Contains(eventId) || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128 || run.events.Count >= 512) return false;
             var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed));
-            int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : catalog.expeditionCapacity - 3;
-            if (rule == catalog.enemy && loot.Count + run.items.Count > capacity) loot.Clear();
-            if (loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
+            int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
+            if ((rule == catalog.enemy||rule==catalog.supplies) && loot.Count + run.items.Count > capacity) loot.Clear();
+            if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
             return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot); }, "Recompensa registrada: " + rule.rewardId);
         }
         public bool FinishExpedition(string runId, bool victory, string outcome)

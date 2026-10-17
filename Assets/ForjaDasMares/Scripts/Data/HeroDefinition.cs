@@ -24,6 +24,7 @@ namespace ForjaDasMares
         public DodgeSettings dodge = new DodgeSettings();
         public AttackDefinition[] attacks;
         public AbilityDefinition special;
+        public CombatFlowDefinition onlineFlow;
         public Color color = Color.cyan;
         public int visualSlot;
     }

@@ -33,5 +33,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb1e8de4998c9e64db9e86a8e2f71115, type: 2}
   - {fileID: 11400000, guid: 40b39108dfde85448ac5976baae3e851, type: 2}
   special: {fileID: 11400000, guid: f8abad9b850d6f24c97a4207b69aea23, type: 2}
+  onlineFlow: {fileID: 11400000, guid: 6cb64fdd7081bef44ae89ba04009af9e, type: 2}
   color: {r: 1, g: 0.45, b: 0.16, a: 1}
   visualSlot: 0

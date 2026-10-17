@@ -41,7 +41,7 @@ namespace ForjaDasMares
                 else if (node.category == RoomCategory.Boss) room.encounter = biome.boss;
                 if(campaign!=null)
                 {
-                    if(node.category==RoomCategory.Combat)room.encounter=campaign.normal;
+                    if(node.category==RoomCategory.Combat)room.encounter=campaign.combatVariants!=null&&campaign.combatVariants.Length>0?campaign.combatVariants[node.id%campaign.combatVariants.Length]:campaign.normal;
                     if(node.category==RoomCategory.HardCombat)room.encounter=campaign.hard;
                     if(node.category==RoomCategory.Boss)room.encounter=campaign.boss;
                     room.cooperativeObjective=node.category==RoomCategory.Event;

@@ -16,6 +16,7 @@ namespace ForjaDasMares
         public bool UseBy(Health player)
         {
             if (!CanUse || player == null || !player.IsAlive || player.Faction != CombatFaction.Player || (player.transform.position - transform.position).sqrMagnitude > 2.1f * 2.1f) return false;
+            if(Physics.Linecast(player.transform.position+Vector3.up,transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore))return false;
             if (Kind == DungeonInteractionKind.Chest && !session.TryOpenChest(room.node.id)) return false;
             if (Kind == DungeonInteractionKind.Exit && !session.TryExitDungeon()) return false;
             Used = true;
@@ -23,7 +24,10 @@ namespace ForjaDasMares
             {
                 case DungeonInteractionKind.Chest: movingPart.localRotation = Quaternion.Euler(-70, 0, 0); break;
                 case DungeonInteractionKind.Crystal: movingPart.localScale *= 0.5f; session.CompleteObjective(room, true); break;
-                case DungeonInteractionKind.Rest: player.Restore(); break;
+                case DungeonInteractionKind.Rest:
+                    if(session.Party==null)player.Restore();
+                    else for(int i=0;i<4;i++){var ally=session.Party.Get(i);if(ally!=null&&ally.IsAlive&&ally.gameObject.activeInHierarchy&&room.Contains(ally.transform.position)&&!Physics.Linecast(transform.position+Vector3.up,ally.transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore))ally.Restore();}
+                    break;
                 case DungeonInteractionKind.TrapLever: movingPart.localRotation = Quaternion.Euler(50, 0, 0); session.DisableTrap(room); break;
                 case DungeonInteractionKind.Exit: break;
             }

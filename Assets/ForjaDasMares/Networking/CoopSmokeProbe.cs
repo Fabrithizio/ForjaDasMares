@@ -95,12 +95,16 @@ namespace ForjaDasMares.Networking
                 }
                 if(command=="continue-campaign"&&session.IsHost&&session.Campaign!=null)
                 {session.ReturnToCampaignMap();session.SelectCampaignLevel((session.Campaign.Selected+1)%session.Campaign.Count);}
+                if(command=="adventure-seals"&&session.IsHost&&session.Campaign?.Adventure!=null)
+                {foreach(var p in session.Campaign.Adventure.Props)if(p.Kind==AdventurePropKind.Seal)p.Health.ApplyDamage(p.Health.Maximum);Debug.Log("ADMIN_ADVENTURE_SEALS");}
                 if (command == "exit") Application.Quit();
                 Debug.Log("COOP_PROBE_CONTROL " + command);
             }
             var report = new ProbeReport { phase = session.Phase.ToString(), tick = session.LastTick, localSlot = session.LocalSlot, connected = session.ConnectedCount, snapshotBytes = session.LastSnapshotBytes, enemies = session.IsHost ? session.Dungeon.Encounter.Enemies.ActiveCount : session.AppliedEnemyCount, effects = session.AppliedEffectCount, time = elapsed };
             var cloudState = session.GetComponent<CoopCloud>(); report.code = session.Pin; report.cloudMessage = cloudState.Message; report.cloudBusy = cloudState.Busy;
             report.publicRoom=cloudState.PublicRoom;report.solo=session.Campaign!=null&&session.Campaign.Solo;report.completion=session.Campaign!=null?session.Campaign.Completion:0;
+            var adventure=session.Campaign?.Adventure;if(adventure!=null){report.seals=adventure.SealCount;report.sealGoal=adventure.SealGoal;report.explorationReward=adventure.Rewarded;report.propHealth=new int[adventure.Props.Count];for(int p=0;p<report.propHealth.Length;p++)report.propHealth[p]=adventure.Props[p].Health.Current;}
+            report.profileReady=session.GetComponent<CoopProfileChannel>().LocalProfile!=null;
             for(int i=0;i<4;i++)report.maximum[i]=session.Actor(i).Health.Maximum;
             for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
@@ -110,7 +114,7 @@ namespace ForjaDasMares.Networking
             File.WriteAllText(Path.Combine(directory, "probe.json"), JsonUtility.ToJson(report, true));
         }
         [Serializable] sealed class ProbeReport
-        { public string phase, signature, code, cloudMessage; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
+        { public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

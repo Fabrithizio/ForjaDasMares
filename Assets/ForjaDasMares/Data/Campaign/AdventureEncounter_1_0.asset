@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f72c24a1a2308e54d8a5be9031510b19, type: 3}
+  m_Name: AdventureEncounter_1_0
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EncounterDefinition
+  encounterId: adventure-1-0
+  displayName: Patrulha da estrada
+  waves:
+  - displayName: Contato
+    entries:
+    - enemy: {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+      count: 4
+      delay: 1.15
+    - enemy: {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+      count: 1
+      delay: 1.15
+    completion: 0
+    delayBefore: 1.5
+    survivalDuration: 20
+  - displayName: "Refor\xE7os"
+    entries:
+    - enemy: {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+      count: 3
+      delay: 1.15
+    - enemy: {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+      count: 2
+      delay: 1.15
+    - enemy: {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
+      count: 1
+      delay: 1.15
+    completion: 0
+    delayBefore: 2.5
+    survivalDuration: 20
+  maximumMobileEnemies: 10
+  maximumPcEnemies: 10

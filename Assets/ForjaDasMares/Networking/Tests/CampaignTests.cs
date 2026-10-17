@@ -5,6 +5,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 namespace ForjaDasMares.Networking.Tests
 {
     public sealed class CampaignTests
@@ -106,7 +108,7 @@ namespace ForjaDasMares.Networking.Tests
             var frame=new WorldFrame{campaignLevel=2,campaign=new CampaignSnapshot{clock=12.5f,occupied=3,progress=new[]{.4f,1f}}};
             frame.players.Add(new ActorFrame{variant=2,actionVersion=12,impact=.3f});
             var copy=JsonUtility.FromJson<WorldFrame>(JsonUtility.ToJson(frame));Assert.AreEqual(2,copy.campaignLevel);Assert.AreEqual(.4f,copy.campaign.progress[0]);Assert.AreEqual(2,copy.players[0].variant);
-            Assert.AreEqual(4,CoopLimits.Protocol);
+            Assert.AreEqual(5,CoopLimits.Protocol);
         }
         [UnityTest] public IEnumerator SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent()
         {
@@ -150,6 +152,7 @@ namespace ForjaDasMares.Networking.Tests
             UnityEngine.UI.Button Find(string name){foreach(var b in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(b.name==name)return b;return null;}
             Find("SettingsTab").onClick.Invoke();float prior=AudioListener.volume;Find("VolumeDown").onClick.Invoke();Assert.That(AudioListener.volume,Is.LessThanOrEqualTo(prior));Find("VolumeUp").onClick.Invoke();
             Find("FriendsTab").onClick.Invoke();Assert.IsTrue(Find("CopyFriendInvite").gameObject.activeInHierarchy);
+            Find("ExpeditionTab").onClick.Invoke();Assert.NotNull(Find("ExpeditionTab"));
             inventory.OpenInventory();Assert.IsTrue(inventory.IsOpen);Assert.IsFalse(menu.IsOpen);
             menu.Open();Assert.IsTrue(menu.IsOpen);Assert.IsFalse(inventory.IsOpen);
             Find("Leave").onClick.Invoke();Assert.IsTrue(Find("ConfirmLeave").gameObject.activeInHierarchy);
@@ -159,6 +162,94 @@ namespace ForjaDasMares.Networking.Tests
             foreach(var text in hud.GetComponentsInChildren<UnityEngine.UI.Text>())if(text.text.Contains("SALA  HUDTEST"))codeFound=true;
             Assert.IsTrue(codeFound);menu.Open();yield return null;Assert.AreEqual(CoopPhase.Playing,session.Phase);Assert.AreEqual(scale,Time.timeScale);
             menu.Close();
+        }
+        [UnityTest] public IEnumerator AdventureSuppliesAndThreeSealsGrantOneAuthorityReward()
+        {
+            Assert.IsTrue(session.HostDirect("ADVLOOT",7798,false));yield return null;session.StartGame();yield return null;
+            var adventure=run.Adventure;Assert.NotNull(adventure);Assert.AreEqual(3,adventure.SealGoal);Assert.That(adventure.Props.Count,Is.LessThanOrEqualTo(48));
+            var service=session.GetComponent<CoopProgression>().Profile(0);int before=service.Profile.expedition.items.Count;
+            CampaignAdventureProp supply=null;
+            foreach(var prop in adventure.Props)
+            {
+                if(prop.Kind==AdventurePropKind.Supply&&supply==null)supply=prop;
+                if(prop.Kind==AdventurePropKind.Seal)prop.Health.ApplyDamage(prop.Health.Maximum);
+            }
+            yield return new WaitForSeconds(.25f);Assert.IsTrue(adventure.Rewarded);Assert.AreEqual(before+1,service.Profile.expedition.items.Count);
+            Assert.That(service.Profile.expedition.items[before].rarity,Is.GreaterThanOrEqualTo(ItemRarity.Rare));
+            yield return new WaitForSeconds(.3f);Assert.AreEqual(before+1,service.Profile.expedition.items.Count);
+            int coins=service.Profile.expedition.coins;
+            var hero=session.Actor(0);hero.Motor.Teleport(supply.transform.position+new Vector3(0,.06f,-1.15f),Quaternion.identity);Physics.SyncTransforms();
+            Assert.IsTrue(hero.Combat.TryAttack());hero.Combat.Simulate(hero.Combat.BasicAttack.windup+.02f);Assert.IsFalse(supply.Health.IsAlive);
+            yield return new WaitForSeconds(.25f);Assert.AreEqual(coins+2,service.Profile.expedition.coins);
+            var copy=JsonUtility.FromJson<AdventureSnapshot>(JsonUtility.ToJson(adventure.Capture()));
+            run.Authority=false;Assert.IsFalse(supply.Health.ApplyHit(session.Actor(0).Combat.BasicAttack,Vector3.forward,session.Actor(0).Health));adventure.Apply(copy);Assert.IsTrue(adventure.Rewarded);
+        }
+        [UnityTest] public IEnumerator FountainHealsTwoNearbyHeroesOnlyOnceAndNeverDuringCombat()
+        {
+            Assert.IsTrue(session.HostDirect("ADVHEAL",7799,false));yield return null;session.StartGame();yield return null;
+            var adventure=run.Adventure;CampaignAdventureProp well=null;foreach(var p in adventure.Props)if(p.Kind==AdventurePropKind.Fountain){well=p;break;}Assert.NotNull(well);
+            var a=session.Actor(0);var b=session.Actor(1);b.gameObject.SetActive(true);session.Dungeon.Party.Set(1,b.Health);
+            a.Motor.Teleport(well.transform.position+Vector3.right*.9f+Vector3.up*.06f,Quaternion.identity);b.Motor.Teleport(well.transform.position+Vector3.left*.9f+Vector3.up*.06f,Quaternion.identity);
+            a.Health.ApplyDamage(70);b.Health.ApplyDamage(70);session.Dungeon.Enter(well.Room);
+            if(session.Dungeon.Encounter.State==EncounterState.Spawning)Assert.IsFalse(adventure.TryUse(a.Health));
+            session.Dungeon.Encounter.Cancel();int hp=a.Health.Current,bhp=b.Health.Current;
+            Assert.IsTrue(adventure.TryUse(a.Health));Assert.That(a.Health.Current,Is.GreaterThan(hp));Assert.That(b.Health.Current,Is.GreaterThan(bhp));
+            a.Health.ApplyDamage(30);Assert.IsFalse(adventure.TryUse(a.Health));Assert.IsTrue(well.Claimed);
+        }
+        [UnityTest] public IEnumerator TransportShutdownLeavesNoPlayableGhostSessionOrInventorySlot()
+        {
+            Assert.IsTrue(session.HostDirect("ADVDROP",7800,false));yield return null;session.StartGame();yield return null;
+            session.Manager.Shutdown();yield return new WaitForSeconds(.3f);
+            Assert.AreEqual(CoopPhase.Closed,session.Phase);Assert.AreEqual(-1,session.LocalSlot);Assert.AreEqual(0,session.ConnectedCount);Assert.IsFalse(run.Running);
+        }
+        [UnityTest] public IEnumerator EscapeTogglesSessionMenuThroughInputSystem()
+        {
+            Assert.IsTrue(session.HostDirect("ADVESC",7801,false));yield return null;
+            var hud=UnityEngine.Object.FindFirstObjectByType<CampaignHud>();var menu=hud.GetComponent<CampaignSessionMenu>();
+            var mode=InputSystem.settings.updateMode;var background=InputSystem.settings.backgroundBehavior;
+#if UNITY_EDITOR
+            var focus=InputSystem.settings.editorInputBehaviorInPlayMode;InputSystem.settings.editorInputBehaviorInPlayMode=InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+#endif
+            InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;InputSystem.settings.updateMode=InputSettings.UpdateMode.ProcessEventsManually;
+            var keyboard=InputSystem.AddDevice<Keyboard>();keyboard.MakeCurrent();
+            try
+            {
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Escape));InputSystem.Update();yield return new WaitForSecondsRealtime(.05f);Assert.IsTrue(menu.IsOpen);
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState());InputSystem.Update();yield return null;
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Escape));InputSystem.Update();yield return new WaitForSecondsRealtime(.05f);Assert.IsFalse(menu.IsOpen);
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(keyboard);InputSystem.settings.updateMode=mode;InputSystem.settings.backgroundBehavior=background;
+#if UNITY_EDITOR
+                InputSystem.settings.editorInputBehaviorInPlayMode=focus;
+#endif
+            }
+        }
+        [UnityTest] public IEnumerator WarriorHeldAttackAndSuperAreCalculatedOnAuthority()
+        {
+            Assert.IsTrue(session.HostDirect("ADVPOWER",7802,false));yield return null;session.StartGame();yield return null;
+            var hero=session.Actor(0);Assert.IsTrue(hero.Combat.EnhancedControls);hero.Combat.ResetCombat();bool heavy=false;
+            Assert.IsTrue(hero.Commands.Accept(900,Vector2.zero,Vector2.up,HeroButtons.Attack));Assert.IsTrue(hero.Commands.AttackHeld);
+            for(int i=0;i<30;i++){hero.Combat.ProcessAttackInput(hero.Commands.AttackHeld,i==0,false,.1f);heavy|=hero.Combat.IsHeavy;hero.Combat.Simulate(.1f);}
+            Assert.IsTrue(heavy);hero.Combat.Simulate(5);
+            var pool=session.Dungeon.Encounter.Enemies;EnemyActor target=null;
+            for(int i=0;i<pool.Capacity;i++)if(pool.DefinitionAt(i).kind==EnemyKind.Raider){target=pool.TrySpawn(pool.DefinitionAt(i),hero.transform.position+Vector3.forward*1.5f);break;}
+            Assert.NotNull(target);target.Health.SetReplicaState(10000,10000);target.Brain.enabled=false;
+            for(int i=0;i<hero.Roster.Current.onlineFlow.hitsForSuper;i++)Assert.IsTrue(target.Health.ApplyHit(hero.Combat.BasicAttack,Vector3.forward,hero.Health));
+            Assert.IsTrue(hero.Combat.SuperReady);int hp=target.Health.Current;Assert.IsTrue(hero.Combat.TrySuper());Assert.AreEqual(0,hero.Combat.SuperProgress);
+            hero.Combat.Simulate(hero.Roster.Current.onlineFlow.superAttack.windup+.01f);Assert.That(target.Health.Current,Is.LessThan(hp));Assert.IsFalse(hero.Combat.TrySuper());
+            hero.Commands.Accept(901,Vector2.zero,Vector2.up,HeroButtons.None);Assert.IsFalse(hero.Commands.AttackHeld);
+        }
+        [Test] public void NewWeaponsUseDifferentRealAttackDataAndRewardRulesReserveCapacity()
+        {
+            var catalog=session.GetComponent<CoopProgression>().Catalog;catalog.Validate();
+            Assert.That(catalog.Find("wavecleaver").attacks[0].arc,Is.GreaterThanOrEqualTo(160));Assert.AreEqual(3,catalog.Find("reedvolley").attacks[0].projectileCount);Assert.That(catalog.Find("cinderfocus").attacks[0].splashRadius,Is.GreaterThan(1));
+            string path=Path.Combine(Application.temporaryCachePath,"AdventureFullBag",Guid.NewGuid().ToString("N"),"profile.json");var service=new ProfileService(catalog,new ProfileStore(path));Assert.IsTrue(service.BeginExpedition("warrior","Campaign"));
+            var random=new System.Random(175);var id=service.Profile.expedition.runId;
+            for(int i=0;i<29;i++)service.Profile.expedition.items.Add(LootGenerator.Create(catalog,"wavecleaver",ItemRarity.Common,random));
+            Assert.IsTrue(service.Grant(id,"seals",catalog.exploration,1));Assert.IsTrue(service.Grant(id,"supply",catalog.supplies,2));Assert.IsTrue(service.Grant(id,"boss",catalog.boss,3));Assert.IsTrue(service.Grant(id,"finish",catalog.completion,4));
+            Assert.AreEqual(32,service.Profile.expedition.items.Count);Assert.IsTrue(service.FinishExpedition(id,true,"Victory"));Assert.AreEqual(32,service.Profile.inventory.Count);
         }
     }
 }

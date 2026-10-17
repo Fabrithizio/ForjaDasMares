@@ -44,6 +44,7 @@ namespace ForjaDasMares
         bool echoResolved;
         public AttackDefinition BasicAttack => equipmentAttacks != null && equipmentAttacks.Length > 0 ? equipmentAttacks[0] : profile != null ? profile.attacks[0] : null;
         public float AttackSpeed => attackSpeed;
+        public void AddTargets(int mask)=>targets|=mask;
         public void ApplyEquipment(AttackDefinition[] attacks, StatSnapshot stats, float rarityPower, bool twin, AttackDefinition echo = null)
         { equipmentAttacks = attacks; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
         public bool IsAttacking => active && !special;

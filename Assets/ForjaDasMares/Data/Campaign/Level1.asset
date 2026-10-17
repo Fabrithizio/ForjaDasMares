@@ -34,6 +34,11 @@ MonoBehaviour:
   normal: {fileID: 11400000, guid: aaaf4abaae76d594fbc3fb7f0e1298fd, type: 2}
   hard: {fileID: 11400000, guid: 7bb244e11fcf4164abcee4d755b2aabf, type: 2}
   boss: {fileID: 11400000, guid: e14225e344f70e044abdd442d48e32d4, type: 2}
+  adventure: {fileID: 11400000, guid: 0d8c7bf2560451e419fd50f1a213039f, type: 2}
+  combatVariants:
+  - {fileID: 11400000, guid: b269afc962388a0489053378312ebd6c, type: 2}
+  - {fileID: 11400000, guid: 5309d4685c5c6f04c99050707b626dca, type: 2}
+  - {fileID: 11400000, guid: 26e83a5cb080995428ca7ce4ca43e712, type: 2}
   plateHold: 1.5
   dartInterval: 4.2
   dartAttack: {fileID: 11400000, guid: 503870f81e456834290c742529a0ca36, type: 2}

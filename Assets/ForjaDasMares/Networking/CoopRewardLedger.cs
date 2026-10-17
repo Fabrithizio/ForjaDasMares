@@ -52,7 +52,7 @@ namespace ForjaDasMares.Networking
         public bool Grant(string eventId, RewardRule rule, int seed)
         {
             if (!active || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128) return false;
-            if (rule != catalog.enemy && rule != catalog.room && rule != catalog.chest && rule != catalog.boss && rule != catalog.completion) return false;
+            if (!catalog.IsRewardRule(rule)) return false;
             if(completedEvents.Contains(eventId))return true;
             Error = null;
             for (int i = 0; i < profiles.Length; i++)

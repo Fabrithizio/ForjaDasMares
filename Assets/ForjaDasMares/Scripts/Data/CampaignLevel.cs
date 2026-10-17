@@ -10,6 +10,8 @@ namespace ForjaDasMares
         public Vector2Int[] route;
         public RoomCategory[] categories;
         public EncounterDefinition normal,hard,boss;
+        public CampaignAdventureDefinition adventure;
+        public EncounterDefinition[] combatVariants;
         [Range(1,5)] public float plateHold=1.5f;
         [Range(1.5f,6)] public float dartInterval=4;
         public AttackDefinition dartAttack;

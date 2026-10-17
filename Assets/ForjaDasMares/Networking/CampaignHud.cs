@@ -5,9 +5,9 @@ namespace ForjaDasMares.Networking
     public sealed class CampaignHud : MonoBehaviour
     {
         CoopDirector director;CoopCloud cloud;ArenaInput controls;CampaignRun campaign;
-        RectTransform root,healthFill;GameObject map,side,touch,backdrop,vitals,objective;Text title,details,state,party,combat;InputField code;
+        RectTransform root,healthFill,superFill;GameObject map,side,touch,backdrop,vitals,objective;Text title,details,state,party,combat;InputField code;
         Button create,find,join,start,hero,leave,copyInvite,visibility,liveVisibility,homeButton;
-        GameObject home; CampaignSessionMenu sessionMenu; Button menuButton; Text roomCode;
+        Text actionStatus; Button dodgeAction,specialAction,superAction,attackAction; GameObject home; CampaignSessionMenu sessionMenu; Button menuButton; Text roomCode;
         public bool AtHome {get;private set;}=true;
         readonly Button[] nodes=new Button[3];float refresh;uint cleared;
         public void Build(RectTransform parent,CoopDirector owner,ArenaInput input)
@@ -45,8 +45,10 @@ namespace ForjaDasMares.Networking
             party=Label(life,"",14,-10,255,110,15);
             var bar=RusticHudTheme.Rect(life,"HealthTrack",new Vector2(0,1),new Vector2(14,-130),new Vector2(255,12));bar.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
             healthFill=RusticHudTheme.Rect(bar,"Health",new Vector2(0,1),Vector2.zero,new Vector2(255,12));healthFill.gameObject.AddComponent<Image>().color=new Color(.75f,.15f,.14f);
-            var goal=RusticHudTheme.Rect(root,"CampaignObjective",new Vector2(0,1),new Vector2(325,-20),new Vector2(455,140));RusticHudTheme.Panel(goal,RusticHudTheme.Ink,20);objective=goal.gameObject;
-            combat=Label(goal,"",15,-10,425,120,15);
+            var superTrack=RusticHudTheme.Rect(life,"SuperTrack",new Vector2(0,1),new Vector2(14,-146),new Vector2(255,5));superTrack.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
+            superFill=RusticHudTheme.Rect(superTrack,"Super",new Vector2(0,1),Vector2.zero,new Vector2(0,5));superFill.gameObject.AddComponent<Image>().color=RusticHudTheme.Gold;
+            var goal=RusticHudTheme.Rect(root,"CampaignObjective",new Vector2(0,1),new Vector2(325,-20),new Vector2(455,172));RusticHudTheme.Panel(goal,RusticHudTheme.Ink,20);objective=goal.gameObject;
+            combat=Label(goal,"",15,-10,425,152,15);
             leave=RusticHudTheme.Button(root,"CampaignLeave",new Vector2(1,1),new Vector2(-20,-20),new Vector2(190,44),"MENU DA SALA",()=>sessionMenu.Open());
             copyInvite=RusticHudTheme.Button(root,"CopyInvite",new Vector2(1,1),new Vector2(-220,-20),new Vector2(160,44),"COPIAR CÓDIGO",()=>{if(!string.IsNullOrEmpty(director.Pin))GUIUtility.systemCopyBuffer=director.Pin;});
             liveVisibility=RusticHudTheme.Button(root,"LiveVisibility",new Vector2(1,1),new Vector2(-20,-75),new Vector2(390,44),"ABRIR SALA",()=>cloud.ToggleVisibility());
@@ -59,26 +61,29 @@ namespace ForjaDasMares.Networking
                 var ring=stick.gameObject.AddComponent<RoundedHudGraphic>();ring.color=new Color(.13f,.18f,.15f,.65f);ring.radius=85;ring.borderColor=RusticHudTheme.Copper;
                 var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(55,55));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=27;cap.raycastTarget=false;
                 stick.gameObject.AddComponent<TouchMoveStick>().Configure(controls,thumb);
-                Touch("Ataque",-70,55,HeroButtons.Attack,true);Touch("Esquiva",-240,55,HeroButtons.Dodge,false);Touch("Habilidade",-70,140,HeroButtons.Special,false);Touch("Interagir",-240,140,HeroButtons.Interact,false);
+                Touch("Ataque",-70,55,HeroButtons.Attack,true);Touch("Esquiva",-240,55,HeroButtons.Dodge,false);Touch("Habilidade",-70,140,HeroButtons.Special,false);Touch("Interagir",-240,140,HeroButtons.Interact,false);Touch("Super",-410,55,HeroButtons.Super,false);
             }
             else
             {
-                var dock=RusticHudTheme.Rect(touch.transform,"DesktopDock",new Vector2(.5f,0),new Vector2(0,20),new Vector2(650,70));dock.pivot=new Vector2(.5f,0);RusticHudTheme.Panel(dock,RusticHudTheme.Ink);
-                Label(dock,"WASD · mover    Mouse · segure para atacar    Espaço · esquiva\nE · habilidade       F · interagir       Esc · menu da sala / configurações",15,-8,620,55,17);
+                var dock=RusticHudTheme.Rect(touch.transform,"DesktopDock",new Vector2(.5f,0),new Vector2(0,20),new Vector2(820,78));dock.pivot=new Vector2(.5f,0);RusticHudTheme.Panel(dock,RusticHudTheme.Ink);
+                actionStatus=Label(dock,"WASD · mover    Mouse · segure para atacar    Espaço · esquiva\nE · habilidade       F · interagir       Esc · menu da sala / configurações",15,-8,790,65,16);
             }
             var controlsGroup=touch.AddComponent<CanvasGroup>();
             var codePanel=RusticHudTheme.Rect(root,"LiveRoomCode",new Vector2(1,1),new Vector2(-20,-20),new Vector2(280,62));
             RusticHudTheme.Panel(codePanel,RusticHudTheme.Ink,18);
             roomCode=Label(codePanel,"",12,-8,256,46,19);
-            menuButton=RusticHudTheme.Button(root,"SessionMenuButton",new Vector2(1,1),new Vector2(-20,-94),new Vector2(180,48),"MENU · ESC",()=>sessionMenu.Open());
+            menuButton=RusticHudTheme.Button(root,"SessionMenuButton",new Vector2(1,1),new Vector2(-20,-94),new Vector2(180,48),Application.isMobilePlatform?"MENU":"MENU · ESC",()=>sessionMenu.Open());
             var homeRect=RusticHudTheme.Rect(root,"InitialScreen",Vector2.zero,Vector2.zero,Vector2.zero);homeRect.anchorMax=Vector2.one;homeRect.offsetMin=homeRect.offsetMax=Vector2.zero;home=homeRect.gameObject;
             home.AddComponent<CampaignHome>().Build(homeRect,director,()=>AtHome=false);
             sessionMenu=gameObject.AddComponent<CampaignSessionMenu>();sessionMenu.Build(root,director,controlsGroup);
+            gameObject.AddComponent<CampaignCombatReadout>().Build(root,director);
         }
         void Touch(string label,float x,float y,HeroButtons action,bool held)
         {
             var button=RusticHudTheme.Button(touch.transform,label,new Vector2(1,0),new Vector2(x,y),new Vector2(145,72),label,()=>{if(!held)director.Request(action);});
             if(held)button.gameObject.AddComponent<HoldAttackButton>().Configure(controls);
+            if(action==HeroButtons.Attack)attackAction=button;if(action==HeroButtons.Super)superAction=button;
+            if(action==HeroButtons.Dodge)dodgeAction=button;if(action==HeroButtons.Special)specialAction=button;
         }
         void Update()
         {
@@ -118,11 +123,26 @@ namespace ForjaDasMares.Networking
             string allies="";for(int i=0;i<4;i++)if(director.IsConnected(i)){var actor=director.Actor(i);allies+=(i==director.LocalSlot?"VOCÊ":"ALIADO "+(i+1))+" · "+actor.Health.Current+"/"+actor.Health.Maximum+" VIDA"+(i==director.LocalSlot?"\n"+actor.Roster.Current.displayName:"")+"\n";}
             party.text=allies;
             var local=director.Actor(director.LocalSlot);healthFill.sizeDelta=new Vector2(local!=null&&local.Health.Maximum>0?255f*local.Health.Current/local.Health.Maximum:0,12);
+            if(local!=null&&active)
+            {
+                superFill.sizeDelta=new Vector2(local.SuperProgress*255,5);superFill.parent.gameObject.SetActive(local.Enhanced);
+                if(superAction!=null){superAction.gameObject.SetActive(local.Enhanced);superAction.interactable=local.Health.IsAlive&&local.SuperProgress>=1;superAction.GetComponentInChildren<Text>().text="SUPER\n"+Mathf.FloorToInt(local.SuperProgress*100)+"%";}
+                if(attackAction!=null)attackAction.GetComponentInChildren<Text>().text=local.Enhanced&&local.Charge>0?"Ataque\nCarga "+Mathf.FloorToInt(local.Charge*100)+"%":"Ataque\nSegure";
+                string skill=local.SpecialCooldown>0?local.SpecialCooldown.ToString("F1")+"s":"pronta",dodge=local.DodgeCooldown>0?local.DodgeCooldown.ToString("F1")+"s":"pronta";
+                if(specialAction!=null){specialAction.GetComponentInChildren<Text>().text="Habilidade\n"+skill;specialAction.interactable=local.Health.IsAlive&&local.SpecialCooldown<=0;}
+                if(dodgeAction!=null){dodgeAction.GetComponentInChildren<Text>().text="Esquiva\n"+dodge;dodgeAction.interactable=local.Health.IsAlive&&local.DodgeCooldown<=0;}
+                if(actionStatus!=null)actionStatus.text="WASD · mover   Mouse · segure para atacar   F · interagir\nE · habilidade: "+skill+"   Espaço · esquiva: "+dodge+"   Esc · menu"+(local.Enhanced?"   Q · SUPER "+Mathf.FloorToInt(local.SuperProgress*100)+"%":"");
+            }
             var profile=director.GetComponent<CoopProfileChannel>().LocalProfile;
             if(profile!=null)cleared=profile.campaignCleared;
             for(int i=0;i<3;i++)nodes[i].GetComponentInChildren<Text>().text=campaign.At(i).displayName+"\n\n"+((cleared&(1u<<i))!=0?"CONCLUÍDA":i==0?"INICIAL":i==1?"VETERANO":"DESAFIADOR");
             combat.text=campaign.Level.displayName+"\n"+campaign.Objective+(profile!=null?"\nMoedas: "+(profile.expedition?.coins??profile.coins)+" · saque: "+(profile.expedition?.items.Count??0):"");
             if(active)combat.text+="\nProgresso: "+Mathf.FloorToInt(campaign.Completion*100)+"%"+(campaign.Solo?" · SOLO +10% VIDA / DANO":"")+(campaign.Completion>=.2f?" · novas entradas encerradas":" · pode receber parceiros");
+            if(active&&campaign.Adventure!=null)
+            {
+                combat.text+="\n"+campaign.Adventure.Objective;
+                string nearby=campaign.Adventure.NearbyLabel(local?.Health);if(nearby.Length>0)combat.text+="\n"+nearby;
+            }
             foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.IsAlive&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\nCHEFE · "+enemy.Health.Current+" / "+enemy.Health.Maximum;break;}
         }
         static Text Label(Transform p,string s,float x,float y,float w,float h,int font)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,font);

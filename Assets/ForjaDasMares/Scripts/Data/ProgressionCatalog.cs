@@ -41,11 +41,14 @@ namespace ForjaDasMares
         public AffixRule[] affixes;
         public HeroEquipmentRule[] heroes;
         public RewardRule enemy, boss, chest, room, completion;
+        public RewardRule supplies=new RewardRule{rewardId="supplies",experience=1,coins=2,itemChance=.03f};
+        public RewardRule exploration=new RewardRule{rewardId="exploration",experience=30,coins=15,guaranteedItems=1,minimumRarity=ItemRarity.Rare};
         public AttackDefinition legendaryEcho;
         public CompanionSettings companion = new CompanionSettings();
         public EquipmentDefinition Find(string id) { if (equipment != null) foreach (var item in equipment) if (item != null && item.itemId == id) return item; return null; }
         public HeroEquipmentRule Hero(string id) { if (heroes != null) foreach (var rule in heroes) if (rule.heroId == id) return rule; return null; }
         public RarityRule Rarity(ItemRarity value) { if (rarities != null) foreach (var rule in rarities) if (rule.rarity == value) return rule; return null; }
+        public bool IsRewardRule(RewardRule rule)=>rule!=null&&(rule==enemy||rule==boss||rule==chest||rule==room||rule==completion||rule==supplies||rule==exploration);
         public void Validate()
         {
             if (equipment == null || equipment.Length < 12 || rarities == null || rarities.Length != 5 || heroes == null) throw new InvalidOperationException("Progression catalog is incomplete.");
@@ -65,7 +68,7 @@ namespace ForjaDasMares
             var heroIds = new System.Collections.Generic.HashSet<string>();
             foreach (var hero in heroes) if (hero == null || string.IsNullOrWhiteSpace(hero.heroId) || !heroIds.Add(hero.heroId) || hero.affinity == 0 || (hero.affinity & ~HeroAffinity.All) != 0) throw new InvalidOperationException("Invalid hero equipment rule.");
             if (inventoryCapacity < 8 || inventoryCapacity > 100 || expeditionCapacity < 4 || expeditionCapacity > 64 || maximumLevel < 1 || maximumLevel > 20 || starterItems == null || starterItems.Length > inventoryCapacity) throw new InvalidOperationException("Invalid progression capacity.");
-            foreach (var rule in new[] { enemy, boss, chest, room, completion }) if (rule == null || rule.experience < 0 || rule.coins < 0 || rule.guaranteedItems < 0 || rule.guaranteedItems > 2 || rule.itemChance < 0 || rule.itemChance > 1) throw new InvalidOperationException("Invalid reward table.");
+            foreach (var rule in new[] { enemy, boss, chest, room, completion, supplies, exploration }) if (rule == null || rule.experience < 0 || rule.coins < 0 || rule.guaranteedItems < 0 || rule.guaranteedItems > 2 || rule.itemChance < 0 || rule.itemChance > 1) throw new InvalidOperationException("Invalid reward table.");
             foreach (var id in starterItems) if (Find(id) == null) throw new InvalidOperationException("Missing starter item.");
         }
     }

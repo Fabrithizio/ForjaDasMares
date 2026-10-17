@@ -1,6 +1,14 @@
 {
   "name": "ForjaDasMares.Networking.Tests",
-  "references": ["ForjaDasMares.Runtime", "ForjaDasMares.Networking", "Unity.Netcode.Runtime", "Unity.Collections"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "ForjaDasMares.Runtime",
+    "ForjaDasMares.Networking",
+    "Unity.Netcode.Runtime",
+    "Unity.Collections",
+    "Unity.InputSystem"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

@@ -90,6 +90,7 @@ namespace ForjaDasMares.Networking
                 director.Dungeon.Encounter.Enemies.Spawned += Spawned; director.Dungeon.Encounter.Enemies.Died += Died;
                 director.Dungeon.RoomCompleted += RoomWon; bound = true;
             }
+            if(director.Campaign!=null)director.Campaign.SideRewardRequested=SideReward;
             director.Dungeon.ChestRewardRequested = Chest; director.Dungeon.ExitRewardRequested = Exit;
             return true;
         }
@@ -109,6 +110,11 @@ namespace ForjaDasMares.Networking
                 var actor = director.Actor(i); if (!director.IsConnected(i) || actor.Health.IsAlive) continue;
                 if (actor.Health.Revive(revivalFraction)) director.PlaceInRoom(i, room);
             }
+        }
+        bool SideReward(int id,bool exploration)
+        {
+            if(!Active||!director.Manager.IsServer||director.Phase!=CoopPhase.Playing)return false;
+            Enqueue("adventure:"+id,exploration?catalog.exploration:catalog.supplies);return TryFlush();
         }
         bool Chest(int room) { if (!Active || !director.Manager.IsServer) return false; Enqueue("chest:" + room, catalog.chest); return TryFlush(); }
         bool Exit()

@@ -132,7 +132,7 @@ namespace ForjaDasMares.Networking
                 owner.SetProperty("campaign",new SessionProperty(CampaignKey,VisibilityPropertyOptions.Public,PropertyIndex.String1));
                 await owner.SavePropertiesAsync();
             }
-            catch(Exception error){advertDirty=true;advertClock=3;Message="Não foi possível atualizar o anúncio da sala: "+error.Message;}
+            catch(Exception error){if(ReferenceEquals(session,current)&&!disposing){advertDirty=true;advertClock=3;Message="Não foi possível atualizar o anúncio da sala: "+error.Message;}}
             finally{advertising=false;}
         }
         void Changed()

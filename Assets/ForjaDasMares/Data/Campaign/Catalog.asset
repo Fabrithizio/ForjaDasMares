@@ -28,6 +28,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dab7681f3402c8443a2234eee1211764, type: 2}
   - {fileID: 11400000, guid: 905c30b215982724aa893757a6c814b4, type: 2}
   - {fileID: 11400000, guid: bcb5a57a0a17ae741853fc327a7a7878, type: 2}
+  - {fileID: 11400000, guid: 52ea42a850f37d74cbbd0ec343474451, type: 2}
+  - {fileID: 11400000, guid: b8fb9a17f522db346ba684d299c45589, type: 2}
+  - {fileID: 11400000, guid: fccd22e997e7488469b611111ae80d2f, type: 2}
   starterItems: []
   rarities:
   - rarity: 0
@@ -108,7 +111,7 @@ MonoBehaviour:
     experience: 150
     coins: 30
     guaranteedItems: 1
-    itemChance: 0.3
+    itemChance: 0
     minimumRarity: 2
   chest:
     rewardId: "Ba\xFA"
@@ -128,8 +131,22 @@ MonoBehaviour:
     rewardId: "Vit\xF3ria"
     experience: 90
     coins: 20
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  supplies:
+    rewardId: supplies
+    experience: 1
+    coins: 2
     guaranteedItems: 0
-    itemChance: 0.5
+    itemChance: 0.03
+    minimumRarity: 0
+  exploration:
+    rewardId: exploration
+    experience: 30
+    coins: 15
+    guaranteedItems: 1
+    itemChance: 0
     minimumRarity: 2
   legendaryEcho: {fileID: 11400000, guid: 8f7813f5b4030c340b87b88a7f199911, type: 2}
   companion:
