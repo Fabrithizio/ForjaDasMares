@@ -1,3 +1,13 @@
+# Entrega atual — campanha 0.9.1, 17/10/2026
+
+Base existente preservada; esta revisão melhora estabilidade, exploração e combate cooperativo. Foram implementados suprimentos, selos opcionais, fontes limitadas, encontros variantes, três armas e carregado/SUPER do guerreiro com autoridade do host. Inventário e resultado receberam correções reais; protocolo5, sem migração de save. Consulte `AVENTURA_0_9_2026-10-17.md` para evidências, lista de arquivos, builds e limites. Instruções atuais em `CAMPANHA_COMO_JOGAR.md`; os registros abaixo são históricos.
+
+Não declarar lançamento comercial concluído: arte/animação de todos os heróis, equilíbrio humano, testes prolongados, outras redes e celulares continuam pendentes. Sem migração de host/servidor dedicado.
+
+Validação final:151 testes PlayMode,150 aprovados,0 falhas,1 ignorado; builds Windows/Android0.9.1 e teste físico PC–moto g15 pelo Relay. Sessão4/4 anterior deste bloco:3 processosWindows+1Android, não quatro pessoas.
+
+---
+
 # Etapa 3 — entrega atual (13/10/2026)
 
 Quatro heróis configurados e selecionáveis na ArenaTest existente. Guerreiro: espada em arco/combo e impacto; Patrulheiro: projéteis e armadilha; Arcanista: gelo/fogo/raio e pulso glacial; Cavaleiro Rúnico: armadura, proteção do aliado e investida. ScriptableObjects separados; pool de projéteis/zonas; dano, facção, direção, obstáculos, knockback, recuperação/cooldowns e invulnerabilidade finita. Sem equipamento ou multiplayer.

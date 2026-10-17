@@ -9,7 +9,7 @@ namespace ForjaDasMares.Networking
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
-        Button inventoryButton,resultButton,stockView;bool deliveries;
+        Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries;
         System.Collections.Generic.List<ItemInstance> CurrentItems=>deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];
         bool management;
         bool CanManageNow=>director.LocalSlot>=0&&director.Actor(director.LocalSlot).Health.IsAlive&&director.Phase!=CoopPhase.Loading&&director.EncounterStatus!=EncounterState.Spawning&&director.EncounterStatus!=EncounterState.Fighting;
@@ -24,11 +24,11 @@ namespace ForjaDasMares.Networking
             overlay = new GameObject("CoopInventory", typeof(RectTransform), typeof(Image)); overlay.transform.SetParent(parent, false);
             var full = (RectTransform)overlay.transform; full.anchorMin = Vector2.zero; full.anchorMax = Vector2.one; full.offsetMin = full.offsetMax = Vector2.zero; overlay.GetComponent<Image>().color = new Color(.025f, .045f, .065f, .98f);
             header = Label(overlay.transform, "", new Vector2(30, -20), new Vector2(1000, 50), 23);
-            Button(overlay.transform, "FECHAR", new Vector2(1080, -20), new Vector2(150, 44), Close);
+            closeButton=Button(overlay.transform, "FECHAR", new Vector2(1080, -20), new Vector2(150, 44), Close);
             for (int i = 0; i < rows.Length; i++)
             { int row = i; rows[i] = Button(overlay.transform, "", new Vector2(30, -95 - i * 57), new Vector2(560, 50), () => Select(row)); }
-            Button(overlay.transform, "ANTERIOR", new Vector2(30, -560), new Vector2(170, 42), () => { page = Mathf.Max(0, page - 1); selected = null; Refresh(); });
-            Button(overlay.transform, "PRÓXIMA", new Vector2(215, -560), new Vector2(170, 42), () => { var items = CurrentItems; if (items != null && (page + 1) * 8 < items.Count) page++; selected = null; Refresh(); });
+            previous=Button(overlay.transform, "ANTERIOR", new Vector2(30, -560), new Vector2(170, 42), () => { page = Mathf.Max(0, page - 1); selected = null; Refresh(); });
+            next=Button(overlay.transform, "PRÓXIMA", new Vector2(215, -560), new Vector2(170, 42), () => { var items = CurrentItems; if (items != null && (page + 1) * 8 < items.Count) page++; selected = null; Refresh(); });
             detail = Label(overlay.transform, "", new Vector2(620, -95), new Vector2(600, 415), 19);
             equip = Button(overlay.transform, "EQUIPAR", new Vector2(620, -535), new Vector2(185, 48), Equip);
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
@@ -40,7 +40,7 @@ namespace ForjaDasMares.Networking
         void BuildPaperDoll()
         {
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
-            overlay.GetComponent<Image>().color=Color.clear;RusticHudTheme.Panel(panel,RusticHudTheme.Ink,22);
+            overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,RusticHudTheme.Ink,22);
             stockView=Button(overlay.transform,"ENTREGAS",new Vector2(400,-560),new Vector2(170,42),()=>{deliveries=!deliveries;selected=null;page=0;Refresh();});RusticHudTheme.Skin(stockView);
             for(int i=0;i<rows.Length;i++)
             {
@@ -101,15 +101,16 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < rows.Length; i++)
             {
                 int index = page * 8 + i; bool visible = !results && index < CurrentItems.Count; rows[i].gameObject.SetActive(visible);
-                if (visible) { var item = CurrentItems[index]; rows[i].GetComponentInChildren<Text>().text = channel.Catalog.Find(item.definitionId).displayName + "\n" + item.rarity;var color=channel.Catalog.Rarity(item.rarity).color;rows[i].GetComponentInChildren<Text>().color=color; }
+                if (visible) { var item = CurrentItems[index]; rows[i].GetComponentInChildren<Text>().text = channel.Catalog.Find(item.definitionId).displayName + "\n" + RusticHudTheme.RarityName(item.rarity);var color=channel.Catalog.Rarity(item.rarity).color;rows[i].GetComponentInChildren<Text>().color=color; }
             }
+            previous.gameObject.SetActive(!results);next.gameObject.SetActive(!results);previous.interactable=page>0;next.interactable=CurrentItems!=null&&(page+1)*8<CurrentItems.Count;
             equip.gameObject.SetActive(!results); remove.gameObject.SetActive(!results); discard.gameObject.SetActive(!results);
             var actor = director.Actor(director.LocalSlot); var value = CurrentItems.Find(item=>item.instanceId==selected);
             if (results)
             {
                 var result = profile.lastResult;
                 detail.text = result != null ? result.outcome + "\nXP " + result.experience + " | moedas " + result.coins + "\nItens obtidos: " + result.items.Count : "Nenhuma partida concluída nesta sessão.";
-                if (result != null) foreach (var item in result.items) detail.text += "\n" + channel.Catalog.Find(item.definitionId).displayName + " — " + item.rarity;
+                if (result != null) foreach (var item in result.items) detail.text += "\n" + channel.Catalog.Find(item.definitionId).displayName + " — " + RusticHudTheme.RarityName(item.rarity);
             }
             else if (value == null) detail.text = "Escolha um item. O host valida a equipagem e salva este perfil cooperativo.\n\nXP total " + profile.experience + " | moedas " + profile.coins + "\nEntregas guardadas: " + channel.DeliveryCount;
             else
@@ -126,7 +127,7 @@ namespace ForjaDasMares.Networking
                 resultScroll.gameObject.SetActive(results);detail.gameObject.SetActive(!results);
                 if(results){resultText.text=detail.text+"\n\nTodos os itens recebidos estão na mochila ou no estoque de entregas.";resultContent.sizeDelta=new Vector2(1130,Mathf.Max(430,resultText.preferredHeight+24));}
             }
-            if(deliveries&&value!=null)detail.text=channel.Catalog.Find(value.definitionId).displayName+"\n"+value.rarity+"\nGuardado no estoque. Receba na mochila antes de equipar.\nEspaços livres: "+(channel.Catalog.inventoryCapacity-profile.inventory.Count);
+            if(deliveries&&value!=null)detail.text=channel.Catalog.Find(value.definitionId).displayName+"\n"+RusticHudTheme.RarityName(value.rarity)+"\nGuardado no estoque. Receba na mochila antes de equipar.\nEspaços livres: "+(channel.Catalog.inventoryCapacity-profile.inventory.Count);
             if(stockView!=null){stockView.gameObject.SetActive(!results);stockView.interactable=deliveries||channel.DeliveryCount>0;stockView.GetComponentInChildren<Text>().text=deliveries?"VOLTAR À MOCHILA":"ENTREGAS · "+channel.DeliveryCount;}
             equip.GetComponentInChildren<Text>().text=deliveries?"RECEBER ITEM":"EQUIPAR";
             if(paperDoll!=null)

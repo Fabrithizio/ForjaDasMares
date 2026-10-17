@@ -251,5 +251,20 @@ namespace ForjaDasMares.Networking.Tests
             Assert.IsTrue(service.Grant(id,"seals",catalog.exploration,1));Assert.IsTrue(service.Grant(id,"supply",catalog.supplies,2));Assert.IsTrue(service.Grant(id,"boss",catalog.boss,3));Assert.IsTrue(service.Grant(id,"finish",catalog.completion,4));
             Assert.AreEqual(32,service.Profile.expedition.items.Count);Assert.IsTrue(service.FinishExpedition(id,true,"Victory"));Assert.AreEqual(32,service.Profile.inventory.Count);
         }
+        [UnityTest] public IEnumerator DefeatClearsEnemiesAndHidesDefaultWeaponAndUselessResultPagination()
+        {
+            Assert.IsTrue(session.HostDirect("ADVEND",7803,false));yield return null;session.StartGame();yield return null;
+            var hero=session.Actor(0);var model=hero.Presentation.Visible.GetComponentInChildren<HeroModelView>();Assert.NotNull(model);
+            var pool=session.Dungeon.Encounter.Enemies;
+            for(int i=0;i<pool.Capacity;i++)if(pool.DefinitionAt(i).kind==EnemyKind.Raider){Assert.NotNull(pool.TrySpawn(pool.DefinitionAt(i),hero.transform.position+Vector3.forward*2));break;}
+            Assert.That(pool.ActiveCount,Is.GreaterThan(0));hero.Health.ApplyDamage(100000);yield return new WaitForSeconds(.2f);
+            Assert.AreEqual(CoopPhase.Defeat,session.Phase);Assert.AreEqual(0,pool.ActiveCount);Assert.IsFalse(model.DefaultWeapon.activeSelf);
+            var hud=UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>();
+            foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name=="RESULTADO"){button.onClick.Invoke();break;}
+            yield return null;
+            foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name=="ANTERIOR"||button.name=="PRÓXIMA")Assert.IsFalse(button.gameObject.activeSelf);
+            model.ShowDefaultWeapon(false);model.Animate(HeroState.Idle,0,0,true);Assert.IsFalse(model.DefaultWeapon.activeSelf);
+            model.ShowDefaultWeapon(true);model.Animate(HeroState.Idle,0,0,true);Assert.IsTrue(model.DefaultWeapon.activeSelf);
+        }
     }
 }

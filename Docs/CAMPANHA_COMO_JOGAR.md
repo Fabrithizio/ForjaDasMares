@@ -1,3 +1,31 @@
+# Jogar a campanha 0.9.1
+
+## PC e Android juntos
+
+1. PC: abra **Jogos/Jogar Campanha Forja das Mares**. Android: instale **Jogos/Enviar para meu irmao/ForjaDasMares-0.9.1-Android.apk**. Para compartilhar, envie esse APK como Documento no WhatsApp; não envie só o executável de PC.
+2. Ambos precisam de internet e da mesma versão. Host: CAMPANHA → fase → CRIAR SALA PRIVADA. Compartilhe o código exibido.
+3. Convidado: CAMPANHA → informe o código → ENTRAR PELO CÓDIGO. Host: INICIAR COM O GRUPO. Prefira aguardar todos no lobby.
+4. Pode iniciar sozinho (+10% vida/dano enquanto estiver só). Uma sala publicada recebe jogadores até 20% do percurso e no máximo quatro; uma sala privada depende de código.
+5. MENU/Esc abre sala, convites, mapa e opções durante a fase. Não pausa o online. Inventário possui equipamento, comparação e descarte confirmado; o resultado mostra os itens obtidos.
+6. Mantenha o host aberto; sair encerra a sessão. O host guarda a progressão cooperativa. Não há migração de host nem transferência automática de progresso entre hosts. Amigos são agenda local de convites, não uma rede social com presença.
+
+## Novidades para experimentar
+
+- Quebre os suprimentos dos caminhos laterais para obter pequenas recompensas.
+- Encontre e destrua os três selos: equipamento raro ou melhor, XP e moedas, uma vez por expedição.
+- INTERAGIR perto de uma fonte recupera 35% da vida máxima dos aliados vivos no mesmo setor, fora de combate; cada fonte é de uso único.
+- Guerreiro: segure ataque para carregar o golpe pesado (1,2s; intervalo 4s). SUPER enche após 18 acertos válidos; Q no PC/botão SUPER no toque.
+- Corta-Maré, Salva de Junco e Foco de Brasa mudam arco/alcance, disparos em leque e explosão, respectivamente. Os visuais ainda são provisórios.
+- MAPA E OBJETIVOS mostra os setores reais, sua posição e progresso; o HUD informa cooldowns e personagem caído.
+
+Cena do Editor: `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Pressione Play após terminar a importação. As cenas de arena e masmorras anteriores foram preservadas.
+
+Builds: `Builds/CampaignWindows-0.9.1/ForjaDasMaresCampanha.exe` e `Builds/CampaignAndroid-0.9.1/ForjaDasMaresCampanha.apk`. APK ARM64, Android mínimo API25, assinado para desenvolvimento; não é release da Play Store. Atualize por cima para preservar os dados. O Android pode pedir autorização pessoal para instalar o arquivo recebido.
+
+Ainda exige sessões humanas completas para balancear dificuldade/duração, outros modelos de celular e testes entre redes diferentes. Esta é uma versão privada de testes, com arte provisória em parte do conteúdo. Evidências e dependências: `AVENTURA_0_9_2026-10-17.md`.
+
+## Histórico de instruções anteriores
+
 # Atualização 0.8.2
 
 PC: atalho Jogar Campanha Forja das Mares. Android: enviar como Documento o APK em `Área de Trabalho/Jogos/Enviar para meu irmao/ForjaDasMares-0.8.2-Android.apk`. Crie a sala no PC e compartilhe o código; convidado usa Campanha → Entrar pelo código. Prefira entrar antes de iniciar. Na fase: código no alto e botão MENU para grupo, convite, opções e saída. Menu não pausa o online. Amigos são agenda local de convites.

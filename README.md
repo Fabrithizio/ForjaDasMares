@@ -1,3 +1,15 @@
+# Versão de testes atual: 0.9.1 (17/10/2026)
+
+Windows e Android, protocolo 5. Abra o atalho **Jogar Campanha Forja das Mares** na pasta Jogos da Área de Trabalho. Para enviar ao irmão, use **ForjaDasMares-0.9.1-Android.apk**, na pasta **Jogos/Enviar para meu irmao**, como Documento no WhatsApp. Ambos devem usar a mesma versão; builds 0.8.x são incompatíveis.
+
+A campanha existente foi ampliada com suprimentos quebráveis, três selos opcionais por mapa, fontes de cura limitadas, nove variantes de encontros e três armas com padrões diferentes. Guerreiro: segure ataque para carregar; SUPER após 18 acertos em inimigos, Q no PC ou botão no Android. Os demais heróis mantêm ataques e habilidades anteriores. Nenhum inventário ou save existente foi apagado.
+
+Detalhes técnicos, arquivos, evidências e limites: [relatório da entrega](Docs/AVENTURA_0_9_2026-10-17.md). Os blocos abaixo são históricos, não a versão para compartilhar agora.
+
+Validação final:151 testes PlayMode,150 aprovados,0 falhas,1 ignorado; builds Windows/Android0.9.1 e teste físico PC–moto g15 pelo Relay. Sessão4/4 anterior deste bloco:3 processosWindows+1Android, não quatro pessoas.
+
+---
+
 ## Campanha 0.8.2 — HUD e convite em jogo
 
 Código visível, menu de sessão e APK para testes privados: [relatório](Docs/HUD_E_COMPARTILHAMENTO_2026-10-17.md). Builds em `Builds/CampaignWindows-0.8.2` e `Builds/CampaignAndroid-0.8.2`; binários locais não estão versionados.

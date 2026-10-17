@@ -1,4 +1,16 @@
-﻿# Arquitetura proposta — Forja das Marés
+# Arquitetura implementada — atualização 0.9.1
+
+A revisão reutiliza CampaignRun, DungeonGenerator, EncounterDirector, HeroCombat, Health, CoopDirector e os perfis existentes. CampaignAdventureDefinition fornece os dados; CampaignAdventure cria props determinísticos dentro do NavMesh, com máximo48; CampaignAdventureProp usa Health/IHitDefense. Layer14 CampaignProps recebe dano sem bloquear jogadores/agentes. SnapshotAdventure replica vida, fontes usadas e recompensa concluída.
+
+O host valida intenção, alcance/obstáculos e dano, controla RNG/recompensas e persiste via CoopProgression/CoopRewardLedger. Cliente não fornece valor final de dano, carga ou recompensa. Eventos adventure:id são idempotentes. IsRewardRule centraliza as tabelas autorizadas no catálogo. Save versão existente preservado; protocolo de rede5 exige clientes atualizados.
+
+CampaignCombatReadout observa mudanças reais de Health e perfis, com pool20 e liberação de eventos. CampaignSessionMenu usa InputAction para Esc/Start e mapa baseado em salas reais. WarriorOnlineFlow é dado por herói: ataque carregado/SUPER reaproveitam HeroCombat e clips reais de Brasa; não são poderes universais fictícios.
+
+A autoridade em host não protege contra host adulterado. Sem migração de host/servidor dedicado. Dependências e resultados detalhados em `AVENTURA_0_9_2026-10-17.md`. O plano histórico abaixo permanece como referência; recursos planejados não equivalem a implementados.
+
+---
+
+# Arquitetura proposta — Forja das Marés
 
 Estado: documento mestre iniciado na etapa 1. As áreas futuras abaixo são planejamento. A arena local da etapa 2 já foi implementada; o catálogo real e a validação estão em PROGRESSO.md.
 

@@ -86,6 +86,7 @@ namespace ForjaDasMares
         }
         public float DamageMultiplier(Vector3 direction, Health source, AttackDefinition attack)
         { return Stats.block > 0 && Vector3.Dot(-direction.normalized, transform.forward) > .5f ? 1 - Stats.block : 1; }
+        void LateUpdate(){if(heroes==null)return;if(mainVisual!=null)mainVisual.enabled=heroes.Health.IsAlive;if(secondaryVisual!=null)secondaryVisual.enabled=heroes.Health.IsAlive;}
         void Update()
         {
             if (service == null || !heroes.Health.IsAlive || Stats.recovery <= 0) return;

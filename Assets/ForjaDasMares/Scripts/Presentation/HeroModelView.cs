@@ -18,7 +18,7 @@ namespace ForjaDasMares
         static int[] Hashes(string prefix,string[] names)
         {var result=new int[names.Length];for(int i=0;i<names.Length;i++)result[i]=Animator.StringToHash(prefix+names[i]);return result;}
         int lastState=-1,lastUpper=-1,lastVersion=-1;
-        bool running;
+        bool running,wantsDefaultWeapon=true;
         float phase,upperWeight;
         public Animator Animator=>animator;
         public Transform PrimarySocket=>primarySocket;
@@ -31,10 +31,11 @@ namespace ForjaDasMares
         public HeroState CurrentState {get;private set;}
         public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon)
         {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;}
-        public void ShowDefaultWeapon(bool visible){if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
+        public void ShowDefaultWeapon(bool visible){wantsDefaultWeapon=visible;if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
         void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=0;running=false;}
         public void Animate(HeroState state,float normalizedAttack,float movement,bool alive,int variant=0,int version=0,float impact=.25f)
         {
+            if(defaultWeapon!=null)defaultWeapon.SetActive(wantsDefaultWeapon&&alive);
             if(animator==null||!animator.isActiveAndEnabled||animator.runtimeAnimatorController==null)return;
             CurrentState=state;MovementSpeed=Mathf.Max(0,movement);
             LocomotionActive=alive&&movement>.12f&&state!=HeroState.Dodge&&state!=HeroState.Dead;

@@ -127,7 +127,7 @@ namespace ForjaDasMares.Networking
             {
                 superFill.sizeDelta=new Vector2(local.SuperProgress*255,5);superFill.parent.gameObject.SetActive(local.Enhanced);
                 if(superAction!=null){superAction.gameObject.SetActive(local.Enhanced);superAction.interactable=local.Health.IsAlive&&local.SuperProgress>=1;superAction.GetComponentInChildren<Text>().text="SUPER\n"+Mathf.FloorToInt(local.SuperProgress*100)+"%";}
-                if(attackAction!=null)attackAction.GetComponentInChildren<Text>().text=local.Enhanced&&local.Charge>0?"Ataque\nCarga "+Mathf.FloorToInt(local.Charge*100)+"%":"Ataque\nSegure";
+                if(attackAction!=null){attackAction.interactable=local.Health.IsAlive;attackAction.GetComponentInChildren<Text>().text=local.Enhanced&&local.Charge>0?"Ataque\nCarga "+Mathf.FloorToInt(local.Charge*100)+"%":"Ataque\nSegure";}
                 string skill=local.SpecialCooldown>0?local.SpecialCooldown.ToString("F1")+"s":"pronta",dodge=local.DodgeCooldown>0?local.DodgeCooldown.ToString("F1")+"s":"pronta";
                 if(specialAction!=null){specialAction.GetComponentInChildren<Text>().text="Habilidade\n"+skill;specialAction.interactable=local.Health.IsAlive&&local.SpecialCooldown<=0;}
                 if(dodgeAction!=null){dodgeAction.GetComponentInChildren<Text>().text="Esquiva\n"+dodge;dodgeAction.interactable=local.Health.IsAlive&&local.DodgeCooldown<=0;}
@@ -137,7 +137,8 @@ namespace ForjaDasMares.Networking
             if(profile!=null)cleared=profile.campaignCleared;
             for(int i=0;i<3;i++)nodes[i].GetComponentInChildren<Text>().text=campaign.At(i).displayName+"\n\n"+((cleared&(1u<<i))!=0?"CONCLUÍDA":i==0?"INICIAL":i==1?"VETERANO":"DESAFIADOR");
             combat.text=campaign.Level.displayName+"\n"+campaign.Objective+(profile!=null?"\nMoedas: "+(profile.expedition?.coins??profile.coins)+" · saque: "+(profile.expedition?.items.Count??0):"");
-            if(active)combat.text+="\nProgresso: "+Mathf.FloorToInt(campaign.Completion*100)+"%"+(campaign.Solo?" · SOLO +10% VIDA / DANO":"")+(campaign.Completion>=.2f?" · novas entradas encerradas":" · pode receber parceiros");
+            if(active)combat.text+="\nProgresso: "+Mathf.FloorToInt(campaign.Completion*100)+"%"+(campaign.Solo?" · SOLO +10% VIDA / DANO":"")+(director.ConnectedCount>=4?" · grupo completo":campaign.Completion>=.2f?" · novas entradas encerradas":" · pode receber parceiros");
+            if(active&&local!=null&&!local.Health.IsAlive)combat.text="VOCÊ CAIU · aguarde o grupo vencer para ser erguido.\n"+combat.text;
             if(active&&campaign.Adventure!=null)
             {
                 combat.text+="\n"+campaign.Adventure.Objective;

@@ -290,7 +290,7 @@ namespace ForjaDasMares.Networking
                 for(int i=0;i<4;i++)if(seats[i].connected&&!seats[i].loaded&&Time.unscaledTime>seats[i].expires)network.DisconnectClient(seats[i].client,"Mapa não confirmado a tempo.");
                 roomClock -= Time.deltaTime;
                 if (roomClock <= 0) { roomClock = .08f; AdvanceRoomAndInteract(); }
-                if (!party.AnyAlive || dungeon.Encounter.State == EncounterState.Failed) { Freeze(); progression.Finish(false, "Derrota cooperativa"); SetPhase(CoopPhase.Defeat, "Todos os heróis caíram. Consulte o resultado e encerre a sala."); }
+                if (!party.AnyAlive || dungeon.Encounter.State == EncounterState.Failed) { Freeze();dungeon.Encounter.Cancel(); progression.Finish(false, "Derrota cooperativa"); SetPhase(CoopPhase.Defeat, "Todos os heróis caíram. Consulte o resultado e encerre a sala."); }
                 else if (dungeon.Finished) { Freeze(); SetPhase(CoopPhase.Victory, "Masmorra concluída pelo grupo."); }
             }
             snapshotClock -= Time.unscaledDeltaTime;

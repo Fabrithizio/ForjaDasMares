@@ -72,7 +72,7 @@ namespace ForjaDasMares
         }
         public string NearbyLabel(Health player)
         {
-            if(player==null)return "";
+            if(player==null||!player.IsAlive)return "";
             foreach(var p in props)if(p.Kind==AdventurePropKind.Fountain&&!p.Claimed&&(p.transform.position-player.transform.position).sqrMagnitude<=4.41f)return "INTERAGIR · fonte de cura do grupo (uso único)";
             return "";
         }

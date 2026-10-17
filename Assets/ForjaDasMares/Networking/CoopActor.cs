@@ -75,6 +75,7 @@ namespace ForjaDasMares.Networking
         }
         void LateUpdate()
         {
+            if(mainGear!=null)mainGear.enabled=Health.IsAlive;if(secondaryGear!=null)secondaryGear.enabled=Health.IsAlive;
             if (Motor == null || Motor.enabled || !hasFrame) return;
             replicaSpecial=Mathf.Max(0,replicaSpecial-Time.unscaledDeltaTime);replicaDodge=Mathf.Max(0,replicaDodge-Time.unscaledDeltaTime);
             float blend = 1 - Mathf.Exp(-18 * Time.unscaledDeltaTime);

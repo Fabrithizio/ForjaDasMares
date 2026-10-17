@@ -70,7 +70,7 @@ namespace ForjaDasMares.Networking
             if(c>0||e>0||n>0)
             {
                 string text=(c>0?"+"+c+" moedas   ":"")+(e>0?"+"+e+" XP   ":"");
-                if(n>0){var item=run.items[run.items.Count-1];text+="Saque: "+(profiles.Catalog.Find(item.definitionId)?.displayName??item.definitionId)+" · "+item.rarity;}
+                if(n>0){var item=run.items[run.items.Count-1];text+="Saque: "+(profiles.Catalog.Find(item.definitionId)?.displayName??item.definitionId)+" · "+RusticHudTheme.RarityName(item.rarity);}
                 toast.text=text;toastTime=3.5f;
             }
             coins=run.coins;xp=run.experience;items=run.items.Count;
