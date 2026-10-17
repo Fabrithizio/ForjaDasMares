@@ -20,6 +20,7 @@ namespace ForjaDasMares.Networking
         public ProgressionCatalog Catalog => catalog;
         public string Error { get; private set; }
         public bool Active => ledger != null && ledger.Active;
+        public bool Participating(int slot)=>ledger!=null&&ledger.Profile(slot)!=null;
         public int PendingCount => pending.Count;
         sealed class Job { public RewardRule rule; public int seed; }
         public void Configure(ProgressionCatalog data) => catalog = data;
@@ -41,6 +42,8 @@ namespace ForjaDasMares.Networking
         public bool Attach(int slot, string identity,int hero=-1)
         {
             if (ledger == null) return false;
+            if(Active)for(int i=0;i<4;i++)if(i!=slot&&identities[i]==identity&&ledger.Profile(i)!=null)
+            {Error="Este perfil já possui uma vaga nesta expedição.";return false;}
             if (identities[slot] == identity && profiles[slot] != null && (!Active||ledger.Profile(slot)==profiles[slot])) return true;
             if (Active && (ledger.Profile(slot)!=null||hero<0||hero>=director.HeroCount)) { Error = "Vaga reservada nesta expedição."; return false; }
             if(Active&&!TryFlush())return false;

@@ -28,6 +28,14 @@ namespace ForjaDasMares.Networking.Tests
         }
         [Test] public void ProgressBeforeMapGenerationIsZeroAndSafeForSessionAdvertising()
         {run.Authority=true;Assert.AreEqual(0,run.Completion);}
+        [UnityTest] public IEnumerator OneIdentityCannotOpenTwoProfilesInTheSameExpedition()
+        {
+            Assert.IsTrue(session.HostDirect("CMPIDENT",7797,false));yield return null;session.StartGame();yield return null;
+            var profiles=session.GetComponent<CoopProgression>();var original=profiles.Profile(0).Profile.expedition.runId;
+            string identity=new DirectoryInfo(Path.GetDirectoryName(profiles.SavePath(0))).Name;
+            Assert.IsFalse(profiles.Attach(1,identity,0));Assert.AreEqual(original,profiles.Profile(0).Profile.expedition.runId);
+            var loaded=new ProfileService(profiles.Catalog,new ProfileStore(profiles.SavePath(0)));Assert.AreEqual(original,loaded.Profile.expedition.runId);
+        }
         [UnityTest] public IEnumerator EveryCampaignMapBakesConnectedNavigationAndCreatesPuzzlesAndMist()
         {
             for(int i=0;i<3;i++)

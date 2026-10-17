@@ -59,7 +59,10 @@ namespace ForjaDasMares.Networking
 #endif
         CampaignRun campaign;
         public CampaignRun Campaign=>campaign;
-        public bool CanAdmitNewPlayer => Campaign!=null&&Phase==CoopPhase.Playing&&Campaign.Completion<.2f;
+        bool CampaignReservation(int slot)=>Campaign!=null&&Phase==CoopPhase.Playing&&progression.Participating(slot);
+        bool SeatFree(int slot)=>seats[slot].identity==null||!seats[slot].connected&&seats[slot].expires<=Time.unscaledTime&&(Phase!=CoopPhase.Playing||!progression.Participating(slot));
+        public bool HasAdmissionSeat {get{for(int i=0;i<4;i++)if(SeatFree(i))return true;return false;}}
+        public bool CanAdmitNewPlayer => Campaign!=null&&Phase==CoopPhase.Playing&&Campaign.Completion<.2f&&HasAdmissionSeat;
         void UpdateSoloBonus()
         {
             if(Campaign==null)return;
@@ -74,7 +77,7 @@ namespace ForjaDasMares.Networking
         public NetworkManager Manager => network;
         public DungeonSession Dungeon => dungeon;
         public bool IsConnected(int slot) => slot >= 0 && slot < 4 && seats[slot].connected;
-        public bool IsParticipant(int slot) => slot >= 0 && slot < 4 && seats[slot].identity != null && (seats[slot].connected || seats[slot].expires > Time.unscaledTime);
+        public bool IsParticipant(int slot) => slot >= 0 && slot < 4 && seats[slot].identity != null && (seats[slot].connected || seats[slot].expires > Time.unscaledTime||CampaignReservation(slot));
         public bool TryGetSlot(ulong client, out int slot) => connections.TryGetValue(client, out slot);
         public event Action Changed;
         sealed class Seat { public string identity; public ulong client; public bool connected, loaded; public float expires, rateTime; public int commands; }
@@ -161,10 +164,10 @@ namespace ForjaDasMares.Networking
             catch (Exception) { response.Reason = "Pedido inválido."; return; }
             if (!CoopLimits.ValidJoin(join, template.Count) || join.campaign!=(Campaign!=null) || join.campaignLevel>=0&&(Campaign==null||join.campaignLevel!=Campaign.Selected) || join.pin != (cloudMode ? "" : Pin)) { response.Reason = "Código ou versão incompatível."; return; }
             int slot = -1;
-            for (int i = 0; i < seats.Length; i++) if (seats[i].identity == join.identity && !seats[i].connected && seats[i].expires > Time.unscaledTime) { slot = i; break; }
+            for (int i = 0; i < seats.Length; i++) if (seats[i].identity == join.identity && !seats[i].connected && (seats[i].expires > Time.unscaledTime || CampaignReservation(i))) { slot = i; break; }
             bool returning = slot >= 0;
             if (!returning && Phase != CoopPhase.Offline && Phase != CoopPhase.Lobby && Phase != CoopPhase.Connecting && !CanAdmitNewPlayer) { response.Reason = "Entrada encerrada: fase com 20% ou mais de progresso."; return; }
-            if (!returning) for (int i = 0; i < seats.Length; i++) if (seats[i].identity == null || Phase!=CoopPhase.Playing&&!seats[i].connected && seats[i].expires <= Time.unscaledTime) { slot = i; break; }
+            if (!returning) for (int i = 0; i < seats.Length; i++) if (SeatFree(i)) { slot = i; break; }
             if (slot < 0) { response.Reason = "Sala cheia: máximo de quatro jogadores."; return; }
             foreach (var seat in seats) if (seat.connected && seat.identity == join.identity) { response.Reason = "Jogador já conectado."; return; }
             if(!returning)actors[slot].Roster.Select(join.hero);

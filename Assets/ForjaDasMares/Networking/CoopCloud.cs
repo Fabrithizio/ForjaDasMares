@@ -144,7 +144,7 @@ namespace ForjaDasMares.Networking
         {
             if(session==null||!session.IsHost||director.Campaign==null||busy||disposing||advertising)return;
             advertClock-=Time.unscaledDeltaTime;if(advertClock>0)return;advertClock=1;
-            bool locked=director.Phase!=CoopPhase.Lobby&&!director.CanAdmitNewPlayer||director.ConnectedCount>=4;
+            bool locked=director.Phase!=CoopPhase.Lobby&&!director.CanAdmitNewPlayer||!director.HasAdmissionSeat;
             string key=CampaignKey+":"+locked+":"+session.IsPrivate;
             if(!advertDirty&&key==advertKey)return;advertDirty=false;advertKey=key;_=SaveCampaignAdvert(locked);
         }
