@@ -1,47 +1,71 @@
 using UnityEngine;
 namespace ForjaDasMares
 {
-    // An optional authored model; heroes without one retain geometric presentation.
+    // One animation owner: locomotion below the waist, masked actions above it.
     public sealed class HeroModelView : MonoBehaviour
     {
         [SerializeField] Animator animator;
         [SerializeField] Transform primarySocket, secondarySocket;
         [SerializeField] GameObject defaultWeapon;
-        static readonly int Speed = Animator.StringToHash("Speed"), State = Animator.StringToHash("State"), Alive = Animator.StringToHash("Alive");
-        static readonly int ActionTime = Animator.StringToHash("ActionTime");
-        int lastState = -1, lastVersion = -1;
-        static readonly int[] AttackStates = { Animator.StringToHash("Base Layer.Attack"), Animator.StringToHash("Base Layer.Attack2"), Animator.StringToHash("Base Layer.Attack3"), Animator.StringToHash("Base Layer.Charged"), Animator.StringToHash("Base Layer.Super") };
-        static readonly int[] States = {
-            Animator.StringToHash("Base Layer.Idle"), Animator.StringToHash("Base Layer.Walk"),
-            Animator.StringToHash("Base Layer.Attack"), Animator.StringToHash("Base Layer.Skill"),
-            Animator.StringToHash("Base Layer.Dodge"), Animator.StringToHash("Base Layer.Hit"),
-            Animator.StringToHash("Base Layer.Dead"), Animator.StringToHash("Base Layer.Victory") };
-        public Animator Animator => animator;
-        public Transform PrimarySocket => primarySocket;
-        public Transform SecondarySocket => secondarySocket;
-        public GameObject DefaultWeapon => defaultWeapon;
-        public void Configure(Animator player, Transform main, Transform offhand, GameObject weapon)
-        { animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon; }
-        public void ShowDefaultWeapon(bool visible) { if(defaultWeapon!=null)defaultWeapon.SetActive(visible); }
-        void OnEnable() { lastState = lastVersion = -1; }
+        [SerializeField, Min(.1f)] float walkStride=.9173f, runStride=2.4571f;
+        static readonly int Speed=Animator.StringToHash("Speed"), State=Animator.StringToHash("State"), Alive=Animator.StringToHash("Alive");
+        static readonly int ActionTime=Animator.StringToHash("ActionTime"), GaitTime=Animator.StringToHash("GaitTime");
+        static readonly string[] Names={"Idle","Walk","Attack","Skill","Dodge","Hit","Dead","Victory"};
+        static readonly string[] Attacks={"Attack","Attack2","Attack3","Charged","Super"};
+        static readonly int[] BaseStates=Hashes("Base Layer.",Names),UpperStates=Hashes("Upper Body.",Names);
+        static readonly int[] BaseAttacks=Hashes("Base Layer.",Attacks),UpperAttacks=Hashes("Upper Body.",Attacks);
+        static readonly int Run=Animator.StringToHash("Base Layer.Run");
+        static int[] Hashes(string prefix,string[] names)
+        {var result=new int[names.Length];for(int i=0;i<names.Length;i++)result[i]=Animator.StringToHash(prefix+names[i]);return result;}
+        int lastState=-1,lastUpper=-1,lastVersion=-1;
+        bool running;
+        float phase,upperWeight;
+        public Animator Animator=>animator;
+        public Transform PrimarySocket=>primarySocket;
+        public Transform SecondarySocket=>secondarySocket;
+        public GameObject DefaultWeapon=>defaultWeapon;
+        public float GaitPhase=>phase;
+        public float StanceFraction=>running?.28f:.60f;
+        public float MovementSpeed {get;private set;}
+        public bool LocomotionActive {get;private set;}
+        public HeroState CurrentState {get;private set;}
+        public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon)
+        {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;}
+        public void ShowDefaultWeapon(bool visible){if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
+        void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=0;running=false;}
         public void Animate(HeroState state,float normalizedAttack,float movement,bool alive,int variant=0,int version=0,float impact=.25f)
         {
             if(animator==null||!animator.isActiveAndEnabled||animator.runtimeAnimatorController==null)return;
+            CurrentState=state;MovementSpeed=Mathf.Max(0,movement);
+            LocomotionActive=alive&&movement>.12f&&state!=HeroState.Dodge&&state!=HeroState.Dead;
+            if(running?movement<2.6f:movement>3.2f)running=!running;
+            if(LocomotionActive)phase=Mathf.Repeat(phase+movement*Time.deltaTime/(running?runStride:walkStride),1);
+            animator.SetFloat(GaitTime,phase);animator.SetFloat(Speed,1);
             animator.SetInteger(State,(int)state);animator.SetBool(Alive,alive);
-            animator.SetFloat(Speed,state==HeroState.Walk?Mathf.Clamp(movement>0.1f?movement/5.8f:1,.4f,1.6f):1);
             bool action=state==HeroState.Attack||state==HeroState.Skill;
-            int target=action&&(state==HeroState.Attack||variant==4)?AttackStates[Mathf.Clamp(variant,0,4)]:States[(int)state];
-            // A single owner switches states. Motion-time sampling aligns the contact pose
-            // with the actual hit; no Play() restarts or competing AnyState transitions.
+            bool attackVariant=action&&(state==HeroState.Attack||variant==4);
+            int variantIndex=Mathf.Clamp(variant,0,4);
             float contact=variant>=3||state==HeroState.Skill?.5f:.3f;
-            float split=Mathf.Clamp(impact,.05f,.9f), time=Mathf.Clamp01(normalizedAttack);
+            float split=Mathf.Clamp(impact,.05f,.9f),time=Mathf.Clamp01(normalizedAttack);
             animator.SetFloat(ActionTime,action?(time<=split?time/split*contact:Mathf.Lerp(contact,1,(time-split)/(1-split))):time);
-            if(lastState!=target || action&&lastVersion!=version)
+            bool masked=LocomotionActive&&(action||state==HeroState.Hit||state==HeroState.Victory)&&animator.layerCount>1;
+            int target=LocomotionActive?(running?Run:BaseStates[1]):attackVariant?BaseAttacks[variantIndex]:BaseStates[(int)state];
+            if(!LocomotionActive&&state==HeroState.Walk)target=BaseStates[0];
+            if(lastState!=target||!masked&&action&&lastVersion!=version)
             {
                 if(lastState==-1)animator.Play(target,0,0);
-                else animator.CrossFadeInFixedTime(target,state==HeroState.Hit?.035f:.065f,0,0);
-                lastState=target;lastVersion=version;
+                else animator.CrossFadeInFixedTime(target,state==HeroState.Hit?.04f:action?.08f:.12f,0,0);
+                lastState=target;
             }
+            if(animator.layerCount>1)
+            {
+                int upper=attackVariant?UpperAttacks[variantIndex]:UpperStates[(int)state];
+                if(masked&&(upper!=lastUpper||action&&version!=lastVersion))
+                {animator.CrossFadeInFixedTime(upper,.07f,1,0);lastUpper=upper;}
+                upperWeight=Mathf.MoveTowards(upperWeight,masked?1:0,Time.deltaTime/0.10f);
+                animator.SetLayerWeight(1,upperWeight);
+            }
+            lastVersion=version;
         }
     }
 }

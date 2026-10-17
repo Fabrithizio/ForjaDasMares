@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2449811056285570516}
   - component: {fileID: 6629039760306381769}
+  - component: {fileID: 6737462672454316105}
   m_Layer: 0
   m_Name: Brasa
   m_TagString: Untagged
@@ -49,6 +50,33 @@ MonoBehaviour:
   primarySocket: {fileID: 3103552496133682443}
   secondarySocket: {fileID: 5245276140376421325}
   defaultWeapon: {fileID: 6914738538529725555}
+  walkStride: 0.9173
+  runStride: 2.4571
+--- !u!114 &6737462672454316105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2323142758250546055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f26ccc08cec4f0e47bfa0ce0e9ed1cd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BrasaFootPlant
+  view: {fileID: 6629039760306381769}
+  leftThigh: {fileID: 6742890189475807440}
+  leftShin: {fileID: 7389294575610608199}
+  leftFoot: {fileID: 160536981587050943}
+  rightThigh: {fileID: 8018253181903457929}
+  rightShin: {fileID: 7138796681598745020}
+  rightFoot: {fileID: 7676889901947171929}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  ankleHeight: 0.135
+  halfWidth: 0.19
+  stepReach: 0.34
 --- !u!1001 &9166312352672693662
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -75,7 +103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.045
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -126,6 +154,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+--- !u!4 &160536981587050943 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9011455523334913057, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3103552496133682443 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6063885827598420117, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
@@ -141,9 +174,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -5188218930901856685, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
   m_PrefabInstance: {fileID: 9166312352672693662}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &6742890189475807440 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6726470861060522674, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6914738538529725555 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2360834626375655917, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7138796681598745020 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7194692513054424030, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7389294575610608199 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7369783718712899623, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7676889901947171929 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7657102106049082937, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
+  m_PrefabInstance: {fileID: 9166312352672693662}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8018253181903457929 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8037862878799924457, guid: dc3c018619ca5144083b2200767b2c5c, type: 3}
   m_PrefabInstance: {fileID: 9166312352672693662}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8700939054703303285 stripped

@@ -401,3 +401,15 @@ Ataque segurado repete combos. Nas Galerias,1,35s carrega pesado2,4x;16 acertos 
 Rodada ampla final123 casos:122 aprovados/0falhas/1ignorado Cloud. Depois do buffer:42 focados com41 aprovados/1falha do percurso cooperativo já intermitente; robô ignorava obstáculos. Corrigido só o caminho do robô no teste, preservando asserções/dano/colisões/recompensas;42/42 passaram com caminhos bloqueados registrados nas salas1/2/4. Refinamento de efeitos para projéteis:31/31 passaram. Não confluir essas rodadas em uma suíte ampla posterior inexistente.
 
 Windows0.7.1 compilado Succeeded/errors0; smoke real write/read aprovado em perfil isolado (13 itens/5XP/5moedas/armadura/max160/opções). Atalho atualizado preservando perfil original. Janela nova de QA aberta; observados combate humano, carregamento56%, super50% e depois88%, avanço de salas/saque e apenas1 corpo visível. Sem exceções de referência/Animator nos logs próprios examinados. Android em compilação neste checkpoint. Fontes, dados, listas de arquivos, testes e limites em BRASA_COMBATE_2026-10-16.md. Avisos nativos JobTempAlloc em batch e revisão artística/profiling seguem pendentes.
+
+
+### Brasa0.7.1 — fechamento Android do checkpoint anterior
+
+APK real 51.726.226 bytes, SHA256 57A4559F45C87FEE29C9028B2CED38AB6567056FE60578C0F44ACE99AA62DC1B, ARM64/code16, assinatura v2. Gradle direto concluiu após falha local de loopback Java no empacotador interno. Instalado-r e executado no moto g15; toque mantido mostrou carga64%, joystick/habilidade acionados e vídeo próprio android-brasa-combat.mp4 gravado. Super não foi ativado no teste físico. Fonte desse bloco protegida no GitHub e00c41f. Usuário identificou locomoção ainda rígida/deslizante; qualidade de animação reaberta para0.7.2.
+
+### Brasa0.7.2 — locomoção, em validação
+
+Auditados clipe curto e substituição das pernas pelos ataques. Nova corrida, ciclo por distância real, ações superiores mascaradas, apoio dos pés com IK de dois segmentos e postura parada com respiração. Primeiro teste detectou desvio0,06554; corrigido alcance do quadril sem relaxar limite0,06. Rodada seguinte32/32 aprovada. Últimos refinamentos e builds ainda em verificação; não considerar encerrado. Arquivos, configuração e limites em BRASA_MOVIMENTO_2026-10-16.md.
+
+
+Checkpoint Windows0.7.2: rodada final32/32 aprovada, incluindo corrida/lateral rápido e regressão de golpes; compilação Windows Succeeded/errors0. Atalho atualizado e build aberta no perfil original (nível5/53XP/112ouro observados). Postura/entrada de movimento conferidas; sem erros de referência/Animator no log examinado. Android em compilação; aparelho bloqueado, teste físico depende de desbloqueio pessoal. Não há medição sustentada de FPS nem teste online novo.

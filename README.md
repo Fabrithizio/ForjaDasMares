@@ -2,15 +2,13 @@
 
 Unity 6.3 LTS 6000.3.26f1, URP, C#, Input System e AI Navigation 2.0.16. Plataformas atuais: Windows e Android; iOS adiado. VS Code é o editor de código; Visual Studio IDE não é necessário.
 
-## Mapa local Galerias — revisão0.7.0, personagem Brasa
+## Mapa local Galerias — revisão0.7.2, locomoção do Brasa
 
-Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.0/ForjaDasMaresGalerias.exe. APK separado Builds/GaleriasAndroid-0.7.0/ForjaDasMaresGalerias.apk instalado/testado no moto g15. Cena inicial GaleriasDungeon; câmera acompanha continuamente entre encontros e mantém obstáculos semitransparentes. HUD rústico com vida/XP, objetivo, mochila/menu compactos, ícones originais, botões circulares e cooldowns no Android; dock com atalhos no PC. Ferramentas de seed/bioma/reset ficam no menu. Inventário/equipamentos/resultado/opções preservam as funções existentes.
+Atalho Desktop/Jogos/Jogar Galerias da Mare.lnk abre Builds/GaleriasWindows-0.7.2/ForjaDasMaresGalerias.exe, compilado sem erros. Cena inicial GaleriasDungeon. Android0.7.1/code16 foi instalado/testado no moto g15; revisão0.7.2 em preparação neste checkpoint. Câmera contínua e obstáculos semitransparentes, HUD rústico, mochila/equipamentos/opções existentes preservados.
 
-O guerreiro local usa agora o Brasa: primeiro modelo 3D autoral, rig de17 ossos e8 clipes básicos reais. Fonte editável em ArtSource/Characters/Brasa/Brasa.blend; atalho Jogos/Editar personagem Brasa abre o Blender portátil instalado em Area Dev/Ferramentas. Prévia Brasa_preview.png e gerador create_brasa.py acompanham a fonte. Outros heróis e cenas online conservam seus modelos atuais. Arte/animação ainda exigem acabamento, revisão dos pesos/poses e otimização dos13 materiais. Relatório e arquivos: Docs/BRASA_MODELO_2026-10-16.md.
+Brasa possui fonte original Blender,17 ossos e13 clipes reais. Correção de cópias sobrepostas, ataque segurado, pesado e barra SUPER em0.7.1;0.7.2 separa tronco/pernas, calibra passada pela distância real, adiciona corrida e apoios com IK, além de postura parada com respiração. Não há root motion nem mudança de velocidade/collider do jogador. Testes focados finais32/32 aprovados; isso não é validação artística final ou garantia de FPS em todos os aparelhos.
 
-Validação0.7.0: Windows compilado sem erros e aberto; Android ARM64/code15 gerado por Gradle direto após falha local do Java no empacotador interno, instalado e executado. Testes focados26/26 aprovados; a rodada ampla anterior teve112 aprovados,1 falha de tempo no percurso cooperativo e1 ignorado. O mesmo percurso passou na repetição focada; a suíte inteira não foi repetida. Não houve teste online deste modelo ou profiling sustentado.
-
-Esta variante é local. O lobby online continua com apresentação própria e builds anteriores abaixo. Janelas já abertas conservam a versão antiga até reabrir o novo atalho. Tema definitivo, arte final e profiling continuam pendentes. Relatórios: Docs/HUD_RUSTICO_2026-10-16.md, Docs/CAMERA_CONTINUA_2026-10-15.md e Docs/MAPA_GALERIAS_2026-10-15.md.
+Fonte ArtSource/Characters/Brasa/Brasa.blend e create_brasa.py; Blender portátil em Area Dev/Ferramentas. Relatórios: Docs/BRASA_MODELO_2026-10-16.md, BRASA_COMBATE_2026-10-16.md e BRASA_MOVIMENTO_2026-10-16.md, com arquivos/configuração/evidências/limitações. Novos visual/pesado/super são locais às Galerias; outros heróis e cooperativo conservam seus visuais atuais. Histórico completo em Docs/PROGRESSO.md. Janelas antigas precisam ser reabertas para executar a revisão nova.
 
 ## Executar
 

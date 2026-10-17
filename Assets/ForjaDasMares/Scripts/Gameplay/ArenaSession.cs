@@ -12,6 +12,8 @@ namespace ForjaDasMares
         [SerializeField] Health trainingTarget;
         [SerializeField] LayerMask solidGeometry;
         [SerializeField] float fallThreshold = -4f;
+        [Header("Frame pacing")]
+        [SerializeField,Range(30,120)] int mobileFrameRate=60;
         [SerializeField] HeroRoster heroes;
         [SerializeField] TrainingTargetMotion[] movableTargets;
         [SerializeField] Health ally;
@@ -23,6 +25,9 @@ namespace ForjaDasMares
         { player = motor; spawn = respawn; combat = attack; followCamera = camera; trainingTarget = target; solidGeometry = solids; }
         void Awake()
         {
+            // Mobile defaults to 30 fps in Unity unless explicitly requested.
+            // This is a target, not a claim that every phone can sustain it.
+            if(!Application.isEditor&&Application.isMobilePlatform)Application.targetFrameRate=mobileFrameRate;
             if (player == null || spawn == null || combat == null || followCamera == null || trainingTarget == null)
             { Debug.LogError("ArenaSession has incomplete references.", this); enabled = false; }
         }

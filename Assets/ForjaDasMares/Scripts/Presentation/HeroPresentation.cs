@@ -2,6 +2,7 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     public enum HeroState { Idle, Walk, Attack, Skill, Dodge, Hit, Dead, Victory }
+    [DefaultExecutionOrder(50)]
     public sealed class HeroPresentation : MonoBehaviour
     {
         [SerializeField] Transform[] models;
@@ -12,6 +13,8 @@ namespace ForjaDasMares
         Transform visible;
         HeroModelView visibleView;
         float hitTime, victoryTime;
+        Vector3 previousPosition;
+        bool hasPosition;
         public HeroState State { get; private set; }
         public Transform Visible => visible;
         public bool ReplicaMode { get; set; }
@@ -25,7 +28,7 @@ namespace ForjaDasMares
         public void Show(int slot)
         {
             for (int i = 0; i < models.Length; i++) models[i].gameObject.SetActive(i == slot);
-            visible = models[Mathf.Clamp(slot, 0, models.Length - 1)]; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();
+            visible = models[Mathf.Clamp(slot, 0, models.Length - 1)]; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();hasPosition=false;
             if(visibleView != null)
             {
                 foreach(var view in visible.GetComponentsInChildren<HeroModelView>(true))if(view!=visibleView)view.gameObject.SetActive(false);
@@ -36,16 +39,23 @@ namespace ForjaDasMares
         }
         public void ShowVictory() { if (health.IsAlive) victoryTime = 2; }
         public void ResetPose() { hitTime = victoryTime = 0; if (visible != null) { visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity; } }
-        void LateUpdate()
+        // Authored Animator parameters must be set before Unity evaluates animation.
+        // Existing geometric/replica presentation retains its late update timing.
+        void Update(){if(visibleView!=null)Present();}
+        void LateUpdate(){if(visibleView==null)Present();}
+        void Present()
         {
             if (visible == null) return;
+            Vector3 delta=transform.position-previousPosition;delta.y=0;
+            float actualSpeed=hasPosition&&Time.deltaTime>0&&delta.sqrMagnitude<4?delta.magnitude/Time.deltaTime:0;
+            previousPosition=transform.position;hasPosition=true;
             hitTime = Mathf.Max(0, hitTime - Time.deltaTime); victoryTime = Mathf.Max(0, victoryTime - Time.deltaTime);
             if (!ReplicaMode) State = !health.IsAlive ? HeroState.Dead : hitTime > 0 ? HeroState.Hit : motor.IsDodging ? HeroState.Dodge : combat.IsUsingSpecial ? HeroState.Skill : combat.IsAttacking ? HeroState.Attack : victoryTime > 0 ? HeroState.Victory : motor.PlanarVelocity.sqrMagnitude > 0.1f ? HeroState.Walk : HeroState.Idle;
             if (visibleView != null)
             {
                 visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity;
                 float time=ReplicaMode?replicaAnimation:State==HeroState.Dodge?motor.DodgeProgress:State==HeroState.Hit?1-hitTime/.2f:combat.NormalizedTime;
-                visibleView.Animate(State, time, motor.PlanarVelocity.magnitude, health.IsAlive, ReplicaMode?0:combat.AnimationVariant, ReplicaMode?0:combat.ActionVersion, ReplicaMode?.25f:combat.ImpactTime);
+                visibleView.Animate(State, time, actualSpeed, health.IsAlive, ReplicaMode?0:combat.AnimationVariant, ReplicaMode?0:combat.ActionVersion, ReplicaMode?.25f:combat.ImpactTime);
                 return;
             }
             float bob = State == HeroState.Walk ? Mathf.Sin(Time.time * 16) * 0.05f : State == HeroState.Victory ? Mathf.Abs(Mathf.Sin(Time.time * 8)) * 0.25f : 0;

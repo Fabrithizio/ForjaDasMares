@@ -36,9 +36,9 @@ namespace ForjaDasMares.Tests
         {
             var presentation=heroes.GetComponent<HeroPresentation>();presentation.enabled=false;
             Vector3 actor=heroes.transform.position;int hp=heroes.Health.Current;
-            model.Animate(HeroState.Walk,0,5.8f,true);model.Animator.Play("Base Layer.Walk",0,.25f);model.Animator.Update(0);
+            model.Animate(HeroState.Walk,0,5.8f,true);model.Animator.SetFloat("GaitTime",.25f);model.Animator.Play("Base Layer.Walk",0,.25f);model.Animator.Update(0);
             Vector3 hand=model.PrimarySocket.position;
-            model.Animator.Play("Base Layer.Walk",0,.75f);model.Animator.Update(0);
+            model.Animator.SetFloat("GaitTime",.75f);model.Animator.Play("Base Layer.Walk",0,.75f);model.Animator.Update(0);
             Assert.That(Vector3.Distance(hand,model.PrimarySocket.position),Is.GreaterThan(.02f),"A real walk clip must move the skeleton.");
             model.Animate(HeroState.Attack,.25f,0,true);model.Animator.Update(.08f);hand=model.PrimarySocket.position;
             model.Animate(HeroState.Attack,.75f,0,true);model.Animator.Update(0);

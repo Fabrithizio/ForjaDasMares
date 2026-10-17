@@ -14,7 +14,7 @@ namespace ForjaDasMares.Editor
         public const string ControllerPath=Root+"Brasa.controller";
         [Serializable] sealed class Palette { public Entry[] materials; }
         [Serializable] sealed class Entry { public string name;public float[] color;public float roughness,metallic; }
-        static readonly string[] Names={"Idle","Walk","Attack","Skill","Dodge","Hit","Dead","Victory","Attack2","Attack3","Charged","Super"};
+        static readonly string[] Names={"Idle","Walk","Attack","Skill","Dodge","Hit","Dead","Victory","Attack2","Attack3","Charged","Super","Run"};
         [MenuItem("Forja das Mares/Characters/Install Brasa in Galerias")]
         public static void Apply()
         {
@@ -42,7 +42,7 @@ namespace ForjaDasMares.Editor
             foreach(var clip in settings)
             {
                 string name=Names.FirstOrDefault(n=>clip.name.EndsWith(n,StringComparison.Ordinal));
-                if(name==null)continue;clip.name=name;clip.loopTime=name=="Idle"||name=="Walk"||name=="Victory";
+                if(name==null)continue;clip.name=name;clip.loopTime=name=="Idle"||name=="Walk"||name=="Run"||name=="Victory";
                 clip.lockRootRotation=clip.lockRootPositionXZ=clip.lockRootHeightY=true;
             }
             importer.clipAnimations=settings;importer.SaveAndReimport();
@@ -54,6 +54,7 @@ namespace ForjaDasMares.Editor
             if(!controller.parameters.Any(p=>p.name=="Speed"))controller.AddParameter("Speed",AnimatorControllerParameterType.Float);
             if(!controller.parameters.Any(p=>p.name=="Alive"))controller.AddParameter("Alive",AnimatorControllerParameterType.Bool);
             if(!controller.parameters.Any(p=>p.name=="ActionTime"))controller.AddParameter("ActionTime",AnimatorControllerParameterType.Float);
+            if(!controller.parameters.Any(p=>p.name=="GaitTime"))controller.AddParameter("GaitTime",AnimatorControllerParameterType.Float);
             var machine=controller.layers[0].stateMachine;
             foreach(var transition in machine.anyStateTransitions)machine.RemoveAnyStateTransition(transition);
             for(int i=0;i<Names.Length;i++)
@@ -65,6 +66,7 @@ namespace ForjaDasMares.Editor
                 state.writeDefaultValues=true;
                 state.timeParameterActive=Names[i].StartsWith("Attack")||Names[i]=="Skill"||Names[i]=="Charged"||Names[i]=="Super"||Names[i]=="Dodge"||Names[i]=="Hit";
                 if(state.timeParameterActive)state.timeParameter="ActionTime";
+                if(Names[i]=="Walk"||Names[i]=="Run"){state.timeParameter="GaitTime";state.timeParameterActive=true;}
                 if(i==0)machine.defaultState=state;
                 if(i==1){state.speedParameter="Speed";state.speedParameterActive=true;}
             }
@@ -73,11 +75,35 @@ namespace ForjaDasMares.Editor
             try
             {
                 var model=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Root+"Brasa.fbx"));
-                model.transform.SetParent(prefabRoot.transform,false);model.transform.localScale=Vector3.one*.86f;
+                model.transform.SetParent(prefabRoot.transform,false);model.transform.localScale=Vector3.one*.86f;model.transform.localPosition=Vector3.down*.045f;
                 var animator=model.GetComponent<Animator>()??model.AddComponent<Animator>();animator.runtimeAnimatorController=controller;animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
                 var hand=Find(model.transform,"Hand.R");var off=Find(model.transform,"Hand.L");var sword=Find(model.transform,"GreatSword");
                 if(hand==null||off==null||sword==null)throw new InvalidOperationException("Missing hand socket or sword in FBX.");
-                prefabRoot.AddComponent<HeroModelView>().Configure(animator,hand,off,sword.gameObject);
+                // A generic transform mask keeps the hips and legs driven by locomotion.
+                string maskPath=Root+"BrasaUpperBody.mask";
+                var mask=AssetDatabase.LoadAssetAtPath<AvatarMask>(maskPath);
+                if(mask==null){mask=new AvatarMask();AssetDatabase.CreateAsset(mask,maskPath);}
+                var transforms=model.GetComponentsInChildren<Transform>(true);mask.transformCount=transforms.Length;
+                var spine=Find(model.transform,"Spine");
+                for(int j=0;j<transforms.Length;j++)
+                {mask.SetTransformPath(j,AnimationUtility.CalculateTransformPath(transforms[j],model.transform));mask.SetTransformActive(j,transforms[j]==spine||transforms[j].IsChildOf(spine));}
+                EditorUtility.SetDirty(mask);
+                var layers=controller.layers;
+                if(layers.Length<2){controller.AddLayer("Upper Body");layers=controller.layers;}
+                layers[1].avatarMask=mask;layers[1].defaultWeight=0;layers[1].blendingMode=AnimatorLayerBlendingMode.Override;
+                controller.layers=layers;
+                var upperMachine=layers[1].stateMachine;
+                foreach(string actionName in Names)
+                {
+                    var upperState=upperMachine.states.Select(x=>x.state).FirstOrDefault(x=>x.name==actionName)??upperMachine.AddState(actionName);
+                    upperState.motion=clips.Single(c=>c.name==actionName);upperState.writeDefaultValues=true;
+                    upperState.timeParameterActive=actionName.StartsWith("Attack")||actionName=="Skill"||actionName=="Charged"||actionName=="Super"||actionName=="Hit";
+                    if(upperState.timeParameterActive)upperState.timeParameter="ActionTime";
+                    if(actionName=="Idle")upperMachine.defaultState=upperState;
+                }
+                EditorUtility.SetDirty(controller);
+                var view=prefabRoot.AddComponent<HeroModelView>();view.Configure(animator,hand,off,sword.gameObject);
+                prefabRoot.AddComponent<BrasaFootPlant>().Configure(view,Find(model.transform,"Thigh.L"),Find(model.transform,"Shin.L"),Find(model.transform,"Foot.L"),Find(model.transform,"Thigh.R"),Find(model.transform,"Shin.R"),Find(model.transform,"Foot.R"));
                 foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {skin.updateWhenOffscreen=false;if(skin.sharedMesh==null||skin.bones.Length<1)throw new InvalidOperationException("Unbound skin.");}
                 PrefabUtility.SaveAsPrefabAsset(prefabRoot,PrefabPath);
@@ -112,7 +138,7 @@ namespace ForjaDasMares.Editor
                 var feedback=heroes.GetComponent<HeroPowerFeedback>()??heroes.gameObject.AddComponent<HeroPowerFeedback>();feedback.Configure(combat,ribbon);EditorUtility.SetDirty(feedback);
                 EditorSceneManager.SaveScene(scene);
             }
-            AssetDatabase.SaveAssets();Debug.Log("BRASA_MODEL_READY scenes=2 clips=12 singlePresentationOwner=true combatFlow=ready");
+            AssetDatabase.SaveAssets();Debug.Log("BRASA_MODEL_READY scenes=2 clips=13 singlePresentationOwner=true combatFlow=ready");
         }
         static CombatFlowDefinition Flow()
         {

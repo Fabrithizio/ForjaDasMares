@@ -255,19 +255,32 @@ def envelope(t,contact=.3):
 def animate_pose(name,t):
     pose_reset();ready();wave=math.sin(t*math.tau)
     if name=='Idle':
-        rotate('Spine',(.012*wave,0,0));rotate('Head',(0,0,.012*wave))
-    elif name=='Walk':
-        # Analytic two-segment legs: stance foot stays on the floor and only
-        # the swinging foot lifts. The knee always bends toward the front.
-        hip_z=.98-.04+.004*math.cos(t*math.tau*2)
+        # Relaxed guard: supported knees, shifting weight and a breathing chest.
+        arm.pose.bones['Hips'].location.y=-.065+.006*wave
+        arm.pose.bones['Hips'].location.x=.012*wave
+        rotate('Spine',(-.025+.025*wave,.012*wave,.025*wave))
+        rotate('Head',(.015*wave,0,-.045*wave))
+        rotate('UpperArm.R',(-.30+.035*wave,0,-.12))
+        rotate('UpperArm.L',(-.16-.045*wave,0,.12))
+        rotate('Forearm.R',(-.38+.035*wave,0,0));rotate('Forearm.L',(-.27-.035*wave,0,0))
+        for side in ['L','R']:
+            rotate('Thigh.'+side,(-.20,0,0));rotate('Shin.'+side,(.40,0,0));rotate('Foot.'+side,(-.20,0,0))
+    elif name in ['Walk','Run']:
+        running=name=='Run';stance=.28 if running else .60
+        travel=.80 if running else .64
+        flight=abs(math.sin(t*math.tau))
+        hip_z=.86+.055*flight if running else .89+.009*math.cos(t*math.tau*2)
         arm.pose.bones['Hips'].location.y=hip_z-.98
+        arm.pose.bones['Hips'].location.x=.012*wave
         for sign,side in [(-1,'L'),(1,'R')]:
             cycle=(t+(0 if side=='L' else .5))%1
-            if cycle<.5:
-                ankle_y=-.18+.36*cycle*2;ankle_z=.14
+            if cycle<stance:
+                ankle_y=-travel/2+travel*cycle/stance;ankle_z=.14
             else:
-                u=(cycle-.5)*2;ankle_y=.18-.36*ease(u);ankle_z=.14+.09*math.sin(math.pi*u)
-            dy,dz=ankle_y,ankle_z-hip_z;distance=math.hypot(dy,dz)
+                u=(cycle-stance)/(1-stance)
+                ankle_y=travel/2-travel*ease(u);ankle_z=.14+(.22 if running else .12)*math.sin(math.pi*u)
+            dy,dz=ankle_y,ankle_z-hip_z;distance=min(.839,math.hypot(dy,dz))
+            direction=math.atan2(dy,-dz);dy=math.sin(direction)*distance;dz=-math.cos(direction)*distance
             along=(.44**2-.4**2+distance**2)/(2*distance)
             height=math.sqrt(max(0,.44**2-along**2))
             knee_y=dy/distance*along+dz/distance*height
@@ -276,8 +289,9 @@ def animate_pose(name,t):
             shin=math.atan2(ankle_y-knee_y,knee_z-ankle_z)
             rotate('Thigh.'+side,(thigh,0,0));rotate('Shin.'+side,(shin-thigh,0,0));rotate('Foot.'+side,(-shin,0,0))
             swing=wave*sign
-            rotate('UpperArm.'+side,(-.18+swing*.22,0,-sign*.08));rotate('Forearm.'+side,(-.22,0,0))
-        rotate('Spine',(-.035,0,.035*wave));rotate('Head',(.02,0,-.02*wave))
+            rotate('UpperArm.'+side,(-.30+swing*(.55 if running else .30),0,-sign*.10))
+            rotate('Forearm.'+side,(-.65 if running else -.35,0,0))
+        rotate('Spine',(-.12 if running else -.045,0,.055*wave));rotate('Head',(.055 if running else .02,0,-.03*wave))
     elif name in ['Attack','Attack2','Attack3','Charged','Skill','Super']:
         impact=.5 if name in ['Charged','Super','Skill'] else .3
         anticipation,strike=envelope(t,impact)
@@ -314,7 +328,7 @@ def animate_pose(name,t):
         rotate('UpperArm.R',(-.24-1.85*raised,0,-.1));rotate('Forearm.R',(-.28-.25*raised,0,0))
         rotate('Spine',(-.06*raised,0,.025*wave));rotate('Head',(-.1*raised,0,0))
 
-actions={};lengths={'Idle':49,'Walk':25,'Attack':25,'Attack2':25,'Attack3':25,'Charged':33,'Skill':33,'Super':41,'Dodge':19,'Hit':13,'Dead':31,'Victory':49}
+actions={};lengths={'Idle':49,'Walk':25,'Run':25,'Attack':25,'Attack2':25,'Attack3':25,'Charged':33,'Skill':33,'Super':41,'Dodge':19,'Hit':13,'Dead':31,'Victory':49}
 arm.animation_data_create()
 for name,length in lengths.items():
     action=bpy.data.actions.new(name);action.use_fake_user=True;arm.animation_data.action=action;actions[name]=action

@@ -10988,6 +10988,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1536
   fallThreshold: -4
+  mobileFrameRate: 60
   heroes: {fileID: 60716055}
   movableTargets:
   - {fileID: 1011635944}
