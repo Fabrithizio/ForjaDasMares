@@ -416,3 +416,10 @@ Checkpoint Windows0.7.2: rodada final32/32 aprovada, incluindo corrida/lateral r
 
 
 Fechamento0.7.2: fonte e arte protegidas no GitHub2f2d31e. APK real51.782.174bytes, SHA256 0B0DAD351222CA661E3A044E0DF9307CD176C9786F3A5DED8D68FD4E7B075C77, ARM64/code17/assinaturav2. Empacotador interno Android falhou por conexão loopback Java/errors4 após compilação nativa; Gradle direto concluiu BUILD SUCCESSFUL in57s/exit0. Instalado-r Success no moto g15; versão instalada0.7.2/code17 confirmada. Celular ainda bloqueado (keyguard showing=true), portanto não houve teste visual dessa revisão nem medição de FPS no aparelho. PC continua aberto, atalho aponta0.7.2,32 testes focados passaram; qualidade artística final e teste prolongado permanecem em revisão. Relatório BRASA_MOVIMENTO_2026-10-16.md lista arquivos/procedimentos/limitações. Identidade principal e URP preservadas; versão/code atualizados.
+
+
+### Campanha0.8.0 — 17/10/2026, implementação em validação
+
+Retomado após pausa explícita do usuário. Auditoria somente antes da pausa; nesta retomada autorizada, criada variante CampaignCoop com3 mapas12/15/18 setores, extensões opcionais do gerador, placas de2 heróis, flechas autoritativas e névoa exterior. UI com mapa de fases, sala privada/código e procura de grupo público por fase. Catálogo separado com inventário inicial vazio, prévia3D e5 slots; saves anteriores preservados. Protocolo3/versões antigas incompatíveis intencionalmente.
+
+Instalador compilou e criou assets reais. Primeira rodada19/22, três falhas de MaterialPropertyBlock no construtor das placas; corrigido. Segunda23/23 aprovada. Suíte ampla, builds e teste real de descoberta/PC–Android ainda pendentes neste checkpoint. Não marcar campanha concluída. Detalhes/limites/arquivos em CAMPANHA_2026-10-17.md. Android0.7.2 anterior gravado com toque no aparelho desbloqueado; não confundir com teste0.8.0.

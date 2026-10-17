@@ -15,7 +15,9 @@ namespace ForjaDasMares.Networking
             if (string.IsNullOrEmpty(directory)) { enabled = false; return; }
             session = GetComponent<CoopDirector>(); int.TryParse(Arg(args, "-netExpected"), out expected); if (expected == 0) expected = 4;
             Directory.CreateDirectory(directory); session.ProbeInput = true;
+            if(session.Campaign!=null&&int.TryParse(Arg(args,"-netCampaignLevel"),out int level))session.SelectCampaignLevel(level);
             var cloud = session.GetComponent<CoopCloud>();
+            if(Arg(args,"-netCloudMode")=="find")cloud.FindCampaignGroup();
             if (Arg(args, "-netCloudMode") == "host") cloud.Create();
             if (Arg(args, "-netCloudMode") == "client") cloud.Join(Arg(args, "-netCloudCode"));
         }
@@ -69,6 +71,8 @@ namespace ForjaDasMares.Networking
                 if (command == "defeat" && session.IsHost && session.Phase == CoopPhase.Playing) for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.Actor(i).Health.ApplyDamage(100000);
                 if (command == "encounter" && session.IsHost && session.Phase == CoopPhase.Playing)
                 { var room = session.Dungeon.Generator.Rooms[1]; session.Dungeon.Enter(room); for (int i = 0; i < 4; i++) if (session.IsConnected(i)) session.PlaceInRoom(i, room); }
+                if(command=="rescue-check"&&session.IsHost&&session.Phase==CoopPhase.Playing&&session.ConnectedCount>=2)
+                {var fallen=session.Actor(1);fallen.Health.ApplyDamage(100000);session.Actor(0).Motor.Teleport(fallen.transform.position+Vector3.right*.9f,Quaternion.identity);session.Request(HeroButtons.Interact);}
                 if (command == "clear-wave" && session.IsHost && session.Phase == CoopPhase.Playing) foreach (var enemy in session.Dungeon.Encounter.Enemies.Actors) if (enemy.IsAlive) enemy.Health.ApplyDamage(100000);
                 if (command == "exit") Application.Quit();
                 Debug.Log("COOP_PROBE_CONTROL " + command);

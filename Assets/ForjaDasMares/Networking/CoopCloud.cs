@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
@@ -33,11 +34,36 @@ namespace ForjaDasMares.Networking
         }
         public async void Create() { await Open(true, null); }
         public async void Join(string code) { await Open(false, code); }
-        async Task Open(bool host, string code)
+        public async void FindCampaignGroup(){await Open(false,null,true);}
+        public string CampaignKey=>"fdm-campaign-p"+CoopLimits.Protocol+"-l"+(director.Campaign!=null?director.Campaign.Selected:0);
+        public SessionOptions CampaignOptions(bool privateRoom)
+        {
+            var options=new SessionOptions{MaxPlayers=4,IsPrivate=privateRoom,Name=director.Campaign!=null?director.Campaign.Level.displayName:"Forja das Marés"};
+            if(director.Campaign!=null)options.SessionProperties["campaign"]=new SessionProperty(CampaignKey,VisibilityPropertyOptions.Public,PropertyIndex.String1);
+            return options.WithRelayNetwork(settings.RelayRegion);
+        }
+        async Task<ISession> FindCampaign(CancellationToken cancellation)
+        {
+            Message="Procurando grupo para esta fase…";
+            var options=new QuerySessionsOptions{Count=10,FilterOptions=new List<FilterOption>{
+                new FilterOption(FilterField.StringIndex1,CampaignKey,FilterOperation.Equal),
+                new FilterOption(FilterField.IsLocked,"false",FilterOperation.Equal),
+                new FilterOption(FilterField.AvailableSlots,"0",FilterOperation.Greater)}};
+            var found=await MultiplayerService.Instance.QuerySessionsAsync(options,cancellation);
+            foreach(var candidate in found.Sessions)
+            {
+                cancellation.ThrowIfCancellationRequested();
+                try{return await MultiplayerService.Instance.JoinSessionByIdAsync(candidate.Id,new JoinSessionOptions(),cancellation);}
+                catch(SessionException error){Message="A vaga mudou; procurando outro grupo: "+error.Error;}
+            }
+            Message="Nenhum grupo aguardando: criando uma sala aberta desta fase.";
+            return await MultiplayerService.Instance.CreateSessionAsync(CampaignOptions(false),cancellation);
+        }
+        async Task Open(bool host, string code,bool find=false)
         {
             if (Busy || director.Manager.IsListening) return;
             if (!Configured) { Message = "Internet indisponível: vincule o projeto em Unity Services e confira Forja das Mares/Internet/Configuração."; return; }
-            if (!host && (string.IsNullOrWhiteSpace(code) || code.Length > 12)) { Message = "Informe o código privado da sala."; return; }
+            if (!host && !find && (string.IsNullOrWhiteSpace(code) || code.Length > 12)) { Message = "Informe o código privado da sala."; return; }
             busy = true; operation = new CancellationTokenSource(TimeSpan.FromSeconds(settings.ConnectionTimeoutSeconds));
             try
             {
@@ -56,16 +82,16 @@ namespace ForjaDasMares.Networking
                 if (!AuthenticationService.Instance.IsSignedIn) await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 operation.Token.ThrowIfCancellationRequested();
                 director.PrepareCloudConnection();
-                session = host
-                    ? await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions { MaxPlayers = 4, IsPrivate = true, Name = "Forja das Marés" }.WithRelayNetwork(settings.RelayRegion), operation.Token)
+                session = find ? await FindCampaign(operation.Token) : host
+                    ? await MultiplayerService.Instance.CreateSessionAsync(CampaignOptions(true), operation.Token)
                     : await JoinOrResume(code.Trim().ToUpperInvariant(), operation.Token);
-                if (!host)
+                if (!session.IsHost)
                 {
                     PlayerPrefs.SetString(ResumeKey, JsonUtility.ToJson(new CoopSessionResume { sessionId = session.Id, code = session.Code }));
                     PlayerPrefs.Save();
                 }
                 operation.Token.ThrowIfCancellationRequested();
-                director.CompleteCloudConnection(session.Code); Message = "Sala privada UGS: " + session.Code;
+                director.CompleteCloudConnection(session.Code); Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
             }
             catch (Exception error)
             { Message = error is OperationCanceledException ? "Conexão cancelada ou tempo esgotado." : "Falha nos serviços: " + error.Message; director.Close(); await DisposeSession(); }
@@ -86,7 +112,13 @@ namespace ForjaDasMares.Networking
             }
             return await MultiplayerService.Instance.JoinSessionByCodeAsync(code, new JoinSessionOptions(), cancellation);
         }
-        void Changed() { if (director.Phase == CoopPhase.Closed) { operation?.Cancel(); _ = DisposeSession(); } }
+        async Task LockCampaignSession()
+        {
+            var current=session;if(current==null||!current.IsHost||director.Campaign==null)return;
+            try{var owner=current.AsHost();owner.IsLocked=true;await owner.SavePropertiesAsync();}
+            catch(Exception error){Message="Partida iniciada; não foi possível atualizar o anúncio: "+error.Message;}
+        }
+        void Changed() { if(director.Phase==CoopPhase.Loading)_=LockCampaignSession(); if (director.Phase == CoopPhase.Closed) { operation?.Cancel(); _ = DisposeSession(); } }
         public void Cancel() { operation?.Cancel(); director.Close(); }
         async Task DisposeSession()
         {

@@ -15,6 +15,7 @@ namespace ForjaDasMares
     {
         public readonly List<DungeonNode> rooms = new List<DungeonNode>(12);
         public const float Spacing = 16;
+        public int BossId {get;private set;} = 6;
         public Vector3 Center(int id) => new Vector3(rooms[id].coordinate.x * Spacing, 0, rooms[id].coordinate.y * Spacing);
         static readonly Vector2Int[] Directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
         static readonly RoomCategory[] Main = { RoomCategory.Entrance, RoomCategory.Combat, RoomCategory.Combat, RoomCategory.Event, RoomCategory.HardCombat, RoomCategory.Trap, RoomCategory.Boss };
@@ -41,6 +42,14 @@ namespace ForjaDasMares
             }
             if (!layout.Validate(maximumRooms, out string error)) throw new InvalidOperationException(error); return layout;
         }
+        public static DungeonLayout Campaign(Vector2Int[] route,RoomCategory[] categories)
+        {
+            if(route==null||categories==null||route.Length!=categories.Length||route.Length<2||route.Length>24)throw new ArgumentException("Invalid campaign route.");
+            var layout=new DungeonLayout{BossId=route.Length-1};
+            for(int i=0;i<route.Length;i++){layout.Add(route[i],categories[i],i);if(i>0)layout.Connect(i-1,i);}
+            if(!layout.Validate(24,out string error))throw new InvalidOperationException(error);
+            return layout;
+        }
         static bool Extend(List<Vector2Int> positions, System.Random random)
         {
             if (positions.Count == 7) return true;
@@ -58,7 +67,7 @@ namespace ForjaDasMares
         public bool Validate(int maximum, out string error)
         {
             error = "";
-            if (rooms.Count < 7 || rooms.Count > maximum || rooms[0].category != RoomCategory.Entrance || rooms[6].category != RoomCategory.Boss) { error = "Invalid route length/entry/boss."; return false; }
+            if (rooms.Count < 7 || rooms.Count > maximum || rooms[0].category != RoomCategory.Entrance || rooms[BossId].category != RoomCategory.Boss) { error = "Invalid route length/entry/boss."; return false; }
             var unique = new HashSet<Vector2Int>(); var visited = new HashSet<int>(); var queue = new Queue<int>(); queue.Enqueue(0);
             foreach (var room in rooms)
             {

@@ -27,6 +27,8 @@ namespace ForjaDasMares
             catch (Exception error) { Message = "Não foi possível salvar: " + error.Message; return false; }
             Profile = next; Message = message; Changed?.Invoke(); return true;
         }
+        public bool MarkCampaignClear(int level)
+        {if(level<0||level>23)return false;uint bit=1u<<level;if((Profile.campaignCleared&bit)!=0)return true;return Transaction(next=>next.campaignCleared|=bit,"Fase concluída na campanha.");}
         public bool Equip(string heroId, string itemId, EquipmentSlot slot)
         {
             var item = Profile.Item(itemId); if (!ProgressionStats.CanEquip(Profile, catalog, heroId, item, slot, out string reason)) { Message = reason; return false; }

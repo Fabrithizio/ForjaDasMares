@@ -18,8 +18,8 @@ namespace ForjaDasMares
         public HeroState State { get; private set; }
         public Transform Visible => visible;
         public bool ReplicaMode { get; set; }
-        float replicaAnimation;
-        public void ApplyReplica(HeroState value, float time) { State = value; replicaAnimation = Mathf.Clamp01(time); }
+        float replicaAnimation,replicaImpact=.25f;int replicaVariant,replicaVersion;
+        public void ApplyReplica(HeroState value, float time,int variant=0,int version=0,float impact=.25f) { State = value; replicaAnimation = Mathf.Clamp01(time);replicaVariant=variant;replicaVersion=version;replicaImpact=impact; }
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }
@@ -55,7 +55,7 @@ namespace ForjaDasMares
             {
                 visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity;
                 float time=ReplicaMode?replicaAnimation:State==HeroState.Dodge?motor.DodgeProgress:State==HeroState.Hit?1-hitTime/.2f:combat.NormalizedTime;
-                visibleView.Animate(State, time, actualSpeed, health.IsAlive, ReplicaMode?0:combat.AnimationVariant, ReplicaMode?0:combat.ActionVersion, ReplicaMode?.25f:combat.ImpactTime);
+                visibleView.Animate(State, time, actualSpeed, health.IsAlive, ReplicaMode?replicaVariant:combat.AnimationVariant, ReplicaMode?replicaVersion:combat.ActionVersion, ReplicaMode?replicaImpact:combat.ImpactTime);
                 return;
             }
             float bob = State == HeroState.Walk ? Mathf.Sin(Time.time * 16) * 0.05f : State == HeroState.Victory ? Mathf.Abs(Mathf.Sin(Time.time * 8)) * 0.25f : 0;

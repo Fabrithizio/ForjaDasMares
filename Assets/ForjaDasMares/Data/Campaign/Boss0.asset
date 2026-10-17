@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f72c24a1a2308e54d8a5be9031510b19, type: 3}
+  m_Name: Boss0
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EncounterDefinition
+  encounterId: campaign-boss-0
+  displayName: "Guardi\xE3o da etapa 1"
+  waves:
+  - displayName: Custodio da Forja
+    entries:
+    - enemy: {fileID: 11400000, guid: f1b488f9a19732044b3e607f6fffce62, type: 2}
+      count: 1
+      delay: 0.4
+    completion: 2
+    delayBefore: 0.6
+    survivalDuration: 20
+  maximumMobileEnemies: 12
+  maximumPcEnemies: 18

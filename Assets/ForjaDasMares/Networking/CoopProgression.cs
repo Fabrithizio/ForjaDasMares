@@ -7,6 +7,7 @@ namespace ForjaDasMares.Networking
     public sealed class CoopProgression : MonoBehaviour
     {
         [SerializeField] ProgressionCatalog catalog;
+        [SerializeField] string profileDirectory="PrivateCoopProfiles";
         [SerializeField, Range(.1f, 1)] float revivalFraction = .5f;
         CoopDirector director; CoopRewardLedger ledger;
         readonly ProfileService[] profiles = new ProfileService[4];
@@ -26,7 +27,7 @@ namespace ForjaDasMares.Networking
         {
             director = GetComponent<CoopDirector>();
             if (catalog == null) { Error = "Catálogo de progressão ausente."; enabled = false; return; }
-            ledger = new CoopRewardLedger(catalog); directory = Path.Combine(Application.persistentDataPath, "PrivateCoopProfiles");
+            ledger = new CoopRewardLedger(catalog); directory = Path.Combine(Application.persistentDataPath, profileDirectory);
             var args = Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length; i++)
             {
@@ -125,6 +126,8 @@ namespace ForjaDasMares.Networking
         {
             if (!Active) return false;
             if (!TryFlush() || !ledger.Finish(victory, outcome)) { Error ??= ledger.Error; return false; }
+            if(victory&&director.Campaign!=null)for(int i=0;i<4;i++)if(director.IsParticipant(i)&&profiles[i]!=null)
+                if(!profiles[i].MarkCampaignClear(director.Campaign.Selected))Error=profiles[i].Message;
             spawned.Clear(); return true;
         }
         public bool CanManage(int slot)

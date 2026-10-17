@@ -26,10 +26,18 @@ namespace ForjaDasMares.Networking
             if (mainGear == null) { mainGear = CreateGear("ReplicaMain", new Vector3(.55f, 1, .3f)); secondaryGear = CreateGear("ReplicaSecondary", new Vector3(-.55f, 1, .3f)); }
             var main = catalog.Find(frame.mainItem); var secondary = catalog.Find(frame.secondaryItem);
             ShowGear(mainGear, main); ShowGear(secondaryGear, secondary);
+            var model=Presentation.Visible.GetComponentInChildren<HeroModelView>(true);
+            if(model!=null)
+            {
+                model.ShowDefaultWeapon(main==null);
+                MountReplica(mainGear,model.PrimarySocket);MountReplica(secondaryGear,model.SecondarySocket);
+            }
             foreach (Transform body in transform) if (body.name.StartsWith("HeroVisual_")) foreach (Transform part in body)
                 if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(main == null);
                 else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
         }
+        static void MountReplica(MeshRenderer gear,Transform socket)
+        {if(gear==null||socket==null)return;gear.transform.SetParent(socket,false);gear.transform.localPosition=new Vector3(0,-.3f,0);gear.transform.localRotation=Quaternion.Euler(90,0,0);}
         MeshRenderer CreateGear(string label, Vector3 position)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = label; go.transform.SetParent(Presentation.Visible, false); go.transform.localPosition = position;
@@ -53,7 +61,7 @@ namespace ForjaDasMares.Networking
             Health.SetReplicaState(frame.hp, frame.maximum);
             destination = frame.position; orientation = Quaternion.Euler(0, frame.yaw, 0);
             if (!hasFrame || (destination - transform.position).sqrMagnitude > 16) transform.SetPositionAndRotation(destination, orientation);
-            hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation);
+            hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact);
         }
         void LateUpdate()
         {

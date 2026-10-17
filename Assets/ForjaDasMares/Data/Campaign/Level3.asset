@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161a13d11aba9074591c2462b314c51b, type: 3}
+  m_Name: Level3
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CampaignLevel
+  levelId: campaign-3
+  displayName: "03 \xB7 Forja dos Dois S\xF3is"
+  description: "Fortaleza vulc\xE2nica \xB7 invocadores e corredores de risco"
+  seed: 18073
+  biomeIndex: 2
+  route:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
+  - {x: 3, y: 1}
+  - {x: 2, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 1}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 2, y: 2}
+  - {x: 3, y: 2}
+  - {x: 3, y: 3}
+  - {x: 2, y: 3}
+  - {x: 1, y: 3}
+  - {x: 0, y: 3}
+  - {x: 0, y: 4}
+  - {x: 1, y: 4}
+  categories: 000000000100000005000000020000000600000001000000030000000100000005000000020000000600000001000000020000000300000005000000020000000400000007000000
+  normal: {fileID: 11400000, guid: 812d18de775e04d40a815f8c5624dcc3, type: 2}
+  hard: {fileID: 11400000, guid: a1ce775c432c8994fa53f410e431682b, type: 2}
+  boss: {fileID: 11400000, guid: d1f3ac63ede454b4d8fad156918cef6e, type: 2}
+  plateHold: 2.7
+  dartInterval: 3.1999998
+  dartAttack: {fileID: 11400000, guid: c73db792ec3118c4da9d3e0a3187ac39, type: 2}
+  mist: {fileID: 2100000, guid: 7795975ad42194b42a77fce80b985dcc, type: 2}
+  challengeMaterial: {fileID: 2100000, guid: f61cd35707900b84b85b9b6ef6632eda, type: 2}
+  atmosphere: {r: 0.2, g: 0.085, b: 0.05, a: 1}

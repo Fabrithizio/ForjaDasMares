@@ -14,6 +14,8 @@ namespace ForjaDasMares
         [SerializeField] DungeonStyleDefinition style;
         public DungeonStyleDefinition Style => style;
         public void ConfigureStyle(DungeonStyleDefinition value) => style = value;
+        CampaignLevel campaign;
+        public void ConfigureCampaign(CampaignLevel level){campaign=level;}
         GameObject map;
         public DungeonLayout Layout { get; private set; }
         public DungeonRoom[] Rooms { get; private set; }
@@ -26,7 +28,7 @@ namespace ForjaDasMares
         public void Generate(DungeonSession session, BiomeDefinition biome, int seed, int maximum, bool fixedMap, TelegraphPool warnings)
         {
             if (map != null) { map.SetActive(false); Destroy(map); }
-            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = DungeonLayout.Generate(seed, maximum, fixedMap, style != null ? style.mainRoute : null); Rooms = new DungeonRoom[Layout.rooms.Count];
+            Doors.Clear(); Traps.Clear(); Corridors.Clear(); Layout = campaign!=null ? DungeonLayout.Campaign(campaign.route,campaign.categories) : DungeonLayout.Generate(seed, maximum, fixedMap, style != null ? style.mainRoute : null); Rooms = new DungeonRoom[Layout.rooms.Count];
             map = new GameObject("GeneratedDungeon_Seed_" + seed); map.transform.SetParent(transform);
             foreach (var node in Layout.rooms)
             {
@@ -37,10 +39,17 @@ namespace ForjaDasMares
                 int difficulty = node.depth <= 1 ? 0 : node.depth <= 2 ? 1 : 2;
                 if (node.category == RoomCategory.Combat || node.category == RoomCategory.HardCombat) room.encounter = biome.encountersByDepth[Mathf.Min(difficulty, biome.encountersByDepth.Length - 1)];
                 else if (node.category == RoomCategory.Boss) room.encounter = biome.boss;
+                if(campaign!=null)
+                {
+                    if(node.category==RoomCategory.Combat)room.encounter=campaign.normal;
+                    if(node.category==RoomCategory.HardCombat)room.encounter=campaign.hard;
+                    if(node.category==RoomCategory.Boss)room.encounter=campaign.boss;
+                    room.cooperativeObjective=node.category==RoomCategory.Event;
+                }
                 room.objectiveComplete = node.category != RoomCategory.Event && node.category != RoomCategory.Trap;
                 room.spawnPoints = new[] { root.transform.position + new Vector3(-3, 0.06f, 2), root.transform.position + new Vector3(3, 0.06f, 2), root.transform.position + new Vector3(0, 0.06f, 3) };
                 if (node.category == RoomCategory.Treasure || node.category == RoomCategory.Event) Interaction(session, room, DungeonInteractionKind.Chest, new Vector3(-2, 0, -2), biome);
-                if (node.category == RoomCategory.Event) Interaction(session, room, DungeonInteractionKind.Crystal, new Vector3(2, 0, -1), biome);
+                if (node.category == RoomCategory.Event && campaign==null) Interaction(session, room, DungeonInteractionKind.Crystal, new Vector3(2, 0, -1), biome);
                 if (node.category == RoomCategory.Rest) Interaction(session, room, DungeonInteractionKind.Rest, Vector3.zero, biome);
                 if (node.category == RoomCategory.Boss) Interaction(session, room, DungeonInteractionKind.Exit, new Vector3(0, 0, 3), biome);
                 if (node.category == RoomCategory.Trap)

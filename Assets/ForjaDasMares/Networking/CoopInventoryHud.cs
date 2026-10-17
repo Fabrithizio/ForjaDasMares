@@ -8,14 +8,17 @@ namespace ForjaDasMares.Networking
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
+        Button inventoryButton,resultButton;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];
+        bool management;
+        bool CanManageNow=>director.LocalSlot>=0&&director.Actor(director.LocalSlot).Health.IsAlive&&director.Phase!=CoopPhase.Loading&&director.EncounterStatus!=EncounterState.Spawning&&director.EncounterStatus!=EncounterState.Fighting;
         int page, revision = -1; string selected, pendingDiscard; bool results;
         public void Configure(CoopDirector session) => director = session;
         void Start()
         {
             channel = director.GetComponent<CoopProfileChannel>(); font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var parent = GetComponent<CoopHud>().SafeRoot;
-            TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
-            TopRight(parent, "RESULTADO", -171, () => Show(true));
+            inventoryButton=TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
+            resultButton=TopRight(parent, "RESULTADO", -171, () => Show(true));
             overlay = new GameObject("CoopInventory", typeof(RectTransform), typeof(Image)); overlay.transform.SetParent(parent, false);
             var full = (RectTransform)overlay.transform; full.anchorMin = Vector2.zero; full.anchorMax = Vector2.one; full.offsetMin = full.offsetMax = Vector2.zero; overlay.GetComponent<Image>().color = new Color(.025f, .045f, .065f, .98f);
             header = Label(overlay.transform, "", new Vector2(30, -20), new Vector2(1000, 50), 23);
@@ -28,32 +31,64 @@ namespace ForjaDasMares.Networking
             equip = Button(overlay.transform, "EQUIPAR", new Vector2(620, -535), new Vector2(185, 48), Equip);
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
             discard = Button(overlay.transform, "DESCARTAR", new Vector2(1030, -535), new Vector2(185, 48), Discard);
-            notice = Label(overlay.transform, "", new Vector2(30, -620), new Vector2(1180, 75), 18); overlay.SetActive(false);
+            notice = Label(overlay.transform, "", new Vector2(30, -620), new Vector2(1180, 75), 18);
+            if(director.Campaign!=null)BuildPaperDoll();
+            overlay.SetActive(false);
         }
+        void BuildPaperDoll()
+        {
+            overlay.GetComponent<Image>().color=RusticHudTheme.Ink;
+            for(int i=0;i<rows.Length;i++)
+            {
+                var r=(RectTransform)rows[i].transform;r.anchoredPosition=new Vector2(30+i%4*118,-105-i/4*125);r.sizeDelta=new Vector2(110,112);RusticHudTheme.Skin(rows[i]);
+                var text=rows[i].GetComponentInChildren<Text>();var tr=(RectTransform)text.transform;tr.sizeDelta=r.sizeDelta;text.fontSize=15;
+            }
+            var previewRect=RusticHudTheme.Rect(overlay.transform,"HeroPreview",new Vector2(0,1),new Vector2(745,-112),new Vector2(185,280));
+            var raw=previewRect.gameObject.AddComponent<RawImage>();raw.raycastTarget=false;paperDoll=overlay.AddComponent<EquipmentPaperDoll>();paperDoll.Configure(raw);
+            Vector2[] points={new Vector2(540,-130),new Vector2(965,-130),new Vector2(540,-255),new Vector2(965,-255),new Vector2(750,-405)};
+            for(int i=0;i<5;i++)
+            {
+                int slot=i;equipmentSlots[i]=Button(overlay.transform,"EquipmentSlot_"+i,points[i],new Vector2(175,100),()=>SelectEquipped(slot));RusticHudTheme.Skin(equipmentSlots[i]);
+                var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,100);text.fontSize=15;
+            }
+            var info=(RectTransform)detail.transform;info.anchoredPosition=new Vector2(30,-382);info.sizeDelta=new Vector2(475,170);detail.fontSize=16;
+            foreach(var button in new[]{equip,remove,discard}){var rect=(RectTransform)button.transform;rect.anchoredPosition=new Vector2(rect.anchoredPosition.x,-560);RusticHudTheme.Skin(button);}
+        }
+        void SelectEquipped(int slot)
+        {var actor=director.Actor(director.LocalSlot);var set=channel.LocalProfile?.Loadout(actor.Roster.Current.heroId);selected=set!=null?set.items[slot]:null;pendingDiscard=null;Refresh();}
         void Show(bool result)
         {
             if (channel.LocalProfile == null || director.LocalSlot < 0) return;
             results = result; selected = pendingDiscard = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); director.SetInputBlocked(true); Refresh();
         }
-        void TopRight(Transform parent, string label, float y, UnityEngine.Events.UnityAction action)
-        { var rect = (RectTransform)Button(parent, label, Vector2.zero, new Vector2(190, 44), action).transform; rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one; rect.anchoredPosition = new Vector2(-15, y); }
+        Button TopRight(Transform parent,string label,float y,UnityEngine.Events.UnityAction action)
+        {
+            var button=Button(parent,label,Vector2.zero,new Vector2(190,44),action);var rect=(RectTransform)button.transform;
+            if(director.Campaign!=null){rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(30,label=="INVENTÁRIO"?20:75);RusticHudTheme.Skin(button);}
+            else{rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.one;rect.anchoredPosition=new Vector2(-15,y);}return button;
+        }
         void Close() { overlay.SetActive(false); pendingDiscard = null; director.SetInputBlocked(false); }
         void Update()
         {
+            if(inventoryButton!=null)
+            {
+                inventoryButton.interactable=director.LocalSlot>=0;
+                if(director.Campaign!=null)resultButton.gameObject.SetActive(director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
+            }
             if (overlay == null || !overlay.activeSelf) return;
             if (director.LocalSlot < 0) { Close(); return; }
-            if (revision != channel.Revision) Refresh();
+            if (revision != channel.Revision||management!=CanManageNow) Refresh();
         }
         void Select(int row)
         { var items = channel.LocalProfile.inventory; int index = page * 8 + row; if (index >= items.Count) return; selected = items[index].instanceId; pendingDiscard = null; Refresh(); }
         void Refresh()
         {
-            var profile = channel.LocalProfile; if (profile == null) return; revision = channel.Revision;
+            var profile = channel.LocalProfile; if (profile == null) return; revision = channel.Revision;management=CanManageNow;
             header.text = results ? "RESULTADO COOPERATIVO" : "INVENTÁRIO DA SESSÃO — " + profile.inventory.Count + "/" + channel.Catalog.inventoryCapacity;
             for (int i = 0; i < rows.Length; i++)
             {
                 int index = page * 8 + i; bool visible = !results && index < profile.inventory.Count; rows[i].gameObject.SetActive(visible);
-                if (visible) { var item = profile.inventory[index]; rows[i].GetComponentInChildren<Text>().text = channel.Catalog.Find(item.definitionId).displayName + " — " + item.rarity; }
+                if (visible) { var item = profile.inventory[index]; rows[i].GetComponentInChildren<Text>().text = channel.Catalog.Find(item.definitionId).displayName + "\n" + item.rarity;var color=channel.Catalog.Rarity(item.rarity).color;rows[i].GetComponentInChildren<Text>().color=color; }
             }
             equip.gameObject.SetActive(!results); remove.gameObject.SetActive(!results); discard.gameObject.SetActive(!results);
             var actor = director.Actor(director.LocalSlot); var value = profile.Item(selected);
@@ -72,7 +107,20 @@ namespace ForjaDasMares.Networking
                 if (!ProgressionStats.CanEquip(profile, channel.Catalog, actor.Roster.Current.heroId, value, definition.slot, out string reason)) detail.text += "\n" + reason;
                 var loadout = profile.Loadout(actor.Roster.Current.heroId); if (loadout != null) for (int i = 0; i < loadout.items.Length; i++) if (loadout.items[i] == selected) detail.text += "\nEQUIPADO: " + (EquipmentSlot)i;
             }
-            equip.interactable = remove.interactable = discard.interactable = !results && value != null;
+            if(paperDoll!=null)
+            {
+                var detailRect=(RectTransform)detail.transform;detailRect.anchoredPosition=results?new Vector2(40,-130):new Vector2(30,-382);detailRect.sizeDelta=results?new Vector2(1140,430):new Vector2(475,170);
+                paperDoll.SetVisible(!results);paperDoll.Refresh(actor.Presentation,profile,actor.Roster.Current.heroId);
+                string[] names={"ARMA PRINCIPAL","SECUNDÁRIA","ARMADURA","ACESSÓRIO","ARTEFATO"};var set=profile.Loadout(actor.Roster.Current.heroId);
+                for(int i=0;i<5;i++)
+                {
+                    equipmentSlots[i].gameObject.SetActive(!results);var equipped=set!=null?profile.Item(set.items[i]):null;
+                    equipmentSlots[i].GetComponentInChildren<Text>().text=names[i]+"\n"+(equipped!=null?channel.Catalog.Find(equipped.definitionId).displayName:i==0?"Ataque base do herói":"Vazio");
+                }
+                if(!results&&profile.inventory.Count==0)detail.text="Sua mochila está vazia. O herói já tem ataque básico: vença inimigos e abra baús para conquistar equipamentos.\nSaque desta tentativa: "+(profile.expedition?.items.Count??0)+" itens. Eles são guardados no resultado.";
+            }
+            bool canEquip=value!=null&&ProgressionStats.CanEquip(profile,channel.Catalog,actor.Roster.Current.heroId,value,channel.Catalog.Find(value.definitionId).slot,out _);
+            equip.interactable=!results&&management&&canEquip;remove.interactable=discard.interactable=!results&&management&&value!=null;
             discard.GetComponentInChildren<Text>().text = pendingDiscard == selected && selected != null ? "CONFIRMAR?" : "DESCARTAR";
             notice.text = channel.Message ?? "Gerencie fora de encontros; equipar não cura. O progresso cooperativo é armazenado no host, separado do perfil local.";
         }

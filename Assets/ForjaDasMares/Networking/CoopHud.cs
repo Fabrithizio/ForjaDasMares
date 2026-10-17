@@ -11,7 +11,7 @@ namespace ForjaDasMares.Networking
         Text status, party; InputField address, pin, port;
         Button host, join, start, hero; RectTransform root; GameObject menu, touch;
         float refresh; readonly StringBuilder text = new StringBuilder(512);
-        Font font;
+        Font font;int previousSleep;
         CoopCloud cloud; InputField cloudCode; Text cloudStatus; Button cloudHost, cloudJoin;
         public RectTransform SafeRoot => root;
         readonly System.Collections.Generic.List<RaycastResult> pointerHits = new System.Collections.Generic.List<RaycastResult>(16);
@@ -20,9 +20,15 @@ namespace ForjaDasMares.Networking
         public void Configure(CoopDirector director, ArenaInput input) { session = director; controls = input; }
         void Start()
         {
+            previousSleep=Screen.sleepTimeout;if(Application.isMobilePlatform)Screen.sleepTimeout=SleepTimeout.NeverSleep;
             font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             root = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>(); root.SetParent(transform, false);
             var layout = GetComponent<CanvasScaler>(); layout.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; layout.referenceResolution = new Vector2(1280, 720); layout.matchWidthOrHeight = .5f;
+            if(session.Campaign!=null)
+            {
+                layout.matchWidthOrHeight=1;
+                gameObject.AddComponent<CampaignHud>().Build(root,session,controls);controls.PointerBlocked=PointerOverUi;return;
+            }
             menu = Panel(root, "SessionMenu", new Vector2(340, 390), new Vector2(15, -15));
             Label(menu.transform, "FORJA DAS MARÉS — COOP", new Vector2(310, 40), new Vector2(15, -8), 21);
             address = Field(menu.transform, "127.0.0.1", new Vector2(15, -58), 195); port = Field(menu.transform, "7777", new Vector2(220, -58), 100);
@@ -62,6 +68,7 @@ namespace ForjaDasMares.Networking
         {
             if (root == null) return;
             Rect safe = Screen.safeArea; root.anchorMin = new Vector2(safe.xMin / Screen.width, safe.yMin / Screen.height); root.anchorMax = new Vector2(safe.xMax / Screen.width, safe.yMax / Screen.height); root.offsetMin = root.offsetMax = Vector2.zero;
+            if(session.Campaign!=null)return;
             refresh -= Time.unscaledDeltaTime; if (refresh > 0) return; refresh = .15f;
             bool disconnected = session.Phase == CoopPhase.Offline || session.Phase == CoopPhase.Closed;
             host.interactable = join.interactable = disconnected && !session.Manager.IsListening;
@@ -86,6 +93,6 @@ namespace ForjaDasMares.Networking
         { var go = Panel(parent, value, new Vector2(width, 44), offset); go.GetComponent<Image>().color = new Color(.12f, .3f, .4f); var button = go.AddComponent<Button>(); button.onClick.AddListener(action); var label = Label(go.transform, value, new Vector2(width, 44), Vector2.zero); label.alignment = TextAnchor.MiddleCenter; return button; }
         InputField Field(Transform parent, string value, Vector2 offset, float width)
         { var go = Panel(parent, "Input", new Vector2(width, 40), offset); go.GetComponent<Image>().color = new Color(.12f, .17f, .2f); var label = Label(go.transform, value, new Vector2(width - 12, 40), new Vector2(6, 0)); label.alignment = TextAnchor.MiddleLeft; var field = go.AddComponent<InputField>(); field.textComponent = label; field.characterLimit = 48; field.text = value; return field; }
-        void OnDestroy() { if (controls != null) controls.PointerBlocked = null; }
+        void OnDestroy() { if(Application.isMobilePlatform)Screen.sleepTimeout=previousSleep; if (controls != null) controls.PointerBlocked = null; }
     }
 }
