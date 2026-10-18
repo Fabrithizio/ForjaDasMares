@@ -327,7 +327,6 @@ M	Assets/ForjaDasMares/Scripts/Gameplay/ProfileService.cs
 M	Assets/ForjaDasMares/Scripts/Persistence/ProfileStore.cs
 M	Assets/ForjaDasMares/Scripts/Presentation/CameraOcclusion.cs
 M	Assets/ForjaDasMares/Scripts/UI/RusticHudTheme.cs
-M	Assets/Settings/UniversalRenderPipelineGlobalSettings.asset
 M	Docs/ARQUITETURA.md
 A	Docs/ASSETS_E_DIRECAO_0_10.md
 M	Docs/CAMPANHA_COMO_JOGAR.md
