@@ -1,3 +1,15 @@
+# Entrega atual — 0.11.0, 18/10/2026
+
+Minimapa com inimigos, setor pendente e objetivos; reforços intermediários sem apagar remanescentes; emissores de flechas e avisos de chegada; arma inicial comum focada, sem bônus solo; armas por classe com combos/habilidades reais; inventário por slots/categorias, secundária permitida e comparação; personagem acessível no início; barra de habilidades no PC com ícones e Fúria temporária do guerreiro. Saves mantidos e loadouts antigos incompatíveis desequipados para a mochila. Sem modelos/clips finais novos nesta revisão.
+
+Validação: regressão PlayMode geral com 174 casos, 173 aprovados, zero falhas, 1 ignorado; grupo focado de correções: 14/14 aprovados. Após o último ajuste visual da réplica, repetidos todos os testes de rede: 65 casos, 64 aprovados, 0 falhas, 1 ignorado. Unity 6.3 LTS (6000.3.26f1). Builds reais Windows/Android 0.11.0, protocolo 7, APK ARM64 versão 25. Teste físico PC + moto g15 no mesmo Wi-Fi pelo Relay: entrada, movimento, mapa compartilhado, derrota→lobby→fase seguinte→reentrada, intenção offline validada no host e encerramento sincronizado. Resultado/recompensas na rodada anterior foram acionados administrativamente, não por vitória humana. Não testado entre redes diferentes, quatro pessoas ou FPS medido.
+
+**Aprovado com limitações para testes privados.** Host ainda encerra a sala quando sai; sem migração/servidor dedicado. Perfil deste aparelho e cache da última sala são contextos separados, não uma conta global. Arte, animações, equilíbrio humano, sessões prolongadas e desempenho em outros dispositivos ainda exigem trabalho. Não é release comercial/PlayStore.
+
+Arquitetura atualizada em ARQUITETURA.md; configurações/passos em CAMPANHA_COMO_JOGAR.md; arquivos em ARQUIVOS_0_11.txt. Dependências, evidências e problemas intermediários em REVISAO_0_11_2026-10-18.md. Fonte/dados/documentação entram no GitHub; saves pessoais e builds não são inventário global nem backup de conta. Os registros abaixo são históricos.
+
+---
+
 # Entrega atual — campanha 0.9.1, 17/10/2026
 
 Base existente preservada; esta revisão melhora estabilidade, exploração e combate cooperativo. Foram implementados suprimentos, selos opcionais, fontes limitadas, encontros variantes, três armas e carregado/SUPER do guerreiro com autoridade do host. Inventário e resultado receberam correções reais; protocolo5, sem migração de save. Consulte `AVENTURA_0_9_2026-10-17.md` para evidências, lista de arquivos, builds e limites. Instruções atuais em `CAMPANHA_COMO_JOGAR.md`; os registros abaixo são históricos.

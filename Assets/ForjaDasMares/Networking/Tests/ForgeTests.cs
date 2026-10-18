@@ -60,7 +60,9 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTest]public IEnumerator ReplicaWeaponIsHiddenWhenActorReturnsToAuthority()
         {
-            var actor=session.Actor(1);actor.gameObject.SetActive(true);var frame=new ActorFrame{hero=0,mainItem="fenda-axe",maximum=100,hp=100};actor.Apply(frame);actor.ApplyGear(frame,progression.Catalog);var visual=actor.GetComponentsInChildren<MeshRenderer>(true).First(x=>x.name=="ReplicaMain");Assert.IsTrue(visual.gameObject.activeSelf);actor.SetAuthority(true);Assert.IsFalse(visual.gameObject.activeSelf);yield return null;
+            var actor=session.Actor(1);actor.gameObject.SetActive(true);var frame=new ActorFrame{hero=0,mainItem="fenda-axe",maximum=100,hp=100};actor.Apply(frame);actor.ApplyGear(frame,progression.Catalog);var visual=actor.GetComponentsInChildren<MeshRenderer>(true).First(x=>x.name=="ReplicaMain");Assert.IsTrue(visual.gameObject.activeSelf);
+            frame.mainItem="";actor.ApplyGear(frame,progression.Catalog);Assert.IsFalse(visual.gameObject.activeSelf);Assert.NotNull(actor.Presentation.Visible.GetComponentInChildren<HeroModelView>(true));Assert.IsFalse(actor.Presentation.Visible.Find("GreatSword").gameObject.activeSelf,"A espada geométrica antiga não pode sobrepor o modelo equipado ou sua arma padrão.");
+            frame.mainItem="fenda-axe";actor.ApplyGear(frame,progression.Catalog);Assert.IsTrue(visual.gameObject.activeSelf);actor.SetAuthority(true);Assert.IsFalse(visual.gameObject.activeSelf);yield return null;
         }
         [UnityTest]public IEnumerator MinimapExpandsAndProjectileOriginCannotCrossCover()
         {

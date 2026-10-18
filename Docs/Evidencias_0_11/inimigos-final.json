@@ -1,0 +1,7 @@
+{
+  "hostEnemies": 4,
+  "phoneEnemies": 4,
+  "sameMap": true,
+  "hostPhase": "Playing",
+  "phonePhase": "Playing"
+}

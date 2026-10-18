@@ -1,0 +1,26 @@
+{
+  "total": "174",
+  "passed": "173",
+  "failed": "0",
+  "skipped": "1",
+  "duration": "441,7058062",
+  "focused": {
+    "total": "14",
+    "passed": "14",
+    "failed": "0",
+    "duration": "13,2629598"
+  },
+  "networkAfterVisualFix": {
+    "total": "65",
+    "passed": "64",
+    "failed": "0",
+    "skipped": "1",
+    "duration": "93,7486995"
+  },
+  "ignored": [
+    {
+      "name": "UnlinkedInternetAttemptPreservesOfflineSession",
+      "reason": "Requires unlinked project; no live service calls in regression."
+    }
+  ]
+}

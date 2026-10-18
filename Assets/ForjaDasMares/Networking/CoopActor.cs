@@ -41,9 +41,13 @@ namespace ForjaDasMares.Networking
             EquipmentVisualPlacement.Mount(secondaryGear.transform,model!=null?model.SecondarySocket:Presentation.Visible,model!=null,new Vector3(-.55f,1,.3f),Quaternion.identity);
             ShowGear(mainGear,main);ShowGear(secondaryGear,secondary);
             if(model!=null)model.ShowDefaultWeapon(main==null);
-            foreach (Transform body in transform) if (body.name.StartsWith("HeroVisual_")) foreach (Transform part in body)
-                if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(main == null);
-                else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
+            foreach (Transform body in transform) if (body.name.StartsWith("HeroVisual_"))
+            {
+                bool geometric=body.GetComponentInChildren<HeroModelView>(true)==null;
+                foreach (Transform part in body)
+                    if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(geometric&&main == null);
+                    else if (part.name == "Shield") part.gameObject.SetActive(geometric&&secondary == null);
+            }
         }
         MeshRenderer CreateGear(string label, Vector3 position)
         {

@@ -1,3 +1,19 @@
+# Versão de testes atual: 0.11.0 — 18/10/2026
+
+PC: **Jogos/Jogar Campanha Forja das Mares**. Android: **Jogos/Enviar para meu irmao/ForjaDasMares-0.11.0-Android.apk**. Envie como Documento no WhatsApp; ambos precisam desta versão.
+
+Minimapa com inimigos, setor pendente e objetivos; reforços intermediários sem apagar remanescentes; emissores de flechas e avisos de chegada; arma inicial comum focada, sem bônus solo; armas por classe com combos/habilidades reais; inventário por slots/categorias, secundária permitida e comparação; personagem acessível no início; barra de habilidades no PC com ícones e Fúria temporária do guerreiro. Saves mantidos e loadouts antigos incompatíveis desequipados para a mochila. Sem modelos/clips finais novos nesta revisão.
+
+Validação: regressão PlayMode geral com 174 casos, 173 aprovados, zero falhas, 1 ignorado; grupo focado de correções: 14/14 aprovados. Após o último ajuste visual da réplica, repetidos todos os testes de rede: 65 casos, 64 aprovados, 0 falhas, 1 ignorado. Unity 6.3 LTS (6000.3.26f1). Builds reais Windows/Android 0.11.0, protocolo 7, APK ARM64 versão 25. Teste físico PC + moto g15 no mesmo Wi-Fi pelo Relay: entrada, movimento, mapa compartilhado, derrota→lobby→fase seguinte→reentrada, intenção offline validada no host e encerramento sincronizado. Resultado/recompensas na rodada anterior foram acionados administrativamente, não por vitória humana. Não testado entre redes diferentes, quatro pessoas ou FPS medido.
+
+[Como jogar](Docs/CAMPANHA_COMO_JOGAR.md) · [relatório, builds e limitações](Docs/REVISAO_0_11_2026-10-18.md) · [arquivos](Docs/ARQUIVOS_0_11.txt).
+
+**Aprovado com limitações para testes privados.** Host ainda encerra a sala quando sai; sem migração/servidor dedicado. Perfil deste aparelho e cache da última sala são contextos separados, não uma conta global. Arte, animações, equilíbrio humano, sessões prolongadas e desempenho em outros dispositivos ainda exigem trabalho. Não é release comercial/PlayStore.
+
+Os blocos abaixo são históricos.
+
+---
+
 # Versão de testes atual:0.10.1 (17/10/2026)
 
 Windows e Android, protocolo6. Abra **Jogos/Jogar Campanha Forja das Mares**. Para enviar ao irmão: **Jogos/Enviar para meu irmao/ForjaDasMares-0.10.1-Android.apk**, como Documento no WhatsApp. Ambos precisam da mesma versão;0.9.x é incompatível com esta revisão.
