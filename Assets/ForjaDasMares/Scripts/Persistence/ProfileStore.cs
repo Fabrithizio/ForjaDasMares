@@ -66,8 +66,10 @@ namespace ForjaDasMares
         static void Validate(PlayerProfile profile, ProgressionCatalog catalog)
         {
             if (profile.version != 2 || profile.experience < 0 || profile.experience > 1000000 || profile.coins < 0 || profile.coins > 100000000 || profile.inventory == null || profile.deliveries == null || profile.loadouts == null || profile.completedRuns == null || profile.options == null) throw new InvalidDataException("Perfil inválido.");
-            if (profile.inventory.Count > catalog.inventoryCapacity || profile.inventory.Count + profile.deliveries.Count > 512 || profile.completedRuns.Count > 256 || profile.loadouts.Count > catalog.heroes.Length) throw new InvalidDataException("Limites de perfil excedidos.");
+            if (InventoryRules.BagCount(profile) > catalog.inventoryCapacity || profile.inventory.Count + profile.deliveries.Count > 512 || profile.completedRuns.Count > 256 || profile.loadouts.Count > catalog.heroes.Length) throw new InvalidDataException("Limites de perfil excedidos.");
             if (float.IsNaN(profile.options.volume) || profile.options.volume < 0 || profile.options.volume > 1) throw new InvalidDataException("Opções inválidas.");
+            profile.talents??=new List<HeroTalentAllocation>();var talentHeroes=new HashSet<string>();
+            foreach(var set in profile.talents){if(set==null||!talentHeroes.Add(set.heroId)||catalog.Hero(set.heroId)==null||set.ranks==null||set.ranks.Length!=6)throw new InvalidDataException("Talentos inválidos.");int spent=0;for(int i=0;i<6;i++){if(set.ranks[i]<0||set.ranks[i]>catalog.talents[i].maximumRank)throw new InvalidDataException("Talento fora dos limites.");spent+=set.ranks[i];}if(spent>ProgressionStats.Level(profile.experience,catalog.maximumLevel)-1)throw new InvalidDataException("Pontos de talento excedidos.");}
             var ids = new HashSet<string>();
             foreach (var item in profile.inventory) Item(item, catalog, ids);
             foreach (var item in profile.deliveries) Item(item, catalog, ids);
@@ -80,7 +82,7 @@ namespace ForjaDasMares
             if (profile.expedition != null)
             {
                 var run = profile.expedition;
-                if (string.IsNullOrWhiteSpace(run.runId) || catalog.Hero(run.heroId) == null || run.items == null || run.events == null || run.items.Count > catalog.expeditionCapacity || run.events.Count > 2048 || run.experience < 0 || run.experience > 100000 || run.coins < 0 || run.coins > 1000000) throw new InvalidDataException("Expedição inválida.");
+                if (string.IsNullOrWhiteSpace(run.runId) || catalog.Hero(run.heroId) == null || run.items == null || run.events == null || run.items.Count > catalog.expeditionCapacity || run.events.Count > 2048 || run.experience < 0 || run.experience > 100000 || run.coins < 0 || run.coins > 1000000||run.bankedExperience<0||run.bankedExperience>run.experience||run.bankedCoins<0||run.bankedCoins>run.coins) throw new InvalidDataException("Expedição inválida.");
                 foreach (var item in run.items) Item(item, catalog, ids);
                 var events = new HashSet<string>(); foreach (var id in run.events) if (string.IsNullOrWhiteSpace(id) || id.Length > 128 || !events.Add(id)) throw new InvalidDataException("Evento duplicado ou inválido.");
             }

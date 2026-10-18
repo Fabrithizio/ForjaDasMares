@@ -1,3 +1,19 @@
+# Atualização 0.12 — propriedade, talentos e economia
+
+InventoryRules centraliza posse visual, capacidade livre da mochila e valor de reciclagem. A coleção persistente conserva IDs únicos de itens possuídos; loadouts referenciam esses IDs. A interface exclui todos os IDs equipados da mochila/saque, sem copiar ou apagar o item. A mesma instância não pode equipar dois heróis. Desequipar com mochila cheia falha sem perder o equipamento.
+
+HeroTalents separa seis regras configuráveis no ProgressionCatalog das alocações persistidas em PlayerProfile. Cada herói dispõe de nível global − 1 pontos; máximo cinco graduações por melhoria. SpendTalent/ResetTalents são transações persistidas e intenções validadas pelo host na rede. HeroEquipment inclui o conjunto de talentos na assinatura e aplica ProgressionStats às funções reais. Equipamentos e talentos compartilham os limites existentes; sem crescimento multiplicativo infinito.
+
+RewardRule.instantCurrency credita XP/ouro na transação da morte. ExpeditionData.bankedExperience/bankedCoins registra a parcela já paga: finalizar, morrer ou retomar após interrupção não paga novamente. Saves versão 2 anteriores têm esses campos em zero e seguem a consolidação anterior. CoopRewardLedger mantém idempotência por evento e participante. A campanha não concede mais item/ouro por RoomWon; mantém reviver aliados. Baús, chefe, exploração e conclusão têm tabelas próprias.
+
+CampaignLootDrops recebe mensagens confiáveis somente do host após salvar a recompensa; não existe intenção do cliente para conceder ouro. Seus 32 tokens geométricos são apresentação temporária, com recolhimento automático. Cada participante recebe seus próprios prêmios, sem disputa. Equipamentos recebidos ficam no SAQUE ATUAL para uso fora de combate e são consolidados no fim; excesso usa as regras de capacidade existentes. Invocações recompensam pouco e mantêm orçamento finito.
+
+CampaignCharacterSheet, ItemDescriptions e o painel ItemComparison reutilizam CoopProfileChannel; sem mutações diretas da UI. Comparação mostra bônus intrínsecos e diferença, depois a prévia geral. A última sala em cache permite apenas o planejamento de equipamento existente; investir talentos/reciclar exige o host de origem ou o perfil deste aparelho. Ouro pode pagar redistribuição de talentos (25 por ponto investido).
+
+HUD: minimapa compacto superior esquerdo, vida/retrato ao lado e objetivo resumido. EquipmentPaperDoll usa mundos de prévia separados; retrato de 128×128 captura apenas quando muda o visual. Não cria outro ator de combate. Protocolo 8: cliente 0.11 não entra numa sala 0.12. Nenhuma dependência adicionada.
+
+---
+
 # Atualização implementada — 0.11.0
 
 CampaignForgeInstaller migra a CampaignCoop existente para dados próprios de campanha (4 heróis, 23 definições de equipamento), preservando IDs e cenas de referência. HeroCombat recebe combos e habilidade da arma via HeroEquipment. Ataques focados têm maximumTargets=1; StrikeOrigin/OriginClear impedem iniciar golpes/projéteis além de cobertura. Fúria é estado temporário do combate, replicado por ActorFrame; não aplica dano direto, não acumula nem recarrega a barra enquanto ativa. Protocolo 7 exige todos os clientes atualizados.

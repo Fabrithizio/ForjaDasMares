@@ -38,11 +38,11 @@ namespace ForjaDasMares.Networking
         public bool Active => ledger != null && ledger.Active;
         public bool Participating(int slot)=>ledger!=null&&ledger.Profile(slot)!=null;
         public int PendingCount => pending.Count;
-        sealed class Job { public RewardRule rule; public int seed; }
+        sealed class Job { public RewardRule rule; public int seed;public bool drop;public Vector3 position;public int[] before=new int[4]; }
         public void Configure(ProgressionCatalog data) => catalog = data;
         void Awake()
         {
-            director = GetComponent<CoopDirector>();
+            director = GetComponent<CoopDirector>();if(GetComponent<CampaignLootDrops>()==null)gameObject.AddComponent<CampaignLootDrops>();
             if (catalog == null) { Error = "Catálogo de progressão ausente."; enabled = false; return; }
             ledger = new CoopRewardLedger(catalog); directory = Path.Combine(Application.persistentDataPath, profileDirectory);
             var args = Environment.GetCommandLineArgs();
@@ -114,14 +114,14 @@ namespace ForjaDasMares.Networking
         void Died(EnemyActor actor)
         {
             if (!director.Manager.IsServer || !Active || !spawned.TryGetValue(actor, out int id)) return;
-            spawned.Remove(actor); if (actor.Profile.kind == EnemyKind.Minion) return;
-            Enqueue("enemy:" + id, actor.Profile.miniboss?catalog.miniboss:actor.Profile.kind == EnemyKind.Boss ? catalog.boss : catalog.enemy); TryFlush();
+            spawned.Remove(actor);
+            var rule=actor.Profile.kind==EnemyKind.Minion?catalog.summonedEnemy:actor.Profile.miniboss?catalog.miniboss:actor.Profile.kind==EnemyKind.Boss?catalog.boss:director.Campaign!=null&&director.Campaign.Selected==2?catalog.challengeEnemy:director.Campaign!=null&&director.Campaign.Selected==1?catalog.veteranEnemy:catalog.enemy;
+            string key="enemy:"+id;Enqueue(key,rule);var job=pending[key];job.drop=director.Campaign!=null;job.position=actor.transform.position;for(int i=0;i<4;i++)job.before[i]=profiles[i]?.Profile.expedition?.items.Count??0;TryFlush();
         }
         void RoomWon(DungeonRoom room)
         {
             if (!director.Manager.IsServer || !Active || room.encounter == null) return;
-            if(director.Campaign!=null&&room.node.id==1)Enqueue("first-weapon:"+room.node.id,catalog.firstVictory);
-            Enqueue("room:" + room.node.id, catalog.room); TryFlush();
+            if(director.Campaign==null)Enqueue("room:" + room.node.id, catalog.room); TryFlush();
             for (int i = 0; i < 4; i++)
             {
                 var actor = director.Actor(i); if (!director.IsConnected(i) || actor.Health.IsAlive) continue;
@@ -148,6 +148,14 @@ namespace ForjaDasMares.Networking
         public bool TryFlush()
         {
             foreach (var pair in pending) if (!ledger.Grant(pair.Key, pair.Value.rule, pair.Value.seed)) { Error = ledger.Error; return false; }
+            foreach(var pair in pending)if(pair.Value.drop)
+            {
+                var job=pair.Value;for(int i=0;i<4;i++)if(director.IsConnected(i)&&profiles[i]?.Profile.expedition!=null)
+                {
+                    var items=profiles[i].Profile.expedition.items;int rarity=items.Count>job.before[i]?(int)items[items.Count-1].rarity:-1;
+                    GetComponent<CampaignLootDrops>()?.Send(i,job.position,job.rule.coins,job.rule.experience,rarity);
+                }
+            }
             pending.Clear(); Error = null; return true;
         }
         public bool Finish(bool victory, string outcome)
@@ -160,7 +168,8 @@ namespace ForjaDasMares.Networking
         }
         public bool CanManage(int slot)
         {
-            var actor = director.Actor(slot); var state = director.Dungeon.Encounter.State;
+            if(slot<0||slot>=4)return false;var actor = director.Actor(slot); var state = director.Dungeon.Encounter.State;
+            if(director.Phase==CoopPhase.Lobby)return actor!=null&&director.IsConnected(slot)&&!actor.Combat.IsBusy;
             return actor != null && director.IsConnected(slot) && actor.Health.IsAlive && !actor.Combat.IsBusy
                 && director.Phase != CoopPhase.Loading && director.Phase != CoopPhase.Connecting
                 && (state != EncounterState.Spawning && state != EncounterState.Fighting || director.Dungeon.OpenLandscape&&!director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position,12)) && actor.Combat.Pool.ActiveProjectiles == 0 && actor.Combat.Pool.ActiveZones == 0;

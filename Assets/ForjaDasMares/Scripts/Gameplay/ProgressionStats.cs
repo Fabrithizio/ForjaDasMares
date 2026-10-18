@@ -32,6 +32,7 @@ namespace ForjaDasMares
                 foreach (var bonus in instance.modifiers) sum[(int)bonus.stat] += Mathf.Clamp(bonus.value, 0, ModifierLimit(bonus.stat));
                 if (data.category == WeaponCategory.Shield) block = Mathf.Clamp(data.frontalBlock * rarity.power, 0, .5f);
             }
+            foreach(var talent in catalog.talents)sum[(int)talent.stat]+=HeroTalents.Rank(profile,hero.heroId,talent.id)*talent.perRank;
             int level = Level(profile.experience, catalog.maximumLevel);
             return new StatSnapshot
             {
@@ -45,6 +46,7 @@ namespace ForjaDasMares
         public static bool CanEquip(PlayerProfile profile, ProgressionCatalog catalog, string heroId, ItemInstance item, EquipmentSlot slot, out string reason)
         {
             reason = ""; if (item == null || profile.Item(item.instanceId) == null) { reason = "Item não está no inventário."; return false; }
+            foreach(var set in profile.loadouts)if(set.heroId!=heroId)foreach(var id in set.items)if(id==item.instanceId){reason="Equipado em outro herói. Desequipe primeiro.";return false;}
             var data = catalog.Find(item.definitionId); var hero = catalog.Hero(heroId);
             if (data == null || hero == null || (data.compatibleHeroes & hero.affinity) == 0) { reason = "Incompatível com este herói."; return false; }
             if (Level(profile.experience, catalog.maximumLevel) < data.minimumLevel) { reason = "Requer nível " + data.minimumLevel; return false; }

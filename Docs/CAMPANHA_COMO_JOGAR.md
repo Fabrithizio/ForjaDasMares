@@ -1,26 +1,36 @@
-# Jogar a campanha 0.11.0
+# Jogar a campanha 0.12.0 (PC)
 
 ## PC e Android juntos
 
-1. PC: abra **Jogos/Jogar Campanha Forja das Mares**. Android: instale **Jogos/Enviar para meu irmao/ForjaDasMares-0.11.0-Android.apk**. Para compartilhar, envie esse APK como Documento no WhatsApp; não envie só o executável de PC.
+1. PC atualizado: **Jogos/Jogar Campanha Forja das Mares**. Esta revisão usa protocolo 8. O APK 0.11 anterior usa protocolo 7 e não pode entrar numa sala 0.12; nova geração/distribuição de APK foi adiada a pedido do usuário. A pasta de envio ao irmão não foi atualizada.
 2. Ambos precisam de internet e da mesma versão. Host: CAMPANHA → fase → CRIAR SALA PRIVADA. Compartilhe o código exibido.
 3. Convidado: CAMPANHA → informe o código → ENTRAR PELO CÓDIGO. Host: INICIAR COM O GRUPO. Prefira aguardar todos no lobby.
 4. Pode iniciar sozinho, sem bônus de vida ou dano. Uma sala publicada recebe jogadores até 20% do percurso e no máximo quatro; uma sala privada depende de código.
-5. MENU/Esc abre sala, convites, mapa e opções durante a fase. Não pausa o online. Inventário possui equipamento, comparação e descarte confirmado; o resultado mostra os itens obtidos.
+5. MENU/Esc abre sala, convites, mapa e opções durante a fase. Não pausa o online. Inventário possui equipamento, comparação e reciclagem confirmada por ouro; o resultado mostra os itens obtidos.
 6. Mantenha o host aberto; sair encerra a sessão. O host guarda a progressão cooperativa. Não há migração de host nem transferência automática de progresso entre hosts. Amigos são agenda local de convites, não uma rede social com presença.
 
 ## Perfil e equipamento antes de entrar
 
 - No início, abra **PERSONAGEM · EQUIPAMENTOS E MOCHILA**. Escolha herói e use TODOS/ARMAS/SECUND./ARMADURA/ACESSÓRIO/ARTEFATO; o filtro de classe começa ativo.
-- Os cinco slots aparecem ao redor do avatar. Selecione um item para comparar atributos, classe/nível e habilidade. Adagas compatíveis oferecem USAR NA SECUNDÁRIA quando permitido; uma arma de duas mãos retira a secundária para a mochila.
-- Cada classe recebe uma arma inicial comum, fraca e focada em um alvo. O primeiro combate vencido concede uma arma comum utilizável, uma única vez por classe. Confira **SAQUE ATUAL**, compare e equipe fora de perigo; nada é equipado automaticamente.
+- Os cinco slots aparecem ao redor do avatar. Equipados saem da grade da mochila; desequipar os devolve. Mochila cheia impede desequipar sem perder a peça. Selecione um item para comparar atributos, classe/nível e habilidade. Adagas compatíveis oferecem USAR NA SECUNDÁRIA quando permitido; uma arma de duas mãos retira a secundária para a mochila.
+- Cada classe recebe uma arma inicial comum, fraca e focada em um alvo. Ouro e XP são concedidos imediatamente por morte; equipamento é aleatório, com melhores chances nas fases mais difíceis. Não há mais arma gratuita por concluir a primeira sala. Confira **SAQUE ATUAL**, compare e equipe fora de perigo; nada é equipado automaticamente.
 - O contexto **ESTE APARELHO** é usado quando você hospeda. **ÚLTIMA SALA** permite organizar o último perfil recebido de outro host: alterações de equipamento são revalidadas ao voltar ao mesmo host, no lobby. Aguarde a sincronização antes de iniciar. Não transfere itens entre hosts nem representa uma conta global.
 - Saves antigos são mantidos; itens que ficaram incompatíveis com a classe voltam para a mochila. Atualize o APK por cima, sem limpar os dados do aplicativo.
+
+## Níveis, itens e ouro
+
+- Cada nível após o primeiro libera **1 ponto por herói**. No perfil, abra **ATRIBUTOS E TALENTOS**. Escolha Vigor, Força, Tenacidade, Agilidade, Precisão ou Disciplina. Cada melhoria tem limite de cinco pontos. As regras ficam no catálogo de dados.
+- Para redistribuir, confirme o custo de **25 ouro por ponto já investido**. Investir e reciclar funciona no seu perfil deste aparelho ou conectado ao host do perfil da sala, fora de perigo. O cache ÚLTIMA SALA sem o host não pode conceder ouro/talentos.
+- Clique/toque na peça da mochila ou num slot para ver atributos próprios, alcance, sequência, habilidade, requisitos e ouro de reciclagem. A comparação começa pelo item equipado no mesmo slot; **COMPARAR COM OUTRO ITEM** percorre outras peças possuídas desse slot.
+- **RECICLAR** exige confirmação e devolve ouro apenas uma vez. Desequipe antes de reciclar. O ouro fica salvo e é a moeda base; não há loja de dinheiro real nesta fase.
+- Todos os inimigos mortos concedem ouro e XP pelo host, inclusive invocações finitas com prêmio menor. Tokens de drop são recolhidos automaticamente e não disputados entre aliados. Equipamentos aleatórios aparecem em SAQUE ATUAL para equipar fora de combate; são guardados ao terminar a expedição. Créditos imediatos não se repetem no resultado e são mantidos na derrota.
+- Fases inicial/veterana/desafiadora: inimigo comum concede 2/3/4 ouro e XP, com chance de equipamento de 10/14/19%. Desafiadora usa raridade mínima incomum. Chefes, elites e baús usam suas tabelas próprias. Capacidade de saque pode limitar equipamento adicional; ouro/XP de mortes continuam.
 
 ## HUD e orientação
 
 - PC: I abre/fecha personagem; M amplia o minimapa; Esc/MENU abre opções e código da sala. Barra com ícones: ataque, E habilidade da arma/classe, Espaço esquiva, F interação, Q super/Fúria, I personagem.
 - Celular: toque no minimapa para ampliar; os controles de combate continuam nas laterais. FÚRIA mostra a duração restante quando ativa.
+- O minimapa compacto fica no topo esquerdo; vida e retrato ao lado. O menu da sala mantém código e opções.
 - Vermelho marca inimigos e setor pendente; azul/ciano, grupo/jogador; dourado, objetivo. A distância ao inimigo mais próximo ajuda a encontrar remanescentes.
 - Flechas têm emissores visíveis com preparação; inimigos mostram um anel de chegada antes de agir. São recursos provisórios, não arte final.
 

@@ -103,12 +103,12 @@ namespace ForjaDasMares.Networking.Editor
         {
             if(EditorUserBuildSettings.activeBuildTarget!=target)throw new InvalidOperationException("Incorrect active build target.");
             if(string.IsNullOrEmpty(Application.cloudProjectId))throw new InvalidOperationException("Unity Services project must remain linked.");
-            string folder=target==BuildTarget.Android?"Builds/CampaignAndroid-0.11.0":"Builds/CampaignWindows-0.11.0";Directory.CreateDirectory(folder);
+            string folder=target==BuildTarget.Android?"Builds/CampaignAndroid-0.12.0":"Builds/CampaignWindows-0.12.0";Directory.CreateDirectory(folder);
             string name=PlayerSettings.productName,id=PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
             try
             {
-                PlayerSettings.productName="Forja das Mares - Campanha";PlayerSettings.bundleVersion="0.11.0";PlayerSettings.runInBackground=true;
-                if(target==BuildTarget.Android){PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.forjadasmares.campaign");PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.bundleVersionCode=25;PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35;EditorUserBuildSettings.buildAppBundle=false;}
+                PlayerSettings.productName="Forja das Mares - Campanha";PlayerSettings.bundleVersion="0.12.0";PlayerSettings.runInBackground=true;
+                if(target==BuildTarget.Android){PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.forjadasmares.campaign");PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.bundleVersionCode=26;PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35;EditorUserBuildSettings.buildAppBundle=false;}
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{ScenePath,CoopInstaller.ScenePath,GaleriasInstaller.DungeonScene,GaleriasInstaller.ArenaScene,ProgressionInstaller.DungeonScene,ProgressionInstaller.ArenaScene},target=target,locationPathName=folder+(target==BuildTarget.Android?"/ForjaDasMaresCampanha.apk":"/ForjaDasMaresCampanha.exe"),options=BuildOptions.Development});
                 Debug.Log("CAMPAIGN_BUILD "+target+" "+report.summary.result+" errors="+report.summary.totalErrors);
                 if(report.summary.result!=BuildResult.Succeeded)throw new InvalidOperationException("Campaign build failed; inspect the generated project and log.");

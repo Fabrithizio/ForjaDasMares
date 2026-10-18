@@ -42,7 +42,7 @@ namespace ForjaDasMares
                     if(next.starterGranted.Contains(rule.heroId))continue;
                     if(next.inventory.Count+next.deliveries.Count>=510)continue;
                     var item=LootGenerator.Create(catalog,rule.itemId,ItemRarity.Common,new System.Random(607));
-                    bool space=next.inventory.Count<catalog.inventoryCapacity;
+                    bool space=InventoryRules.BagCount(next)<catalog.inventoryCapacity||string.IsNullOrEmpty(next.Loadout(rule.heroId)?.items[0]);
                     if(space)next.inventory.Add(item);else next.deliveries.Add(item);
                     var set=next.Loadout(rule.heroId);if(set==null){set=new HeroLoadout{heroId=rule.heroId};next.loadouts.Add(set);}
                     if(space&&string.IsNullOrEmpty(set.items[0]))set.items[0]=item.instanceId;
@@ -74,7 +74,9 @@ namespace ForjaDasMares
         }
         public bool Unequip(string heroId, EquipmentSlot slot)
         {
-            if (Profile.Loadout(heroId) == null) return false;
+            if (!Enum.IsDefined(typeof(EquipmentSlot),slot)||Profile.Loadout(heroId) == null) return false;
+            var current=Profile.Loadout(heroId);int slots=0;for(int i=0;i<5;i++)if(i==(int)slot||slot==EquipmentSlot.MainHand&&i==1){string id=current.items[i];if(!string.IsNullOrEmpty(id)&&Profile.inventory.Exists(x=>x.instanceId==id))slots++;}
+            if(InventoryRules.BagCount(Profile)+slots>catalog.inventoryCapacity){Message="Mochila cheia. Libere espaço antes de desequipar.";return false;}
             return Transaction(next => { var set = next.Loadout(heroId); set.items[(int)slot] = null; if (slot == EquipmentSlot.MainHand) set.items[1] = null; }, "Item desequipado.");
         }
         public bool Discard(string itemId, bool confirmed)
@@ -82,13 +84,24 @@ namespace ForjaDasMares
             if (!confirmed) { Message = "Confirme o descarte."; return false; }
             if (Profile.Item(itemId) == null) return false;
             foreach (var set in Profile.loadouts) foreach (var id in set.items) if (id == itemId) { Message = "Desequipe de todos os heróis antes de descartar."; return false; }
-            return Transaction(next => {next.inventory.RemoveAll(item => item.instanceId == itemId);next.expedition?.items.RemoveAll(item=>item.instanceId==itemId);}, "Item descartado.");
+            return Transaction(next => {next.inventory.RemoveAll(item => item.instanceId == itemId);next.expedition?.items.RemoveAll(item=>item.instanceId==itemId);next.coins=Mathf.Min(100000000,next.coins+InventoryRules.SellValue(catalog,Profile.Item(itemId)));}, "Item reciclado por "+InventoryRules.SellValue(catalog,Profile.Item(itemId))+" ouro.");
         }
         public bool ClaimDelivery(string id)
         {
-            if (Profile.inventory.Count >= catalog.inventoryCapacity) { Message = "Inventário cheio. Libere um espaço."; return false; }
+            if (InventoryRules.BagCount(Profile) >= catalog.inventoryCapacity) { Message = "Inventário cheio. Libere um espaço."; return false; }
             if (!Profile.deliveries.Exists(item => item.instanceId == id)) return false;
             return Transaction(next => { var item = next.deliveries.Find(value => value.instanceId == id); next.deliveries.Remove(item); next.inventory.Add(item); }, "Entrega recebida.");
+        }
+        public bool SpendTalent(string heroId,TalentId id)
+        {
+            if(catalog.Hero(heroId)==null||!Enum.IsDefined(typeof(TalentId),id))return false;
+            var rule=catalog.talents[(int)id];if(HeroTalents.Available(Profile,heroId,catalog)<=0||HeroTalents.Rank(Profile,heroId,id)>=rule.maximumRank){Message="Sem pontos disponíveis ou melhoria no limite.";return false;}
+            return Transaction(next=>{next.talents??=new System.Collections.Generic.List<HeroTalentAllocation>();var set=HeroTalents.Allocation(next,heroId);if(set==null){set=new HeroTalentAllocation{heroId=heroId};next.talents.Add(set);}set.ranks[(int)id]++;},"Melhoria aprendida: "+rule.displayName);
+        }
+        public bool ResetTalents(string heroId,bool confirmed)
+        {
+            if(catalog.Hero(heroId)==null)return false;int cost=HeroTalents.ResetCost(Profile,heroId,catalog);if(!confirmed||cost<=0||Profile.coins<cost){Message="Confirme a redistribuição e tenha "+cost+" ouro.";return false;}
+            return Transaction(next=>{next.coins-=cost;next.talents.RemoveAll(x=>x.heroId==heroId);},"Pontos devolvidos. Custo: "+cost+" ouro.");
         }
         public bool SetOptions(float volume, bool companion, bool largeText) => Transaction(next => next.options = new LocalOptions { volume = Mathf.Clamp01(volume), companionEnabled = companion, largeText = largeText }, "Opções salvas.");
         public bool BeginExpedition(string heroId, string location)
@@ -107,28 +120,26 @@ namespace ForjaDasMares
             if(rule==catalog.firstVictory&&Profile.starterGranted.Contains(discovery))return Transaction(next=>next.expedition.events.Add(eventId),"Encontro concluído.");
             var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed),Profile.expedition.heroId);
             int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
-            if ((rule == catalog.enemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
+            if ((rule == catalog.enemy||rule==catalog.veteranEnemy||rule==catalog.challengeEnemy||rule==catalog.summonedEnemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
             if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
-            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot);if(rule==catalog.firstVictory)next.starterGranted.Add(discovery); }, rule==catalog.firstVictory?"Primeira arma encontrada. Consulte SAQUE ATUAL no personagem.":"Recompensas recebidas.");
+            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience;if(rule.instantCurrency){next.experience=Mathf.Min(1000000,next.experience+rule.experience);next.coins=Mathf.Min(100000000,next.coins+rule.coins);current.bankedExperience+=rule.experience;current.bankedCoins+=rule.coins;} current.items.AddRange(loot);if(rule==catalog.firstVictory)next.starterGranted.Add(discovery); }, rule==catalog.firstVictory?"Primeira arma encontrada. Consulte SAQUE ATUAL no personagem.":"Recompensas recebidas.");
         }
         public bool FinishExpedition(string runId, bool victory, string outcome)
         {
             if (Profile.expedition == null || Profile.expedition.runId != runId || Profile.completedRuns.Contains(runId)) return false;
             return Transaction(next =>
             {
-                var run = next.expedition; int xp = victory ? run.experience : run.experience / 2, coins = victory ? run.coins : run.coins / 2;
-                next.experience = Mathf.Min(1000000, next.experience + xp); next.coins = Mathf.Min(100000000, next.coins + coins);
+                var run = next.expedition; int xp=run.bankedExperience+(victory?run.experience-run.bankedExperience:(run.experience-run.bankedExperience)/2),coins=run.bankedCoins+(victory?run.coins-run.bankedCoins:(run.coins-run.bankedCoins)/2);
+                next.experience = Mathf.Min(1000000, next.experience + xp-run.bankedExperience); next.coins = Mathf.Min(100000000, next.coins + coins-run.bankedCoins);
                 foreach (var item in run.items)
                 {
-                    if(next.inventory.Count>=catalog.inventoryCapacity&&Equipped(next,item.instanceId))
-                    {var stored=next.inventory.Find(value=>!Equipped(next,value.instanceId));if(stored!=null){next.inventory.Remove(stored);next.deliveries.Add(stored);}}
-                    if (next.inventory.Count < catalog.inventoryCapacity) next.inventory.Add(item);
-                    else {next.deliveries.Add(item);foreach(var set in next.loadouts)for(int slot=0;slot<set.items.Length;slot++)if(set.items[slot]==item.instanceId)set.items[slot]=null;}
+                    if(InventoryRules.Equipped(next,item.instanceId)||InventoryRules.BagCount(next)<catalog.inventoryCapacity)next.inventory.Add(item);
+                    else next.deliveries.Add(item);
                 }
                 if (xp > 0 || coins > 0 || run.items.Count > 0 || outcome != "Abandono" && outcome != "Aplicação interrompida")
                     next.lastResult = new ExpeditionResult { runId = run.runId, location = run.location, outcome = outcome, experience = xp, coins = coins, items = run.items };
                 next.completedRuns.Add(run.runId); if (next.completedRuns.Count > 256) next.completedRuns.RemoveAt(0); next.expedition = null;
-            }, victory ? "Vitória! Recompensas salvas." : "Expedição encerrada: itens guardados, metade de XP/moedas.");
+            }, victory ? "Vitória! Recompensas salvas." : "Expedição encerrada. Consulte os valores guardados no resultado.");
         }
         static bool Equipped(PlayerProfile profile,string id)
         {foreach(var set in profile.loadouts)foreach(var equipped in set.items)if(equipped==id)return true;return false;}

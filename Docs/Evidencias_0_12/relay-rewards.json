@@ -1,0 +1,15 @@
+{
+  "connected": 2,
+  "sameMap": true,
+  "hostGold": 150,
+  "clientGold": 125,
+  "mirrorGold": 125,
+  "clientExperience": 110,
+  "bankedCoins": 50,
+  "rewardEvents": 25,
+  "clientLoot": 1,
+  "hostLoot": 2,
+  "fixtureInitialXP": 60,
+  "fixtureGoldHost": 100,
+  "fixtureGoldClientAfterReset": 75
+}

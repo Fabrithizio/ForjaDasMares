@@ -58,11 +58,11 @@ namespace ForjaDasMares.Networking
             }
             catch(Exception){channel.SetNotice("O perfil da sala está disponível, mas sua cópia local não pôde ser guardada.");}
         }
-        public void Request(CoopInventoryAction action,string item,EquipmentSlot slot,bool confirmed)
+        public void Request(CoopInventoryAction action,string item,EquipmentSlot slot,bool confirmed,int talent=0)
         {
             var service=Service;string hero=director.Actor(0).Roster.Current.heroId;
             if(UsingRemote&&action!=CoopInventoryAction.Equip&&action!=CoopInventoryAction.Unequip){channel.SetNotice("Receba ou descarte itens na sala de origem. Aqui você pode organizar o equipamento.");return;}
-            bool success=action==CoopInventoryAction.Equip?service.Equip(hero,item,slot):action==CoopInventoryAction.Unequip?service.Unequip(hero,slot):action==CoopInventoryAction.ClaimDelivery?service.ClaimDelivery(item):service.Discard(item,confirmed);
+            bool success=action==CoopInventoryAction.Equip?service.Equip(hero,item,slot):action==CoopInventoryAction.Unequip?service.Unequip(hero,slot):action==CoopInventoryAction.ClaimDelivery?service.ClaimDelivery(item):action==CoopInventoryAction.Discard?service.Discard(item,confirmed):action==CoopInventoryAction.SpendTalent?service.SpendTalent(hero,(TalentId)talent):service.ResetTalents(hero,confirmed);
             channel.SetNotice(service.Message);
             if(success&&UsingRemote)
             {

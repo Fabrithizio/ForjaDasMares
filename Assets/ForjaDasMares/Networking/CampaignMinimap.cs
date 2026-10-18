@@ -10,12 +10,12 @@ namespace ForjaDasMares.Networking
         Vector2 low,high;float scale;
         public void Build(Transform parent,CoopDirector owner)
         {
-            session=owner;panel=RusticHudTheme.Rect(parent,"MinimapPanel",Vector2.one,new Vector2(-20,-155),new Vector2(230,240));RusticHudTheme.Panel(panel,RusticHudTheme.Ink,18);visibility=panel.gameObject.AddComponent<CanvasGroup>();
-            transform.SetParent(panel,false);rectTransform.anchorMin=rectTransform.anchorMax=rectTransform.pivot=new Vector2(.5f,1);rectTransform.anchoredPosition=new Vector2(0,-10);rectTransform.sizeDelta=new Vector2(210,180);raycastTarget=true;
-            guide=RusticHudTheme.Label(panel,"MapGuide",new Vector2(0,1),new Vector2(10,-195),new Vector2(210,40),"MINIMAPA · toque / M",12);
+            session=owner;panel=RusticHudTheme.Rect(parent,"MinimapPanel",new Vector2(0,1),new Vector2(18,-18),new Vector2(160,165));RusticHudTheme.Panel(panel,RusticHudTheme.Ink,18);visibility=panel.gameObject.AddComponent<CanvasGroup>();
+            transform.SetParent(panel,false);rectTransform.anchorMin=rectTransform.anchorMax=rectTransform.pivot=new Vector2(.5f,1);rectTransform.anchoredPosition=new Vector2(0,-10);rectTransform.sizeDelta=new Vector2(140,115);raycastTarget=true;
+            guide=RusticHudTheme.Label(panel,"MapGuide",new Vector2(0,1),new Vector2(10,-130),new Vector2(140,30),"MINIMAPA · toque / M",10);
         }
         public void OnPointerClick(PointerEventData data)=>Toggle();
-        void Toggle(){expanded=!expanded;panel.sizeDelta=expanded?new Vector2(470,480):new Vector2(230,240);rectTransform.sizeDelta=expanded?new Vector2(450,410):new Vector2(210,180);guide.rectTransform.anchoredPosition=new Vector2(10,expanded?-425:-195);guide.rectTransform.sizeDelta=new Vector2(expanded?450:210,45);SetVerticesDirty();}
+        void Toggle(){expanded=!expanded;panel.sizeDelta=expanded?new Vector2(470,480):new Vector2(160,165);rectTransform.sizeDelta=expanded?new Vector2(450,410):new Vector2(140,115);guide.rectTransform.anchoredPosition=new Vector2(10,expanded?-425:-130);guide.rectTransform.sizeDelta=new Vector2(expanded?450:140,45);SetVerticesDirty();}
         void Update()
         {
             if(session==null)return;bool active=session.Phase==CoopPhase.Playing;visibility.alpha=active?1:0;visibility.blocksRaycasts=active;if(!active)return;
@@ -25,7 +25,7 @@ namespace ForjaDasMares.Networking
             foreach(var enemy in session.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive)nearest=Mathf.Min(nearest,Vector3.Distance(actor.transform.position,enemy.transform.position));
             int fight=session.Campaign.FightRoomId;
             guide.text=nearest<float.MaxValue?"Vermelho: inimigos · próximo "+Mathf.CeilToInt(nearest)+"m":fight>=0?"Combate pendente no setor "+(fight+1):"Azul: grupo · dourado: objetivo";
-            guide.text+="\nM / toque: ampliar";
+            guide.text+=" · M: ampliar";
         }
         Vector2 Map(Vector3 world)=>new Vector2((world.x-low.x)*scale,(world.z-low.y)*scale)-((high-low)*scale)*.5f+rectTransform.rect.center;
         void Quad(VertexHelper vh,Vector2 point,Vector2 size,Color tint)

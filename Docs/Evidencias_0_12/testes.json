@@ -1,0 +1,33 @@
+{
+  "rpg012-final": {
+    "total": "184",
+    "passed": "183",
+    "failed": "0",
+    "skipped": "1",
+    "duration": "501,7336801",
+    "result": "Skipped:Ignored",
+    "ignored": [
+      "UnlinkedInternetAttemptPreservesOfflineSession"
+    ]
+  },
+  "rpg012-network-final": {
+    "total": "75",
+    "passed": "74",
+    "failed": "0",
+    "skipped": "1",
+    "duration": "89,7028848",
+    "result": "Skipped:Ignored",
+    "ignored": [
+      "UnlinkedInternetAttemptPreservesOfflineSession"
+    ]
+  },
+  "rpg012-rpg-final": {
+    "total": "11",
+    "passed": "11",
+    "failed": "0",
+    "skipped": "0",
+    "duration": "8,358734",
+    "result": "Passed",
+    "ignored": []
+  }
+}

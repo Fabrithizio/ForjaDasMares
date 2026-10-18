@@ -83,13 +83,13 @@ namespace ForjaDasMares.Networking.Tests
             var packet=(WorldFrame)typeof(CoopDirector).GetField("frame",flags).GetValue(session);
             Assert.AreEqual(CoopPhase.Lobby,session.Phase);Assert.AreEqual(1,packet.campaignLevel);Assert.AreEqual(-1,packet.room);Assert.IsEmpty(packet.signature);Assert.IsNull(packet.campaign);
         }
-        [UnityTest]public IEnumerator FirstEncounterAwardsOneCommonClassWeaponAndCannotBeFarmedAsAFreeGift()
+        [UnityTest]public IEnumerator FirstEncounterAwardsImmediateCurrencyWithoutRoomLoot()
         {
             Assert.IsTrue(session.HostDirect("FORGE6",7846,false));yield return null;session.StartGame();yield return null;var data=session.Dungeon;var service=progression.Profile(0);data.Enter(data.Generator.Rooms[1]);float previous=Time.timeScale;float deadline=Time.realtimeSinceStartup+30;
             try{Time.timeScale=4;while(data.Encounter.State!=EncounterState.Won&&Time.realtimeSinceStartup<deadline){foreach(var actor in data.Encounter.Enemies.Actors)if(actor.IsAlive)actor.Health.ApplyDamage(100000);yield return null;}}
             finally{Time.timeScale=previous;}
-            Assert.AreEqual(EncounterState.Won,data.Encounter.State);Assert.IsTrue(service.Profile.starterGranted.Contains("discovery:warrior"));Assert.IsTrue(service.Profile.expedition.items.Any(x=>x.rarity==ItemRarity.Common&&progression.Catalog.Find(x.definitionId).slot==EquipmentSlot.MainHand&&!progression.Catalog.Find(x.definitionId).starter));
-            int count=service.Profile.expedition.items.Count;Assert.IsTrue(service.Grant(service.Profile.expedition.runId,"repeat-first-weapon",progression.Catalog.firstVictory,22));Assert.AreEqual(count,service.Profile.expedition.items.Count);
+            Assert.AreEqual(EncounterState.Won,data.Encounter.State);Assert.That(service.Profile.coins,Is.GreaterThan(0));Assert.That(service.Profile.experience,Is.GreaterThan(0));Assert.AreEqual(service.Profile.expedition.coins,service.Profile.expedition.bankedCoins);Assert.IsFalse(service.Profile.expedition.events.Contains("room:1"));Assert.IsFalse(service.Profile.starterGranted.Contains("discovery:warrior"));
+
         }
         [UnityTest]public IEnumerator RangerCanEquipDifferentDaggersInEachHandAndBowRemovesOffhandSafely()
         {

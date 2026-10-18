@@ -1,0 +1,15 @@
+{
+  "twoWindowsClientsViaRelay": true,
+  "restartGoldHost": 152,
+  "restartGoldClient": 127,
+  "clientEquippedArmorOnlyInSlot": true,
+  "clientBagCountBefore": 2,
+  "clientBagCountAfter": 1,
+  "clientMaxHealthBefore": 103,
+  "clientMaxHealthAfter": 120,
+  "clientDefenseBefore": 0.05,
+  "clientDefenseAfter": 0.117,
+  "minimapExpandByClick": true,
+  "keyboardMPhysicalTest": "pending - injected keyboard shortcut did not produce a visible change",
+  "android012PhysicalTest": "pending"
+}

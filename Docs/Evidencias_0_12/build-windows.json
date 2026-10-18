@@ -1,0 +1,9 @@
+{
+  "version": "0.12.0",
+  "protocol": 8,
+  "path": "Builds\\CampaignWindows-0.12.0\\ForjaDasMaresCampanha.exe",
+  "sha256": "b7cca8b82003185f22644d0ee1c23b3640de1b996802d4f5d0501e287011afa6",
+  "buildResult": "Succeeded",
+  "errors": 0,
+  "unity": "6000.3.26f1"
+}

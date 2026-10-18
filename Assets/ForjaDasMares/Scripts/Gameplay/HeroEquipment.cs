@@ -48,7 +48,7 @@ namespace ForjaDasMares
         {
             if (this == null || !enabled || heroes == null || service == null) return;
             var profile = service.Profile; var loadout = profile.Loadout(heroes.Current.heroId);
-            string state = heroes.Current.heroId + ":" + profile.experience + ":" + (loadout != null ? string.Join(",", loadout.items) : "");
+            string state = heroes.Current.heroId + ":" + HeroTalents.Signature(profile,heroes.Current.heroId) + ":" + ProgressionStats.Level(profile.experience,catalog.maximumLevel) + ":" + (loadout != null ? string.Join(",", loadout.items) : "");
             if (state == signature) return; signature = state;
             var calculated=ProgressionStats.Calculate(heroes.Current, profile, catalog);
             if(campaignSolo)calculated=ProgressionStats.WithSoloBonus(calculated);

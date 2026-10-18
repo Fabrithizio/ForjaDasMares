@@ -8,6 +8,7 @@ namespace ForjaDasMares.Networking
         RectTransform root,healthFill,superFill;GameObject map,side,touch,backdrop,vitals,objective;Text title,details,state,party,combat;InputField code;
         Button create,find,join,start,hero,leave,copyInvite,visibility,liveVisibility,homeButton;
         Text actionStatus; Button dodgeAction,specialAction,superAction,attackAction; GameObject home; CampaignSessionMenu sessionMenu; Button menuButton; Text roomCode;
+        EquipmentPaperDoll portrait;
         CoopPhase previousPhase=CoopPhase.Offline;
         public bool AtHome {get;private set;}=true;
         readonly Button[] nodes=new Button[3];float refresh;uint cleared;
@@ -42,14 +43,15 @@ namespace ForjaDasMares.Networking
             join=Button(panel,"JoinCode",20,-395,310,44,"ENTRAR PELO CÓDIGO",()=>cloud.Join(code.text));
             start=Button(panel,"Start",20,-453,310,48,"INICIAR COM O GRUPO",()=>{if(director.Phase==CoopPhase.Lobby)director.StartGame();else director.ReturnToCampaignMap();});
             state=Label(panel,"",20,-510,310,110,16);
-            var life=RusticHudTheme.Rect(root,"CampaignVitals",new Vector2(0,1),new Vector2(20,-20),new Vector2(285,154));RusticHudTheme.Panel(life,RusticHudTheme.Ink,20);vitals=life.gameObject;
-            party=Label(life,"",14,-10,255,110,15);
-            var bar=RusticHudTheme.Rect(life,"HealthTrack",new Vector2(0,1),new Vector2(14,-130),new Vector2(255,12));bar.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
-            healthFill=RusticHudTheme.Rect(bar,"Health",new Vector2(0,1),Vector2.zero,new Vector2(255,12));healthFill.gameObject.AddComponent<Image>().color=new Color(.75f,.15f,.14f);
-            var superTrack=RusticHudTheme.Rect(life,"SuperTrack",new Vector2(0,1),new Vector2(14,-146),new Vector2(255,5));superTrack.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
-            superFill=RusticHudTheme.Rect(superTrack,"Super",new Vector2(0,1),Vector2.zero,new Vector2(0,5));superFill.gameObject.AddComponent<Image>().color=RusticHudTheme.Gold;
-            var goal=RusticHudTheme.Rect(root,"CampaignObjective",new Vector2(0,1),new Vector2(325,-20),new Vector2(455,172));RusticHudTheme.Panel(goal,RusticHudTheme.Ink,20);objective=goal.gameObject;
-            combat=Label(goal,"",15,-10,425,152,15);
+            var life=RusticHudTheme.Rect(root,"CampaignVitals",new Vector2(0,1),new Vector2(190,-18),new Vector2(280,115));RusticHudTheme.Panel(life,RusticHudTheme.Ink,20);vitals=life.gameObject;
+            var head=RusticHudTheme.Rect(life,"HeroPortrait",new Vector2(0,1),new Vector2(8,-8),new Vector2(64,70));portrait=life.gameObject.AddComponent<EquipmentPaperDoll>();portrait.Configure(head.gameObject.AddComponent<RawImage>(),true);
+            party=Label(life,"",82,-8,190,79,13);
+            var bar=RusticHudTheme.Rect(life,"HealthTrack",new Vector2(0,1),new Vector2(10,-92),new Vector2(260,10));bar.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
+            healthFill=RusticHudTheme.Rect(bar,"Health",new Vector2(0,1),Vector2.zero,new Vector2(260,10));healthFill.gameObject.AddComponent<Image>().color=new Color(.75f,.15f,.14f);
+            var superTrack=RusticHudTheme.Rect(life,"SuperTrack",new Vector2(0,1),new Vector2(10,-107),new Vector2(260,4));superTrack.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
+            superFill=RusticHudTheme.Rect(superTrack,"Super",new Vector2(0,1),Vector2.zero,new Vector2(0,4));superFill.gameObject.AddComponent<Image>().color=RusticHudTheme.Gold;
+            var goal=RusticHudTheme.Rect(root,"CampaignObjective",new Vector2(0,1),new Vector2(485,-18),new Vector2(350,90));RusticHudTheme.Panel(goal,RusticHudTheme.Ink,20);objective=goal.gameObject;
+            combat=Label(goal,"",12,-8,328,76,13);
             leave=RusticHudTheme.Button(root,"CampaignLeave",new Vector2(1,1),new Vector2(-20,-20),new Vector2(190,44),"MENU DA SALA",()=>sessionMenu.Open());
             copyInvite=RusticHudTheme.Button(root,"CopyInvite",new Vector2(1,1),new Vector2(-220,-20),new Vector2(160,44),"COPIAR CÓDIGO",()=>{if(!string.IsNullOrEmpty(director.Pin))GUIUtility.systemCopyBuffer=director.Pin;});
             liveVisibility=RusticHudTheme.Button(root,"LiveVisibility",new Vector2(1,1),new Vector2(-20,-75),new Vector2(390,44),"ABRIR SALA",()=>cloud.ToggleVisibility());
@@ -69,10 +71,10 @@ namespace ForjaDasMares.Networking
                 gameObject.AddComponent<CampaignAbilityBar>().Build(touch.transform,director,controls);
             }
             var controlsGroup=touch.AddComponent<CanvasGroup>();
-            var codePanel=RusticHudTheme.Rect(root,"LiveRoomCode",new Vector2(1,1),new Vector2(-20,-20),new Vector2(280,62));
+            var codePanel=RusticHudTheme.Rect(root,"LiveRoomCode",new Vector2(1,1),new Vector2(-20,-20),new Vector2(220,52));
             RusticHudTheme.Panel(codePanel,RusticHudTheme.Ink,18);
-            roomCode=Label(codePanel,"",12,-8,256,46,19);
-            menuButton=RusticHudTheme.Button(root,"SessionMenuButton",new Vector2(1,1),new Vector2(-20,-94),new Vector2(180,48),Application.isMobilePlatform?"MENU":"MENU · ESC",()=>sessionMenu.Open());
+            roomCode=Label(codePanel,"",12,-6,196,40,15);
+            menuButton=RusticHudTheme.Button(root,"SessionMenuButton",new Vector2(1,1),new Vector2(-20,-80),new Vector2(150,40),Application.isMobilePlatform?"MENU":"MENU · ESC",()=>sessionMenu.Open());
             var homeRect=RusticHudTheme.Rect(root,"InitialScreen",Vector2.zero,Vector2.zero,Vector2.zero);homeRect.anchorMax=Vector2.one;homeRect.offsetMin=homeRect.offsetMax=Vector2.zero;home=homeRect.gameObject;
             home.AddComponent<CampaignHome>().Build(homeRect,director,()=>AtHome=false,()=>GetComponent<CoopInventoryHud>().OpenInventory());
             sessionMenu=gameObject.AddComponent<CampaignSessionMenu>();sessionMenu.Build(root,director,controlsGroup);
@@ -122,12 +124,14 @@ namespace ForjaDasMares.Networking
             start.gameObject.SetActive(!offline);start.interactable=director.IsHost&&!cloud.Busy&&(director.Phase==CoopPhase.Lobby&&director.ConnectedCount>=1||director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
             start.GetComponentInChildren<Text>().text=director.Phase==CoopPhase.Lobby?(director.ConnectedCount==1?"INICIAR SOLO":"INICIAR COM O GRUPO"):"CONTINUAR CAMPANHA";
             state.text=offline?cloud.Message:"Sala "+(cloud.PublicRoom?"aberta para grupos":"privada")+" · "+director.Phase+"\nCódigo: "+director.Pin+"\nGrupo "+director.ConnectedCount+"/4"+(director.ConnectedCount==1?" · pode jogar solo":"");
-            string allies="";for(int i=0;i<4;i++)if(director.IsConnected(i)){var actor=director.Actor(i);allies+=(i==director.LocalSlot?"VOCÊ":"ALIADO "+(i+1))+" · "+actor.Health.Current+"/"+actor.Health.Maximum+" VIDA"+(i==director.LocalSlot?"\n"+actor.Roster.Current.displayName:"")+"\n";}
-            party.text=allies;
-            var local=director.Actor(director.LocalSlot);healthFill.sizeDelta=new Vector2(local!=null&&local.Health.Maximum>0?255f*local.Health.Current/local.Health.Maximum:0,12);
+            var local=director.Actor(director.LocalSlot);var liveProfile=director.GetComponent<CoopProfileChannel>().LocalProfile;
+            string allies="";for(int i=0;i<4;i++)if(i!=director.LocalSlot&&director.IsConnected(i)){var ally=director.Actor(i);allies+=" · P"+(i+1)+" "+ally.Health.Current;}
+            party.text=local==null?"":local.Roster.Current.displayName+" · Nv "+(liveProfile!=null?ProgressionStats.Level(liveProfile.experience):1)+"\n"+local.Health.Current+" / "+local.Health.Maximum+" VIDA\n"+(liveProfile?.coins??0)+" OURO"+allies;
+            healthFill.sizeDelta=new Vector2(local!=null&&local.Health.Maximum>0?260f*local.Health.Current/local.Health.Maximum:0,10);
+            portrait.SetVisible(active);if(local!=null&&liveProfile!=null&&active)portrait.Refresh(local.Presentation,liveProfile,local.Roster.Current.heroId);
             if(local!=null&&active)
             {
-                superFill.sizeDelta=new Vector2(local.SuperProgress*255,5);superFill.parent.gameObject.SetActive(local.Enhanced);
+                superFill.sizeDelta=new Vector2(local.SuperProgress*260,4);superFill.parent.gameObject.SetActive(local.Enhanced);
                 if(superAction!=null){superAction.gameObject.SetActive(local.Enhanced);superAction.interactable=local.Health.IsAlive&&local.SuperProgress>=1&&local.FuryRemaining<=0;string name=local.Roster.Current.heroId=="warrior"?"FÚRIA":"SUPER";superAction.GetComponentInChildren<Text>().text=local.FuryRemaining>0?"FÚRIA\n"+local.FuryRemaining.ToString("F1")+"s":name+"\n"+(local.SuperProgress>=1?"PRONTA":Mathf.FloorToInt(local.SuperProgress*100)+"%");}
                 if(attackAction!=null){attackAction.interactable=local.Health.IsAlive;attackAction.GetComponentInChildren<Text>().text=local.Enhanced&&local.Charge>0?"Ataque\nCarga "+Mathf.FloorToInt(local.Charge*100)+"%":"Ataque\nSegure";}
                 string skill=local.SpecialCooldown>0?local.SpecialCooldown.ToString("F1")+"s":"pronta",dodge=local.DodgeCooldown>0?local.DodgeCooldown.ToString("F1")+"s":"pronta";
@@ -138,15 +142,11 @@ namespace ForjaDasMares.Networking
             var profile=director.GetComponent<CoopProfileChannel>().LocalProfile;
             if(profile!=null)cleared=profile.campaignCleared;
             for(int i=0;i<3;i++)nodes[i].GetComponentInChildren<Text>().text=campaign.At(i).displayName+"\n\n"+((cleared&(1u<<i))!=0?"CONCLUÍDA":i==0?"INICIAL":i==1?"VETERANO":"DESAFIADOR");
-            combat.text=campaign.Level.displayName+"\n"+campaign.Objective+(profile!=null?"\nMoedas: "+(profile.expedition?.coins??profile.coins)+" · saque: "+(profile.expedition?.items.Count??0):"");
-            if(active)combat.text+="\nProgresso: "+Mathf.FloorToInt(campaign.Completion*100)+"%"+(campaign.Solo?" · SOLO":"")+(director.ConnectedCount>=4?" · grupo completo":campaign.Completion>=.2f?" · novas entradas encerradas":" · pode receber parceiros");
-            if(active&&local!=null&&!local.Health.IsAlive)combat.text="VOCÊ CAIU · aguarde o grupo vencer para ser erguido.\n"+combat.text;
-            if(active&&campaign.Adventure!=null)
-            {
-                combat.text+="\n"+campaign.Adventure.Objective;
-                string nearby=campaign.Adventure.NearbyLabel(local?.Health);if(nearby.Length>0)combat.text+="\n"+nearby;
-            }
-            foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive&&enemy.Profile!=null&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\n"+(enemy.Profile.miniboss?"ELITE · ":"CHEFE · ")+enemy.Profile.displayName+" · "+enemy.Health.Current+" / "+enemy.Health.Maximum;break;}
+            combat.text=campaign.Level.displayName+" · "+Mathf.FloorToInt(campaign.Completion*100)+"%\n"+campaign.Objective;
+            if(active&&local!=null&&!local.Health.IsAlive)combat.text="VOCÊ CAIU · aguarde o grupo\n"+combat.text;
+            if(active&&campaign.Adventure!=null){string nearby=campaign.Adventure.NearbyLabel(local?.Health);if(nearby.Length>0)combat.text+="\n"+nearby;}
+            foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive&&enemy.Profile!=null&&enemy.Profile.kind==EnemyKind.Boss){combat.text+="\n"+(enemy.Profile.miniboss?"ELITE · ":"CHEFE · ")+enemy.Profile.displayName+" "+enemy.Health.Current+"/"+enemy.Health.Maximum;break;}
+
         }
         static Text Label(Transform p,string s,float x,float y,float w,float h,int font)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,font);
         static Button Button(Transform p,string n,float x,float y,float w,float h,string s,UnityEngine.Events.UnityAction a)=>RusticHudTheme.Button(p,n,new Vector2(0,1),new Vector2(x,y),new Vector2(w,h),s,a);

@@ -1,3 +1,11 @@
+# Revisão atual 0.12.0 — Windows validado com limitações
+
+Mochila sem equipamentos duplicados na grade, atributos em cartões, talentos por nível, comparação individual de itens, reciclagem por ouro, drops imediatos, retrato e minimapa compacto. Consulte [instruções da campanha](Docs/CAMPANHA_COMO_JOGAR.md) e [revisão técnica](Docs/REVISAO_0_12_2026-10-18.md).
+
+Protocolo 8 exige clientes da mesma versão. O APK anterior 0.11/protocolo 7 e a pasta de envio ao irmão permanecem preservados. Android físico 0.12 pendente; sem nova distribuição nesta rodada. Histórico abaixo descreve entregas anteriores.
+
+---
+
 # Versão de testes atual: 0.11.0 — 18/10/2026
 
 PC: **Jogos/Jogar Campanha Forja das Mares**. Android: **Jogos/Enviar para meu irmao/ForjaDasMares-0.11.0-Android.apk**. Envie como Documento no WhatsApp; ambos precisam desta versão.

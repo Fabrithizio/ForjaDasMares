@@ -1,0 +1,16 @@
+{
+  "host": {
+    "gold": 152,
+    "xp": 112,
+    "resultGold": 52,
+    "resultXP": 52,
+    "owned": 6
+  },
+  "client": {
+    "gold": 127,
+    "xp": 112,
+    "resultGold": 52,
+    "resultXP": 52,
+    "owned": 5
+  }
+}

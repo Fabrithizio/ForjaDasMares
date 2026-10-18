@@ -39,6 +39,72 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c57b8ebdf86837f40b7917ae6a6bbd71, type: 2}
   - {fileID: 11400000, guid: 880ac46a4184e504697fb47ebd29b4dd, type: 2}
   - {fileID: 11400000, guid: d316b942529797642b4f01b39715e7fa, type: 2}
+  talents:
+  - id: 0
+    displayName: Vigor
+    stat: 0
+    perRank: 8
+    maximumRank: 5
+  - id: 1
+    displayName: "For\xE7a"
+    stat: 1
+    perRank: 0.025
+    maximumRank: 5
+  - id: 2
+    displayName: Tenacidade
+    stat: 2
+    perRank: 4
+    maximumRank: 5
+  - id: 3
+    displayName: Agilidade
+    stat: 5
+    perRank: 0.025
+    maximumRank: 5
+  - id: 4
+    displayName: "Precis\xE3o"
+    stat: 4
+    perRank: 0.015
+    maximumRank: 5
+  - id: 5
+    displayName: Disciplina
+    stat: 6
+    perRank: 0.02
+    maximumRank: 5
+  salvageBase: 2
+  talentResetGold: 25
+  veteranEnemy:
+    rewardId: Veterano
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 3
+    coins: 3
+    guaranteedItems: 0
+    itemChance: 0.14
+    minimumRarity: 0
+  challengeEnemy:
+    rewardId: Desafiador
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 4
+    coins: 4
+    guaranteedItems: 0
+    itemChance: 0.19
+    minimumRarity: 1
+  summonedEnemy:
+    rewardId: Invocado
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 1
+    coins: 1
+    guaranteedItems: 0
+    itemChance: 0
+    minimumRarity: 0
   normalizeLegacyLoadouts: 1
   starterItems: []
   classStarters:
@@ -121,16 +187,18 @@ MonoBehaviour:
     rewardId: Inimigo
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
-    experience: 1
-    coins: 1
+    experience: 2
+    coins: 2
     guaranteedItems: 0
-    itemChance: 0.025
+    itemChance: 0.1
     minimumRarity: 0
   boss:
     rewardId: Chefe
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 150
     coins: 30
@@ -141,6 +209,7 @@ MonoBehaviour:
     rewardId: "Ba\xFA"
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 10
     coins: 10
@@ -151,6 +220,7 @@ MonoBehaviour:
     rewardId: Sala
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 0
     maximumRequiredLevel: 0
     experience: 12
     coins: 3
@@ -161,6 +231,7 @@ MonoBehaviour:
     rewardId: "Vit\xF3ria"
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 90
     coins: 20
@@ -171,6 +242,7 @@ MonoBehaviour:
     rewardId: Primeira arma
     weaponsOnly: 1
     fixedRarity: 1
+    instantCurrency: 0
     maximumRequiredLevel: 1
     experience: 0
     coins: 0
@@ -181,6 +253,7 @@ MonoBehaviour:
     rewardId: miniboss
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 12
     coins: 8
@@ -191,6 +264,7 @@ MonoBehaviour:
     rewardId: supplies
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 1
     coins: 2
@@ -201,6 +275,7 @@ MonoBehaviour:
     rewardId: exploration
     weaponsOnly: 0
     fixedRarity: 0
+    instantCurrency: 1
     maximumRequiredLevel: 0
     experience: 30
     coins: 15

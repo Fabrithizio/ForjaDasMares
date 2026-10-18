@@ -16,7 +16,7 @@ namespace ForjaDasMares.Networking
         AudioSource audioSource;float nextSound;
         public void Build(RectTransform parent,CoopDirector owner)
         {
-            root=parent;director=owner;profiles=owner.GetComponent<CoopProfileChannel>();cameraView=Camera.main;
+            root=parent;director=owner;owner.GetComponent<CampaignLootDrops>()?.ConfigureReadout(this);profiles=owner.GetComponent<CoopProfileChannel>();cameraView=Camera.main;
             audioSource=gameObject.AddComponent<AudioSource>();audioSource.playOnAwake=false;audioSource.spatialBlend=0;audioSource.volume=.55f;
             for(int i=0;i<pool.Length;i++)
             {var label=RusticHudTheme.Label(root,"Impact_"+i,Vector2.one*.5f,Vector2.zero,new Vector2(130,38),"",24);label.alignment=TextAnchor.MiddleCenter;label.fontStyle=FontStyle.Bold;label.gameObject.SetActive(false);pool[i]=new Popup{label=label};}
@@ -48,7 +48,7 @@ namespace ForjaDasMares.Networking
             {
                 value.remaining=.75f;value.point=track.hp.transform.position+Vector3.up*1.8f;
                 value.color=delta>0?new Color(.35f,1,.55f):track.hp.Faction==CombatFaction.Player?new Color(1,.35f,.3f):RusticHudTheme.Parchment;
-                value.label.text=(delta>0?"+":"")+delta;value.label.color=value.color;value.label.gameObject.SetActive(true);break;
+                value.label.fontSize=24;value.label.rectTransform.sizeDelta=new Vector2(130,38);value.label.text=(delta>0?"+":"")+delta;value.label.color=value.color;value.label.gameObject.SetActive(true);break;
             }
         }
         void LateUpdate()
@@ -66,6 +66,10 @@ namespace ForjaDasMares.Networking
             scan-=dt;if(scan<=0){scan=.15f;Rewards();}
             toastTime=Mathf.Max(0,toastTime-dt);toast.gameObject.SetActive(visible&&toastTime>0);
         }
+        public void ShowDrop(Vector3 point,int gold,int experience,int rarity)
+        {
+            foreach(var value in pool)if(value.remaining<=0){value.remaining=1.1f;value.point=point+Vector3.up*2;value.color=RusticHudTheme.Gold;value.label.text="+"+gold+" ouro\n+"+experience+" XP";if(rarity>=0)value.label.text+="\n"+RusticHudTheme.RarityName((ItemRarity)rarity);value.label.fontSize=16;value.label.rectTransform.sizeDelta=new Vector2(170,72);value.label.gameObject.SetActive(true);break;}
+        }
         void Rewards()
         {
             var run=profiles.LocalProfile?.expedition;if(run==null){runId=null;return;}
@@ -73,7 +77,7 @@ namespace ForjaDasMares.Networking
             int c=run.coins-coins,e=run.experience-xp,n=run.items.Count-items;
             if(c>0||e>0||n>0)
             {
-                string text=(c>0?"+"+c+" moedas   ":"")+(e>0?"+"+e+" XP   ":"");
+                string text=(c>0?"+"+c+" ouro   ":"")+(e>0?"+"+e+" XP   ":"");
                 if(n>0){var item=run.items[run.items.Count-1];text+="Saque: "+(profiles.Catalog.Find(item.definitionId)?.displayName??item.definitionId)+" · "+RusticHudTheme.RarityName(item.rarity);}
                 toast.text=text;toastTime=3.5f;if(n>0)Sound(director.Campaign.Level.lootSound);
             }

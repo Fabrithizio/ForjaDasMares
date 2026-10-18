@@ -15,7 +15,7 @@ namespace ForjaDasMares
     [Serializable] public sealed class ExpeditionData
     {
         public string runId, heroId, location;
-        public int experience, coins;
+        public int experience, coins, bankedExperience, bankedCoins;
         public List<ItemInstance> items = new List<ItemInstance>();
         public List<string> events = new List<string>();
     }
@@ -33,6 +33,7 @@ namespace ForjaDasMares
         public List<ItemInstance> inventory = new List<ItemInstance>();
         public List<ItemInstance> deliveries = new List<ItemInstance>();
         public List<HeroLoadout> loadouts = new List<HeroLoadout>();
+        public List<HeroTalentAllocation> talents = new List<HeroTalentAllocation>();
         public List<string> completedRuns = new List<string>();
         public ExpeditionData expedition;
         public ExpeditionResult lastResult;

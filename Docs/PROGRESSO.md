@@ -1,3 +1,11 @@
+# Iteração 0.12 — aprovada no PC com limitações
+
+Implementados: equipamentos fora da grade da mochila; seis talentos por herói; atributos em cartões; detalhes individuais e comparação entre itens; reciclagem confirmada por ouro; XP/ouro imediato por morte; efeitos de drop com pool; retrato no HUD; minimapa menor à esquerda; objetivo compacto. Catálogo migrado na Unity sem erros de compilação. Suíte geral184/183 aprovados/0 falhas/1 ignorado; reexecução de rede75/74/0/1; rodada final RPG11/11. Build Windows0.12.0 produzida sem erros. Dois clientes PC pelo Relay, persistência após reiniciar, equipagem e modais conferidos; resultados no documento REVISAO_0_12_2026-10-18.md.
+
+Preservados saves, cenas, pacote de rede, perfil por host, combos, Fúria e controles existentes. Não foi solicitada nova distribuição ao irmão; pasta de compartilhamento e APK anterior preservados. Android físico desta revisão ainda não validado. Sem conta global, servidor dedicado ou migração de host.
+
+---
+
 # Entrega atual — 0.11.0, 18/10/2026
 
 Minimapa com inimigos, setor pendente e objetivos; reforços intermediários sem apagar remanescentes; emissores de flechas e avisos de chegada; arma inicial comum focada, sem bônus solo; armas por classe com combos/habilidades reais; inventário por slots/categorias, secundária permitida e comparação; personagem acessível no início; barra de habilidades no PC com ícones e Fúria temporária do guerreiro. Saves mantidos e loadouts antigos incompatíveis desequipados para a mochila. Sem modelos/clips finais novos nesta revisão.

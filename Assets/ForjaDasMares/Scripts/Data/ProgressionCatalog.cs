@@ -15,7 +15,7 @@ namespace ForjaDasMares
     [Serializable] public sealed class RewardRule
     {
         public string rewardId;
-        public bool weaponsOnly,fixedRarity;
+        public bool weaponsOnly,fixedRarity,instantCurrency;
         [Min(0)] public int maximumRequiredLevel;
         [Min(0)] public int experience, coins, guaranteedItems;
         [Range(0, 1)] public float itemChance;
@@ -39,6 +39,11 @@ namespace ForjaDasMares
         [Range(4, 64)] public int expeditionCapacity = 32;
         [Range(1, 20)] public int maximumLevel = 20;
         public EquipmentDefinition[] equipment;
+        public TalentRule[] talents=HeroTalents.Defaults();
+        [Min(1)]public int salvageBase=2,talentResetGold=25;
+        public RewardRule veteranEnemy=new RewardRule{rewardId="Veterano",experience=3,coins=3,itemChance=.14f,instantCurrency=true};
+        public RewardRule challengeEnemy=new RewardRule{rewardId="Desafiador",experience=4,coins=4,itemChance=.19f,instantCurrency=true};
+        public RewardRule summonedEnemy=new RewardRule{rewardId="Invocado",experience=1,coins=1,instantCurrency=true};
         public bool normalizeLegacyLoadouts;
         public string[] starterItems;
         public ClassStarterRule[] classStarters=Array.Empty<ClassStarterRule>();
@@ -55,7 +60,7 @@ namespace ForjaDasMares
         public EquipmentDefinition Find(string id) { if (equipment != null) foreach (var item in equipment) if (item != null && item.itemId == id) return item; return null; }
         public HeroEquipmentRule Hero(string id) { if (heroes != null) foreach (var rule in heroes) if (rule.heroId == id) return rule; return null; }
         public RarityRule Rarity(ItemRarity value) { if (rarities != null) foreach (var rule in rarities) if (rule.rarity == value) return rule; return null; }
-        public bool IsRewardRule(RewardRule rule)=>rule!=null&&(rule==firstVictory||rule==enemy||rule==boss||rule==chest||rule==room||rule==completion||rule==supplies||rule==exploration||rule==miniboss);
+        public bool IsRewardRule(RewardRule rule)=>rule!=null&&(rule==veteranEnemy||rule==challengeEnemy||rule==summonedEnemy||rule==firstVictory||rule==enemy||rule==boss||rule==chest||rule==room||rule==completion||rule==supplies||rule==exploration||rule==miniboss);
         public void Validate()
         {
             if (equipment == null || equipment.Length < 12 || rarities == null || rarities.Length != 5 || heroes == null) throw new InvalidOperationException("Progression catalog is incomplete.");
@@ -67,6 +72,8 @@ namespace ForjaDasMares
                 if (item.slot == EquipmentSlot.MainHand && (item.attacks == null || item.attacks.Length == 0)) throw new InvalidOperationException("Weapon has no real attack: " + item.itemId);
                 if (item.attacks != null) foreach (var attack in item.attacks) if (attack == null || attack.range <= 0 || attack.damage <= 0 || attack.projectileCount < 1 || attack.projectileCount > 5) throw new InvalidOperationException("Invalid weapon attack.");
             }
+            if(talents==null||talents.Length!=6||salvageBase<1||salvageBase>100||talentResetGold<1||talentResetGold>1000)throw new InvalidOperationException("Invalid talent/economy configuration.");
+            for(int i=0;i<talents.Length;i++){var t=talents[i];if(t==null||(int)t.id!=i||!Enum.IsDefined(typeof(ItemStat),t.stat)||t.maximumRank<1||t.maximumRank>10||float.IsNaN(t.perRank)||t.perRank<=0||t.perRank>StatModifier.Limit(t.stat))throw new InvalidOperationException("Invalid talent rule.");}
             int total = 0; var levels = new System.Collections.Generic.HashSet<ItemRarity>();
             foreach (var rarity in rarities) { if (rarity == null || !Enum.IsDefined(typeof(ItemRarity), rarity.rarity) || !levels.Add(rarity.rarity) || rarity.weight < 0 || rarity.weight > 100000 || float.IsNaN(rarity.power) || rarity.power < 1 || rarity.power > 1.5f || rarity.affixCount < 0 || rarity.affixCount > 3) throw new InvalidOperationException("Invalid rarity."); total += rarity.weight; }
             if (total <= 0 || affixes == null || affixes.Length < 3) throw new InvalidOperationException("No valid loot distribution.");
@@ -75,7 +82,7 @@ namespace ForjaDasMares
             var heroIds = new System.Collections.Generic.HashSet<string>();
             foreach (var hero in heroes) if (hero == null || string.IsNullOrWhiteSpace(hero.heroId) || !heroIds.Add(hero.heroId) || hero.affinity == 0 || (hero.affinity & ~HeroAffinity.All) != 0) throw new InvalidOperationException("Invalid hero equipment rule.");
             if (inventoryCapacity < 8 || inventoryCapacity > 100 || expeditionCapacity < 4 || expeditionCapacity > 64 || maximumLevel < 1 || maximumLevel > 20 || starterItems == null || starterItems.Length > inventoryCapacity) throw new InvalidOperationException("Invalid progression capacity.");
-            foreach (var rule in new[] { enemy, boss, chest, room, completion, firstVictory, supplies, exploration, miniboss }) if (rule == null || rule.experience < 0 || rule.coins < 0 || rule.guaranteedItems < 0 || rule.guaranteedItems > 2 || float.IsNaN(rule.itemChance)||rule.itemChance < 0 || rule.itemChance > 1) throw new InvalidOperationException("Invalid reward table.");
+            foreach (var rule in new[] { veteranEnemy,challengeEnemy,summonedEnemy,enemy, boss, chest, room, completion, firstVictory, supplies, exploration, miniboss }) if (rule == null || rule.experience < 0 || rule.coins < 0 || rule.guaranteedItems < 0 || rule.guaranteedItems > 2 || float.IsNaN(rule.itemChance)||rule.itemChance < 0 || rule.itemChance > 1) throw new InvalidOperationException("Invalid reward table.");
             foreach (var id in starterItems) if (Find(id) == null) throw new InvalidOperationException("Missing starter item.");
         }
     }
