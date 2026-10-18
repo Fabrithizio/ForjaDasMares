@@ -121,7 +121,7 @@ namespace ForjaDasMares.Networking
                 detail.text = result != null ? result.outcome + "\nXP " + result.experience + " | moedas " + result.coins + "\nItens obtidos: " + result.items.Count : "Nenhuma partida concluída nesta sessão.";
                 if (result != null) foreach (var item in result.items) detail.text += "\n" + channel.Catalog.Find(item.definitionId).displayName + " — " + RusticHudTheme.RarityName(item.rarity);
             }
-            else if (value == null) detail.text = "Escolha um item. O host valida a equipagem e salva este perfil cooperativo.\n\nXP total " + profile.experience + " | moedas " + profile.coins + "\nEntregas guardadas: " + channel.DeliveryCount;
+            else if (value == null) detail.text = "Escolha um item para comparar os atributos. SAQUE ATUAL mostra os itens encontrados nesta expedição.\n\nXP total " + profile.experience + " | moedas " + profile.coins + "\nEntregas guardadas: " + channel.DeliveryCount;
             else
             {
                 var definition = channel.Catalog.Find(value.definitionId); var before = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog);

@@ -40,12 +40,12 @@ namespace ForjaDasMares
                 {
                     var secondary = next.Item(set.items[1]); if (secondary != null && !ProgressionStats.CanEquip(next, catalog, heroId, secondary, EquipmentSlot.OffHand, out _)) set.items[1] = null;
                 }
-            }, "Equipado. Secundária incompatível foi guardada no inventário.");
+            }, "Item equipado.");
         }
         public bool Unequip(string heroId, EquipmentSlot slot)
         {
             if (Profile.Loadout(heroId) == null) return false;
-            return Transaction(next => { var set = next.Loadout(heroId); set.items[(int)slot] = null; if (slot == EquipmentSlot.MainHand) set.items[1] = null; }, "Item guardado no inventário.");
+            return Transaction(next => { var set = next.Loadout(heroId); set.items[(int)slot] = null; if (slot == EquipmentSlot.MainHand) set.items[1] = null; }, "Item desequipado.");
         }
         public bool Discard(string itemId, bool confirmed)
         {
@@ -77,7 +77,7 @@ namespace ForjaDasMares
             int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
             if ((rule == catalog.enemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
             if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
-            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot); }, "Recompensa registrada: " + rule.rewardId);
+            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot); }, "Recompensas recebidas.");
         }
         public bool FinishExpedition(string runId, bool victory, string outcome)
         {

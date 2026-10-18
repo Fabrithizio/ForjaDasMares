@@ -1,3 +1,17 @@
+# Versão de testes atual:0.10.1 (17/10/2026)
+
+Windows e Android, protocolo6. Abra **Jogos/Jogar Campanha Forja das Mares**. Para enviar ao irmão: **Jogos/Enviar para meu irmao/ForjaDasMares-0.10.1-Android.apk**, como Documento no WhatsApp. Ambos precisam da mesma versão;0.9.x é incompatível com esta revisão.
+
+Campanha com setores maiores28/30/32m, passagens abertas, hordas com mais de100inimigos acumulados, três elites, inventário com imagens/comparação e saque equipável durante a fase fora de perigo. Sequências de três ataques nas armas e carregado/SUPER nos quatro heróis. Suprimentos curam um aliado ferido próximo uma vez.17modelos originais,12ícones e4sons, com fonte Blender/galeria; ainda são recursos provisórios.
+
+Validação:160casos PlayMode,159aprovados,0falhas,1ignorado;16testes focados aprovados. Builds reais Windows/Android0.10.1. Teste físico PC+moto g15 pelo Relay no mesmo Wi-Fi, inventário por toque, arma equipada em escala corrigida, movimento, combate/derrota/encerramento. A sessão4/4 anterior da0.10.0 usou3processosWindows+1Android, não quatro pessoas/dispositivos. Sem medição deFPS ou teste entre redes diferentes.
+
+[Como jogar](Docs/CAMPANHA_COMO_JOGAR.md) · [relatório e limitações](Docs/PAISAGENS_E_HORDAS_0_10_2026-10-17.md) · [assets produzidos e lista restante](Docs/ASSETS_E_DIRECAO_0_10.md) · [arquivos alterados](Docs/ARQUIVOS_0_10.txt).
+
+**Aprovado com limitações para testes privados**, não lançamento comercial. Permanecem importantes: balanceamento humano, desempenho, arte/animações finais, mapas ainda modulares e apenas um encontro ativo por vez. Sem migração de host ou servidor dedicado. Nenhum save existente foi apagado. Os blocos abaixo são históricos.
+
+---
+
 # Versão de testes atual: 0.9.1 (17/10/2026)
 
 Windows e Android, protocolo 5. Abra o atalho **Jogar Campanha Forja das Mares** na pasta Jogos da Área de Trabalho. Para enviar ao irmão, use **ForjaDasMares-0.9.1-Android.apk**, na pasta **Jogos/Enviar para meu irmao**, como Documento no WhatsApp. Ambos devem usar a mesma versão; builds 0.8.x são incompatíveis.

@@ -49,7 +49,8 @@ namespace ForjaDasMares
                 }
                 room.objectiveComplete = node.category != RoomCategory.Event && node.category != RoomCategory.Trap;
                 float spawnSpread=OpenLandscape?campaign.sectorSize*.3f:3;
-                room.spawnPoints = new[] { room.Center + new Vector3(-spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,-spawnSpread),room.Center+new Vector3(-spawnSpread,.06f,-spawnSpread) };
+                room.spawnPoints = OpenLandscape ? new[] { room.Center + new Vector3(-spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,spawnSpread),room.Center+new Vector3(spawnSpread,.06f,-spawnSpread),room.Center+new Vector3(-spawnSpread,.06f,-spawnSpread) }
+                    : new[] { room.Center+new Vector3(-3,.06f,2),room.Center+new Vector3(3,.06f,2),room.Center+new Vector3(0,.06f,3) };
                 if (node.category == RoomCategory.Treasure || node.category == RoomCategory.Event) Interaction(session, room, DungeonInteractionKind.Chest, new Vector3(-2, 0, -2), biome);
                 if (node.category == RoomCategory.Event && campaign==null) Interaction(session, room, DungeonInteractionKind.Crystal, new Vector3(2, 0, -1), biome);
                 if (node.category == RoomCategory.Rest) Interaction(session, room, DungeonInteractionKind.Rest, Vector3.zero, biome);

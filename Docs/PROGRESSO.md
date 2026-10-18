@@ -457,3 +457,13 @@ Status aprovado com limitações para testes solo e PC–Android em dupla no Wi-
 
 ## HUD e compartilhamento 0.8.2 — 17/10/2026
 HUD compacto com código ao vivo; menu local de sala/grupo/convites/configurações/mochila/saída confirmada. Builds PC/Android produzidas, 34 testes passaram/1 ignorado/0 falhas. PC host + moto g15 cliente testados no Wi-Fi; timeout na tentativa com Android host registrado. Arquivos, evidências, hashes e limitações em HUD_E_COMPARTILHAMENTO_2026-10-17.md.
+
+## Paisagens, hordas e inventário0.10.1 — 17/10/2026
+
+Campanha ampliada para setores28/30/32m, passagens18m, sem portas fechando. Encontro preservado durante transição e conclusão creditada ao setor correto; saída exige objetivos obrigatórios. Hordas difíceis109/136/164inimigos acumulados, cap conforme host20Android/24PC. Três elites e modelos originais por arquétipo. Ícones por categoria, comparação, SAQUE ATUAL e equipagem durante fase fora de perigo; conclusão com mochila cheia preserva item usado. Combos de três ataques nas armas, carregado/SUPER nos quatro heróis, suprimentos curam uma vez, feedback por áudio/números.17FBX/12PNG/4WAV e galeriaBlender originais; não são arte/clips finais.
+
+Correções encontradas em QA: arma herdava escala dos ossos e cobria câmera — compensação compartilhada host/réplica/troca de visual; pontos de spawn antigos restaurados; câmera torna filhos de props parcialmente transparentes; pool recupera componentes após estado de réplica; mensagens técnicas de recompensas removidas; migração de combos idempotente.
+
+160testes PlayMode:159aprovados/0falhas/1ignorado;16focados aprovados. Windows0.10.1 BuildPipeline errors0. Android0.10.1/code24 ARM64 gerado via Gradle externo depois de erro de loopback no empacotador interno; assinatura/hash verificados e atualização instalada no moto g15. PC+Android Relay no Wi-Fi: entrada, equipagem, movimento, combate/derrota, limpeza e encerramento. Teste4/4 da build intermediária0.10.0:3processosWindows+1Android. Não quatro humanos/dispositivos; não vitória humana, redes diferentes ou FPS medido.
+
+Relatório/arquivos/passos manuais: PAISAGENS_E_HORDAS_0_10_2026-10-17.md, ARQUIVOS_0_10.txt, CAMPANHA_COMO_JOGAR.md e ASSETS_E_DIRECAO_0_10.md. AtalhoPC e APK compartilhável atualizados para0.10.1, salasQA encerradas e saves preservados. Aprovado com limitações para testes privados; não equivale a concluir todos os pedidos históricos ou lançamento comercial. Importantes: performance/balanceamento humano, mapas ainda modulares/encontros serializados e arte/animação final. Nenhuma compra necessária agora.

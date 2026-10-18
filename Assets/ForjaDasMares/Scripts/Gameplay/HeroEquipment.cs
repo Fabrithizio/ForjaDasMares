@@ -75,14 +75,12 @@ namespace ForjaDasMares
         }
         static void Mount(MeshRenderer visual,Transform parent,bool socket,Vector3 restPosition,Quaternion restRotation)
         {
-            if(visual==null||parent==null)return;visual.transform.SetParent(parent,false);
-            visual.transform.localPosition=socket?new Vector3(0,-.3f,0):restPosition;
-            visual.transform.localRotation=socket?Quaternion.Euler(90,0,0):restRotation;
+            if(visual!=null)EquipmentVisualPlacement.Mount(visual.transform,parent,socket,restPosition,restRotation);
         }
         static void Visual(MeshRenderer renderer, EquipmentDefinition weapon)
         {
             if (renderer == null) return; renderer.gameObject.SetActive(weapon != null); if (weapon == null) return;
-            renderer.transform.localScale = weapon.visualScale; var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", weapon.color); renderer.SetPropertyBlock(block);
+            EquipmentVisualPlacement.SetWorldScale(renderer.transform,weapon.visualScale); var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", weapon.color); renderer.SetPropertyBlock(block);
         }
         public float DamageMultiplier(Vector3 direction, Health source, AttackDefinition attack)
         { return Stats.block > 0 && Vector3.Dot(-direction.normalized, transform.forward) > .5f ? 1 - Stats.block : 1; }

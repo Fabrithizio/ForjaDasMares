@@ -174,3 +174,13 @@ CampaignHome oferece tela inicial e agenda local de códigos de convite, sem fab
 
 ## Menu de sessão da campanha 0.8.2
 CampaignHud cria CampaignSessionMenu na SafeRoot existente. Overlay bloqueia somente ArenaInput local e coordena abertura exclusiva com CoopInventoryHud, sem alterar o relógio da simulação. Visibilidade usa CoopCloud real; nenhuma mensagem de rede nova/protocolo alterado. Volume/controle visual persistidos em PlayerPrefs no aparelho; convites consultam a agenda CampaignInvitations-v1 existente. Sem rede social/presença/WhatsApp automático.
+
+## Revisão0.10.1 — campanha aberta, hordas e equipamento visual
+
+CampaignLevel define openLandscape, sectorSize e passageWidth; DungeonLayout mantém espaçamento por instância, sem alterar o layout legado. DungeonSession conserva activeEncounterRoom separadamente do setor visitado e usa essa referência para conclusão. Portas não fecham nessa campanha. Encontros seguem serializados, enquanto objetivos/interações localizam o setor físico de cada ator.
+
+Campanha usa EnemyDefinitions/prefabs clonados, preservando arena/masmorras anteriores. EnemyPool respeita a capacidade por arquétipo; EncounterController mantém PlannedCount/DefeatedCount sincronizados no CampaignSnapshot/protocolo6. Máximo simultâneo definido pela plataforma do host20Android/24Windows, não100 simultâneos. EnemyModelMotion é apresentação procedural, sem decidir dano.
+
+EquipmentDefinition contém ícone de categoria e sequência de ataques. Profile.Item resolve banco+expedição sem unir as coleções; transações preservam IDs, regras de equipagem e finalização única. CoopProgression valida equipagem em campanha aberta sem perigos próximos. CoopProfileChannel omite o diário de eventos interno do espelho, preservando o diário no host. EquipmentVisualPlacement compensa lossyScale do pai ao montar arma nos ossos importados e réplicas. Não altera o collider ou os atributos do herói.
+
+CameraOcclusion guarda conjuntos de renderers filhos por collider e aplica material parcialmente transparente sem desligar colisão. CampaignCombatReadout apresenta sons e números por deltas de estado, com pools/frequência limitada. Fontes de arte editáveis e galeria: ArtSource/ExpeditionSet. DependênciasUnity/pacotes/serviços permanecem nas versões anteriores; sem novos serviços pagos ou segredos. Relatório e limitações: PAISAGENS_E_HORDAS_0_10_2026-10-17.md.

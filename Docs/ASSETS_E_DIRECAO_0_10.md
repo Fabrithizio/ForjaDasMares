@@ -6,7 +6,7 @@ Nenhuma compra ou conta nova é necessária para esta iteração. Foram produzid
 
 ## Conjunto original produzido
 
-Fonte editável: ArtSource/ExpeditionSet/ExpeditionSet.blend e create_expedition_set.py. Exportações e ícones: Assets/ForjaDasMares/Art/ExpeditionSet. Sem arquivos, modelos ou texturas copiados de Dungeon Rampage. Ícones são renders dos objetos originais, não imagens tiradas da referência.
+Fonte editável: ArtSource/ExpeditionSet/ExpeditionSet.blend e create_expedition_set.py. Para visualizar todos os modelos organizados, abra ExpeditionSet_Gallery.blend; prévia em ExpeditionSet_Preview.png, gerados por create_gallery.py sem modificar assets da Unity. Exportações e ícones: Assets/ForjaDasMares/Art/ExpeditionSet. Sem arquivos, modelos ou texturas copiados de Dungeon Rampage. Ícones são renders dos objetos originais, não imagens tiradas da referência.
 
 | Uso | Arquivos/modelos | Estado |
 |---|---|---|
@@ -31,6 +31,7 @@ Total:17 modelosFBX,12 íconesPNG e4sonsWAV. Não há rig humanoide nem clips no
 |2|Módulos de mapas|Paredes externas, curvas, pedras, árvores/raízes, pilares, ruínas, lava/forja, pontes; colisores simples;20–30 peças por bioma.|Geometria existente+9 props novos|
 |2|Chefes finais|Silhueta por bioma, rig, ao menos3 ataques legíveis e animações de preparação/recuperação.|Chefe e padrões existentes com modelos provisórios|
 |2|VFX próprios|Corte em arco, flecha, impacto, explosão, gelo/raiz, proteção, cura, raro/épico, fumaça de perigo.|Zonas geométricas, flash e números reais|
+|2|Modelos de armas equipadas|9categorias com sockets e escala coerente, variantes legíveis por arma.|Apresentação geométrica anterior; renders de inventário novos|
 |2|Ícones por item e habilidade|128–256px, transparência, leitura em64px; linguagem visual consistente.|12 imagens por categoria|
 |3|Áudio ambiente e música|3 loops ambientais e2–4 faixas com transição exploração/combate.|Não produzido nesta entrega|
 

@@ -86,5 +86,31 @@ namespace ForjaDasMares.Networking.Tests
             actor.SetReplica(data,20,28,EnemyState.Chase);Assert.IsFalse(actor.Brain.enabled);actor.gameObject.SetActive(false);
             var spawned=pool.TrySpawn(data,session.Actor(0).transform.position+Vector3.forward*2);Assert.NotNull(spawned);Assert.IsTrue(spawned.enabled);Assert.IsTrue(spawned.Brain.enabled);Assert.IsTrue(spawned.Motor.enabled);Assert.IsTrue(spawned.Combat.enabled);Assert.IsTrue(spawned.GetComponent<EnemyPresentation>().enabled);
         }
+        [UnityTest]public IEnumerator EquippedWeaponStaysInMetresOnHostReplicaAndHeroChange()
+        {
+            Assert.IsTrue(session.HostDirect("WILD07",7827,false));yield return null;session.StartGame();yield return null;
+            var progression=session.GetComponent<CoopProgression>();var service=progression.Profile(0);
+            var item=LootGenerator.Create(progression.Catalog,"fenda-axe",ItemRarity.Rare,new System.Random(4));service.Profile.expedition.items.Add(item);
+            Assert.IsTrue(service.Equip("warrior",item.instanceId,EquipmentSlot.MainHand),service.Message);yield return null;
+            var host=session.Actor(0);var hostGear=host.GetComponentsInChildren<MeshRenderer>(true).First(x=>x.name=="CoopEquippedMain");
+            Assert.That(hostGear.bounds.size.magnitude,Is.LessThan(3));Assert.That(Vector3.Distance(hostGear.bounds.center,host.transform.position),Is.LessThan(3));
+            var replica=session.Actor(1);replica.gameObject.SetActive(true);
+            var frame=new ActorFrame{hero=0,mainItem="fenda-axe",maximum=140,hp=140};replica.Apply(frame);replica.ApplyGear(frame,progression.Catalog);yield return null;
+            var gear=replica.GetComponentsInChildren<MeshRenderer>(true).First(x=>x.name=="ReplicaMain");
+            Assert.That(gear.bounds.size.magnitude,Is.LessThan(3));Assert.That(Vector3.Distance(gear.bounds.center,replica.transform.position),Is.LessThan(3));
+            frame.hero=1;frame.mainItem="wavecleaver";replica.Apply(frame);replica.ApplyGear(frame,progression.Catalog);yield return null;
+            Assert.IsTrue(gear.gameObject.activeInHierarchy);Assert.IsTrue(gear.transform.IsChildOf(replica.Presentation.Visible));Assert.That(gear.bounds.size.magnitude,Is.LessThan(3));
+        }
+        [UnityTest]public IEnumerator OriginalEnemyModelsRemainUprightAfterRuntimePreparation()
+        {
+            Assert.IsTrue(session.HostDirect("WILD06",7826,false));yield return null;session.StartGame();yield return null;var pool=session.Dungeon.Encounter.Enemies;
+            var definitions=Enumerable.Range(0,pool.Capacity).Select(pool.DefinitionAt).Distinct().ToArray();
+            foreach(var data in definitions)
+            {
+                var actor=pool.TrySpawn(data,session.Actor(0).transform.position+Vector3.forward*2);Assert.NotNull(actor,data.enemyId);
+                var renderers=actor.GetComponentsInChildren<Renderer>();Bounds bounds=renderers[0].bounds;foreach(var surface in renderers)bounds.Encapsulate(surface.bounds);
+                Assert.That(bounds.size.y,Is.GreaterThan(data.height*.65f),data.enemyId);actor.Recycle();
+            }
+        }
     }
 }

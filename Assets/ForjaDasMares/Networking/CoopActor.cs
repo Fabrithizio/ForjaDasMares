@@ -35,19 +35,15 @@ namespace ForjaDasMares.Networking
             if (signature == gearSignature) return; gearSignature = signature;
             if (mainGear == null) { mainGear = CreateGear("ReplicaMain", new Vector3(.55f, 1, .3f)); secondaryGear = CreateGear("ReplicaSecondary", new Vector3(-.55f, 1, .3f)); }
             var main = catalog.Find(frame.mainItem); var secondary = catalog.Find(frame.secondaryItem);
-            ShowGear(mainGear, main); ShowGear(secondaryGear, secondary);
             var model=Presentation.Visible.GetComponentInChildren<HeroModelView>(true);
-            if(model!=null)
-            {
-                model.ShowDefaultWeapon(main==null);
-                MountReplica(mainGear,model.PrimarySocket);MountReplica(secondaryGear,model.SecondarySocket);
-            }
+            EquipmentVisualPlacement.Mount(mainGear.transform,model!=null?model.PrimarySocket:Presentation.Visible,model!=null,new Vector3(.55f,1,.3f),Quaternion.identity);
+            EquipmentVisualPlacement.Mount(secondaryGear.transform,model!=null?model.SecondarySocket:Presentation.Visible,model!=null,new Vector3(-.55f,1,.3f),Quaternion.identity);
+            ShowGear(mainGear,main);ShowGear(secondaryGear,secondary);
+            if(model!=null)model.ShowDefaultWeapon(main==null);
             foreach (Transform body in transform) if (body.name.StartsWith("HeroVisual_")) foreach (Transform part in body)
                 if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(main == null);
                 else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
         }
-        static void MountReplica(MeshRenderer gear,Transform socket)
-        {if(gear==null||socket==null)return;gear.transform.SetParent(socket,false);gear.transform.localPosition=new Vector3(0,-.3f,0);gear.transform.localRotation=Quaternion.Euler(90,0,0);}
         MeshRenderer CreateGear(string label, Vector3 position)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = label; go.transform.SetParent(Presentation.Visible, false); go.transform.localPosition = position;
@@ -56,7 +52,7 @@ namespace ForjaDasMares.Networking
         void ShowGear(MeshRenderer renderer, EquipmentDefinition item)
         {
             renderer.gameObject.SetActive(item != null); if (item == null) return;
-            renderer.transform.SetParent(Presentation.Visible, false); renderer.transform.localScale = item.visualScale;
+            EquipmentVisualPlacement.SetWorldScale(renderer.transform,item.visualScale);
             gearColor ??= new MaterialPropertyBlock(); gearColor.SetColor("_BaseColor", item.color); renderer.SetPropertyBlock(gearColor);
         }
         public void SetAuthority(bool value)

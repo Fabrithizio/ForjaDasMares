@@ -76,7 +76,7 @@ namespace ForjaDasMares.Networking.Editor
             {
                 string icon=item.slot==EquipmentSlot.Armor?"Armor":item.slot==EquipmentSlot.Accessory?"Accessory":item.slot==EquipmentSlot.Artifact?"Artifact":item.category.ToString();
                 item.icon=AssetDatabase.LoadAssetAtPath<Sprite>(Art+"Icon_"+icon+".png");if(item.icon==null)throw new InvalidOperationException("Missing icon "+icon);
-                if(item.slot==EquipmentSlot.MainHand&&item.attacks!=null&&item.attacks.Length>0)
+                if(item.slot==EquipmentSlot.MainHand&&item.attacks!=null&&item.attacks.Length>0&&AssetDatabase.GetAssetPath(item.attacks[0])!=Root+"Combo_"+item.itemId+"_0.asset")
                 {
                     var basic=item.attacks[0];item.attacks=new AttackDefinition[3];
                     for(int i=0;i<3;i++)
