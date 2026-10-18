@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AbilityDefinition
   displayName: Laco de Raizes
   effect: 1
-  hit: {fileID: 11400000, guid: 6dd75b86ddfd22446ac718078cfcb518, type: 2}
-  cooldown: 5
+  hit: {fileID: 11400000, guid: 2536a60d6e38c3f489671399dbca376a, type: 2}
+  cooldown: 8
   radius: 1.8
   trapLifetime: 6
   placementDistance: 2.2

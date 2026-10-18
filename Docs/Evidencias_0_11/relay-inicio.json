@@ -1,0 +1,11 @@
+{
+  "host": "Playing",
+  "phone": "Playing",
+  "hostCount": 2,
+  "phoneCount": 2,
+  "sameMap": true,
+  "phoneHP": "100,100,100,100",
+  "phoneMax": "100,100,100,100",
+  "phoneX": 0.8999999761581421,
+  "phoneZ": -3.0
+}

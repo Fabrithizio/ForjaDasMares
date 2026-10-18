@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AbilityDefinition
   displayName: Guarda e Investida
   effect: 3
-  hit: {fileID: 11400000, guid: 19ad8a25570226e42bcd02dac6841388, type: 2}
-  cooldown: 5
-  radius: 4
+  hit: {fileID: 11400000, guid: 1e7bf3137ec63d84389f648e5b2a11f6, type: 2}
+  cooldown: 9
+  radius: 3
   trapLifetime: 6
   placementDistance: 2.2
   chargeDuration: 0.3
   chargeSpeed: 13
-  protectionDuration: 3
-  protectionReduction: 0.6
+  protectionDuration: 2
+  protectionReduction: 0.35

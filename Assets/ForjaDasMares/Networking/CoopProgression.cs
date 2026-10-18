@@ -120,6 +120,7 @@ namespace ForjaDasMares.Networking
         void RoomWon(DungeonRoom room)
         {
             if (!director.Manager.IsServer || !Active || room.encounter == null) return;
+            if(director.Campaign!=null&&room.node.id==1)Enqueue("first-weapon:"+room.node.id,catalog.firstVictory);
             Enqueue("room:" + room.node.id, catalog.room); TryFlush();
             for (int i = 0; i < 4; i++)
             {

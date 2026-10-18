@@ -27,12 +27,12 @@ namespace ForjaDasMares
         {
             int count = table.guaranteedItems + (random.NextDouble() < table.itemChance ? 1 : 0); var result = new List<ItemInstance>(count);
             var eligible=new List<EquipmentDefinition>();var rule=heroId!=null?catalog.Hero(heroId):null;
-            foreach(var item in catalog.equipment)if(!item.starter&&(rule==null||(item.compatibleHeroes&rule.affinity)!=0))eligible.Add(item);
+            foreach(var item in catalog.equipment)if(!item.starter&&(table.maximumRequiredLevel==0||item.minimumLevel<=table.maximumRequiredLevel)&&(!table.weaponsOnly||item.slot==EquipmentSlot.MainHand)&&(rule==null||(item.compatibleHeroes&rule.affinity)!=0))eligible.Add(item);
             if(eligible.Count==0)return result;
             for (int i = 0; i < count; i++)
             {
                 var definition = eligible[random.Next(eligible.Count)];
-                result.Add(Create(catalog, definition.itemId, RollRarity(catalog, random, table.minimumRarity), random));
+                result.Add(Create(catalog, definition.itemId, table.fixedRarity?table.minimumRarity:RollRarity(catalog, random, table.minimumRarity), random));
             }
             return result;
         }

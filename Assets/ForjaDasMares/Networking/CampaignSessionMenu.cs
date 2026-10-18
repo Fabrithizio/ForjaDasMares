@@ -38,7 +38,7 @@ namespace ForjaDasMares.Networking
             Button(room.transform,"CopyCode",30,415,330,"COPIAR CÓDIGO",()=>Copy(false));
             Button(room.transform,"CopyInvitation",395,415,330,"COPIAR CONVITE",()=>Copy(true));
             visibility=Button(room.transform,"Visibility",760,415,330,"",()=>cloud.ToggleVisibility());
-            Button(room.transform,"Inventory",30,485,330,"ABRIR MOCHILA",()=>{Close();GetComponent<CoopInventoryHud>()?.OpenInventory();});
+            Button(room.transform,"Inventory",30,485,330,"PERSONAGEM E EQUIPAMENTOS",()=>{Close();GetComponent<CoopInventoryHud>()?.OpenInventory();});
             Button(room.transform,"Leave",760,485,330,"SAIR DA SALA…",()=>{warning.text=director.IsHost?"ENCERRAR A SALA?\nVocê é o host: todos serão desconectados.\nO saque temporário ainda não concluído não é garantido.":"SAIR DA SALA?\nOs demais continuam jogando. Para voltar, use o código\ne mantenha o host e esta tentativa abertos.";Show(confirm);});
             feedback=Label(panel,"",30,575,1040,48,18);
             friendInfo=Label(friends.transform,"",30,180,1040,315,18);

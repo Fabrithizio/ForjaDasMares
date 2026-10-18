@@ -20,7 +20,7 @@ MonoBehaviour:
   heavyRangeMultiplier: 1
   hitsForSuper: 24
   superInputBuffer: 1.5
-  superAttack: {fileID: 11400000, guid: e800a4dab5427624a9ed38e892015f71, type: 2}
+  superAttack: {fileID: 0}
   furyDuration: 6
   furyAttackSpeed: 1.55
   superProtection: 0

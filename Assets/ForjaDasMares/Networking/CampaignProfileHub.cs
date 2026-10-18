@@ -37,7 +37,7 @@ namespace ForjaDasMares.Networking
         public string Description=>UsingRemote?"ÚLTIMA SALA · alterações validadas ao retornar ao mesmo host":"ESTE APARELHO · perfil usado ao hospedar suas partidas";
         public void Toggle(){Load();if(cached==null)return;plan.remote=!plan.remote;prepared=null;revision++;Persist();}
         void Changed()=>revision++;
-        void Persist(){try{Directory.CreateDirectory(Root);File.WriteAllText(PlanPath,JsonUtility.ToJson(plan));}catch(Exception){channel.SetNotice("Não foi possível guardar a organização do perfil.");}}
+        void Persist(){try{Directory.CreateDirectory(Root);string temporary=PlanPath+".tmp";File.WriteAllText(temporary,JsonUtility.ToJson(plan));if(File.Exists(PlanPath))File.Replace(temporary,PlanPath,PlanPath+".bak");else File.Move(temporary,PlanPath);}catch(Exception){channel.SetNotice("Não foi possível guardar a organização do perfil.");}}
         public void OwnSession(){Load();plan.remote=false;prepared=null;revision++;Persist();}
         public void Accept(CoopProfileFrame packet)
         {
@@ -48,8 +48,9 @@ namespace ForjaDasMares.Networking
                 int before=plan.pending.Count;
                 foreach(var pending in plan.pending.ToArray())
                 {
-                    var set=packet.profile.Loadout(pending.hero);string desired=pending.action==CoopInventoryAction.Unequip?null:pending.item;
-                    if(set!=null&&set.items[(int)pending.slot]==desired||pending.action==CoopInventoryAction.Equip&&packet.profile.Item(pending.item)==null)plan.pending.Remove(pending);
+                    var set=packet.profile.Loadout(pending.hero);
+                    bool applied=set!=null&&(pending.action==CoopInventoryAction.Unequip?string.IsNullOrEmpty(set.items[(int)pending.slot]):set.items[(int)pending.slot]==pending.item);
+                    if(applied||pending.action==CoopInventoryAction.Equip&&packet.profile.Item(pending.item)==null)plan.pending.Remove(pending);
                 }
                 if(before!=plan.pending.Count)attempts=0;plan.deliveries=packet.deliveryCount;
                 var store=new ProfileStore(ProfilePath);store.Save(packet.profile,authority.Catalog);if(cached!=null)cached.Changed-=Changed;

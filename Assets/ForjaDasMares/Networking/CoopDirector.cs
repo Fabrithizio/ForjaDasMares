@@ -401,8 +401,11 @@ namespace ForjaDasMares.Networking
         void Broadcast()
         {
             if (!handlers) BindMessages(); frame.tick = ++tick; frame.phase = (int)Phase; frame.seed = dungeon.Seed; frame.fixedMap = dungeon.FixedMap; frame.biome = biome;
-            frame.expedition=expedition;frame.campaignLevel=Campaign!=null?Campaign.Selected:-1;frame.campaign=Campaign!=null&&dungeon.Generator.Layout!=null?Campaign.Capture():null;
-            frame.room = dungeon.CurrentRoom != null ? dungeon.CurrentRoom.node.id : -1; frame.signature = dungeon.Generator.Layout != null ? dungeon.Generator.Layout.Signature() : "";
+            // A lobby may retain the previous dungeon locally, but must not advertise it
+            // with the next selected campaign level to a newly joining client.
+            bool hasWorld=Phase!=CoopPhase.Lobby&&dungeon.Generator.Layout!=null;
+            frame.expedition=expedition;frame.campaignLevel=Campaign!=null?Campaign.Selected:-1;frame.campaign=hasWorld&&Campaign!=null?Campaign.Capture():null;
+            frame.room = hasWorld&&dungeon.CurrentRoom != null ? dungeon.CurrentRoom.node.id : -1; frame.signature = hasWorld ? dungeon.Generator.Layout.Signature() : "";
             frame.encounter = (int)dungeon.Encounter.State; frame.finished = dungeon.Finished; frame.hasKey = dungeon.HasKey;
             frame.players.Clear(); frame.enemies.Clear(); frame.effects.Clear();
             for (int i = 0; i < actors.Length; i++)

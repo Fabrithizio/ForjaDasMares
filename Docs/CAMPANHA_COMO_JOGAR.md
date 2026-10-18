@@ -1,30 +1,45 @@
-# Jogar a campanha 0.10.1
+# Jogar a campanha 0.11.0
 
 ## PC e Android juntos
 
-1. PC: abra **Jogos/Jogar Campanha Forja das Mares**. Android: instale **Jogos/Enviar para meu irmao/ForjaDasMares-0.10.1-Android.apk**. Para compartilhar, envie esse APK como Documento no WhatsApp; não envie só o executável de PC.
+1. PC: abra **Jogos/Jogar Campanha Forja das Mares**. Android: instale **Jogos/Enviar para meu irmao/ForjaDasMares-0.11.0-Android.apk**. Para compartilhar, envie esse APK como Documento no WhatsApp; não envie só o executável de PC.
 2. Ambos precisam de internet e da mesma versão. Host: CAMPANHA → fase → CRIAR SALA PRIVADA. Compartilhe o código exibido.
 3. Convidado: CAMPANHA → informe o código → ENTRAR PELO CÓDIGO. Host: INICIAR COM O GRUPO. Prefira aguardar todos no lobby.
-4. Pode iniciar sozinho (+10% vida/dano enquanto estiver só). Uma sala publicada recebe jogadores até 20% do percurso e no máximo quatro; uma sala privada depende de código.
+4. Pode iniciar sozinho, sem bônus de vida ou dano. Uma sala publicada recebe jogadores até 20% do percurso e no máximo quatro; uma sala privada depende de código.
 5. MENU/Esc abre sala, convites, mapa e opções durante a fase. Não pausa o online. Inventário possui equipamento, comparação e descarte confirmado; o resultado mostra os itens obtidos.
 6. Mantenha o host aberto; sair encerra a sessão. O host guarda a progressão cooperativa. Não há migração de host nem transferência automática de progresso entre hosts. Amigos são agenda local de convites, não uma rede social com presença.
+
+## Perfil e equipamento antes de entrar
+
+- No início, abra **PERSONAGEM · EQUIPAMENTOS E MOCHILA**. Escolha herói e use TODOS/ARMAS/SECUND./ARMADURA/ACESSÓRIO/ARTEFATO; o filtro de classe começa ativo.
+- Os cinco slots aparecem ao redor do avatar. Selecione um item para comparar atributos, classe/nível e habilidade. Adagas compatíveis oferecem USAR NA SECUNDÁRIA quando permitido; uma arma de duas mãos retira a secundária para a mochila.
+- Cada classe recebe uma arma inicial comum, fraca e focada em um alvo. O primeiro combate vencido concede uma arma comum utilizável, uma única vez por classe. Confira **SAQUE ATUAL**, compare e equipe fora de perigo; nada é equipado automaticamente.
+- O contexto **ESTE APARELHO** é usado quando você hospeda. **ÚLTIMA SALA** permite organizar o último perfil recebido de outro host: alterações de equipamento são revalidadas ao voltar ao mesmo host, no lobby. Aguarde a sincronização antes de iniciar. Não transfere itens entre hosts nem representa uma conta global.
+- Saves antigos são mantidos; itens que ficaram incompatíveis com a classe voltam para a mochila. Atualize o APK por cima, sem limpar os dados do aplicativo.
+
+## HUD e orientação
+
+- PC: I abre/fecha personagem; M amplia o minimapa; Esc/MENU abre opções e código da sala. Barra com ícones: ataque, E habilidade da arma/classe, Espaço esquiva, F interação, Q super/Fúria, I personagem.
+- Celular: toque no minimapa para ampliar; os controles de combate continuam nas laterais. FÚRIA mostra a duração restante quando ativa.
+- Vermelho marca inimigos e setor pendente; azul/ciano, grupo/jogador; dourado, objetivo. A distância ao inimigo mais próximo ajuda a encontrar remanescentes.
+- Flechas têm emissores visíveis com preparação; inimigos mostram um anel de chegada antes de agir. São recursos provisórios, não arte final.
 
 ## Novidades para experimentar
 
 - Quebre suprimentos para obter recompensas e curar um aliado ferido próximo. A cura acontece uma única vez; procure a marca verde.
 - Encontre e destrua os três selos: equipamento raro ou melhor, XP e moedas, uma vez por expedição.
 - INTERAGIR perto de uma fonte recupera 35% da vida máxima dos aliados vivos no mesmo setor, fora de combate; cada fonte é de uso único.
-- Guerreiro: segure ataque para carregar o golpe pesado (1,2s; intervalo 4s). SUPER enche após 18 acertos válidos; Q no PC/botão SUPER no toque.
+- Guerreiro: segure ataque para carregar o golpe pesado (1,2s; intervalo 4s). FÚRIA enche após 24 acertos válidos; Q no PC/botão FÚRIA no toque ativa 6 segundos de cadência ×1,55, sem explosão em área. Durante a Fúria, ataques não recarregam a barra.
 - Corta-Maré, Salva de Junco e Foco de Brasa mudam arco/alcance, disparos em leque e explosão, respectivamente. Os visuais ainda são provisórios. As demais armas também têm sequências configuradas de três ataques.
-- Patrulheiro, Arcanista e Cavaleiro Rúnico também têm ataque carregado (1,15s) e SUPER após24acertos. Guerreiro mantém18acertos.
+- Patrulheiro, Arcanista e Cavaleiro Rúnico também têm ataque carregado (1,15s) e SUPER após24acertos. Guerreiro também exige24acertos.
 - Na mochila, SAQUE ATUAL mostra itens encontrados nesta tentativa. Se estiver fora de perigo, selecione e equipe para alterar o combate durante a fase. Não é preciso esperar o resultado.
 - As fases têm setores28/30/32m e passagens abertas, sem portões fechando. Encontros difíceis acumulam109/136/164inimigos em ondas; o limite simultâneo segue o host:20noAndroid/24noPC.
-- Três elites possuem ataques de preparação visível. Derrote os combates e conclua os objetivos obrigatórios antes de usar a saída final. Só há um encontro ativo por vez; se o grupo se separar, pode precisar voltar ao combate pendente.
+- Três elites possuem ataques de preparação visível. Derrote os combates e conclua os objetivos obrigatórios antes de usar a saída final. Só há um encontro ativo por vez; o minimapa destaca o setor pendente e os inimigos restantes. Reforços intermediários podem chegar com até dois remanescentes; a última onda exige eliminar todos.
 - MAPA E OBJETIVOS mostra os setores reais, sua posição e progresso; o HUD informa cooldowns e personagem caído.
 
 Cena do Editor: `Assets/ForjaDasMares/Scenes/CampaignCoop.unity`. Pressione Play após terminar a importação. As cenas de arena e masmorras anteriores foram preservadas.
 
-Builds: `Builds/CampaignWindows-0.10.1/ForjaDasMaresCampanha.exe` e `Builds/CampaignAndroid-0.10.1/ForjaDasMaresCampanha.apk`. APK ARM64, Android mínimo API25, assinado para desenvolvimento; não é release da Play Store. Atualize por cima para preservar os dados. O Android pode pedir autorização pessoal para instalar o arquivo recebido.
+Builds: `Builds/CampaignWindows-0.11.0/ForjaDasMaresCampanha.exe` e `Builds/CampaignAndroid-0.11.0/ForjaDasMaresCampanha.apk`. APK ARM64, Android mínimo API25, assinado para desenvolvimento; não é release da Play Store. Atualize por cima para preservar os dados. O Android pode pedir autorização pessoal para instalar o arquivo recebido.
 
 Ainda exige sessões humanas completas para balancear dificuldade/duração, outros modelos de celular e testes entre redes diferentes. Esta é uma versão privada de testes, com arte provisória em parte do conteúdo. Evidências e dependências: `PAISAGENS_E_HORDAS_0_10_2026-10-17.md`.
 

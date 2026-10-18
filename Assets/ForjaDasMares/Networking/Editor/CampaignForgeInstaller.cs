@@ -28,8 +28,15 @@ namespace ForjaDasMares.Networking.Editor
                 var attack=Hit(original.attacks[0],"StarterHit_"+hero.heroId,h==0?10:h==1?8:h==2?9:8,h==1?9:h==2?8:1.8f,1,55);attack.splashRadius=0;attack.projectileCount=1;attack.windup=.16f;attack.recovery=.44f;attack.knockback=.5f;
                 hero.attacks=new[]{attack};hero.special=Copy(original.special,"StarterSkill_"+hero.heroId);
                 if(h==0){hero.special.effect=AbilityEffect.WeaponStrike;hero.special.displayName="Estocada";hero.special.hit=Hit(attack,"StarterThrust",17,2.3f,1,45);hero.special.cooldown=7;}
+                if(h>0)
+                {
+                    hero.special.hit=Hit(original.special.hit,"StarterSkillHit_"+hero.heroId,h==3?10:14,h==3?1.8f:2.2f,h==3?1:0,120);hero.special.cooldown=h==3?9:8;hero.special.radius=h==1?1.8f:h==2?2.2f:3;
+                    if(h==2){hero.special.hit.control=ControlEffect.Slow;hero.special.hit.controlDuration=.8f;}
+                    if(h==3){hero.special.protectionReduction=.35f;hero.special.protectionDuration=2;}
+                    EditorUtility.SetDirty(hero.special.hit);
+                }
                 var flow=Copy(original.onlineFlow,"Flow_"+hero.heroId);hero.onlineFlow=flow;
-                if(h==0){flow.furyDuration=6;flow.furyAttackSpeed=1.55f;flow.hitsForSuper=24;flow.superProtection=0;flow.heavyMultiplier=1.6f;flow.heavyRangeMultiplier=1;}
+                if(h==0){flow.furyDuration=6;flow.furyAttackSpeed=1.55f;flow.hitsForSuper=24;flow.superProtection=0;flow.superAttack=null;flow.heavyMultiplier=1.6f;flow.heavyRangeMultiplier=1;}
                 var starter=Copy(catalog.equipment.First(x=>x.slot==EquipmentSlot.MainHand&&((int)x.compatibleHeroes&(1<<h))!=0),"Starter_"+hero.heroId);
                 starter.itemId="initiation-"+hero.heroId;starter.displayName=h==0?"Espada de Aprendiz":h==1?"Arco de Aprendiz":h==2?"Cajado de Aprendiz":"Lâmina de Vigília";starter.description="Arma comum inicial. Ataque concentrado em um alvo, sem efeitos extras. Encontre armas para definir sua build.";
                 starter.slot=EquipmentSlot.MainHand;starter.category=h==1?WeaponCategory.Bow:h==2?WeaponCategory.Staff:WeaponCategory.Sword;starter.compatibleHeroes=(HeroAffinity)(1<<h);starter.starter=true;starter.minimumLevel=1;starter.bonuses=Array.Empty<StatModifier>();starter.attacks=new[]{attack,attack,attack};starter.ability=null;starter.twoHanded=h==1||h==2;starter.allowsOffHand=!starter.twoHanded;starter.twinStrike=false;starter.frontalBlock=0;starter.visualScale=h==1?new Vector3(.12f,.8f,.15f):new Vector3(.1f,.7f,.12f);starter.icon=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/ForjaDasMares/Art/ExpeditionSet/Icon_"+starter.category+".png");
@@ -39,6 +46,7 @@ namespace ForjaDasMares.Networking.Editor
             var equipment=new List<EquipmentDefinition>();
             foreach(var original in catalog.equipment.Where(x=>!x.starter).ToArray())
             {
+                if(AssetDatabase.GetAssetPath(original).StartsWith(Root+"ClassArmor_")){equipment.Add(original);continue;}
                 var item=Copy(original,"Item_"+original.itemId);
                 if(item.slot==EquipmentSlot.MainHand)
                 {
@@ -58,9 +66,9 @@ namespace ForjaDasMares.Networking.Editor
             foreach(var starter in starters)if(equipment.All(x=>x.itemId!=starter.itemId))equipment.Add(starter);
             var armor=equipment.First(x=>x.slot==EquipmentSlot.Armor);for(int h=0;h<4;h++)
             {
-                var item=Copy(armor,"ClassArmor_"+h);item.itemId="class-armor-"+h;item.displayName=h==0?"Couraça do Duelista":h==1?"Traje do Batedor":h==2?"Manto do Círculo":"Placas do Bastião";item.compatibleHeroes=(HeroAffinity)(1<<h);item.description="Armadura da classe. Proteção e atributos limitados para complementar sua arma.";item.bonuses=new[]{new StatModifier(ItemStat.Health,h==3?24:h==0?16:10),new StatModifier(h==1?ItemStat.AttackSpeed:h==2?ItemStat.CooldownReduction:ItemStat.Defense,h<2&&h!=0||h==2?.06f:7)};if(equipment.All(x=>x.itemId!=item.itemId))equipment.Add(item);EditorUtility.SetDirty(item);
+                var item=Copy(armor,"ClassArmor_"+h);item.itemId="class-armor-"+h;item.displayName=h==0?"Couraça do Duelista":h==1?"Traje do Batedor":h==2?"Manto do Círculo":"Placas do Bastião";item.compatibleHeroes=(HeroAffinity)(1<<h);item.description="Armadura da classe. Proteção e atributos limitados para complementar sua arma.";item.bonuses=new[]{new StatModifier(ItemStat.Health,h==3?24:h==0?16:10),new StatModifier(h==1?ItemStat.AttackSpeed:h==2?ItemStat.CooldownReduction:ItemStat.Defense,h==1||h==2?.06f:7)};if(equipment.All(x=>x.itemId!=item.itemId))equipment.Add(item);EditorUtility.SetDirty(item);
             }
-            catalog.equipment=equipment.ToArray();catalog.classStarters=profiles.Select(x=>new ClassStarterRule{heroId=x.heroId,itemId="initiation-"+x.heroId}).ToArray();catalog.starterItems=Array.Empty<string>();catalog.Validate();progression.Configure(catalog);EditorUtility.SetDirty(progression);EditorUtility.SetDirty(catalog);
+            catalog.normalizeLegacyLoadouts=true;catalog.firstVictory.maximumRequiredLevel=1;catalog.equipment=equipment.ToArray();catalog.classStarters=profiles.Select(x=>new ClassStarterRule{heroId=x.heroId,itemId="initiation-"+x.heroId}).ToArray();catalog.starterItems=Array.Empty<string>();catalog.Validate();progression.Configure(catalog);EditorUtility.SetDirty(progression);EditorUtility.SetDirty(catalog);
             var pool=UnityEngine.Object.FindFirstObjectByType<EnemyPool>();var poolData=new SerializedObject(pool).FindProperty("definitions");for(int i=0;i<poolData.arraySize;i++)
             {var enemy=(EnemyDefinition)poolData.GetArrayElementAtIndex(i).objectReferenceValue;enemy.spawnWarning=.9f;if(enemy.kind==EnemyKind.Raider){enemy.maximumHealth=34;enemy.attack=Hit(enemy.attack,"RaiderHit",9,enemy.attack.range,0,enemy.attack.arc);}EditorUtility.SetDirty(enemy);}
             var run=UnityEngine.Object.FindFirstObjectByType<CampaignRun>();for(int i=0;i<run.Count;i++)foreach(var encounter in run.At(i).combatVariants.Concat(new[]{run.At(i).normal,run.At(i).hard}))

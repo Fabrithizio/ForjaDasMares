@@ -12,6 +12,7 @@ namespace ForjaDasMares
         {value.maximumHealth=Mathf.RoundToInt(value.maximumHealth*1.1f);value.damageMultiplier*=1.1f;return value;}
         public static float ModifierLimit(ItemStat stat) => StatModifier.Limit(stat);
         public static int RequiredExperience(int level) => 60 + 35 * (level - 1);
+        public static float StrikeMultiplier(float damageMultiplier,float elementalDamage,bool critical)=>damageMultiplier*(1+elementalDamage)*(critical?1.5f:1);
         public static int Level(int total, int maximum = 20) { int level = 1; while (level < maximum && total >= RequiredExperience(level)) { total -= RequiredExperience(level); level++; } return level; }
         public static int ExperienceInLevel(int total, int maximum = 20) { int level = 1; while (level < maximum && total >= RequiredExperience(level)) { total -= RequiredExperience(level); level++; } return total; }
         public static StatSnapshot Calculate(HeroDefinition hero, PlayerProfile profile, ProgressionCatalog catalog, string replaceId = null, EquipmentSlot replaceSlot = EquipmentSlot.MainHand, bool preview = false)

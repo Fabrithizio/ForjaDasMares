@@ -15,11 +15,18 @@ namespace ForjaDasMares
             Profile = store.Load(catalog, out string notice); Message = notice;
             if (Profile == null)
             {
+                // Preserve unreadable originals before making a replacement profile.
+                if(System.IO.File.Exists(store.Path))
+                {
+                    string suffix=".preserved-"+DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");System.IO.File.Copy(store.Path,store.Path+suffix);
+                    if(System.IO.File.Exists(store.Path+".bak"))System.IO.File.Copy(store.Path+".bak",store.Path+".bak"+suffix);
+                }
                 Profile = new PlayerProfile(); var random = new System.Random(607);
                 foreach (var id in catalog.starterItems) Profile.inventory.Add(LootGenerator.Create(catalog, id, ItemRarity.Common, random));
                 store.Save(Profile, catalog);
             }
-            EnsureClassStarters();
+            Profile.starterGranted??=new System.Collections.Generic.List<string>();
+            EnsureClassStarters();if(!string.IsNullOrEmpty(notice))Message=notice;
         }
         public void EnsureClassStarters()
         {
@@ -96,11 +103,13 @@ namespace ForjaDasMares
             if (!catalog.IsRewardRule(rule)) return false;
             var run = Profile.expedition;
             if (run == null || run.runId != runId || run.events.Contains(eventId) || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128 || run.events.Count >= 2048) return false;
+            string discovery="discovery:"+run.heroId;
+            if(rule==catalog.firstVictory&&Profile.starterGranted.Contains(discovery))return Transaction(next=>next.expedition.events.Add(eventId),"Encontro concluído.");
             var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed),Profile.expedition.heroId);
             int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
             if ((rule == catalog.enemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
             if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }
-            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot); }, "Recompensas recebidas.");
+            return Transaction(next => { var current = next.expedition; current.events.Add(eventId); current.coins += rule.coins; current.experience += rule.experience; current.items.AddRange(loot);if(rule==catalog.firstVictory)next.starterGranted.Add(discovery); }, rule==catalog.firstVictory?"Primeira arma encontrada. Consulte SAQUE ATUAL no personagem.":"Recompensas recebidas.");
         }
         public bool FinishExpedition(string runId, bool victory, string outcome)
         {

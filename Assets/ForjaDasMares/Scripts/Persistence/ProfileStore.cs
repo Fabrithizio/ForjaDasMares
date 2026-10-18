@@ -30,6 +30,7 @@ namespace ForjaDasMares
                     if (envelope.version == 1) ProfileSerialization.NormalizeLegacyNulls(profile);
                     else { if (!envelope.hasExpedition) profile.expedition = null; if (!envelope.hasLastResult) profile.lastResult = null; }
                     if (profile.version == 1) { profile.version = 2; profile.deliveries ??= new List<ItemInstance>(); profile.completedRuns ??= new List<string>(); profile.options ??= new LocalOptions(); }
+                    if(catalog.normalizeLegacyLoadouts&&NormalizeLoadouts(profile,catalog))notice="Equipamento antigo incompatível foi desequipado; os itens continuam na mochila.";
                     Validate(profile, catalog);
                     if (path != Path) notice = "Salvamento recuperado do backup.";
                     return profile;
@@ -47,6 +48,20 @@ namespace ForjaDasMares
             byte[] bytes = Encoding.UTF8.GetBytes(JsonUtility.ToJson(envelope, true));
             using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None)) { stream.Write(bytes, 0, bytes.Length); stream.Flush(true); }
             if (File.Exists(Path)) File.Replace(temporary, Path, Path + ".bak"); else File.Move(temporary, Path);
+        }
+        static bool NormalizeLoadouts(PlayerProfile profile,ProgressionCatalog catalog)
+        {
+            if(profile.inventory==null||profile.loadouts==null)return false;bool changed=false;
+            foreach(var set in profile.loadouts)
+            {
+                if(set==null||set.items==null||set.items.Length!=5||catalog.Hero(set.heroId)==null)continue;
+                for(int slot=0;slot<5;slot++)
+                {
+                    var item=profile.Item(set.items[slot]);if(item==null||catalog.Find(item.definitionId)==null)continue;
+                    if(!ProgressionStats.CanEquip(profile,catalog,set.heroId,item,(EquipmentSlot)slot,out _)){set.items[slot]=null;changed=true;}
+                }
+            }
+            return changed;
         }
         static void Validate(PlayerProfile profile, ProgressionCatalog catalog)
         {

@@ -31,14 +31,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d74cadb25769da4fa7f4d8948ecb975, type: 2}
   - {fileID: 11400000, guid: 205f9d6b3f3272f488d8511eae8c6e2b, type: 2}
   - {fileID: 11400000, guid: 05df7df1ed942e642a56ba08750709e5, type: 2}
-  - {fileID: 11400000, guid: 563e1bed949b98f49ba27c4649cafec5, type: 2}
-  - {fileID: 11400000, guid: c57b8ebdf86837f40b7917ae6a6bbd71, type: 2}
-  - {fileID: 11400000, guid: 880ac46a4184e504697fb47ebd29b4dd, type: 2}
-  - {fileID: 11400000, guid: d316b942529797642b4f01b39715e7fa, type: 2}
   - {fileID: 11400000, guid: 7a05014733d3f924fb5ab4c5799d5395, type: 2}
   - {fileID: 11400000, guid: 25921ff7d59779548883af1ec70e53c8, type: 2}
   - {fileID: 11400000, guid: 1e1626c10de107945b23c7cdf0b1e2ed, type: 2}
   - {fileID: 11400000, guid: 98e9a6ae2ffec83429136df2f3a65f80, type: 2}
+  - {fileID: 11400000, guid: 563e1bed949b98f49ba27c4649cafec5, type: 2}
+  - {fileID: 11400000, guid: c57b8ebdf86837f40b7917ae6a6bbd71, type: 2}
+  - {fileID: 11400000, guid: 880ac46a4184e504697fb47ebd29b4dd, type: 2}
+  - {fileID: 11400000, guid: d316b942529797642b4f01b39715e7fa, type: 2}
+  normalizeLegacyLoadouts: 1
   starterItems: []
   classStarters:
   - heroId: warrior
@@ -118,6 +119,9 @@ MonoBehaviour:
     allowSecondaryWeapon: 0
   enemy:
     rewardId: Inimigo
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 1
     coins: 1
     guaranteedItems: 0
@@ -125,6 +129,9 @@ MonoBehaviour:
     minimumRarity: 0
   boss:
     rewardId: Chefe
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 150
     coins: 30
     guaranteedItems: 1
@@ -132,6 +139,9 @@ MonoBehaviour:
     minimumRarity: 2
   chest:
     rewardId: "Ba\xFA"
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 10
     coins: 10
     guaranteedItems: 1
@@ -139,6 +149,9 @@ MonoBehaviour:
     minimumRarity: 0
   room:
     rewardId: Sala
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 12
     coins: 3
     guaranteedItems: 0
@@ -146,13 +159,29 @@ MonoBehaviour:
     minimumRarity: 0
   completion:
     rewardId: "Vit\xF3ria"
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 90
     coins: 20
     guaranteedItems: 1
     itemChance: 0
     minimumRarity: 1
+  firstVictory:
+    rewardId: Primeira arma
+    weaponsOnly: 1
+    fixedRarity: 1
+    maximumRequiredLevel: 1
+    experience: 0
+    coins: 0
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 0
   miniboss:
     rewardId: miniboss
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 12
     coins: 8
     guaranteedItems: 1
@@ -160,6 +189,9 @@ MonoBehaviour:
     minimumRarity: 1
   supplies:
     rewardId: supplies
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 1
     coins: 2
     guaranteedItems: 0
@@ -167,6 +199,9 @@ MonoBehaviour:
     minimumRarity: 0
   exploration:
     rewardId: exploration
+    weaponsOnly: 0
+    fixedRarity: 0
+    maximumRequiredLevel: 0
     experience: 30
     coins: 15
     guaranteedItems: 1

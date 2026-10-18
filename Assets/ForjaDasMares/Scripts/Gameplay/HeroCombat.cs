@@ -26,12 +26,14 @@ namespace ForjaDasMares
         public int AnimationVariant { get; private set; }
         public int ActionVersion { get; private set; }
         public float ImpactTime => active ? (heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : attackSpeed)) / length : .25f;
+        public Vector3 StrikeOrigin=>origin!=null?origin.position:transform.position+Vector3.up;
+        bool OriginClear=>!Physics.Linecast(transform.position+Vector3.up,origin.position,geometry,QueryTriggerInteraction.Ignore)&&!Physics.CheckSphere(origin.position,.04f,geometry,QueryTriggerInteraction.Ignore);
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
         public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superHits = 0; }
         void OnEnable() { if(health != null) { health.DealtHit -= ConfirmedHit; health.DealtHit += ConfirmedHit; } }
         void OnDisable() { if(health != null) health.DealtHit -= ConfirmedHit; heldTime = superBuffer = 0; }
         void ConfirmedHit(Health target)
-        { if(flow != null && !ultimate && health.IsAlive && target.Faction == CombatFaction.Enemy) superHits = Mathf.Min(Mathf.Max(1,flow.hitsForSuper),superHits + 1); }
+        { if(flow != null && !ultimate && furyRemaining<=0 && health.IsAlive && target.Faction == CombatFaction.Enemy) superHits = Mathf.Min(Mathf.Max(1,flow.hitsForSuper),superHits + 1); }
         readonly DamageResolver resolver = new DamageResolver();
         readonly Collider[] nearbyAllies = new Collider[24];
         HeroDefinition profile;
@@ -126,7 +128,7 @@ namespace ForjaDasMares
             active = true; special = ability; elapsed = 0; length = Mathf.Max(0.05f, duration); resolved = chargeWindow = false;
             heavy = ultimate = false; AnimationVariant = 0; ActionVersion++;
             facing = transform.forward; facing.y = 0; facing.Normalize();
-            strikeScale = damageMultiplier * (1 + elementalDamage) * (Random.value < criticalChance ? 1.5f : 1);
+            strikeScale = ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance);
             secondResolved = echoResolved = false; motor.LockFacing(currentAttack.windup / (ability ? 1 : attackSpeed)); resolver.Clear();
         }
         public void Simulate(float deltaTime)
@@ -143,12 +145,13 @@ namespace ForjaDasMares
             { resolved = true; if (ultimate) ResolveSuper(); else if (special) ResolveSpecial(); else ResolveBasic(); }
             if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / AttackSpeed)
             { secondResolved = true; ResolveBasic(); }
-            if (chargeWindow && elapsed <= currentAttack.windup + Ability.chargeDuration)
+            if (chargeWindow && OriginClear && elapsed <= currentAttack.windup + Ability.chargeDuration)
                 resolver.Area(origin.position + facing * 0.4f, 1.4f, facing, 180f, currentAttack, health, targets, geometry, false, strikeScale);
             if (elapsed >= length) { active = false; chargeWindow = false; }
         }
         void ResolveBasic()
         {
+            if(!OriginClear)return;
             if (currentAttack.shape == AttackShape.Projectile)
             {
                 Vector3 start = origin.position + facing * 0.05f;
@@ -163,6 +166,7 @@ namespace ForjaDasMares
         }
         void ResolveSuper()
         {
+            if(!OriginClear)return;
             if(currentAttack.shape==AttackShape.Projectile)
             {
                 for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)
@@ -180,6 +184,7 @@ namespace ForjaDasMares
         void ResolveSpecial()
         {
             AbilityDefinition ability = Ability;
+            if(!OriginClear&&ability.effect!=AbilityEffect.ProtectionCharge)return;
             if(ability.effect==AbilityEffect.WeaponStrike)
             {
                 if(currentAttack.shape==AttackShape.Projectile)

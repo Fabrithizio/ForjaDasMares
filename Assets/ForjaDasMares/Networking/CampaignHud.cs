@@ -128,7 +128,7 @@ namespace ForjaDasMares.Networking
             if(local!=null&&active)
             {
                 superFill.sizeDelta=new Vector2(local.SuperProgress*255,5);superFill.parent.gameObject.SetActive(local.Enhanced);
-                if(superAction!=null){superAction.gameObject.SetActive(local.Enhanced);superAction.interactable=local.Health.IsAlive&&local.SuperProgress>=1;superAction.GetComponentInChildren<Text>().text=(local.FuryRemaining>0?"FÚRIA\n"+local.FuryRemaining.ToString("F1")+"s":"SUPER\n"+Mathf.FloorToInt(local.SuperProgress*100)+"%");}
+                if(superAction!=null){superAction.gameObject.SetActive(local.Enhanced);superAction.interactable=local.Health.IsAlive&&local.SuperProgress>=1&&local.FuryRemaining<=0;string name=local.Roster.Current.heroId=="warrior"?"FÚRIA":"SUPER";superAction.GetComponentInChildren<Text>().text=local.FuryRemaining>0?"FÚRIA\n"+local.FuryRemaining.ToString("F1")+"s":name+"\n"+(local.SuperProgress>=1?"PRONTA":Mathf.FloorToInt(local.SuperProgress*100)+"%");}
                 if(attackAction!=null){attackAction.interactable=local.Health.IsAlive;attackAction.GetComponentInChildren<Text>().text=local.Enhanced&&local.Charge>0?"Ataque\nCarga "+Mathf.FloorToInt(local.Charge*100)+"%":"Ataque\nSegure";}
                 string skill=local.SpecialCooldown>0?local.SpecialCooldown.ToString("F1")+"s":"pronta",dodge=local.DodgeCooldown>0?local.DodgeCooldown.ToString("F1")+"s":"pronta";
                 if(specialAction!=null){specialAction.GetComponentInChildren<Text>().text="Habilidade\n"+skill;specialAction.interactable=local.Health.IsAlive&&local.SpecialCooldown<=0;}

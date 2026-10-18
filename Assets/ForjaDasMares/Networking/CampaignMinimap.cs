@@ -27,7 +27,7 @@ namespace ForjaDasMares.Networking
             guide.text=nearest<float.MaxValue?"Vermelho: inimigos · próximo "+Mathf.CeilToInt(nearest)+"m":fight>=0?"Combate pendente no setor "+(fight+1):"Azul: grupo · dourado: objetivo";
             guide.text+="\nM / toque: ampliar";
         }
-        Vector2 Map(Vector3 world)=>new Vector2((world.x-low.x)*scale,(world.z-low.y)*scale)-((high-low)*scale)*.5f;
+        Vector2 Map(Vector3 world)=>new Vector2((world.x-low.x)*scale,(world.z-low.y)*scale)-((high-low)*scale)*.5f+rectTransform.rect.center;
         void Quad(VertexHelper vh,Vector2 point,Vector2 size,Color tint)
         {int n=vh.currentVertCount;vh.AddVert(point+new Vector2(-size.x,-size.y)*.5f,tint,Vector2.zero);vh.AddVert(point+new Vector2(-size.x,size.y)*.5f,tint,Vector2.zero);vh.AddVert(point+new Vector2(size.x,size.y)*.5f,tint,Vector2.zero);vh.AddVert(point+new Vector2(size.x,-size.y)*.5f,tint,Vector2.zero);vh.AddTriangle(n,n+1,n+2);vh.AddTriangle(n,n+2,n+3);}
         protected override void OnPopulateMesh(VertexHelper vh)

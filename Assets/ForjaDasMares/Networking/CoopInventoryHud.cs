@@ -13,7 +13,7 @@ namespace ForjaDasMares.Networking
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
         System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
-        Button classFilter,heroChoice,profileSource; readonly Button[] categoryTabs=new Button[6];
+        Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
         bool management;int category=-1;bool classOnly=true;
         CoopActor ActiveActor=>director.Actor(director.LocalSlot>=0?director.LocalSlot:0);
         readonly System.Collections.Generic.List<ItemInstance> filtered=new System.Collections.Generic.List<ItemInstance>();
@@ -22,10 +22,10 @@ namespace ForjaDasMares.Networking
         {
             filtered.Clear();var source=SourceItems;if(source==null)return;
             var hero=channel.Catalog.Hero(ActiveActor.Roster.Current.heroId);
-            foreach(var item in source){var def=channel.Catalog.Find(item.definitionId);if(def==null||category>=0&&(int)def.slot!=category||classOnly&&hero!=null&&(def.compatibleHeroes&hero.affinity)==0)continue;filtered.Add(item);}
+            foreach(var item in source){var def=channel.Catalog.Find(item.definitionId);if(def==null||category>=0&&(int)def.slot!=category&&!(category==1&&def.category==WeaponCategory.Daggers&&hero!=null&&hero.allowSecondaryWeapon)||classOnly&&hero!=null&&(def.compatibleHeroes&hero.affinity)==0)continue;filtered.Add(item);}
         }
         bool CanManageNow=>channel.HomeMode||director.LocalSlot>=0&&ActiveActor.Health.IsAlive&&director.Phase!=CoopPhase.Loading&&(director.EncounterStatus!=EncounterState.Spawning&&director.EncounterStatus!=EncounterState.Fighting||director.Dungeon.OpenLandscape&&!director.Dungeon.Encounter.Enemies.ThreatNear(ActiveActor.transform.position,12));
-        int page, revision = -1; string selected, pendingDiscard; bool results;
+        int page, revision = -1,lastHero=-1; string selected, pendingDiscard; bool results;
         public void Configure(CoopDirector session) => director = session;
         void Start()
         {
@@ -80,6 +80,7 @@ namespace ForjaDasMares.Networking
             detailViewport=RusticHudTheme.Rect(overlay.transform,"ItemDetailsScroll",new Vector2(0,1),new Vector2(30,-382),new Vector2(475,165));detailViewport.gameObject.AddComponent<RectMask2D>();detailViewport.gameObject.AddComponent<Image>().color=Color.clear;
             var scroll=detailViewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=detailViewport;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
             detail.transform.SetParent(detailViewport,false);var content=(RectTransform)detail.transform;content.anchoredPosition=Vector2.zero;content.sizeDelta=new Vector2(450,165);detail.fontSize=17;scroll.content=content;
+            secondaryEquip=Button(overlay.transform,"USAR NA SECUNDÁRIA",new Vector2(965,-395),new Vector2(240,50),()=>{if(selected!=null)channel.Request(CoopInventoryAction.Equip,selected,EquipmentSlot.OffHand);});RusticHudTheme.Skin(secondaryEquip);secondaryEquip.GetComponentInChildren<Text>().fontSize=13;
             var noticeRect=(RectTransform)notice.transform;noticeRect.anchoredPosition=new Vector2(30,-665);noticeRect.sizeDelta=new Vector2(1180,30);notice.fontSize=14;
             var info=(RectTransform)detail.transform;info.anchoredPosition=new Vector2(30,-382);info.sizeDelta=new Vector2(475,170);detail.fontSize=16;
             foreach(var button in new[]{equip,remove,discard}){var rect=(RectTransform)button.transform;rect.anchoredPosition=new Vector2(rect.anchoredPosition.x,-560);RusticHudTheme.Skin(button);}
@@ -112,13 +113,13 @@ namespace ForjaDasMares.Networking
             }
             if (overlay == null || !overlay.activeSelf) return;
             if (director.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
-            if (revision != channel.Revision||management!=CanManageNow) Refresh();
+            if (revision != channel.Revision||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
         }
         void Select(int row)
         { var items = CurrentItems; int index = page * 8 + row; if (index >= items.Count) return; selected = items[index].instanceId; pendingDiscard = null; Refresh(); }
         void Refresh()
         {
-            var profile = channel.LocalProfile; if (profile == null) return; revision = channel.Revision;management=CanManageNow;FilterItems();
+            var profile = channel.LocalProfile; if (profile == null) return; revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
             if(profileSource!=null){profileSource.gameObject.SetActive(channel.HomeMode&&!results);profileSource.GetComponentInChildren<Text>().text=channel.Hub.Description;profileSource.interactable=channel.Hub.HasRemote;}
             if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"SÓ ESTA CLASSE":"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
             if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/8));
@@ -148,7 +149,11 @@ namespace ForjaDasMares.Networking
                 var definition = channel.Catalog.Find(value.definitionId); var before = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog);
                 var after = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog, selected, definition.slot, true);
 
-                detail.text = "CLASSE: "+RusticHudTheme.ClassNames(definition.compatibleHeroes)+"\n"+definition.displayName + " · "+RusticHudTheme.RarityName(value.rarity)+"\n"+RusticHudTheme.SlotName(definition.slot)+" · nível mínimo "+definition.minimumLevel+"\n" + definition.description + "\n\nVida " + before.maximumHealth + " → " + after.maximumHealth + "\nDano ×" + before.damageMultiplier.ToString("F2") + " → ×" + after.damageMultiplier.ToString("F2") + "\nDefesa "+(before.defense*100).ToString("F0")+"% → "+(after.defense*100).ToString("F0")+"%\nVelocidade " + before.speed.ToString("F1") + " → " + after.speed.ToString("F1")+"\nVel. ataque ×"+before.attackSpeed.ToString("F2")+" → ×"+after.attackSpeed.ToString("F2");
+                var currentItem=profile.Item(profile.Loadout(actor.Roster.Current.heroId)?.items[0]);var currentWeapon=currentItem!=null?channel.Catalog.Find(currentItem.definitionId):null;
+                var currentAttack=currentWeapon!=null?currentWeapon.attacks[0]:actor.Roster.Current.attacks[0];var comparedAttack=definition.slot==EquipmentSlot.MainHand?definition.attacks[0]:currentAttack;
+                float currentPower=currentItem!=null?channel.Catalog.Rarity(currentItem.rarity).power:1,comparedPower=definition.slot==EquipmentSlot.MainHand?channel.Catalog.Rarity(value.rarity).power:currentPower;
+                int baseBefore=Mathf.RoundToInt(currentAttack.damage*ProgressionStats.StrikeMultiplier(before.damageMultiplier*currentPower,before.elementalDamage,false));int baseAfter=Mathf.RoundToInt(comparedAttack.damage*ProgressionStats.StrikeMultiplier(after.damageMultiplier*comparedPower,after.elementalDamage,false));
+                detail.text=definition.displayName+" · "+RusticHudTheme.RarityName(value.rarity)+"\n"+RusticHudTheme.SlotName(definition.slot)+" · nível "+definition.minimumLevel+"\nClasse: "+RusticHudTheme.ClassNames(definition.compatibleHeroes)+"\nGolpe base: "+baseBefore+" → "+baseAfter+" (antes de defesa/crítico)\nVida "+before.maximumHealth+" → "+after.maximumHealth+"\nDefesa "+(before.defense*100).ToString("F0")+"% → "+(after.defense*100).ToString("F0")+"%\nCadência ×"+before.attackSpeed.ToString("F2")+" → ×"+after.attackSpeed.ToString("F2")+"\nCrítico "+(before.criticalChance*100).ToString("F0")+"% → "+(after.criticalChance*100).ToString("F0")+"%\nVelocidade "+before.speed.ToString("F1")+" → "+after.speed.ToString("F1")+"\n"+definition.description;
                 if(definition.ability!=null)detail.text+="\nHabilidade: "+definition.ability.displayName+" · "+definition.ability.cooldown.ToString("F1")+"s de recuperação";
                 if(definition.attacks!=null&&definition.attacks.Length>0){var attack=definition.attacks[0];detail.text+="\nAlcance "+attack.range.ToString("F1")+"m · sequência "+definition.attacks.Length+" ataques\nComo usar: equipe e segure ATAQUE.\nSegure para o pesado; Q/SUPER quando cheio.";}
                 if (!ProgressionStats.CanEquip(profile, channel.Catalog, actor.Roster.Current.heroId, value, definition.slot, out string reason)) detail.text += "\n" + reason;
@@ -172,10 +177,17 @@ namespace ForjaDasMares.Networking
                     equipmentSlots[i].gameObject.SetActive(!results);var equipped=set!=null?profile.Item(set.items[i]):null;
                     equipmentSlots[i].GetComponentInChildren<Text>().text=names[i]+"\n"+(equipped!=null?channel.Catalog.Find(equipped.definitionId).displayName:i==0?"Sem arma equipada":"Vazio");
                 }
-                if(!results&&!deliveries&&!expeditionView&&profile.inventory.Count==0)detail.text="Sua mochila está vazia. Vença inimigos, abra baús e veja SAQUE ATUAL para equipar durante esta tentativa.\nSaque desta tentativa: "+(profile.expedition?.items.Count??0)+" itens. Eles são guardados no resultado.";
+                if(!results&&!deliveries&&!expeditionView&&profile.inventory.Count==0)detail.text+="Sua mochila está vazia. Vença inimigos, abra baús e veja SAQUE ATUAL para equipar durante esta tentativa.\nSaque desta tentativa: "+(profile.expedition?.items.Count??0)+" itens. Eles são guardados no resultado.";
             }
+            if(secondaryEquip!=null)
+            {
+                bool dagger=value!=null&&channel.Catalog.Find(value.definitionId).category==WeaponCategory.Daggers;
+                secondaryEquip.gameObject.SetActive(!results&&!deliveries&&dagger);bool allowed=ProgressionStats.CanEquip(profile,channel.Catalog,actor.Roster.Current.heroId,value,EquipmentSlot.OffHand,out string reason);secondaryEquip.interactable=management&&dagger&&allowed;
+                if(dagger)detail.text+="\nMão secundária: "+(allowed?"disponível; exige outra instância da adaga":reason);
+            }
+            if(detailViewport!=null)detail.rectTransform.sizeDelta=new Vector2(450,Mathf.Max(165,detail.preferredHeight+20));
             bool canEquip=value!=null&&ProgressionStats.CanEquip(profile,channel.Catalog,actor.Roster.Current.heroId,value,channel.Catalog.Find(value.definitionId).slot,out _);
-            equip.interactable=!results&&management&&(deliveries?value!=null&&profile.inventory.Count<channel.Catalog.inventoryCapacity:canEquip);remove.interactable=discard.interactable=!results&&!deliveries&&management&&value!=null;
+            equip.interactable=!results&&management&&(deliveries?value!=null&&profile.inventory.Count<channel.Catalog.inventoryCapacity:canEquip);remove.interactable=!results&&!deliveries&&management&&value!=null;discard.interactable=remove.interactable&&!(channel.HomeMode&&channel.Hub.UsingRemote);if(channel.HomeMode&&channel.Hub.UsingRemote&&deliveries)equip.interactable=false;
             discard.GetComponentInChildren<Text>().text = pendingDiscard == selected && selected != null ? "CONFIRMAR?" : "DESCARTAR";
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }

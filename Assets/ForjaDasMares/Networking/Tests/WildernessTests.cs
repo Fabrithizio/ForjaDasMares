@@ -108,7 +108,7 @@ namespace ForjaDasMares.Networking.Tests
             foreach(var data in definitions)
             {
                 var actor=pool.TrySpawn(data,session.Actor(0).transform.position+Vector3.forward*2);Assert.NotNull(actor,data.enemyId);
-                var renderers=actor.GetComponentsInChildren<Renderer>();Bounds bounds=renderers[0].bounds;foreach(var surface in renderers)bounds.Encapsulate(surface.bounds);
+                var renderers=actor.GetComponent<EnemyPresentation>().Model.GetComponentsInChildren<Renderer>();Bounds bounds=renderers[0].bounds;foreach(var surface in renderers)bounds.Encapsulate(surface.bounds);
                 Assert.That(bounds.size.y,Is.GreaterThan(data.height*.65f),data.enemyId);actor.Recycle();
             }
         }

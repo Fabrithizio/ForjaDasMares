@@ -1,3 +1,17 @@
+# Atualização implementada — 0.11.0
+
+CampaignForgeInstaller migra a CampaignCoop existente para dados próprios de campanha (4 heróis, 23 definições de equipamento), preservando IDs e cenas de referência. HeroCombat recebe combos e habilidade da arma via HeroEquipment. Ataques focados têm maximumTargets=1; StrikeOrigin/OriginClear impedem iniciar golpes/projéteis além de cobertura. Fúria é estado temporário do combate, replicado por ActorFrame; não aplica dano direto, não acumula nem recarrega a barra enquanto ativa. Protocolo 7 exige todos os clientes atualizados.
+
+CampaignProfileHub e CoopProfileChannel permitem usar o perfil no início sem sala. ESTE APARELHO é o mesmo arquivo do participante quando ele hospeda. ÚLTIMA SALA é um cache confirmado pelo host de origem; só intenções limitadas de equipar/desequipar retornam ao mesmo host no lobby, com validação de posse, classe, slot, nível e estado. Não existe conta global, transferência confiável entre hosts, servidor dedicado ou migração de host. O host ainda pode adulterar sua própria autoridade.
+
+ProfileStore mantém versão 2/checksum/backup. A migração Forge retira dos slots itens antigos que se tornaram incompatíveis, conservando-os na mochila junto com XP/moedas. Arquivos ilegíveis são preservados antes de criar substituto. Marcadores por classe tornam armas iniciais e a primeira arma obtida não repetíveis. A primeira vitória concede uma arma comum compatível e utilizável no nível 1; nunca equipa automaticamente. Novas concessões continuam no ledger da autoridade.
+
+CampaignMinimap desenha salas/corredores reais, aliados, inimigos, objetivos e encontro pendente; atualiza a 5 Hz. Snapshot acrescenta fightRoom e aviso de chegada de inimigos. Ondas intermediárias podem reforçar com até dois remanescentes; conclusão final exige todos. Emissores e anéis de chegada são geometria provisória. CampaignAbilityBar liga os seis botões a ações reais, com ícones, cooldowns e atalhos; joystick/toque existentes preservados.
+
+Dependências de rede/renderização/entrada mantidas. Capturas locais de diagnóstico exigem o módulo builtin com.unity.modules.screencapture 1.0.0 (imageconversion 1.0.0). Comandos do CoopSmokeProbe só existem em desenvolvimento/editor e dependem de diretório local -netProbe; não são pedidos de rede. VS Code permanece o editor.
+
+---
+
 # Arquitetura implementada — atualização 0.9.1
 
 A revisão reutiliza CampaignRun, DungeonGenerator, EncounterDirector, HeroCombat, Health, CoopDirector e os perfis existentes. CampaignAdventureDefinition fornece os dados; CampaignAdventure cria props determinísticos dentro do NavMesh, com máximo48; CampaignAdventureProp usa Health/IHitDefense. Layer14 CampaignProps recebe dano sem bloquear jogadores/agentes. SnapshotAdventure replica vida, fontes usadas e recompensa concluída.
