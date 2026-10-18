@@ -24,6 +24,8 @@ namespace ForjaDasMares
         Vector3 mainRestPosition, offRestPosition;
         Quaternion mainRestRotation, offRestRotation;
         void Awake() => CaptureRestPose();
+        void OnEnable(){signature=null;Refresh();}
+        void OnDisable(){if(mainVisual!=null)mainVisual.gameObject.SetActive(false);if(secondaryVisual!=null)secondaryVisual.gameObject.SetActive(false); }
         void CaptureRestPose()
         {
             if(mainVisual!=null){mainRestPosition=mainVisual.transform.localPosition;mainRestRotation=mainVisual.transform.localRotation;}
@@ -44,7 +46,7 @@ namespace ForjaDasMares
         void OnDestroy() { if (heroes != null) heroes.Changed -= HeroChanged; if (service != null) service.Changed -= Refresh; }
         public void Refresh()
         {
-            if (this == null || heroes == null || service == null) return;
+            if (this == null || !enabled || heroes == null || service == null) return;
             var profile = service.Profile; var loadout = profile.Loadout(heroes.Current.heroId);
             string state = heroes.Current.heroId + ":" + profile.experience + ":" + (loadout != null ? string.Join(",", loadout.items) : "");
             if (state == signature) return; signature = state;
@@ -61,7 +63,7 @@ namespace ForjaDasMares
                 Mount(mainVisual,model!=null?model.PrimarySocket:visual,model!=null,mainRestPosition,mainRestRotation);
                 Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation);
             }
-            combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null);
+            combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null,MainWeapon!=null?MainWeapon.ability:null);
             Visual(mainVisual, MainWeapon); Visual(secondaryVisual, secondary);
             // Keep the original geometric hero body/poses; hide its old weapon only when an item replaces it.
             foreach (Transform root in heroes.transform) if (root.name.StartsWith("HeroVisual_"))

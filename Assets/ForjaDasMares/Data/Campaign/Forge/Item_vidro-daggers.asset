@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: Item_vidro-daggers
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: vidro-daggers
+  displayName: Presas de Vidro
+  icon: {fileID: 21300000, guid: beba059dab61c124c85da2b9e71deef3, type: 3}
+  description: "Dois golpes intencionais por a\xE7\xE3o, curto alcance. Patrulheiro;
+    outra adaga pode ocupar a secund\xE1ria."
+  slot: 0
+  category: 4
+  compatibleHeroes: 2
+  minimumLevel: 1
+  starter: 0
+  twoHanded: 0
+  allowsOffHand: 1
+  twinStrike: 1
+  attacks:
+  - {fileID: 11400000, guid: 2e6b6876378a7984fa15d6d6b06adf1e, type: 2}
+  - {fileID: 11400000, guid: 6b61fef3376ade84fb3a1038275b3641, type: 2}
+  - {fileID: 11400000, guid: 8556ae64be12e964c964f291183de19d, type: 2}
+  ability: {fileID: 11400000, guid: e65f21e30c5b3124ebed41be56efd2cd, type: 2}
+  bonuses:
+  - stat: 5
+    value: 0.04
+  frontalBlock: 0
+  color: {r: 0, g: 1, b: 1, a: 1}
+  visualScale: {x: 0.12, y: 0.12, z: 0.65}

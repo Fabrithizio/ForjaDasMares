@@ -23,12 +23,15 @@ namespace ForjaDasMares
             int value = random.Next(weight); foreach (var rule in catalog.rarities) if (rule.rarity >= minimum) { value -= rule.weight; if (value < 0) return rule.rarity; }
             throw new InvalidOperationException("Invalid weighted roll.");
         }
-        public static List<ItemInstance> RewardItems(ProgressionCatalog catalog, RewardRule table, Random random)
+        public static List<ItemInstance> RewardItems(ProgressionCatalog catalog, RewardRule table, Random random,string heroId=null)
         {
             int count = table.guaranteedItems + (random.NextDouble() < table.itemChance ? 1 : 0); var result = new List<ItemInstance>(count);
+            var eligible=new List<EquipmentDefinition>();var rule=heroId!=null?catalog.Hero(heroId):null;
+            foreach(var item in catalog.equipment)if(!item.starter&&(rule==null||(item.compatibleHeroes&rule.affinity)!=0))eligible.Add(item);
+            if(eligible.Count==0)return result;
             for (int i = 0; i < count; i++)
             {
-                var definition = catalog.equipment[random.Next(catalog.equipment.Length)];
+                var definition = eligible[random.Next(eligible.Count)];
                 result.Add(Create(catalog, definition.itemId, RollRarity(catalog, random, table.minimumRarity), random));
             }
             return result;

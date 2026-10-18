@@ -19,6 +19,7 @@ namespace ForjaDasMares
         [Range(0, 1)] public float itemChance;
         public ItemRarity minimumRarity;
     }
+    [Serializable] public sealed class ClassStarterRule {public string heroId,itemId;}
     [Serializable] public sealed class HeroEquipmentRule
     { public string heroId; public HeroAffinity affinity; public bool allowSecondaryWeapon; }
     [Serializable] public sealed class CompanionSettings
@@ -37,6 +38,7 @@ namespace ForjaDasMares
         [Range(1, 20)] public int maximumLevel = 20;
         public EquipmentDefinition[] equipment;
         public string[] starterItems;
+        public ClassStarterRule[] classStarters=Array.Empty<ClassStarterRule>();
         public RarityRule[] rarities;
         public AffixRule[] affixes;
         public HeroEquipmentRule[] heroes;

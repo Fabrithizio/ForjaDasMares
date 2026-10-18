@@ -10,7 +10,10 @@ namespace ForjaDasMares
         [SerializeField] CombatEffectPool pool;
         [SerializeField] LayerMask targets, geometry, allies;
         [SerializeField] CombatFlowDefinition flow;
-        float heldTime, heavyCooldown, superBuffer;
+        float heldTime, heavyCooldown, superBuffer, furyRemaining;
+        AbilityDefinition weaponAbility;
+        public float FuryRemaining=>furyRemaining;
+        public AbilityDefinition Ability=>weaponAbility!=null?weaponAbility:profile!=null?profile.special:null;
         int superHits;
         bool heavy, ultimate;
         public bool EnhancedControls => flow != null;
@@ -24,7 +27,7 @@ namespace ForjaDasMares
         public int ActionVersion { get; private set; }
         public float ImpactTime => active ? (heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : attackSpeed)) / length : .25f;
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
-        public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = 0; superHits = 0; }
+        public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superHits = 0; }
         void OnEnable() { if(health != null) { health.DealtHit -= ConfirmedHit; health.DealtHit += ConfirmedHit; } }
         void OnDisable() { if(health != null) health.DealtHit -= ConfirmedHit; heldTime = superBuffer = 0; }
         void ConfirmedHit(Health target)
@@ -43,10 +46,10 @@ namespace ForjaDasMares
         AttackDefinition legendaryEcho;
         bool echoResolved;
         public AttackDefinition BasicAttack => equipmentAttacks != null && equipmentAttacks.Length > 0 ? equipmentAttacks[0] : profile != null ? profile.attacks[0] : null;
-        public float AttackSpeed => attackSpeed;
+        public float AttackSpeed => Mathf.Min(2.5f,attackSpeed*(furyRemaining>0&&flow!=null?Mathf.Clamp(flow.furyAttackSpeed,1,2):1));
         public void AddTargets(int mask)=>targets|=mask;
-        public void ApplyEquipment(AttackDefinition[] attacks, StatSnapshot stats, float rarityPower, bool twin, AttackDefinition echo = null)
-        { equipmentAttacks = attacks; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
+        public void ApplyEquipment(AttackDefinition[] attacks, StatSnapshot stats, float rarityPower, bool twin, AttackDefinition echo = null, AbilityDefinition ability = null)
+        { equipmentAttacks = attacks; weaponAbility=ability; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
         public bool IsAttacking => active && !special;
         public bool IsUsingSpecial => active && special;
         public bool IsBusy => active;
@@ -56,7 +59,7 @@ namespace ForjaDasMares
         public CombatEffectPool Pool => pool;
         public void Configure(PlayerMotor player, Health owner, Transform strike, CombatEffectPool effects, int targetMask, int wallMask, int allyMask)
         { motor = player; health = owner; origin = strike; pool = effects; targets = targetMask; geometry = wallMask; allies = allyMask; }
-        public void ApplyHero(HeroDefinition hero) { profile = hero; equipmentAttacks = null; legendaryEcho = null; damageMultiplier = attackSpeed = cooldownMultiplier = 1; criticalChance = elementalDamage = 0; twinStrike = false; combo = 0; ResetCombat(); }
+        public void ApplyHero(HeroDefinition hero) { profile = hero; equipmentAttacks = null; weaponAbility=null; legendaryEcho = null; damageMultiplier = attackSpeed = cooldownMultiplier = 1; criticalChance = elementalDamage = 0; twinStrike = false; combo = 0; ResetCombat(); }
         void Awake()
         {
             if (motor == null || health == null || origin == null || pool == null)
@@ -90,7 +93,7 @@ namespace ForjaDasMares
             var attacks = equipmentAttacks ?? (profile != null ? profile.attacks : null);
             if (!CanStart || attacks == null || attacks.Length == 0) return false;
             currentAttack = attacks[combo % attacks.Length]; combo++;
-            Begin(false, (currentAttack.windup + currentAttack.recovery + (twinStrike ? .08f : 0)) / attackSpeed); AnimationVariant = (combo-1)%3; return true;
+            Begin(false, (currentAttack.windup + currentAttack.recovery + (twinStrike ? .08f : 0)) / AttackSpeed); AnimationVariant = (combo-1)%3; return true;
         }
         public bool TryHeavy()
         {
@@ -100,16 +103,22 @@ namespace ForjaDasMares
         }
         public bool TrySuper()
         {
-            if(!CanStart || !SuperReady || flow.superAttack == null) return false;
+            if(!CanStart || !SuperReady) return false;
+            if(flow.furyDuration>0)
+            {
+                if(furyRemaining>0)return false;
+                furyRemaining=Mathf.Clamp(flow.furyDuration,.1f,12);superHits=0;heldTime=superBuffer=0;return true;
+            }
+            if(flow.superAttack==null)return false;
             currentAttack = flow.superAttack; Begin(true, currentAttack.windup + currentAttack.recovery); ultimate = true; AnimationVariant = 4;
             superHits = 0; heldTime = superBuffer = 0; motor.LockFacing(currentAttack.windup); return true;
         }
         public bool TrySpecial()
         {
-            if (!CanStart || specialCooldown > 0 || profile.special == null) return false;
-            currentAttack = profile.special.hit;
-            float extra = profile.special.effect == AbilityEffect.ProtectionCharge ? profile.special.chargeDuration : 0;
-            specialCooldown = profile.special.cooldown * cooldownMultiplier;
+            if (!CanStart || specialCooldown > 0 || Ability == null) return false;
+            currentAttack = Ability.hit;
+            float extra = Ability.effect == AbilityEffect.ProtectionCharge ? Ability.chargeDuration : 0;
+            specialCooldown = Ability.cooldown * cooldownMultiplier;
             Begin(true, currentAttack.windup + currentAttack.recovery + extra); return true;
         }
         void Begin(bool ability, float duration)
@@ -122,18 +131,19 @@ namespace ForjaDasMares
         }
         public void Simulate(float deltaTime)
         {
+            furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
             specialCooldown = Mathf.Max(0, specialCooldown - Mathf.Max(0, deltaTime));
             heavyCooldown = Mathf.Max(0, heavyCooldown - Mathf.Max(0,deltaTime));
             superBuffer = Mathf.Max(0,superBuffer - Mathf.Max(0,deltaTime));
-            if (!health.IsAlive || health.IsStunned || motor.IsDodging) { active = false; chargeWindow = false; return; }
+            if (!health.IsAlive || health.IsStunned || motor.IsDodging) { if(!health.IsAlive)furyRemaining=0;active = false; chargeWindow = false; return; }
             if (!active) return;
             elapsed += Mathf.Max(0, deltaTime);
             float windup = heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : attackSpeed);
             if (!resolved && elapsed >= windup)
             { resolved = true; if (ultimate) ResolveSuper(); else if (special) ResolveSpecial(); else ResolveBasic(); }
-            if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / attackSpeed)
+            if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / AttackSpeed)
             { secondResolved = true; ResolveBasic(); }
-            if (chargeWindow && elapsed <= currentAttack.windup + profile.special.chargeDuration)
+            if (chargeWindow && elapsed <= currentAttack.windup + Ability.chargeDuration)
                 resolver.Area(origin.position + facing * 0.4f, 1.4f, facing, 180f, currentAttack, health, targets, geometry, false, strikeScale);
             if (elapsed >= length) { active = false; chargeWindow = false; }
         }
@@ -147,7 +157,7 @@ namespace ForjaDasMares
                     { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, Quaternion.Euler(0, angle, 0) * facing, currentAttack, health, targets, geometry, strikeScale); }
             }
             else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale);
-            if(heavy) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
+            if(heavy&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
             if (legendaryEcho != null && combo % 3 == 0 && !echoResolved)
             { echoResolved = true; resolver.Area(origin.position, legendaryEcho.range, facing, 360, legendaryEcho, health, targets, geometry, true, strikeScale); }
         }
@@ -169,8 +179,14 @@ namespace ForjaDasMares
         }
         void ResolveSpecial()
         {
-            AbilityDefinition ability = profile.special;
-            if (ability.effect == AbilityEffect.Trap)
+            AbilityDefinition ability = Ability;
+            if(ability.effect==AbilityEffect.WeaponStrike)
+            {
+                if(currentAttack.shape==AttackShape.Projectile)
+                {for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)pool.Shoot(origin.position,Quaternion.Euler(0,(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread,0)*facing,currentAttack,health,targets,geometry,strikeScale);}
+                else resolver.Area(origin.position,currentAttack.range,facing,currentAttack.arc,currentAttack,health,targets,geometry,true,strikeScale);
+            }
+            else if (ability.effect == AbilityEffect.Trap)
             {
                 Vector3 point = origin.position + facing * ability.placementDistance;
                 if (Physics.Linecast(origin.position, point, geometry, QueryTriggerInteraction.Ignore) || Physics.CheckSphere(point, 0.2f, geometry, QueryTriggerInteraction.Ignore)) return;
@@ -196,6 +212,6 @@ namespace ForjaDasMares
                 pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }
-        public void ResetCombat() { active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
+        public void ResetCombat() { active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

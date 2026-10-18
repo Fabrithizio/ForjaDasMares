@@ -50,7 +50,7 @@ namespace ForjaDasMares.Networking
             {
                 if (value.slot < 0 || value.slot >= enemies.Capacity) continue;
                 var actor = enemies.Actors[value.slot]; bool fresh = !actor.gameObject.activeSelf;
-                actor.SetReplica(enemies.DefinitionAt(value.slot), value.hp, value.maximum, (EnemyState)value.state);
+                actor.SetReplica(enemies.DefinitionAt(value.slot), value.hp, value.maximum, (EnemyState)value.state,value.spawnWarning);
                 active[value.slot] = true; positions[value.slot] = value.position; rotations[value.slot] = Quaternion.Euler(0, value.yaw, 0);
                 if (fresh || (actor.transform.position - value.position).sqrMagnitude > 16) actor.transform.SetPositionAndRotation(value.position, rotations[value.slot]);
             }

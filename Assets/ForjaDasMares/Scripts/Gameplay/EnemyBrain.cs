@@ -31,6 +31,7 @@ namespace ForjaDasMares
         void Update()
         {
             if (actor == null || !actor.IsAlive) return;
+            if(actor.SpawnRemaining>0){actor.Motor.Stop();return;}
             if (!actor.Combat.IsBusy)
             {
                 Health selected = actor.SelectTarget();

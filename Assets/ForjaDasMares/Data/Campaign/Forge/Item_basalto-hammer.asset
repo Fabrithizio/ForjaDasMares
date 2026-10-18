@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: Item_basalto-hammer
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: basalto-hammer
+  displayName: Martelo de Basalto
+  icon: {fileID: 21300000, guid: 0abd7df1275583042a3f536afbeae62b, type: 3}
+  description: "Impacto circular pr\xF3ximo e forte empurr\xE3o. Duas m\xE3os."
+  slot: 0
+  category: 2
+  compatibleHeroes: 1
+  minimumLevel: 1
+  starter: 0
+  twoHanded: 1
+  allowsOffHand: 0
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: 5e1f5a7a3f1843343b6042702f0c7b7f, type: 2}
+  - {fileID: 11400000, guid: fe9abbe9e28265e4b8733c57e2dd7c43, type: 2}
+  - {fileID: 11400000, guid: 884e09aafa79d2a40aa9347cc1b4e807, type: 2}
+  ability: {fileID: 11400000, guid: 2da42d0a2c6e61448a65374ecda0e46f, type: 2}
+  bonuses:
+  - stat: 2
+    value: 4
+  frontalBlock: 0
+  color: {r: 0.6627451, g: 0.6627451, b: 0.6627451, a: 1}
+  visualScale: {x: 0.8, y: 0.4, z: 0.85}

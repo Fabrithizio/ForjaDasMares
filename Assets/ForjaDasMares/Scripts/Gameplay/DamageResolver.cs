@@ -14,9 +14,15 @@ namespace ForjaDasMares
         {
             if (clear) Clear();
             int count = Physics.OverlapSphereNonAlloc(origin, radius, contacts, targets, QueryTriggerInteraction.Ignore), hits = 0;
+            if(attack.maximumTargets>0)
+            {
+                // Limited strikes choose the closest physical target, independent of collider enumeration.
+                for(int i=1;i<count;i++){var value=contacts[i];float distance=(value.bounds.center-origin).sqrMagnitude;int j=i-1;while(j>=0&&(contacts[j].bounds.center-origin).sqrMagnitude>distance){contacts[j+1]=contacts[j];j--;}contacts[j+1]=value;}
+            }
             float dot = Mathf.Cos(arc * 0.5f * Mathf.Deg2Rad);
             for (int i = 0; i < count; i++)
             {
+                if(attack.maximumTargets>0&&seenCount>=attack.maximumTargets)break;
                 Health health = contacts[i].GetComponentInParent<Health>();
                 if (health == null || !health.CanReceiveFrom(source)) continue;
                 bool duplicate = false; for (int j = 0; j < seenCount; j++) if (seen[j] == health) { duplicate = true; break; }

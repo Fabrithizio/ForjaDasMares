@@ -19,6 +19,29 @@ namespace ForjaDasMares
                 foreach (var id in catalog.starterItems) Profile.inventory.Add(LootGenerator.Create(catalog, id, ItemRarity.Common, random));
                 store.Save(Profile, catalog);
             }
+            EnsureClassStarters();
+        }
+        public void EnsureClassStarters()
+        {
+            if(catalog.classStarters==null||catalog.classStarters.Length==0)return;
+            Profile.starterGranted??=new System.Collections.Generic.List<string>();
+            bool missing=false;foreach(var rule in catalog.classStarters)if(!Profile.starterGranted.Contains(rule.heroId))missing=true;
+            if(!missing)return;
+            Transaction(next=>
+            {
+                next.starterGranted??=new System.Collections.Generic.List<string>();
+                foreach(var rule in catalog.classStarters)
+                {
+                    if(next.starterGranted.Contains(rule.heroId))continue;
+                    if(next.inventory.Count+next.deliveries.Count>=510)continue;
+                    var item=LootGenerator.Create(catalog,rule.itemId,ItemRarity.Common,new System.Random(607));
+                    bool space=next.inventory.Count<catalog.inventoryCapacity;
+                    if(space)next.inventory.Add(item);else next.deliveries.Add(item);
+                    var set=next.Loadout(rule.heroId);if(set==null){set=new HeroLoadout{heroId=rule.heroId};next.loadouts.Add(set);}
+                    if(space&&string.IsNullOrEmpty(set.items[0]))set.items[0]=item.instanceId;
+                    next.starterGranted.Add(rule.heroId);
+                }
+            },"Armas comuns de iniciação disponíveis no perfil.");
         }
         bool Transaction(Action<PlayerProfile> mutate, string message)
         {
@@ -73,7 +96,7 @@ namespace ForjaDasMares
             if (!catalog.IsRewardRule(rule)) return false;
             var run = Profile.expedition;
             if (run == null || run.runId != runId || run.events.Contains(eventId) || string.IsNullOrWhiteSpace(eventId) || eventId.Length > 128 || run.events.Count >= 2048) return false;
-            var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed));
+            var loot = LootGenerator.RewardItems(catalog, rule, new System.Random(seed),Profile.expedition.heroId);
             int capacity = rule == catalog.boss || rule == catalog.completion ? catalog.expeditionCapacity : rule==catalog.exploration?catalog.expeditionCapacity-1:catalog.expeditionCapacity - 3;
             if ((rule == catalog.enemy||rule==catalog.supplies||rule==catalog.miniboss) && loot.Count + run.items.Count > capacity) loot.Clear();
             if (loot.Count>0&&loot.Count + run.items.Count > capacity || Profile.inventory.Count + Profile.deliveries.Count + run.items.Count + loot.Count > 512) { Message = "Espaço de saque cheio; libere espaço antes de abrir outro baú."; return false; }

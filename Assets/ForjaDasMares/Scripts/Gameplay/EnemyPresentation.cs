@@ -12,6 +12,7 @@ namespace ForjaDasMares
         float flash, step;
         bool bound;
         EnemyModelMotion segmentedMotion;
+        public Transform Model=>model;
         public void Configure(EnemyActor owner, Transform body, Renderer[] renderers, GameObject guard) { actor = owner; model = body; surfaces = renderers; shield = guard; }
         public void Prepare(EnemyDefinition data)
         {

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
   m_Name: Enemy_fragmento
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0.9
   enemyId: wild-fragmento
   displayName: Fragmento Invocado
   kind: 5

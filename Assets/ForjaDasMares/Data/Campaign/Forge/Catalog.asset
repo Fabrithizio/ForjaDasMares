@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7b36d6f680c0f4bbf499e9f45f9581, type: 3}
+  m_Name: Catalog
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ProgressionCatalog
+  inventoryCapacity: 36
+  expeditionCapacity: 32
+  maximumLevel: 20
+  equipment:
+  - {fileID: 11400000, guid: 6991e13e185bae048ad8d77371cce7fe, type: 2}
+  - {fileID: 11400000, guid: 3abf7763c44f20041b27d2838f55bab6, type: 2}
+  - {fileID: 11400000, guid: 811a35da4955c9548a07137567581de0, type: 2}
+  - {fileID: 11400000, guid: 023b887a7746d114a8945b02ba2aab7d, type: 2}
+  - {fileID: 11400000, guid: 44d91d9189fa0c947a4ef7fa62e11505, type: 2}
+  - {fileID: 11400000, guid: ec198106eef88bb4eb03cc2b1594b275, type: 2}
+  - {fileID: 11400000, guid: aaecb34178071184f9b38ae23dbfb17b, type: 2}
+  - {fileID: 11400000, guid: 384b69d23023a7d498a6a05bf9422742, type: 2}
+  - {fileID: 11400000, guid: ae29e4b9612c6414497df08c163f1211, type: 2}
+  - {fileID: 11400000, guid: 0895f767d230f6f4ea4227c87a81f812, type: 2}
+  - {fileID: 11400000, guid: 892eaf36bed839642b73fc939d367be9, type: 2}
+  - {fileID: 11400000, guid: a8ec3eed1edf23140a3ec09d9fda6821, type: 2}
+  - {fileID: 11400000, guid: 1d74cadb25769da4fa7f4d8948ecb975, type: 2}
+  - {fileID: 11400000, guid: 205f9d6b3f3272f488d8511eae8c6e2b, type: 2}
+  - {fileID: 11400000, guid: 05df7df1ed942e642a56ba08750709e5, type: 2}
+  - {fileID: 11400000, guid: 563e1bed949b98f49ba27c4649cafec5, type: 2}
+  - {fileID: 11400000, guid: c57b8ebdf86837f40b7917ae6a6bbd71, type: 2}
+  - {fileID: 11400000, guid: 880ac46a4184e504697fb47ebd29b4dd, type: 2}
+  - {fileID: 11400000, guid: d316b942529797642b4f01b39715e7fa, type: 2}
+  - {fileID: 11400000, guid: 7a05014733d3f924fb5ab4c5799d5395, type: 2}
+  - {fileID: 11400000, guid: 25921ff7d59779548883af1ec70e53c8, type: 2}
+  - {fileID: 11400000, guid: 1e1626c10de107945b23c7cdf0b1e2ed, type: 2}
+  - {fileID: 11400000, guid: 98e9a6ae2ffec83429136df2f3a65f80, type: 2}
+  starterItems: []
+  classStarters:
+  - heroId: warrior
+    itemId: initiation-warrior
+  - heroId: ranger
+    itemId: initiation-ranger
+  - heroId: arcanist
+    itemId: initiation-arcanist
+  - heroId: rune-knight
+    itemId: initiation-rune-knight
+  rarities:
+  - rarity: 0
+    weight: 55
+    power: 1
+    affixCount: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - rarity: 1
+    weight: 30
+    power: 1.08
+    affixCount: 1
+    color: {r: 0.35, g: 1, b: 0.5, a: 1}
+  - rarity: 2
+    weight: 10
+    power: 1.16
+    affixCount: 2
+    color: {r: 0.4, g: 0.7, b: 1, a: 1}
+  - rarity: 3
+    weight: 4
+    power: 1.25
+    affixCount: 3
+    color: {r: 0.85, g: 0.45, b: 1, a: 1}
+  - rarity: 4
+    weight: 1
+    power: 1.35
+    affixCount: 3
+    color: {r: 1, g: 0.8, b: 0.2, a: 1}
+  affixes:
+  - stat: 0
+    minimum: 5
+    maximum: 18
+  - stat: 1
+    minimum: 0.02
+    maximum: 0.07
+  - stat: 2
+    minimum: 3
+    maximum: 10
+  - stat: 3
+    minimum: 0.01
+    maximum: 0.04
+  - stat: 4
+    minimum: 0.02
+    maximum: 0.05
+  - stat: 5
+    minimum: 0.02
+    maximum: 0.06
+  - stat: 6
+    minimum: 0.02
+    maximum: 0.06
+  - stat: 7
+    minimum: 0.02
+    maximum: 0.07
+  - stat: 8
+    minimum: 0.1
+    maximum: 0.3
+  heroes:
+  - heroId: warrior
+    affinity: 1
+    allowSecondaryWeapon: 0
+  - heroId: ranger
+    affinity: 2
+    allowSecondaryWeapon: 1
+  - heroId: arcanist
+    affinity: 4
+    allowSecondaryWeapon: 0
+  - heroId: rune-knight
+    affinity: 8
+    allowSecondaryWeapon: 0
+  enemy:
+    rewardId: Inimigo
+    experience: 1
+    coins: 1
+    guaranteedItems: 0
+    itemChance: 0.025
+    minimumRarity: 0
+  boss:
+    rewardId: Chefe
+    experience: 150
+    coins: 30
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 2
+  chest:
+    rewardId: "Ba\xFA"
+    experience: 10
+    coins: 10
+    guaranteedItems: 1
+    itemChance: 0.15
+    minimumRarity: 0
+  room:
+    rewardId: Sala
+    experience: 12
+    coins: 3
+    guaranteedItems: 0
+    itemChance: 0
+    minimumRarity: 0
+  completion:
+    rewardId: "Vit\xF3ria"
+    experience: 90
+    coins: 20
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  miniboss:
+    rewardId: miniboss
+    experience: 12
+    coins: 8
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  supplies:
+    rewardId: supplies
+    experience: 1
+    coins: 2
+    guaranteedItems: 0
+    itemChance: 0.03
+    minimumRarity: 0
+  exploration:
+    rewardId: exploration
+    experience: 30
+    coins: 15
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 2
+  legendaryEcho: {fileID: 11400000, guid: 8f7813f5b4030c340b87b88a7f199911, type: 2}
+  companion:
+    displayName: Lume, vaga-lume de pedra
+    healing: 4
+    charges: 12
+    cooldown: 10
+    speed: 5
+    teleportDistance: 8

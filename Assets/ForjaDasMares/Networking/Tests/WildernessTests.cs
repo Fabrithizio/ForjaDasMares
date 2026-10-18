@@ -29,7 +29,7 @@ namespace ForjaDasMares.Networking.Tests
             {var level=run.At(i);int total=level.hard.waves.Sum(w=>w.entries.Sum(e=>e.count));Assert.That(total,Is.GreaterThan(100));Assert.AreEqual(20,level.hard.maximumMobileEnemies);Assert.AreEqual(24,level.hard.maximumPcEnemies);Assert.That(level.sectorSize,Is.GreaterThanOrEqualTo(28));Assert.NotNull(level.coverModels[0]);}
             var defs=session.Dungeon.Encounter.Enemies.Actors.Select((a,i)=>session.Dungeon.Encounter.Enemies.DefinitionAt(i)).Distinct().ToArray();Assert.AreEqual(3,defs.Count(x=>x.miniboss));
             foreach(var elite in defs.Where(x=>x.miniboss)){Assert.That(elite.boss.attacks.Length,Is.GreaterThanOrEqualTo(2));Assert.That(elite.boss.attacks[0].warning,Is.GreaterThanOrEqualTo(1));Assert.NotNull(elite.prefab.GetComponentInChildren<EnemyModelMotion>(true));}
-            var catalog=session.GetComponent<CoopProgression>().Catalog;foreach(var item in catalog.equipment){Assert.NotNull(item.icon,item.itemId);if(item.slot==EquipmentSlot.MainHand){Assert.AreEqual(3,item.attacks.Length);Assert.AreNotEqual(item.attacks[0],item.attacks[2]);}}
+            var catalog=session.GetComponent<CoopProgression>().Catalog;foreach(var item in catalog.equipment){Assert.NotNull(item.icon,item.itemId);if(item.slot==EquipmentSlot.MainHand){Assert.AreEqual(3,item.attacks.Length);if(!item.starter)Assert.AreNotEqual(item.attacks[0],item.attacks[2]);}}
             var roster=session.Actor(0).Roster;for(int i=0;i<roster.Count;i++){roster.Select(i);Assert.NotNull(roster.Current.onlineFlow);}
         }
         [Test]public void ExpeditionEquipmentPersistsWithoutDuplicatingOnDefeatOrFullInventory()

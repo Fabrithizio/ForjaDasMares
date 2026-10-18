@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ForjaDasMares
 {
-    public enum AbilityEffect { AreaImpact, Trap, ElementalBurst, ProtectionCharge }
+    public enum AbilityEffect { AreaImpact, Trap, ElementalBurst, ProtectionCharge, WeaponStrike }
     [CreateAssetMenu(menuName = "Forja/Ability")]
     public sealed class AbilityDefinition : ScriptableObject
     {

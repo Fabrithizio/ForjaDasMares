@@ -12,7 +12,7 @@ namespace ForjaDasMares.Networking
         const string InviteKey="CampaignInvitations-v1",VolumeKey="CampaignMasterVolume";
         Invitations saved=new Invitations();CoopDirector director;CoopCloud cloud;Action play;
         GameObject main,friends,options,confirm;Text notice;InputField alias,code;Button[] entries=new Button[6];
-        public void Build(RectTransform parent,CoopDirector owner,Action campaign)
+        public void Build(RectTransform parent,CoopDirector owner,Action campaign,Action profile)
         {
             director=owner;cloud=owner.GetComponent<CoopCloud>();play=campaign;
             try{saved=JsonUtility.FromJson<Invitations>(PlayerPrefs.GetString(InviteKey,""))??new Invitations();}catch(ArgumentException){saved=new Invitations();}
@@ -22,11 +22,12 @@ namespace ForjaDasMares.Networking
             Label(main,"FORJA DAS MARÉS",60,75,1160,100,52);
             Label(main,"AS ROTAS DA MARÉ",65,180,1100,60,26);
             Label(main,"Explore ruínas. Enfrente as hordas. Volte com histórias.",65,265,1100,55,22);
-            Button(main,"Campaign",65,370,560,"CAMPANHA · SOLO OU EM GRUPO",()=>play());
-            Button(main,"Friends",65,445,560,"AMIGOS E CONVITES",()=>Show(friends));
-            Button(main,"Settings",65,520,560,"CONFIGURAÇÕES",()=>Show(options));
-            Button(main,"Quit",65,595,560,"SAIR DO JOGO",()=>Show(confirm));
-            Label(main,"1–4 JOGADORES\n\nSolo: +10% vida e dano.\nSalas por código ou grupo aberto.\n\nVersão de testes "+Application.version+"",720,365,470,260,22);
+            Button(main,"Campaign",65,330,560,"CAMPANHA · SOLO OU EM GRUPO",()=>play());
+            Button(main,"Profile",65,405,560,"PERSONAGEM · EQUIPAMENTOS E MOCHILA",()=>profile());
+            Button(main,"Friends",65,480,560,"AMIGOS E CONVITES",()=>Show(friends));
+            Button(main,"Settings",65,555,560,"CONFIGURAÇÕES",()=>Show(options));
+            Button(main,"Quit",65,630,560,"SAIR DO JOGO",()=>Show(confirm));
+            Label(main,"1–4 JOGADORES\n\nSolo ou grupo: sem bônus de atributos.\nSalas por código ou grupo aberto.\n\nVersão de testes "+Application.version+"",720,365,470,260,22);
             Label(friends,"AMIGOS E CONVITES",40,30,1100,65,32);
             Label(friends,"Agenda neste aparelho: guarde o nome e o código que seu amigo compartilhar.\nCódigos expiram quando o host encerra a sala. Sem presença online ou contas de amigos ainda.",40,100,1180,70,18);
             alias=Field(friends,"FriendName",40,195,330,"Nome do amigo",24);code=Field(friends,"FriendCode",390,195,240,"Código da sala",12);

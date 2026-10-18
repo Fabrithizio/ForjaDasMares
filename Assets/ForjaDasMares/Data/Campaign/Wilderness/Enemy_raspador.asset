@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
   m_Name: Enemy_raspador
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0.9
   enemyId: wild-raspador
   displayName: Goblin Raspador
   kind: 0
   prefab: {fileID: 3861977701743061671, guid: 48024824f13138e47af0aeb788d87271, type: 3}
-  maximumHealth: 28
+  maximumHealth: 34
   poolCapacity: 22
   armor: 0
   speed: 4.4
@@ -31,7 +32,7 @@ MonoBehaviour:
   preferredRange: 6
   retreatRange: 3.5
   attackCooldown: 1.1
-  attack: {fileID: 11400000, guid: cd722c0a634aee749af81dac4ef54f4a, type: 2}
+  attack: {fileID: 11400000, guid: a6cd03f79555d2c42bf8c3c6f4f0fb8a, type: 2}
   blockArc: 120
   blockReduction: 0.75
   knockbackResistance: 0

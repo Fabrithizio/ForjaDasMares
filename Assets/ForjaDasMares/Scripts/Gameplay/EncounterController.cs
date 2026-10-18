@@ -72,7 +72,7 @@ namespace ForjaDasMares
                     }
                 }
             }
-            if (State == EncounterState.Fighting && enemies.ActiveCount == 0 && (wave.completion != WaveEndCondition.SurviveDuration || waveTime >= wave.survivalDuration) && (wave.completion != WaveEndCondition.DefeatBoss || bossSpawned && bossDefeated))
+            if (State == EncounterState.Fighting && (enemies.ActiveCount == 0 || waveIndex+1<current.waves.Length && enemies.ActiveCount<=wave.reinforceThreshold) && (wave.completion != WaveEndCondition.SurviveDuration || waveTime >= wave.survivalDuration) && (wave.completion != WaveEndCondition.DefeatBoss || bossSpawned && bossDefeated))
             {
                 waveIndex++; if (waveIndex < current.waves.Length) NextWave();
                 else { State = EncounterState.Won; Seals += bossReward; heroes.Victory(); Completed?.Invoke(); }

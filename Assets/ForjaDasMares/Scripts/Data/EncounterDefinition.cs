@@ -11,6 +11,7 @@ namespace ForjaDasMares
     }
     [Serializable] public sealed class EncounterWave
     {
+        [Range(0,3)] public int reinforceThreshold;
         public string displayName;
         public SpawnEntry[] entries;
         public WaveEndCondition completion;

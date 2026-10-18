@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury }
     public sealed class HudIcon : MaskableGraphic
     {
         public HudSymbol symbol;
@@ -23,6 +23,8 @@ namespace ForjaDasMares
             vh.Clear();
             switch (symbol)
             {
+                case HudSymbol.Fury:
+                    Line(vh,new Vector2(0,-12),new Vector2(-9,-5),3);Line(vh,new Vector2(-9,-5),new Vector2(-7,6),3);Line(vh,new Vector2(-7,6),new Vector2(-2,2),3);Line(vh,new Vector2(-2,2),new Vector2(1,13),3);Line(vh,new Vector2(1,13),new Vector2(9,0),3);Line(vh,new Vector2(9,0),new Vector2(8,-6),3);Line(vh,new Vector2(8,-6),new Vector2(0,-12),3);Line(vh,new Vector2(0,-5),new Vector2(1,3),3);break;
                 case HudSymbol.Sword:
                     Line(vh, new Vector2(-10,-11), new Vector2(10,11),3); Line(vh,new Vector2(-8,-1),new Vector2(1,-9));
                     Line(vh,new Vector2(2,9),new Vector2(10,11)); Line(vh,new Vector2(10,11),new Vector2(9,3)); break;

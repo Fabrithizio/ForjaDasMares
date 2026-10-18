@@ -15,7 +15,8 @@ MonoBehaviour:
   encounterId: wild-0-hard
   displayName: Horda e comandante
   waves:
-  - displayName: "Refor\xE7os 1"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 1"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 20
@@ -32,7 +33,8 @@ MonoBehaviour:
     completion: 0
     delayBefore: 2
     survivalDuration: 20
-  - displayName: "Refor\xE7os 2"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 2"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 20
@@ -49,7 +51,8 @@ MonoBehaviour:
     completion: 0
     delayBefore: 2
     survivalDuration: 20
-  - displayName: "Refor\xE7os 3"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 3"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 20
@@ -66,7 +69,8 @@ MonoBehaviour:
     completion: 0
     delayBefore: 2
     survivalDuration: 20
-  - displayName: "Refor\xE7os 4"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 4"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 20

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: Item_wavecleaver
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: wavecleaver
+  displayName: "Corta-Mar\xE9"
+  icon: {fileID: 21300000, guid: e62fd945de5cda84e938ed352dae7669, type: 3}
+  description: "Golpes largos para abrir espa\xE7o entre hordas."
+  slot: 0
+  category: 0
+  compatibleHeroes: 9
+  minimumLevel: 1
+  starter: 0
+  twoHanded: 0
+  allowsOffHand: 1
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: 6d4987c7a89920f4e80bb2f130a7a47d, type: 2}
+  - {fileID: 11400000, guid: 59563744ca57fe14b8af029119c23d6f, type: 2}
+  - {fileID: 11400000, guid: e90e06444667ee943b16a52751553a46, type: 2}
+  ability: {fileID: 11400000, guid: 8b467bfc98fb4654d9261008f02c03ce, type: 2}
+  bonuses:
+  - stat: 1
+    value: 0.04
+  frontalBlock: 0
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  visualScale: {x: 0.15, y: 0.15, z: 1.2}

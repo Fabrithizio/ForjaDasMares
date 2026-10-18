@@ -15,7 +15,8 @@ MonoBehaviour:
   encounterId: wild-0-2
   displayName: "Escaramu\xE7a 3"
   waves:
-  - displayName: "Refor\xE7os 1"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 1"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 8
@@ -29,7 +30,8 @@ MonoBehaviour:
     completion: 0
     delayBefore: 2
     survivalDuration: 20
-  - displayName: "Refor\xE7os 2"
+  - reinforceThreshold: 2
+    displayName: "Refor\xE7os 2"
     entries:
     - enemy: {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
       count: 8

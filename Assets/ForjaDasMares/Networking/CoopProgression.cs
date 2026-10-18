@@ -16,6 +16,22 @@ namespace ForjaDasMares.Networking
         readonly int[] revisions = new int[4];
         readonly Dictionary<EnemyActor, int> spawned = new Dictionary<EnemyActor, int>(64);
         readonly Dictionary<string, Job> pending = new Dictionary<string, Job>(64);
+        public string HomeCacheRoot=>Path.Combine(directory,"HomeCache",director.ParticipantIdentity);
+        public void PrepareHome(ProfileService service){var actor=director.Actor(0);if(actor.Roster.Selected!=director.SelectedHero||!actor.Health.IsAlive)actor.Roster.Select(director.SelectedHero);actor.Presentation.ApplyReplica(HeroState.Idle,0);director.Actor(0).ClearReplicaGear();EnsureEquipment(0,service);director.Actor(0).GetComponent<HeroEquipment>().enabled=true;}
+        ProfileService homeProfile;
+        public int HomeRevision {get;private set;}
+        public ProfileService HomeProfile
+        {
+            get
+            {
+                if(homeProfile!=null)return homeProfile;
+                homeProfile=new ProfileService(catalog,new ProfileStore(CoopRewardLedger.ParticipantPath(directory,director.ParticipantIdentity)));
+                if(homeProfile.Profile.expedition!=null)homeProfile.FinishExpedition(homeProfile.Profile.expedition.runId,false,"Aplicação interrompida");
+                homeProfile.Changed+=HomeChanged;HomeRevision++;return homeProfile;
+            }
+        }
+        void HomeChanged()=>HomeRevision++;
+        public void ReleaseHome(){if(homeProfile!=null)homeProfile.Changed-=HomeChanged;homeProfile=null;HomeRevision++;}
         string directory, expeditionId; int serial; float retry; bool bound;
         public ProgressionCatalog Catalog => catalog;
         public string Error { get; private set; }
@@ -68,7 +84,7 @@ namespace ForjaDasMares.Networking
                 Material material = actor.Presentation.Visible.GetComponentInChildren<Renderer>().sharedMaterial;
                 gear.Configure(actor.Roster, actor.Motor, actor.Combat, Visual(actor.transform, "CoopEquippedMain", new Vector3(.55f, 1, .3f), material), Visual(actor.transform, "CoopEquippedSecondary", new Vector3(-.55f, 1, .3f), material));
             }
-            gear.Initialize(profile, catalog);
+            gear.enabled=true;gear.Initialize(profile, catalog);
         }
         static MeshRenderer Visual(Transform parent, string label, Vector3 position, Material material)
         {
@@ -156,6 +172,7 @@ namespace ForjaDasMares.Networking
         }
         void OnDestroy()
         {
+            ReleaseHome();
             if (bound && director != null && director.Dungeon != null)
             { director.Dungeon.Encounter.Enemies.Spawned -= Spawned; director.Dungeon.Encounter.Enemies.Died -= Died; director.Dungeon.RoomCompleted -= RoomWon; }
             for (int i = 0; i < profiles.Length; i++) if (profiles[i] != null && callbacks[i] != null) profiles[i].Changed -= callbacks[i];

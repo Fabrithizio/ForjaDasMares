@@ -5,16 +5,18 @@ namespace ForjaDasMares
     public sealed class CampaignWallDarts : MonoBehaviour
     {
         CampaignRun run;DungeonSession session;DungeonRoom room;CampaignLevel level;
-        LineRenderer warning,arrow;
+        LineRenderer warning,arrow;Renderer muzzle;MaterialPropertyBlock tint;
         readonly DamageResolver damage=new DamageResolver();
         Vector3 start,end,direction,last;
         int cycle=-1;float offset;bool blocked;
         public void Configure(CampaignRun owner,DungeonSession map,DungeonRoom context,int lane,CampaignLevel data)
         {
-            run=owner;session=map;room=context;level=data;offset=lane*.65f;
+            tint??=new MaterialPropertyBlock();run=owner;session=map;room=context;level=data;offset=lane*.65f;
             float half=map.OpenLandscape?room.walkableHalf:5.15f;
             start=room.Center+new Vector3(-half,.8f,-.5f+lane*1.25f);end=start+Vector3.right*(half*2);direction=Vector3.right;last=start;
             warning=Line("Warning_DodgeTheLane",new Color(1,.22f,.08f),.045f,2);warning.SetPosition(0,start);warning.SetPosition(1,end);
+            var mount=GameObject.CreatePrimitive(PrimitiveType.Cube);mount.name="WallDartMount";mount.transform.SetParent(transform,false);mount.transform.position=start-direction*.25f;mount.transform.localScale=new Vector3(.45f,.8f,.8f);mount.GetComponent<Collider>().enabled=false;Destroy(mount.GetComponent<Collider>());mount.GetComponent<Renderer>().sharedMaterial=level.challengeMaterial;
+            var barrel=GameObject.CreatePrimitive(PrimitiveType.Cylinder);barrel.name="VisibleDartEmitter";barrel.transform.SetParent(transform,false);barrel.transform.position=start-direction*.08f;barrel.transform.rotation=Quaternion.FromToRotation(Vector3.up,direction);barrel.transform.localScale=new Vector3(.32f,.4f,.32f);barrel.GetComponent<Collider>().enabled=false;Destroy(barrel.GetComponent<Collider>());muzzle=barrel.GetComponent<Renderer>();muzzle.sharedMaterial=level.challengeMaterial;
             arrow=Line("Arrow_OriginalPlaceholder",new Color(1,.83f,.3f),.075f,4);
         }
         LineRenderer Line(string name,Color color,float width,int count)
@@ -30,6 +32,7 @@ namespace ForjaDasMares
             float clock=run.Clock+offset;int next=Mathf.FloorToInt(clock/level.dartInterval);float time=Mathf.Repeat(clock,level.dartInterval);
             if(cycle!=next){cycle=next;damage.Clear();last=start;blocked=false;}
             warning.enabled=time<1.1f;
+            tint.SetColor("_BaseColor",warning.enabled?Color.Lerp(new Color(.3f,.17f,.08f),new Color(1,.25f,.03f),time/1.1f):new Color(.25f,.3f,.32f));muzzle.SetPropertyBlock(tint);
             float distance=(time-1.1f)*(session.OpenLandscape?20:9);
             bool flying=distance>=0&&distance<Vector3.Distance(start,end)&&!blocked;arrow.enabled=flying;
             if(!flying)return;

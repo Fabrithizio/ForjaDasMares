@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     [Serializable] public sealed class CampaignSnapshot
-    {public float clock,completion;public bool solo;public int wave,defeated,planned;public uint occupied;public float[] progress;public AdventureSnapshot adventure;}
+    {public float clock,completion;public bool solo;public int wave,defeated,planned,fightRoom=-1;public uint occupied;public float[] progress;public AdventureSnapshot adventure;}
     public sealed class CampaignRun : MonoBehaviour
     {
         [SerializeField] DungeonSession dungeon;
@@ -31,7 +31,8 @@ namespace ForjaDasMares
         public int Selected {get;private set;}
         public float Clock {get;private set;}
         int replicaWave=1;
-        int replicaDefeated,replicaPlanned;
+        int replicaDefeated,replicaPlanned,replicaFightRoom=-1;
+        public int FightRoomId=>Authority?(dungeon.FightRoom!=null?dungeon.FightRoom.node.id:-1):replicaFightRoom;
         public int Count=>levels.Length;
         public CampaignLevel Level=>levels[Selected];
         public CampaignLevel At(int index)=>levels[Mathf.Clamp(index,0,levels.Length-1)];
@@ -90,7 +91,7 @@ namespace ForjaDasMares
         public CampaignSnapshot Capture()
         {
             snapshot.clock=Clock;snapshot.wave=dungeon.Encounter.WaveNumber;snapshot.occupied=0;snapshot.solo=Solo;snapshot.completion=Completion;
-            snapshot.defeated=dungeon.Encounter.DefeatedCount;snapshot.planned=dungeon.Encounter.PlannedCount;
+            snapshot.fightRoom=FightRoomId;snapshot.defeated=dungeon.Encounter.DefeatedCount;snapshot.planned=dungeon.Encounter.PlannedCount;
             for(int i=0;i<puzzles.Count;i++){snapshot.progress[i]=puzzles[i].Progress;snapshot.occupied|=(uint)puzzles[i].Mask<<(i*2);}
             snapshot.adventure=Adventure?.Capture();
             return snapshot;
@@ -100,7 +101,7 @@ namespace ForjaDasMares
             if(value==null||value.progress==null||value.progress.Length!=puzzles.Count||float.IsNaN(value.clock)||float.IsInfinity(value.clock))return;
             Adventure?.Apply(value.adventure);
             Clock=Mathf.Max(0,value.clock);replicaWave=Mathf.Max(1,value.wave);Solo=value.solo;replicaCompletion=Mathf.Clamp01(value.completion);
-            replicaDefeated=Mathf.Max(0,value.defeated);replicaPlanned=Mathf.Max(0,value.planned);
+            replicaFightRoom=value.fightRoom;replicaDefeated=Mathf.Max(0,value.defeated);replicaPlanned=Mathf.Max(0,value.planned);
             for(int i=0;i<puzzles.Count;i++)puzzles[i].Apply(value.progress[i],(int)(value.occupied>>(i*2))&3);
         }
     }

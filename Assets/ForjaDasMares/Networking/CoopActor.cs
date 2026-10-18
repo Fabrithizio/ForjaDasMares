@@ -9,10 +9,11 @@ namespace ForjaDasMares.Networking
         public HeroPresentation Presentation { get; private set; }
         public ValidatedHeroCommands Commands { get; private set; }
         public Health Health => Roster.Health;
-        float replicaSpecial,replicaDodge,replicaCharge,replicaSuper,replicaRange;
+        float replicaSpecial,replicaDodge,replicaCharge,replicaSuper,replicaRange,replicaFury;
         public float Charge=>Motor.enabled?Combat.ChargeProgress:replicaCharge;
         public float SuperProgress=>Motor.enabled?Combat.SuperProgress:replicaSuper;
         public float AimRange=>Motor.enabled?Combat.BasicAttack?.range??3:replicaRange;
+        public float FuryRemaining=>Motor.enabled?Combat.FuryRemaining:replicaFury;
         public bool Enhanced=>Roster.Current.onlineFlow!=null;
         public float SpecialCooldown=>Motor.enabled?Combat.SpecialCooldownRemaining:replicaSpecial;
         public float DodgeCooldown=>Motor.enabled?Motor.DodgeCooldownRemaining:replicaDodge;
@@ -55,8 +56,11 @@ namespace ForjaDasMares.Networking
             EquipmentVisualPlacement.SetWorldScale(renderer.transform,item.visualScale);
             gearColor ??= new MaterialPropertyBlock(); gearColor.SetColor("_BaseColor", item.color); renderer.SetPropertyBlock(gearColor);
         }
-        public void SetAuthority(bool value)
+        public void ClearReplicaGear(){replicaFury=0;hasFrame=false;if(mainGear!=null)mainGear.gameObject.SetActive(false);if(secondaryGear!=null)secondaryGear.gameObject.SetActive(false);gearSignature=null;}
+        public void SetAuthority(bool value,bool equipmentPresentation=false)
         {
+            if(value||equipmentPresentation)ClearReplicaGear();
+            var equipment=GetComponent<HeroEquipment>();if(equipment!=null)equipment.enabled=value||equipmentPresentation;
             Motor.enabled = Combat.enabled = value;
             GetComponent<CharacterController>().enabled = value;
             Presentation.ReplicaMode = !value;
@@ -64,7 +68,7 @@ namespace ForjaDasMares.Networking
         public void Apply(ActorFrame frame)
         {
             if (Roster.Selected != frame.hero) Roster.Select(frame.hero);
-            Health.SetReplicaState(frame.hp, frame.maximum);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
+            Health.SetReplicaState(frame.hp, frame.maximum);replicaFury=Mathf.Clamp(frame.fury,0,12);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
             destination = frame.position; orientation = Quaternion.Euler(0, frame.yaw, 0);
             if (!hasFrame || (destination - transform.position).sqrMagnitude > 16) transform.SetPositionAndRotation(destination, orientation);
             hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact);
@@ -73,6 +77,7 @@ namespace ForjaDasMares.Networking
         {
             if(mainGear!=null)mainGear.enabled=Health.IsAlive;if(secondaryGear!=null)secondaryGear.enabled=Health.IsAlive;
             if (Motor == null || Motor.enabled || !hasFrame) return;
+            replicaFury=Mathf.Max(0,replicaFury-Time.unscaledDeltaTime);
             replicaSpecial=Mathf.Max(0,replicaSpecial-Time.unscaledDeltaTime);replicaDodge=Mathf.Max(0,replicaDodge-Time.unscaledDeltaTime);
             float blend = 1 - Mathf.Exp(-18 * Time.unscaledDeltaTime);
             transform.SetPositionAndRotation(Vector3.Lerp(transform.position, destination, blend), Quaternion.Slerp(transform.rotation, orientation, blend));

@@ -983,10 +983,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroRoster
   heroes:
-  - {fileID: 11400000, guid: 6717b359e86883a428d43cc5e4f5d5cb, type: 2}
-  - {fileID: 11400000, guid: c1921bc8aa4042c45892fa3c26832ac6, type: 2}
-  - {fileID: 11400000, guid: eb7bb3c50b13627468a6845fb6ab1a70, type: 2}
-  - {fileID: 11400000, guid: 3839efacb31bf9341b88969d77578b72, type: 2}
+  - {fileID: 11400000, guid: 56c2cc8dcc7f2374ba769a282d3c0e7c, type: 2}
+  - {fileID: 11400000, guid: bd6c7eb6f56535e44bb2b12378d94443, type: 2}
+  - {fileID: 11400000, guid: b77e5e3d2af62514ba6109097bd82d46, type: 2}
+  - {fileID: 11400000, guid: de6ba8a3a4e135f4386d36dc97dc2c0a, type: 2}
   motor: {fileID: 60716049}
   combat: {fileID: 60716052}
   health: {fileID: 60716053}
@@ -11882,7 +11882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3b58b0dde73c745a6b26d049d59532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.CoopProgression
-  catalog: {fileID: 11400000, guid: dc34cf856ac44064bb381c316f0616fe, type: 2}
+  catalog: {fileID: 11400000, guid: cd8c0a63bd87f074381abe8f09ace44a, type: 2}
   profileDirectory: CampaignProfiles-v1
   revivalFraction: 0.5
 --- !u!114 &1955449262

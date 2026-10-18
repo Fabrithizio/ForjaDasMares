@@ -8,6 +8,7 @@ namespace ForjaDasMares
     public sealed class AttackDefinition : ScriptableObject
     {
         public AttackShape shape;
+        [Min(0)] public int maximumTargets; // Zero preserves area attacks; one is a focused starter strike.
         [Min(1)] public int damage = 26;
         [Min(0.1f)] public float range = 2.8f;
         [Range(1, 360)] public float arc = 120f;

@@ -13,7 +13,10 @@ namespace ForjaDasMares
         EnemyActor summoner;
         EnemyDefinition profile;
         bool live, bound;
-        float recycleTime;
+        float recycleTime,arrival;
+        public float SpawnRemaining=>arrival;
+        EnemyArrivalVisual arrivalView;
+        void ArrivalView(){if(arrivalView==null){arrivalView=GetComponent<EnemyArrivalVisual>();if(arrivalView==null)arrivalView=gameObject.AddComponent<EnemyArrivalVisual>();arrivalView.Configure(this);}}
         public Health Health => health;
         public EnemyBrain Brain => brain;
         public EnemyCombat Combat => combat;
@@ -29,7 +32,7 @@ namespace ForjaDasMares
         void Bind() { if (bound) return; health.Changed += OnHealthChanged; bound = true; }
         public bool Activate(EnemyDefinition data, Vector3 position, Health target, EnemyPool registry, CombatEffectPool shots, TelegraphPool warnings, int targets, int geometry, EnemyActor owner)
         {
-            Bind(); live = false; profile = data; pool = registry; summoner = owner; recycleTime = 0;
+            Bind(); live = false; profile = data; pool = registry; summoner = owner; recycleTime = 0;arrival=Mathf.Clamp(data.spawnWarning,0,2);ArrivalView();
             brain.enabled=combat.enabled=motor.enabled=enabled=true;
             transform.SetPositionAndRotation(position, Quaternion.identity);
             guard.Configure(brain); health.ConfigureDefense(guard); health.Configure(data.maximumHealth, CombatFaction.Enemy, data.armor);
@@ -44,15 +47,15 @@ namespace ForjaDasMares
             live = false; recycleTime = 0.6f; combat.Cancel(); motor.Deactivate(); brain.Die();
             pool.NotifyDeath(this);
         }
-        void Update() { if (!live && recycleTime > 0) { recycleTime -= Time.deltaTime; if (recycleTime <= 0) Recycle(); } }
+        void Update() { arrival=Mathf.Max(0,arrival-Time.deltaTime);if (!live && recycleTime > 0) { recycleTime -= Time.deltaTime; if (recycleTime <= 0) Recycle(); } }
         public void Recycle()
         {
-            live = false; recycleTime = 0; combat.Cancel(); brain.ClearTarget(); motor.Deactivate(); summoner = null;
+            live = false; recycleTime = arrival = 0; combat.Cancel(); brain.ClearTarget(); motor.Deactivate(); summoner = null;
             gameObject.SetActive(false);
         }
-        public void SetReplica(EnemyDefinition data, int hitPoints, int maximum, EnemyState state)
+        public void SetReplica(EnemyDefinition data, int hitPoints, int maximum, EnemyState state,float warning=0)
         {
-            live = false; profile = data; recycleTime = 0;
+            live = false; profile = data; recycleTime = 0;arrival=Mathf.Clamp(warning,0,2);ArrivalView();
             brain.enabled = combat.enabled = motor.enabled = enabled = false;
             motor.Deactivate(); gameObject.SetActive(true);
             health.SetReplicaState(hitPoints, maximum);

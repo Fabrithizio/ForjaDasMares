@@ -49,14 +49,14 @@ namespace ForjaDasMares.Networking.Tests
                 foreach(var room in session.Dungeon.Generator.Rooms)if(room.cooperativeObjective)Assert.IsFalse(room.objectiveComplete);
             }
         }
-        [UnityTest] public IEnumerator CampaignStartsSoloWithEmptyBagAndTenPercentBonus()
+        [UnityTest] public IEnumerator CampaignStartsSoloWithCommonStartersAndNoBonus()
         {
             Assert.IsTrue(session.HostDirect("CMPTEST",7792,false));yield return null;
-            Assert.AreEqual(0,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
+            Assert.AreEqual(4,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
             Assert.NotNull(session.Actor(0).Combat.BasicAttack);session.StartGame();yield return null;
             Assert.AreEqual(CoopPhase.Playing,session.Phase);var gear=session.Actor(0).GetComponent<HeroEquipment>();
             var normal=ProgressionStats.Calculate(session.Actor(0).Roster.Current,session.GetComponent<CoopProgression>().Profile(0).Profile,session.GetComponent<CoopProgression>().Catalog);
-            Assert.AreEqual(Mathf.RoundToInt(normal.maximumHealth*1.1f),gear.Stats.maximumHealth);Assert.AreEqual(normal.damageMultiplier*1.1f,gear.Stats.damageMultiplier,.0001f);
+            Assert.AreEqual(normal.maximumHealth,gear.Stats.maximumHealth);Assert.AreEqual(normal.damageMultiplier,gear.Stats.damageMultiplier,.0001f);
             session.Actor(0).Health.ApplyDamage(30);float before=(float)session.Actor(0).Health.Current/session.Actor(0).Health.Maximum;
             for(int i=0;i<5;i++){gear.SetCampaignSolo(false);gear.SetCampaignSolo(true);}
             Assert.That((float)session.Actor(0).Health.Current/session.Actor(0).Health.Maximum,Is.LessThanOrEqualTo(before));
@@ -87,20 +87,20 @@ namespace ForjaDasMares.Networking.Tests
         [Test] public void CampaignLootStartsEmptyPersistsOnceAndSavesMapCompletion()
         {
             string path=Path.Combine(Application.temporaryCachePath,"CampaignTests",Guid.NewGuid().ToString("N"),"profile.json");var catalog=session.GetComponent<CoopProgression>().Catalog;
-            var service=new ProfileService(catalog,new ProfileStore(path));Assert.AreEqual(0,service.Profile.inventory.Count);
+            var service=new ProfileService(catalog,new ProfileStore(path));Assert.AreEqual(4,service.Profile.inventory.Count);
             Assert.IsTrue(service.BeginExpedition("warrior","Campaign"));string id=service.Profile.expedition.runId;
             Assert.IsTrue(service.Grant(id,"chest",catalog.chest,123));Assert.IsFalse(service.Grant(id,"chest",catalog.chest,123));
             Assert.IsTrue(service.FinishExpedition(id,true,"Victory"));Assert.IsTrue(service.MarkCampaignClear(1));Assert.IsFalse(service.FinishExpedition(id,true,"Victory"));
             var loaded=new ProfileService(catalog,new ProfileStore(path));Assert.That(loaded.Profile.inventory.Count,Is.GreaterThan(0));Assert.AreEqual(2u,loaded.Profile.campaignCleared);
         }
-        [UnityTest] public IEnumerator InventoryOpensWithFiveRealEquipmentSlotsAndAnEmptyBag()
+        [UnityTest] public IEnumerator InventoryOpensWithFiveRealEquipmentSlotsAndClassStarters()
         {
             Assert.IsTrue(session.HostDirect("CMPBAG",7795,false));yield return null;
             var hud=UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>();
             foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name=="INVENTÁRIO"){button.onClick.Invoke();break;}
             yield return null;int slots=0;
             foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>())if(button.name.StartsWith("EquipmentSlot_"))slots++;
-            Assert.AreEqual(5,slots);Assert.AreEqual(0,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
+            Assert.AreEqual(5,slots);Assert.AreEqual(4,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
             Assert.NotNull(hud.GetComponentInChildren<UnityEngine.UI.RawImage>());
         }
         [Test] public void CampaignFrameRoundtripContainsSharedLevelProgressAndAnimationVariants()
@@ -108,7 +108,7 @@ namespace ForjaDasMares.Networking.Tests
             var frame=new WorldFrame{campaignLevel=2,campaign=new CampaignSnapshot{clock=12.5f,occupied=3,progress=new[]{.4f,1f}}};
             frame.players.Add(new ActorFrame{variant=2,actionVersion=12,impact=.3f});
             var copy=JsonUtility.FromJson<WorldFrame>(JsonUtility.ToJson(frame));Assert.AreEqual(2,copy.campaignLevel);Assert.AreEqual(.4f,copy.campaign.progress[0]);Assert.AreEqual(2,copy.players[0].variant);
-            Assert.AreEqual(6,CoopLimits.Protocol);
+            Assert.AreEqual(7,CoopLimits.Protocol);
         }
         [UnityTest] public IEnumerator SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent()
         {
@@ -179,7 +179,7 @@ namespace ForjaDasMares.Networking.Tests
             yield return new WaitForSeconds(.3f);Assert.AreEqual(before+1,service.Profile.expedition.items.Count);
             int coins=service.Profile.expedition.coins;
             var hero=session.Actor(0);hero.Motor.Teleport(supply.transform.position+new Vector3(0,.06f,-1.15f),Quaternion.identity);Physics.SyncTransforms();
-            Assert.IsTrue(hero.Combat.TryAttack());hero.Combat.Simulate(hero.Combat.BasicAttack.windup+.02f);Assert.IsFalse(supply.Health.IsAlive);
+            for(int i=0;i<5&&supply.Health.IsAlive;i++){hero.Combat.Simulate(2);Assert.IsTrue(hero.Combat.TryAttack());hero.Combat.Simulate(hero.Combat.BasicAttack.windup+.02f);}Assert.IsFalse(supply.Health.IsAlive);
             yield return new WaitForSeconds(.25f);Assert.AreEqual(coins+2,service.Profile.expedition.coins);
             var copy=JsonUtility.FromJson<AdventureSnapshot>(JsonUtility.ToJson(adventure.Capture()));
             run.Authority=false;Assert.IsFalse(supply.Health.ApplyHit(session.Actor(0).Combat.BasicAttack,Vector3.forward,session.Actor(0).Health));adventure.Apply(copy);Assert.IsTrue(adventure.Rewarded);
@@ -238,7 +238,7 @@ namespace ForjaDasMares.Networking.Tests
             Assert.NotNull(target);target.Health.SetReplicaState(10000,10000);target.Brain.enabled=false;
             for(int i=0;i<hero.Roster.Current.onlineFlow.hitsForSuper;i++)Assert.IsTrue(target.Health.ApplyHit(hero.Combat.BasicAttack,Vector3.forward,hero.Health));
             Assert.IsTrue(hero.Combat.SuperReady);int hp=target.Health.Current;Assert.IsTrue(hero.Combat.TrySuper());Assert.AreEqual(0,hero.Combat.SuperProgress);
-            hero.Combat.Simulate(hero.Roster.Current.onlineFlow.superAttack.windup+.01f);Assert.That(target.Health.Current,Is.LessThan(hp));Assert.IsFalse(hero.Combat.TrySuper());
+            hero.Combat.Simulate(.1f);Assert.AreEqual(hp,target.Health.Current);Assert.That(hero.Combat.FuryRemaining,Is.GreaterThan(0));Assert.That(hero.Combat.AttackSpeed,Is.GreaterThan(1));Assert.IsFalse(hero.Combat.TrySuper());
             hero.Commands.Accept(901,Vector2.zero,Vector2.up,HeroButtons.None);Assert.IsFalse(hero.Commands.AttackHeld);
         }
         [Test] public void NewWeaponsUseDifferentRealAttackDataAndRewardRulesReserveCapacity()
@@ -249,7 +249,7 @@ namespace ForjaDasMares.Networking.Tests
             var random=new System.Random(175);var id=service.Profile.expedition.runId;
             for(int i=0;i<29;i++)service.Profile.expedition.items.Add(LootGenerator.Create(catalog,"wavecleaver",ItemRarity.Common,random));
             Assert.IsTrue(service.Grant(id,"seals",catalog.exploration,1));Assert.IsTrue(service.Grant(id,"supply",catalog.supplies,2));Assert.IsTrue(service.Grant(id,"boss",catalog.boss,3));Assert.IsTrue(service.Grant(id,"finish",catalog.completion,4));
-            Assert.AreEqual(32,service.Profile.expedition.items.Count);Assert.IsTrue(service.FinishExpedition(id,true,"Victory"));Assert.AreEqual(32,service.Profile.inventory.Count);
+            Assert.AreEqual(32,service.Profile.expedition.items.Count);Assert.IsTrue(service.FinishExpedition(id,true,"Victory"));Assert.AreEqual(36,service.Profile.inventory.Count);
         }
         [UnityTest] public IEnumerator DefeatClearsEnemiesAndHidesDefaultWeaponAndUselessResultPagination()
         {

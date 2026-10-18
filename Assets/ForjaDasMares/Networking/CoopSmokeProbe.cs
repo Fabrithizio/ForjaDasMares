@@ -57,6 +57,9 @@ namespace ForjaDasMares.Networking
             if (File.Exists(control))
             {
                 string command = File.ReadAllText(control).Trim(); File.Delete(control);
+                if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
+                if(command=="profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.OpenInventory();
+                if(command=="close-profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.CloseInventory();
                 if(command=="manual")session.ProbeInput=false;
                 if(command=="quiet"){session.ProbeInput=true;session.ProbeMove=Vector2.zero;spawned=true;}
                 if(command=="publish"&&session.IsHost)session.GetComponent<CoopCloud>().ToggleVisibility();

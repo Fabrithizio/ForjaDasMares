@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: Item_centelha-book
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: centelha-book
+  displayName: "C\xF3dice das Tr\xEAs Centelhas"
+  icon: {fileID: 21300000, guid: 3a8a48670de46eb41a8c38b00f034220, type: 3}
+  description: "Tr\xEAs proj\xE9teis em leque: cada um encerra ao primeiro impacto.
+    Arcanista."
+  slot: 0
+  category: 6
+  compatibleHeroes: 4
+  minimumLevel: 1
+  starter: 0
+  twoHanded: 0
+  allowsOffHand: 1
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: 66974d8cf68a368438a52838d509b42e, type: 2}
+  - {fileID: 11400000, guid: 40d8cbb290512b044934d3c46abfe655, type: 2}
+  - {fileID: 11400000, guid: aaf58e8006040e945a146ad5b7e554ed, type: 2}
+  ability: {fileID: 11400000, guid: 377b6ac0e52815347a7c54b121fbcb80, type: 2}
+  bonuses:
+  - stat: 6
+    value: 0.05
+  frontalBlock: 0
+  color: {r: 1, g: 0, b: 1, a: 1}
+  visualScale: {x: 0.4, y: 0.5, z: 0.16}

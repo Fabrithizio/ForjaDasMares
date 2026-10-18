@@ -5,6 +5,7 @@ namespace ForjaDasMares
     [CreateAssetMenu(menuName = "Forja/Enemy")]
     public sealed class EnemyDefinition : ScriptableObject
     {
+        [Range(0,2)] public float spawnWarning;
         public string enemyId, displayName;
         public EnemyKind kind;
         public GameObject prefab;

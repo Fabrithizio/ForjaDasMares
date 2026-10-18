@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f78da534427364fbf8dab22877fb72, type: 3}
+  m_Name: Hero_ranger
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroDefinition
+  heroId: ranger
+  displayName: PATRULHEIRO - Vento
+  role: 'PATRULHEIRO '
+  strengths: Alcance, mobilidade e armadilha
+  weaknesses: Pouca resistencia
+  maximumHealth: 86
+  armor: 0
+  speed: 6.8
+  acceleration: 40
+  deceleration: 50
+  dodge:
+    duration: 0.22
+    speed: 15
+    cooldown: 0.6
+    invulnerableStart: 0.03
+    invulnerableEnd: 0.15
+  attacks:
+  - {fileID: 11400000, guid: e558e704dc8e4c642b0e6c5eb63d4783, type: 2}
+  special: {fileID: 11400000, guid: cf77d60043faad14fa37cebcfc4cf418, type: 2}
+  onlineFlow: {fileID: 11400000, guid: ef3350713ff6d7f4881dfc512e5ce9a6, type: 2}
+  color: {r: 0.2, g: 0.85, b: 0.4, a: 1}
+  visualSlot: 1

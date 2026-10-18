@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f8ff50b1f39c7438a2c99b33b18f89, type: 3}
+  m_Name: Combo_cinderfocus_2
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
+  shape: 1
+  maximumTargets: 0
+  damage: 17
+  range: 10
+  arc: 1
+  windup: 0.17999999
+  recovery: 0.87
+  knockback: 0
+  projectileSpeed: 8.4
+  projectileRadius: 0.14
+  splashRadius: 1.15
+  control: 1
+  controlDuration: 1.1
+  slowMultiplier: 0.6
+  color: {r: 0.65, g: 0.85, b: 1, a: 1}
+  projectileCount: 1
+  projectileSpread: 0
