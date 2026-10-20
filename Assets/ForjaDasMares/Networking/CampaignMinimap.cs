@@ -40,6 +40,7 @@ namespace ForjaDasMares.Networking
             foreach(var room in rooms)
             {Color c=room.completed?new Color(.18f,.35f,.25f):room.entered?new Color(.38f,.35f,.23f):new Color(.17f,.19f,.18f);if(room.node.id==session.Campaign.FightRoomId)c=new Color(.55f,.17f,.13f);Quad(vh,Map(room.Center),Vector2.one*room.walkableHalf*2*scale,c);if(!room.completed&&room.node.category!=RoomCategory.Combat&&room.node.category!=RoomCategory.HardCombat)Quad(vh,Map(room.Center),Vector2.one*5,RusticHudTheme.Gold);}
             foreach(var enemy in session.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive)Quad(vh,Map(enemy.transform.position),Vector2.one*(enemy.Profile.miniboss?6:4),new Color(1,.2f,.1f));
+            if(session.Campaign.Features?.Pings!=null)foreach(var ping in session.Campaign.Features.Pings)if(ping!=null&&ping.remaining>0)Quad(vh,Map(ping.position),Vector2.one*8,ping.kind==2?Color.red:Color.yellow);
             for(int i=0;i<4;i++)if(session.IsConnected(i)){var a=session.Actor(i);Quad(vh,Map(a.transform.position),Vector2.one*(i==session.LocalSlot?7:5),i==session.LocalSlot?Color.cyan:Color.blue);}
         }
     }

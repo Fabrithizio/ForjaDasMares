@@ -23,7 +23,8 @@ namespace ForjaDasMares
         float verticalSpeed, dodgeRemaining, cooldownRemaining;
         Health health;
         float invulnerableStart, invulnerableEnd, facingLock;
-        bool charge;
+        bool charge,perfectUsed;
+        public bool ConfirmPerfectDodge(){if(!IsInvulnerable||perfectUsed||dodgeDuration-dodgeRemaining>invulnerableStart+.065f)return false;perfectUsed=true;var build=GetComponent<CombatBuildEffects>();if(build!=null)build.GrantCounter();var feel=GetComponent<HeroRoster>()?.Current.feedback;CombatAudioPool.Play(feel!=null?feel.perfect:null,.3f);return true;}
         float baseDodgeCooldown;
 
         public float Speed => speed;
@@ -85,7 +86,7 @@ namespace ForjaDasMares
         {
             if (cooldownRemaining > 0f || dodgeRemaining > 0f || (health != null && (!health.IsAlive || health.ControlMultiplier == 0f))) return false;
             dodgeDirection = direction.sqrMagnitude > 0.01f ? WorldDirection(direction).normalized : transform.forward;
-            dodgeRemaining = dodgeDuration;
+            dodgeRemaining = dodgeDuration;perfectUsed=false;
             charge = false;
             cooldownRemaining = dodgeDuration + dodgeCooldown;
             return true;

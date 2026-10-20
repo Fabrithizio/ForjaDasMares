@@ -43,5 +43,7 @@ MonoBehaviour:
   summonBudget: 6
   summonCooldown: 4
   boss: {fileID: 11400000, guid: 651d8a46e81718c42940dcc9e0f4c248, type: 2}
+  rewardTheme: 2
   miniboss: 1
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
   color: {r: 0.8, g: 0.4, b: 0.18, a: 1}

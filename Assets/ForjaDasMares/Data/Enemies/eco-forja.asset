@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
   m_Name: eco-forja
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0
   enemyId: eco-forja
   displayName: Eco da Forja
   kind: 4
@@ -42,4 +43,7 @@ MonoBehaviour:
   summonBudget: 6
   summonCooldown: 4
   boss: {fileID: 0}
+  rewardTheme: -1
+  miniboss: 0
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
   color: {r: 0.8, g: 0.25, b: 0.75, a: 1}

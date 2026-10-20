@@ -41,7 +41,7 @@ namespace ForjaDasMares
             if(run.Authority)
             {
                 float length=Vector3.Distance(last,point);int steps=Mathf.Max(1,Mathf.CeilToInt(length/.3f));
-                for(int i=1;i<=steps;i++)damage.Area(Vector3.Lerp(last,point,(float)i/steps),.46f,direction,360,level.dartAttack,null,1<<11,1<<9,false);
+                for(int i=1;i<=steps;i++)damage.Area(Vector3.Lerp(last,point,(float)i/steps),.46f,direction,360,level.dartAttack,null,(1<<11)|(1<<10),1<<9,false);
             }
             arrow.SetPosition(0,point-direction*.65f);arrow.SetPosition(1,point);arrow.SetPosition(2,point-direction*.18f+Vector3.forward*.13f);arrow.SetPosition(3,point-direction*.18f-Vector3.forward*.13f);last=point;
         }

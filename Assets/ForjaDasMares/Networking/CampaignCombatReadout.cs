@@ -13,11 +13,11 @@ namespace ForjaDasMares.Networking
         readonly Popup[] pool=new Popup[20];
         CoopDirector director;CoopProfileChannel profiles;RectTransform root;Camera cameraView;Text toast;
         float toastTime,scan;string runId;int coins,xp,items;
-        AudioSource audioSource;float nextSound;
+        float nextSound;
         public void Build(RectTransform parent,CoopDirector owner)
         {
             root=parent;director=owner;owner.GetComponent<CampaignLootDrops>()?.ConfigureReadout(this);profiles=owner.GetComponent<CoopProfileChannel>();cameraView=Camera.main;
-            audioSource=gameObject.AddComponent<AudioSource>();audioSource.playOnAwake=false;audioSource.spatialBlend=0;audioSource.volume=.55f;
+
             for(int i=0;i<pool.Length;i++)
             {var label=RusticHudTheme.Label(root,"Impact_"+i,Vector2.one*.5f,Vector2.zero,new Vector2(130,38),"",24);label.alignment=TextAnchor.MiddleCenter;label.fontStyle=FontStyle.Bold;label.gameObject.SetActive(false);pool[i]=new Popup{label=label};}
             toast=RusticHudTheme.Label(root,"RewardNotice",new Vector2(.5f,0),new Vector2(0,110),new Vector2(650,48),"",20);toast.alignment=TextAnchor.MiddleCenter;toast.color=RusticHudTheme.Gold;
@@ -28,6 +28,7 @@ namespace ForjaDasMares.Networking
             Unbind();
             for(int i=0;i<4;i++)Watch(director.Actor(i)?.Health);
             foreach(var enemy in director.Dungeon.Encounter.Enemies.Actors)Watch(enemy.Health);
+            if(director.Campaign.Features!=null)foreach(var feature in director.Campaign.Features.Nodes)Watch(feature.health);
             if(director.Campaign.Adventure!=null)foreach(var prop in director.Campaign.Adventure.Props)Watch(prop.Health);
         }
         void Watch(Health hp)
@@ -43,7 +44,7 @@ namespace ForjaDasMares.Networking
             if(track.hp.Faction==CombatFaction.Player&&track.hp!=local.Health&&delta<0)return;
             if(delta>0&&track.hp.Faction!=CombatFaction.Player)return; // pool resets are not heals
             var level=director.Campaign.Level;
-            Sound(delta>0?level.healSound:track.hp.Faction==CombatFaction.Training&&!track.hp.IsAlive?level.crateSound:level.hitSound);
+            if(delta>0||track.hp.Faction==CombatFaction.Training&&!track.hp.IsAlive)Sound(delta>0?level.healSound:level.crateSound);
             foreach(var value in pool)if(value.remaining<=0)
             {
                 value.remaining=.75f;value.point=track.hp.transform.position+Vector3.up*1.8f;
@@ -84,7 +85,7 @@ namespace ForjaDasMares.Networking
             coins=run.coins;xp=run.experience;items=run.items.Count;
         }
         void Unbind(){foreach(var track in tracks)if(track.hp!=null)track.hp.Changed-=track.changed;tracks.Clear();}
-        void Sound(AudioClip clip){if(clip==null||Time.unscaledTime<nextSound)return;nextSound=Time.unscaledTime+.07f;audioSource.PlayOneShot(clip);}
+        void Sound(AudioClip clip){if(clip==null||Time.unscaledTime<nextSound)return;nextSound=Time.unscaledTime+.07f;CombatAudioPool.Play(clip,.45f);}
         void OnDestroy(){if(director!=null)director.Dungeon.Generated-=Bind;Unbind();}
     }
 }

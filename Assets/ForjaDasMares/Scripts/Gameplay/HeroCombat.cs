@@ -10,7 +10,7 @@ namespace ForjaDasMares
         [SerializeField] CombatEffectPool pool;
         [SerializeField] LayerMask targets, geometry, allies;
         [SerializeField] CombatFlowDefinition flow;
-        float heldTime, heavyCooldown, superBuffer, furyRemaining;
+        bool wasHeld;float heavyBuffer;float heldTime, heavyCooldown, superBuffer, furyRemaining;
         AbilityDefinition weaponAbility;
         public float FuryRemaining=>furyRemaining;
         public AbilityDefinition Ability=>weaponAbility!=null?weaponAbility:profile!=null?profile.special:null;
@@ -25,7 +25,7 @@ namespace ForjaDasMares
         public bool IsSuper => active && ultimate;
         public int AnimationVariant { get; private set; }
         public int ActionVersion { get; private set; }
-        public float ImpactTime => active ? (heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : attackSpeed)) / length : .25f;
+        public float ImpactTime => active ? (heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : AttackSpeed)) / length : .25f;
         public Vector3 StrikeOrigin=>origin!=null?origin.position:transform.position+Vector3.up;
         bool OriginClear=>!Physics.Linecast(transform.position+Vector3.up,origin.position,geometry,QueryTriggerInteraction.Ignore)&&!Physics.CheckSphere(origin.position,.04f,geometry,QueryTriggerInteraction.Ignore);
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
@@ -50,7 +50,7 @@ namespace ForjaDasMares
         AttackDefinition legendaryEcho;
         bool echoResolved;
         public AttackDefinition BasicAttack => equipmentAttacks != null && equipmentAttacks.Length > 0 ? equipmentAttacks[0] : profile != null ? profile.attacks[0] : null;
-        public float AttackSpeed => Mathf.Min(2.5f,attackSpeed*(furyRemaining>0&&flow!=null?Mathf.Clamp(flow.furyAttackSpeed,1,2):1));
+        public float AttackSpeed => Mathf.Min(2.5f,(GetComponent<CombatBuildEffects>()?.Tempo??1)*attackSpeed*(furyRemaining>0&&flow!=null?Mathf.Clamp(flow.furyAttackSpeed,1,2):1));
         public void AddTargets(int mask)=>targets|=mask;
         public void ApplyEquipment(AttackDefinition[] attacks, StatSnapshot stats, float rarityPower, bool twin, AttackDefinition echo = null, AbilityDefinition ability = null)
         { equipmentAttacks = attacks; weaponAbility=ability; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance;criticalMultiplier=stats.criticalMultiplier>=1?stats.criticalMultiplier:1.5f; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
@@ -76,14 +76,16 @@ namespace ForjaDasMares
                 if (input.TakeSpecial()) TrySpecial();
                 bool pressed = input.TakeAttack();
                 var continuous = motor.Commands as IContinuousCombatCommands;
-                if(continuous != null && continuous.CombatBlocked) heldTime = superBuffer = 0;
+                if(continuous != null && continuous.CombatBlocked) heldTime = superBuffer = heavyBuffer = 0;
                 else ProcessAttackInput(continuous != null && continuous.AttackHeld, pressed, continuous != null && continuous.TakeSuper(), Time.deltaTime);
             }
             Simulate(Time.deltaTime);
         }
         public void ProcessAttackInput(bool held, bool pressed, bool superRequested, float deltaTime)
         {
-            if (!health.IsAlive || health.IsStunned || motor.IsDodging) { heldTime = superBuffer = 0; return; }
+            if (!health.IsAlive || health.IsStunned || motor.IsDodging) { wasHeld=false;heavyBuffer=0;heldTime = superBuffer = 0; return; }
+            bool released=wasHeld&&!held;float releasedCharge=ChargeProgress;wasHeld=held;if(released&&releasedCharge>=.65f&&heavyCooldown<=0)heavyBuffer=.3f;
+            if(heavyBuffer>0&&TryHeavy()){heavyBuffer=0;return;}
             if(flow != null && held && heavyCooldown <= 0) heldTime = Mathf.Min(flow.holdDuration, heldTime + Mathf.Max(0,deltaTime));
             else if(!held) heldTime = 0;
             if(flow != null && superRequested && SuperReady)superBuffer = Mathf.Max(.1f,flow.superInputBuffer);
@@ -130,19 +132,19 @@ namespace ForjaDasMares
             active = true; special = ability; elapsed = 0; length = Mathf.Max(0.05f, duration); resolved = chargeWindow = false;
             heavy = ultimate = false; AnimationVariant = 0; ActionVersion++;
             facing = transform.forward; facing.y = 0; facing.Normalize();
-            strikeScale = ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
-            secondResolved = echoResolved = false; motor.LockFacing(currentAttack.windup / (ability ? 1 : attackSpeed)); resolver.Clear();
+            strikeScale = (GetComponent<CombatBuildEffects>()?.ConsumeCounter()??1)*ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
+            secondResolved = echoResolved = false; motor.LockFacing(currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
         }
         public void Simulate(float deltaTime)
         {
-            furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
+            heavyBuffer=Mathf.Max(0,heavyBuffer-Mathf.Max(0,deltaTime));furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
             specialCooldown = Mathf.Max(0, specialCooldown - Mathf.Max(0, deltaTime));
             heavyCooldown = Mathf.Max(0, heavyCooldown - Mathf.Max(0,deltaTime));
             superBuffer = Mathf.Max(0,superBuffer - Mathf.Max(0,deltaTime));
             if (!health.IsAlive || health.IsStunned || motor.IsDodging) { if(!health.IsAlive)furyRemaining=0;active = false; chargeWindow = false; return; }
             if (!active) return;
             elapsed += Mathf.Max(0, deltaTime);
-            float windup = heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : attackSpeed);
+            float windup = heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : AttackSpeed);
             if (!resolved && elapsed >= windup)
             { resolved = true; if (ultimate) ResolveSuper(); else if (special) ResolveSpecial(); else ResolveBasic(); }
             if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / AttackSpeed)
@@ -219,6 +221,6 @@ namespace ForjaDasMares
                 pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }
-        public void ResetCombat() { active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
+        public void ResetCombat() {wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

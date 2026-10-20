@@ -19,7 +19,8 @@ namespace ForjaDasMares
         [SerializeField] LayerMask blockers;
         [SerializeField, Range(30f, 80f)] float verticalFieldOfView = 48f;
         [SerializeField, Min(0.5f)] float referenceAspect = 1.777778f;
-        Vector3 smoothedFocus, smoothVelocity;
+        Vector3 smoothedFocus, smoothVelocity;float impulse,impulseTime;
+        public void Impact(float strength){if(PlayerPrefs.GetInt("CampaignCameraShake",0)==1){impulse=Mathf.Max(impulse,Mathf.Clamp(strength,0,.06f));impulseTime=.12f;}}
         Camera cameraComponent;
         bool boundFocus;
         float armDistance, armVelocity;
@@ -66,7 +67,8 @@ namespace ForjaDasMares
                 safeDistance = ClearDistance(direction, armLength);
             if (snap || safeDistance < armDistance) { armDistance = safeDistance; armVelocity = 0f; }
             else if (deltaTime > 0f) armDistance = Mathf.Min(safeDistance, Mathf.SmoothDamp(armDistance, safeDistance, ref armVelocity, zoomOutTime, Mathf.Infinity, deltaTime));
-            transform.position = smoothedFocus + direction * armDistance;
+            impulseTime=Mathf.Max(0,impulseTime-Time.unscaledDeltaTime);Vector3 shake=impulseTime>0?new Vector3(Mathf.Sin(Time.unscaledTime*90),0,Mathf.Cos(Time.unscaledTime*73))*impulse*(impulseTime/.12f):Vector3.zero;
+            transform.position = smoothedFocus + direction * armDistance+shake;
             transform.rotation = Quaternion.LookRotation(-direction, Mathf.Abs(direction.y) > 0.999f ? Vector3.forward : Vector3.up);
             occlusion.Update(transform.position, target.position, blockers, visibilityRadius, obstructionReleaseDelay, Time.unscaledTime, obstructionOpacity);
         }

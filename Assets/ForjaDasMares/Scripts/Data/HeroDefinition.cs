@@ -25,7 +25,7 @@ namespace ForjaDasMares
         public AttackDefinition[] attacks;
         public AbilityDefinition special;
         public CombatFlowDefinition onlineFlow;
-        public Material attackAreaMaterial;
+        public Material attackAreaMaterial;public CombatFeelDefinition feedback;
         public Color color = Color.cyan;
         public int visualSlot;
     }

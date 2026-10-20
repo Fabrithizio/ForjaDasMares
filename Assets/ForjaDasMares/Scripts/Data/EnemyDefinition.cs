@@ -24,7 +24,7 @@ namespace ForjaDasMares
         [Min(1)] public int summonPerCast = 1, maxOwnedSummons = 2, summonBudget = 6;
         [Min(0.1f)] public float summonCooldown = 4;
         public BossDefinition boss;
-        public bool miniboss;
+        [Range(-1,2)]public int rewardTheme=-1;public bool miniboss;public CombatFeelDefinition feedback;
         public Color color = Color.green;
     }
 }

@@ -115,7 +115,7 @@ namespace ForjaDasMares.Networking
         {
             if (!director.Manager.IsServer || !Active || !spawned.TryGetValue(actor, out int id)) return;
             spawned.Remove(actor);
-            var rule=actor.Profile.kind==EnemyKind.Minion?catalog.summonedEnemy:actor.Profile.miniboss?catalog.miniboss:actor.Profile.kind==EnemyKind.Boss?catalog.boss:director.Campaign!=null&&director.Campaign.Selected==2?catalog.challengeEnemy:director.Campaign!=null&&director.Campaign.Selected==1?catalog.veteranEnemy:catalog.enemy;
+            var rule=actor.Profile.kind==EnemyKind.Minion?catalog.summonedEnemy:actor.Profile.miniboss?catalog.MinibossRule(actor.Profile.rewardTheme):actor.Profile.kind==EnemyKind.Boss?catalog.boss:director.Campaign!=null&&director.Campaign.Selected==2?catalog.challengeEnemy:director.Campaign!=null&&director.Campaign.Selected==1?catalog.veteranEnemy:catalog.enemy;
             string key="enemy:"+id;Enqueue(key,rule);var job=pending[key];job.drop=director.Campaign!=null;job.position=actor.transform.position;for(int i=0;i<4;i++)job.before[i]=profiles[i]?.Profile.expedition?.items.Count??0;TryFlush();
         }
         void RoomWon(DungeonRoom room)
@@ -131,7 +131,7 @@ namespace ForjaDasMares.Networking
         bool SideReward(int id,bool exploration)
         {
             if(!Active||!director.Manager.IsServer||director.Phase!=CoopPhase.Playing)return false;
-            Enqueue("adventure:"+id,exploration?catalog.exploration:catalog.supplies);return TryFlush();
+            Enqueue("adventure:"+id,id>=3000?catalog.optionalChallenge:id>=2000?catalog.secretCache:exploration?catalog.exploration:catalog.supplies);return TryFlush();
         }
         bool Chest(int room) { if (!Active || !director.Manager.IsServer) return false; Enqueue("chest:" + room, catalog.chest); return TryFlush(); }
         bool Exit()

@@ -14,7 +14,7 @@ namespace ForjaDasMares.Networking
         readonly Button[] nodes=new Button[3];float refresh;uint cleared;
         public void Build(RectTransform parent,CoopDirector owner,ArenaInput input)
         {
-            root=parent;director=owner;controls=input;campaign=owner.Campaign;cloud=owner.GetComponent<CoopCloud>();
+            root=parent;director=owner;controls=input;campaign=owner.Campaign;gameObject.AddComponent<CampaignAdventureHud>().Configure(owner,owner.GetComponent<CampaignAdventureChannel>(),parent);cloud=owner.GetComponent<CoopCloud>();
             var shade=RusticHudTheme.Rect(root,"CampaignBackdrop",Vector2.zero,Vector2.zero,Vector2.zero);shade.anchorMax=Vector2.one;shade.offsetMin=shade.offsetMax=Vector2.zero;RusticHudTheme.Panel(shade,RusticHudTheme.Ink,0);backdrop=shade.gameObject;
             var content=RusticHudTheme.Rect(root,"CampaignContent",Vector2.one*.5f,Vector2.zero,new Vector2(1280,720));
             var background=RusticHudTheme.Rect(content,"CampaignMap",new Vector2(0,1),new Vector2(20,-25),new Vector2(860,655));map=background.gameObject;RusticHudTheme.Panel(background,new Color(.10f,.16f,.13f,.98f),24);

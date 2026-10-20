@@ -64,6 +64,7 @@ namespace ForjaDasMares
                 Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation);
             }
             combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null,MainWeapon!=null?MainWeapon.ability:null);
+            var effects=GetComponent<CombatBuildEffects>()??gameObject.AddComponent<CombatBuildEffects>();BuildSynergy synergy=BuildSynergy.None;if(loadout!=null)foreach(var id in loadout.items){var owned=profile.Item(id);var item=owned!=null?catalog.Find(owned.definitionId):null;if(item!=null)synergy|=item.synergy;}effects.Configure(MainWeapon!=null?MainWeapon.perk:WeaponPerk.None,synergy);
             Visual(mainVisual, MainWeapon); Visual(secondaryVisual, secondary);
             // Keep the original geometric hero body/poses; hide its old weapon only when an item replaces it.
             foreach (Transform root in heroes.transform) if (root.name.StartsWith("HeroVisual_"))

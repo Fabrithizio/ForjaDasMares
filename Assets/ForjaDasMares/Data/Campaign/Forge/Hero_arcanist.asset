@@ -33,5 +33,6 @@ MonoBehaviour:
   special: {fileID: 11400000, guid: c2d2128dbc67b484bba10a103be771a6, type: 2}
   onlineFlow: {fileID: 11400000, guid: cc7a9c05e77a06947a63ca3535620211, type: 2}
   attackAreaMaterial: {fileID: 2100000, guid: 83cbef8ba67e7164eb3c1255d080104b, type: 2}
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
   color: {r: 0.65, g: 0.35, b: 1, a: 1}
   visualSlot: 2

@@ -16,7 +16,7 @@ namespace ForjaDasMares
         int targets, geometry, summonCount;
         float elapsed, windup, recovery, cooldown, scale, radius;
         bool busy, resolved, summoning;
-        public bool IsBusy => busy;
+        public bool IsBusy => busy;public bool IsRecovering=>busy&&resolved;
         public void SetTarget(Health player) { if (!busy) target = player; }
         public float WarningRemaining => busy && !resolved ? Mathf.Max(0, windup - elapsed) : 0;
         public BossAttackKind? CurrentBossAttack => bossMove != null && busy ? bossMove.kind : (BossAttackKind?)null;

@@ -24,7 +24,7 @@ namespace ForjaDasMares
         public WeaponCategory category = WeaponCategory.None;
         public HeroAffinity compatibleHeroes = HeroAffinity.All;
         [Min(1)] public int minimumLevel = 1;
-        public bool starter;
+        public bool starter;public WeaponPerk perk;public BuildSynergy synergy;
         public bool twoHanded, allowsOffHand, twinStrike;
         public AttackDefinition[] attacks;
         public AbilityDefinition ability; // Optional class-compatible replacement for the skill, not the ultimate.

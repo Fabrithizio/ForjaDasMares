@@ -31,7 +31,83 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 52ea42a850f37d74cbbd0ec343474451, type: 2}
   - {fileID: 11400000, guid: b8fb9a17f522db346ba684d299c45589, type: 2}
   - {fileID: 11400000, guid: fccd22e997e7488469b611111ae80d2f, type: 2}
+  baseCriticalMultiplier: 1.5
+  maximumDefensePoints: 75
+  talents:
+  - id: 0
+    displayName: Vigor
+    stat: 0
+    perRank: 8
+    maximumRank: 5
+  - id: 1
+    displayName: "For\xE7a"
+    stat: 1
+    perRank: 0.025
+    maximumRank: 5
+  - id: 2
+    displayName: Tenacidade
+    stat: 2
+    perRank: 4
+    maximumRank: 5
+  - id: 3
+    displayName: Agilidade
+    stat: 5
+    perRank: 0.025
+    maximumRank: 5
+  - id: 4
+    displayName: "Precis\xE3o"
+    stat: 4
+    perRank: 0.015
+    maximumRank: 5
+  - id: 5
+    displayName: Disciplina
+    stat: 6
+    perRank: 0.02
+    maximumRank: 5
+  salvageBase: 2
+  talentResetGold: 25
+  veteranEnemy:
+    rewardId: Veterano
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 3
+    coins: 3
+    guaranteedItems: 0
+    itemChance: 0.14
+    minimumRarity: 0
+  challengeEnemy:
+    rewardId: Desafiador
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 4
+    coins: 4
+    guaranteedItems: 0
+    itemChance: 0.19
+    minimumRarity: 0
+  summonedEnemy:
+    rewardId: Invocado
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 1
+    maximumRequiredLevel: 0
+    experience: 1
+    coins: 1
+    guaranteedItems: 0
+    itemChance: 0
+    minimumRarity: 0
+  normalizeLegacyLoadouts: 0
   starterItems: []
+  classStarters: []
   rarities:
   - rarity: 0
     weight: 55
@@ -101,6 +177,12 @@ MonoBehaviour:
     allowSecondaryWeapon: 0
   enemy:
     rewardId: Inimigo
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 1
     coins: 1
     guaranteedItems: 0
@@ -108,6 +190,12 @@ MonoBehaviour:
     minimumRarity: 0
   boss:
     rewardId: Chefe
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 150
     coins: 30
     guaranteedItems: 1
@@ -115,6 +203,12 @@ MonoBehaviour:
     minimumRarity: 2
   chest:
     rewardId: "Ba\xFA"
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 10
     coins: 10
     guaranteedItems: 1
@@ -122,6 +216,12 @@ MonoBehaviour:
     minimumRarity: 0
   room:
     rewardId: Sala
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 12
     coins: 3
     guaranteedItems: 0
@@ -129,13 +229,101 @@ MonoBehaviour:
     minimumRarity: 0
   completion:
     rewardId: "Vit\xF3ria"
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 90
     coins: 20
     guaranteedItems: 1
     itemChance: 0
     minimumRarity: 1
+  firstVictory:
+    rewardId: Primeira arma
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 1
+    fixedRarity: 1
+    instantCurrency: 0
+    maximumRequiredLevel: 1
+    experience: 0
+    coins: 0
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 0
+  minibossThemes:
+  - rewardId: Malho
+    preferredItem: basalto-hammer
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
+    experience: 12
+    coins: 8
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  - rewardId: "Ra\xEDzes"
+    preferredItem: retorno-seal
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
+    experience: 12
+    coins: 8
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  - rewardId: Cinza
+    preferredItem: fenda-axe
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
+    experience: 12
+    coins: 8
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  optionalChallenge:
+    rewardId: Desafio opcional
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
+    experience: 35
+    coins: 20
+    guaranteedItems: 1
+    itemChance: 0
+    minimumRarity: 1
+  secretCache:
+    rewardId: Esconderijo
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
+    experience: 5
+    coins: 6
+    guaranteedItems: 0
+    itemChance: 0.35
+    minimumRarity: 0
   miniboss:
     rewardId: miniboss
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 12
     coins: 8
     guaranteedItems: 1
@@ -143,6 +331,12 @@ MonoBehaviour:
     minimumRarity: 1
   supplies:
     rewardId: supplies
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 1
     coins: 2
     guaranteedItems: 0
@@ -150,6 +344,12 @@ MonoBehaviour:
     minimumRarity: 0
   exploration:
     rewardId: exploration
+    preferredItem:
+    preferredChance: 0.35
+    weaponsOnly: 0
+    fixedRarity: 0
+    instantCurrency: 0
+    maximumRequiredLevel: 0
     experience: 30
     coins: 15
     guaranteedItems: 1

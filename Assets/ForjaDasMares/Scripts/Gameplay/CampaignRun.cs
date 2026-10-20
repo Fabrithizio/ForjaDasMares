@@ -4,14 +4,14 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     [Serializable] public sealed class CampaignSnapshot
-    {public float clock,completion;public bool solo;public int wave,defeated,planned,fightRoom=-1;public uint occupied;public float[] progress;public AdventureSnapshot adventure;}
+    {public float clock,completion;public bool solo;public int wave,defeated,planned,fightRoom=-1;public uint occupied;public float[] progress;public AdventureSnapshot adventure;public FeatureSnapshot features;}
     public sealed class CampaignRun : MonoBehaviour
     {
         [SerializeField] DungeonSession dungeon;
         [SerializeField] CampaignLevel[] levels;
         readonly List<CooperativePlates> puzzles=new List<CooperativePlates>();
         readonly CampaignSnapshot snapshot=new CampaignSnapshot();
-        public CampaignAdventure Adventure {get;private set;}
+        public CampaignAdventure Adventure {get;private set;}public CampaignFeatures Features {get;private set;}
         public Func<int,bool,bool> SideRewardRequested {get;set;}
         public bool Authority {get;set;}
         public bool Running {get;set;}
@@ -76,7 +76,7 @@ namespace ForjaDasMares
                         go.AddComponent<CampaignWallDarts>().Configure(this,dungeon,room,lane,Level);
                     }
             }
-            Adventure??=gameObject.GetComponent<CampaignAdventure>()??gameObject.AddComponent<CampaignAdventure>();Adventure.Build(this,dungeon);
+            Adventure??=gameObject.GetComponent<CampaignAdventure>()??gameObject.AddComponent<CampaignAdventure>();Adventure.Build(this,dungeon);Features??=gameObject.GetComponent<CampaignFeatures>()??gameObject.AddComponent<CampaignFeatures>();Features.Build(this,dungeon);
             snapshot.progress=new float[puzzles.Count];snapshot.occupied=0;
             // A low transparent mist sea fills the exterior without hiding the walkable floor.
             Vector3 min=Vector3.zero,max=Vector3.zero;
@@ -93,13 +93,13 @@ namespace ForjaDasMares
             snapshot.clock=Clock;snapshot.wave=dungeon.Encounter.WaveNumber;snapshot.occupied=0;snapshot.solo=Solo;snapshot.completion=Completion;
             snapshot.fightRoom=FightRoomId;snapshot.defeated=dungeon.Encounter.DefeatedCount;snapshot.planned=dungeon.Encounter.PlannedCount;
             for(int i=0;i<puzzles.Count;i++){snapshot.progress[i]=puzzles[i].Progress;snapshot.occupied|=(uint)puzzles[i].Mask<<(i*2);}
-            snapshot.adventure=Adventure?.Capture();
+            snapshot.adventure=Adventure?.Capture();snapshot.features=Features?.Capture();
             return snapshot;
         }
         public void Apply(CampaignSnapshot value)
         {
             if(value==null||value.progress==null||value.progress.Length!=puzzles.Count||float.IsNaN(value.clock)||float.IsInfinity(value.clock))return;
-            Adventure?.Apply(value.adventure);
+            Adventure?.Apply(value.adventure);Features?.Apply(value.features);
             Clock=Mathf.Max(0,value.clock);replicaWave=Mathf.Max(1,value.wave);Solo=value.solo;replicaCompletion=Mathf.Clamp01(value.completion);
             replicaFightRoom=value.fightRoom;replicaDefeated=Mathf.Max(0,value.defeated);replicaPlanned=Mathf.Max(0,value.planned);
             for(int i=0;i<puzzles.Count;i++)puzzles[i].Apply(value.progress[i],(int)(value.occupied>>(i*2))&3);

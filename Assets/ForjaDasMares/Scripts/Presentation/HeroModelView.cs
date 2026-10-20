@@ -42,8 +42,11 @@ namespace ForjaDasMares
         {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;}
         public void ShowDefaultWeapon(bool visible){wantsDefaultWeapon=visible;if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
         void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=0;running=false;}
+        float pauseUntil,heldActionTime;
+        public void PauseImpact(float duration){pauseUntil=Mathf.Max(pauseUntil,Time.unscaledTime+Mathf.Clamp(duration,0,.06f));}
         public void Animate(HeroState state,float normalizedAttack,float movement,bool alive,int variant=0,int version=0,float impact=.25f)
         {
+            if(Time.unscaledTime<pauseUntil)normalizedAttack=heldActionTime;else heldActionTime=normalizedAttack;
             if(defaultWeapon!=null)defaultWeapon.SetActive(wantsDefaultWeapon&&alive);
             if(animator==null||!animator.isActiveAndEnabled||animator.runtimeAnimatorController==null)return;
             CurrentState=state;MovementSpeed=Mathf.Max(0,movement);

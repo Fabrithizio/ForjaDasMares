@@ -31,7 +31,7 @@ namespace ForjaDasMares
             if(eligible.Count==0)return result;
             for (int i = 0; i < count; i++)
             {
-                var definition = eligible[random.Next(eligible.Count)];
+                var definition = eligible[random.Next(eligible.Count)];if(!string.IsNullOrEmpty(table.preferredItem)&&random.NextDouble()<table.preferredChance){var preferred=eligible.Find(x=>x.itemId==table.preferredItem);if(preferred!=null)definition=preferred;}
                 result.Add(Create(catalog, definition.itemId, table.fixedRarity?table.minimumRarity:RollRarity(catalog, random, table.minimumRarity), random));
             }
             return result;

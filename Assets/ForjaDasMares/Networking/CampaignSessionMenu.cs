@@ -51,7 +51,10 @@ namespace ForjaDasMares.Networking
             Button(options.transform,"OpacityDown",30,350,210,"MAIS DISCRETO",()=>Opacity(-.1f));
             Button(options.transform,"OpacityUp",260,350,210,"MAIS VISÍVEL",()=>Opacity(.1f));
             opacity=Label(options.transform,"",500,350,150,48,24);
-            Label(options.transform,"PC: WASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · Esc: menu · Q: SUPER do guerreiro\nCelular: joystick e botões à direita. Menu no canto superior direito.\nEnvie o APK ao amigo; ele entra em Campanha → Entrar pelo código.",30,425,1040,130,19);
+            Button(options.transform,"Shake",700,230,330,"TREMOR: "+(PlayerPrefs.GetInt("CampaignCameraShake",0)==1?"SIM":"NÃO"),()=>ToggleOption("CampaignCameraShake","Shake","TREMOR"));
+            Button(options.transform,"Vibration",700,350,330,"VIBRAÇÃO: "+(PlayerPrefs.GetInt("CampaignVibration",0)==1?"SIM":"NÃO"),()=>ToggleOption("CampaignVibration","Vibration","VIBRAÇÃO"));
+            Button(options.transform,"Effects",30,560,500,"EFEITOS: "+Mathf.RoundToInt(PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f)*100)+"%",()=>{float v=PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f);v=v<.01f?1:Mathf.Max(0,v-.2f);PlayerPrefs.SetFloat("CampaignEffectsVolume",v);PlayerPrefs.Save();options.transform.Find("Effects").GetComponentInChildren<Text>().text="EFEITOS: "+Mathf.RoundToInt(v*100)+"%";});
+            Label(options.transform,"PC: WASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: FÚRIA\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,425,1040,130,19);
             warning=Label(confirm.transform,"",60,215,1000,180,25);
             Button(confirm.transform,"CancelLeave",60,445,450,"CONTINUAR NA SALA",()=>Show(room));
             Button(confirm.transform,"ConfirmLeave",580,445,450,"CONFIRMAR SAÍDA",()=>{Close();director.Close();});
@@ -111,6 +114,7 @@ namespace ForjaDasMares.Networking
             catch(System.ArgumentException){text+="\nAgenda indisponível.";}
             friendInfo.text=text+"\n\nPara entrar em outra sala, saia da atual e use Amigos no início.\nCódigos deixam de valer quando o host encerra a sala.";
         }
+        void ToggleOption(string key,string button,string label){int v=1-PlayerPrefs.GetInt(key,0);PlayerPrefs.SetInt(key,v);PlayerPrefs.Save();options.transform.Find(button).GetComponentInChildren<Text>().text=label+": "+(v==1?"SIM":"NÃO");}
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat("CampaignMasterVolume",AudioListener.volume);PlayerPrefs.Save();volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
         void Opacity(float step){controls.alpha=Mathf.Clamp(controls.alpha+step,.35f,1);PlayerPrefs.SetFloat("CampaignControlOpacity",controls.alpha);PlayerPrefs.Save();opacity.text=Mathf.RoundToInt(controls.alpha*100)+"%";}
         void Show(GameObject page){room.SetActive(page==room);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);expedition.SetActive(page==expedition);feedback.text="";}

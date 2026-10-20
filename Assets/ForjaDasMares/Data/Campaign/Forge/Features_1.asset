@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b708458c50e66541a253875ec9efcf6, type: 3}
+  m_Name: Features_1
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ExpeditionFeatureDefinition
+  optionalEvent: 1
+  enemies:
+  - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+  - {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+  miniboss: {fileID: 11400000, guid: a48ac5ef464c1b546b55d4d10a623129, type: 2}
+  barrelModel: {fileID: 919132149155446097, guid: 366e0eb4ad1b4c54389dcb284c4c3ec3, type: 3}
+  altarModel: {fileID: 919132149155446097, guid: 3f03665f1fe0bea40a4c6c25a4fd8768, type: 3}
+  cacheModel: {fileID: 919132149155446097, guid: 63912905def1feb4a957fd6f28434bfb, type: 3}
+  challengeModel: {fileID: 919132149155446097, guid: f3cc2cc50eee67c4886c631403585865, type: 3}
+  wallModel: {fileID: 919132149155446097, guid: 61e93503adb3461438bafcc0151cf0c5, type: 3}
+  bridgeModel: {fileID: 919132149155446097, guid: 2d7266162c05ec549ba7b6726a31dd3d, type: 3}
+  bridgeDamage: 10
+  enemyBudget: 8
+  timeLimit: 75
+  defenseDuration: 22
+  objectiveHealth: 180
+  barrelDamage: 30
+  barrelRadius: 2.8

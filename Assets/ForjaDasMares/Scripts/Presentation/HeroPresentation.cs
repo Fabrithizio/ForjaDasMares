@@ -17,7 +17,7 @@ namespace ForjaDasMares
         bool hasPosition;
         public EquipmentDefinition EquippedWeapon {get;private set;}
         public float ActionProgress=>ReplicaMode?replicaAnimation:combat.NormalizedTime;
-        void Start(){var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
+        void Start(){var feedback=GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;
         public int ActionVersion=>ReplicaMode?replicaVersion:combat.ActionVersion;
         public void SetWeapon(EquipmentDefinition value){EquippedWeapon=value;if(visibleView!=null)visibleView.SetWeaponCategory(value!=null?value.category:WeaponCategory.Sword);}
@@ -33,6 +33,7 @@ namespace ForjaDasMares
         void Hit() { hitTime = 0.2f; victoryTime = 0; }
         public void Show(int slot)
         {
+            GetComponent<ActorImpactFeedback>()?.ResetVisual();
             for (int i = 0; i < models.Length; i++) models[i].gameObject.SetActive(i == slot);
             visible = models[Mathf.Clamp(slot, 0, models.Length - 1)]; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();hasPosition=false;
             if(visibleView != null)

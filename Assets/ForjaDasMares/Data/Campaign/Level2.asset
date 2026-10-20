@@ -38,6 +38,7 @@ MonoBehaviour:
   hard: {fileID: 11400000, guid: 7f37ee68258402f4b987f6636174363b, type: 2}
   boss: {fileID: 11400000, guid: 7ca6994c59037e64d9815477e0a82e11, type: 2}
   adventure: {fileID: 11400000, guid: 0d8c7bf2560451e419fd50f1a213039f, type: 2}
+  features: {fileID: 11400000, guid: 0fc5773b942d45847bf2696b00797ef5, type: 2}
   combatVariants:
   - {fileID: 11400000, guid: 393c5d9a2fcf2f14283cbb44bd0fcebb, type: 2}
   - {fileID: 11400000, guid: fa93c288847790f4188756f1865beab3, type: 2}
@@ -49,10 +50,10 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: 45e9c1cb7fe06bc46874002230c6a87f, type: 3}
   - {fileID: 919132149155446097, guid: 4bd18e8e36b6dd0428d2afbb3dc0dbc3, type: 3}
   - {fileID: 919132149155446097, guid: b9e0db3c275f21045b69d56cd0412f39, type: 3}
-  hitSound: {fileID: 8300000, guid: deb970fccc62abc4098980f16ed14143, type: 3}
-  crateSound: {fileID: 8300000, guid: 833936f090ad240459dbf5d4b00e3041, type: 3}
-  healSound: {fileID: 8300000, guid: 69931c5937c48f14e90251b59e6f65f6, type: 3}
-  lootSound: {fileID: 8300000, guid: ff3c004127839874b91d592e6aed87de, type: 3}
+  hitSound: {fileID: 8300000, guid: ad1ad86fb0df09b4dab50ca9c7cb9302, type: 3}
+  crateSound: {fileID: 8300000, guid: 28ae03c6cdc6e884289a2e8a1da3732a, type: 3}
+  healSound: {fileID: 8300000, guid: bd3dbe3219fff404183f7507753d097f, type: 3}
+  lootSound: {fileID: 8300000, guid: 8605c3ae0e646c749827c234082a1c0c, type: 3}
   plateHold: 2.1
   dartInterval: 3.6999998
   dartAttack: {fileID: 11400000, guid: 6fd29ef4516a09f4c9987ea0556448a7, type: 2}

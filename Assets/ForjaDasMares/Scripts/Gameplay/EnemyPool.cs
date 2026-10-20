@@ -21,7 +21,8 @@ namespace ForjaDasMares
         public event Action<EnemyActor> Spawned, Died;
         public CombatParty Party { get; set; }
         public bool HasLivingPlayers => Party != null ? Party.AnyAlive : heroes.Health.IsAlive;
-        public Health SelectTarget(Vector3 position) => Party != null ? Party.Nearest(position) : heroes.Health;
+        public Health AuxiliaryObjective{get;set;}
+        public Health SelectTarget(Vector3 position){var player=Party!=null?Party.Nearest(position):heroes.Health;if(AuxiliaryObjective!=null&&AuxiliaryObjective.IsAlive&&AuxiliaryObjective.gameObject.activeInHierarchy&&(player==null||(AuxiliaryObjective.transform.position-position).sqrMagnitude<(player.transform.position-position).sqrMagnitude))return AuxiliaryObjective;return player;}
         public void Configure(EnemyDefinition[] data, HeroRoster player, CombatEffectPool shots, TelegraphPool signs, int walls, int blockers, int playerTargets)
         { definitions = data; heroes = player; projectiles = shots; warnings = signs; geometry = walls; spawnBlockers = blockers; targets = playerTargets; }
         void Awake()

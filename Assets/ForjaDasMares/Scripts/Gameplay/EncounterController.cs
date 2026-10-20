@@ -79,7 +79,7 @@ namespace ForjaDasMares
             }
         }
         void Spawned(EnemyActor actor) { if (actor.Profile.kind == EnemyKind.Boss) { boss = actor; bossSpawned = true; } }
-        void Died(EnemyActor actor) {if(actor.Summoner==null)DefeatedCount++; if (actor == boss) { bossDefeated = true; bossReward = actor.Profile.boss.rewardSeals; } }
+        void Died(EnemyActor actor) {if(State!=EncounterState.Spawning&&State!=EncounterState.Fighting)return;if(actor.Summoner==null)DefeatedCount++; if (actor == boss) { bossDefeated = true; bossReward = actor.Profile.boss.rewardSeals; } }
         void Fail() { State = EncounterState.Failed; enemies.Clear(); boss = null; Failed?.Invoke(); }
         public void Cancel() { State = EncounterState.Ready; current = null; boss = null; bossReward = 0;PlannedCount=DefeatedCount=0; enemies.Clear(); }
     }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
   m_Name: raspador
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0
   enemyId: raspador
   displayName: Goblin Raspador
   kind: 0
@@ -42,4 +43,7 @@ MonoBehaviour:
   summonBudget: 6
   summonCooldown: 4
   boss: {fileID: 0}
+  rewardTheme: -1
+  miniboss: 0
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
   color: {r: 0.3, g: 0.8, b: 0.35, a: 1}

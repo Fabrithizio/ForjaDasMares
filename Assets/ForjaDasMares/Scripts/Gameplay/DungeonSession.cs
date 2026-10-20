@@ -33,11 +33,11 @@ namespace ForjaDasMares
         public int Coins { get; private set; }
         public bool HasKey { get; private set; }
         public bool Finished { get; private set; }
-        public bool ExternallyDriven { get; set; }
+        public bool ExternallyDriven { get; set; }public bool SideActivityBusy{get;set;}public TelegraphPool Telegraphs=>warnings;
         public CombatParty Party { get; set; }
         public bool HasLivingPlayers => Party != null ? Party.AnyAlive : heroes.Health.IsAlive;
         public DungeonInteractable Nearby { get; private set; }
-        public event System.Action Generated;
+        public event System.Action Generated;public event System.Action<DungeonRoom> TrapsDisabled;
         public event System.Action<DungeonRoom> RoomCompleted;
         public System.Func<int, bool> ChestRewardRequested { get; set; }
         public System.Func<bool> ExitRewardRequested { get; set; }
@@ -84,6 +84,7 @@ namespace ForjaDasMares
         }
         public void Enter(DungeonRoom room)
         {
+            if(SideActivityBusy)return;
             if (!HasLivingPlayers || room == null || room == CurrentRoom && (!OpenLandscape || room.encounter==null || room.encounterComplete || activeEncounterRoom!=null)) return;
             CurrentRoom = room;
             if (!room.entered)
@@ -107,7 +108,7 @@ namespace ForjaDasMares
         public void CompleteObjective(DungeonRoom room, bool grantKey)
         { room.objectiveComplete = true; if (grantKey && Biome.rewards.eventGrantsOptionalKey) HasKey = true; TryComplete(room); RefreshDoors(); }
         public void DisableTrap(DungeonRoom room)
-        { foreach (var trap in generator.Traps) if (trap.transform.IsChildOf(room.root.transform)) trap.Disarm(); CompleteObjective(room, false); }
+        { TrapsDisabled?.Invoke(room);foreach (var trap in generator.Traps) if (trap.transform.IsChildOf(room.root.transform)) trap.Disarm(); CompleteObjective(room, false); }
         public void OpenChest(int roomId)
         { TryOpenChest(roomId); }
         public bool TryOpenChest(int roomId)

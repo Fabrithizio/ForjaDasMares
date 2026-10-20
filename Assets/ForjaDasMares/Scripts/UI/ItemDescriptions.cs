@@ -33,6 +33,7 @@ namespace ForjaDasMares
             if(d.frontalBlock>0)text.AppendLine("Bloqueio frontal: "+(Mathf.Min(.5f,d.frontalBlock*catalog.Rarity(item.rarity).power)*100).ToString("0")+"%");
             if(d.attacks!=null&&d.attacks.Length>0){text.AppendLine();text.AppendLine("SEQUÊNCIA DE ATAQUES");foreach(var attack in d.attacks)text.AppendLine(attack.damage+" dano base ×"+catalog.Rarity(item.rarity).power.ToString("0.##")+" · alcance "+attack.range.ToString("0.#")+"m · ciclo "+(attack.windup+attack.recovery).ToString("0.##")+"s · "+(attack.shape==AttackShape.Arc?"arco "+attack.arc.ToString("0")+"°":"projétil")+" · alvos "+(attack.maximumTargets==0?"em área":attack.maximumTargets.ToString()));}
             if(d.ability!=null)text.AppendLine("Habilidade: "+d.ability.displayName+" · recarga "+d.ability.cooldown.ToString("0.#")+"s");
+            if(d.perk!=WeaponPerk.None)text.AppendLine("EFEITO DA ARMA: "+CombatPerkDescriptions.Perk(d.perk));if(d.synergy!=BuildSynergy.None)text.AppendLine("SINERGIA: "+CombatPerkDescriptions.Synergy(d.synergy));
             text.AppendLine();text.AppendLine(d.description);text.AppendLine("Reciclagem: "+InventoryRules.SellValue(catalog,item)+" ouro");
             text.AppendLine("Bônus sujeitos aos limites globais da ficha.");return text.ToString();
         }

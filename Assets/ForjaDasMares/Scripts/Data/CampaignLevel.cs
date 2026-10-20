@@ -10,7 +10,7 @@ namespace ForjaDasMares
         public Vector2Int[] route;
         public RoomCategory[] categories;
         public EncounterDefinition normal,hard,boss;
-        public CampaignAdventureDefinition adventure;
+        public CampaignAdventureDefinition adventure;public ExpeditionFeatureDefinition features;
         public EncounterDefinition[] combatVariants;
         public bool openLandscape;
         [Range(20,40)] public float sectorSize=28;

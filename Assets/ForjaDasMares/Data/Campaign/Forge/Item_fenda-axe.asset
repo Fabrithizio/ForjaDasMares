@@ -28,6 +28,8 @@ MonoBehaviour:
   compatibleHeroes: 1
   minimumLevel: 1
   starter: 0
+  perk: 1
+  synergy: 0
   twoHanded: 1
   allowsOffHand: 0
   twinStrike: 0

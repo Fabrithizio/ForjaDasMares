@@ -9,6 +9,7 @@ namespace ForjaDasMares.Networking
         public HeroPresentation Presentation { get; private set; }
         public ValidatedHeroCommands Commands { get; private set; }
         public Health Health => Roster.Health;
+        bool replicaCounter;public bool CounterReady=>Motor.enabled?GetComponent<CombatBuildEffects>()?.CounterReady??false:replicaCounter;
         float replicaSpecial,replicaDodge,replicaCharge,replicaSuper,replicaRange,replicaFury;
         public float Charge=>Motor.enabled?Combat.ChargeProgress:replicaCharge;
         public float SuperProgress=>Motor.enabled?Combat.SuperProgress:replicaSuper;
@@ -25,7 +26,7 @@ namespace ForjaDasMares.Networking
             Roster = GetComponent<HeroRoster>(); Motor = GetComponent<PlayerMotor>(); Combat = GetComponent<HeroCombat>(); Presentation = GetComponent<HeroPresentation>();
             Roster.enabled = false; GetComponent<PlayerAim>().enabled = false;
             Commands = GetComponent<ValidatedHeroCommands>(); if (Commands == null) Commands = gameObject.AddComponent<ValidatedHeroCommands>(); Commands.Clear(); Motor.Configure(Commands, basis);
-            Roster.Changed+=RefreshFlow;RefreshFlow();
+            if(GetComponent<CombatBuildEffects>()==null)gameObject.AddComponent<CombatBuildEffects>();Roster.Changed+=RefreshFlow;RefreshFlow();
             SetAuthority(false); destination = transform.position; orientation = transform.rotation;
         }
         void RefreshFlow()=>Combat.ConfigureFlow(Roster.Current.onlineFlow);
@@ -71,7 +72,7 @@ namespace ForjaDasMares.Networking
         public void Apply(ActorFrame frame)
         {
             if (Roster.Selected != frame.hero) Roster.Select(frame.hero);
-            Health.SetReplicaState(frame.hp, frame.maximum);replicaFury=Mathf.Clamp(frame.fury,0,12);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
+            replicaCounter=frame.counter;Health.SetReplicaState(frame.hp, frame.maximum);GetComponent<CombatBuildEffects>()?.SetReplicaBoons(frame.boons);replicaFury=Mathf.Clamp(frame.fury,0,12);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
             destination = frame.position; orientation = Quaternion.Euler(0, frame.yaw, 0);
             if (!hasFrame || (destination - transform.position).sqrMagnitude > 16) transform.SetPositionAndRotation(destination, orientation);
             hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact);

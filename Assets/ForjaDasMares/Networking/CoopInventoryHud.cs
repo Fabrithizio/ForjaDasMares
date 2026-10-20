@@ -8,11 +8,11 @@ namespace ForjaDasMares.Networking
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
-        CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails;string compared;Button compareButton;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails;string compared;Button compareButton;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
-        System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];
+        System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];readonly Image[] equippedIcons=new Image[5];readonly HudIcon[] emptySlots=new HudIcon[5];
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
         Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
         bool management;int category=-1;bool classOnly=true;
@@ -76,7 +76,9 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<5;i++)
             {
                 int slot=i;equipmentSlots[i]=Button(overlay.transform,"EquipmentSlot_"+i,points[i],new Vector2(175,100),()=>SelectEquipped(slot));RusticHudTheme.Skin(equipmentSlots[i]);
-                var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,100);text.fontSize=15;
+                var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,100);text.fontSize=15;text.text="";
+                var iconRect=RusticHudTheme.Rect(equipmentSlots[i].transform,"EquippedItemIcon",Vector2.one*.5f,Vector2.zero,new Vector2(82,82));equippedIcons[i]=iconRect.gameObject.AddComponent<Image>();equippedIcons[i].preserveAspect=true;equippedIcons[i].raycastTarget=false;
+                var silhouette=RusticHudTheme.Rect(equipmentSlots[i].transform,"EmptySlot",Vector2.one*.5f,Vector2.zero,new Vector2(50,50));emptySlots[i]=silhouette.gameObject.AddComponent<HudIcon>();emptySlots[i].symbol=i==0?HudSymbol.Sword:i<3?HudSymbol.Hero:i==3?HudSymbol.Interact:HudSymbol.Rune;emptySlots[i].color=new Color(.5f,.53f,.47f,.5f);emptySlots[i].raycastTarget=false;
             }
             detailViewport=RusticHudTheme.Rect(overlay.transform,"ItemDetailsScroll",new Vector2(0,1),new Vector2(30,-382),new Vector2(475,165));detailViewport.gameObject.AddComponent<RectMask2D>();detailViewport.gameObject.AddComponent<Image>().color=Color.clear;
             var scroll=detailViewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=detailViewport;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
@@ -94,6 +96,7 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Label(rect,"Title",new Vector2(0,1),new Vector2(25,-15),new Vector2(850,40),"ITEM SELECIONADO",22);RusticHudTheme.Label(rect,"ComparisonTitle",new Vector2(0,1),new Vector2(595,-15),new Vector2(500,40),"COMPARAÇÃO",22);
             RusticHudTheme.Button(rect,"CloseItem",new Vector2(1,1),new Vector2(-20,-15),new Vector2(140,40),"VOLTAR",()=>{itemPopup.SetActive(false);selected=null;Refresh();});
             compareButton=RusticHudTheme.Button(rect,"CompareOther",new Vector2(0,1),new Vector2(595,-545),new Vector2(535,44),"COMPARAR COM OUTRO ITEM",CycleCompare);
+            var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(510,-10),new Vector2(48,48));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(1080,-10),new Vector2(48,48));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
             itemPopup.SetActive(false);
         }
         Text ScrollableDetails(Transform parent,string name,Vector2 pos)
@@ -114,7 +117,7 @@ namespace ForjaDasMares.Networking
             var slot=channel.Catalog.Find(chosen.definitionId).slot;list.RemoveAll(x=>x.instanceId==selected||channel.Catalog.Find(x.definitionId).slot!=slot);int index=list.FindIndex(x=>x.instanceId==compared);compared=list.Count>0?list[(index+1)%list.Count].instanceId:null;Refresh();
         }
         void SelectEquipped(int slot)
-        {deliveries=false;expeditionView=false;var actor=ActiveActor;var set=channel.LocalProfile?.Loadout(actor.Roster.Current.heroId);selected=set!=null?set.items[slot]:null;pendingDiscard=null;Refresh();OpenItem();}
+        {deliveries=false;expeditionView=false;var actor=ActiveActor;var set=channel.LocalProfile?.Loadout(actor.Roster.Current.heroId);selected=set!=null?set.items[slot]:null;pendingDiscard=null;Refresh();if(selected==null)notice.text=RusticHudTheme.SlotName((EquipmentSlot)slot)+" · vazio. Selecione uma peça compatível na mochila.";OpenItem();}
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
         public void OpenInventory()=>Show(false);
         public void CloseInventory(){if(IsOpen)Close();}
@@ -203,7 +206,7 @@ namespace ForjaDasMares.Networking
                 for(int i=0;i<5;i++)
                 {
                     equipmentSlots[i].gameObject.SetActive(!results);var equipped=set!=null?profile.Item(set.items[i]):null;
-                    equipmentSlots[i].GetComponentInChildren<Text>().text=names[i]+"\n"+(equipped!=null?channel.Catalog.Find(equipped.definitionId).displayName:i==0?"Sem arma equipada":"Vazio");
+                    var definition=equipped!=null?channel.Catalog.Find(equipped.definitionId):null;equippedIcons[i].sprite=definition!=null?definition.icon:null;equippedIcons[i].enabled=equippedIcons[i].sprite!=null;emptySlots[i].gameObject.SetActive(!equippedIcons[i].enabled);equipmentSlots[i].GetComponentInChildren<Text>().text="";equipmentSlots[i].GetComponent<Image>().color=equipped!=null?Color.Lerp(RusticHudTheme.Surface,channel.Catalog.Rarity(equipped.rarity).color,.18f):RusticHudTheme.Surface;
                 }
                 if(!results&&!deliveries&&!expeditionView&&InventoryRules.BagCount(profile)==0)detail.text+="Sua mochila está vazia. Vença inimigos, abra baús e veja SAQUE ATUAL para equipar durante esta tentativa.\nSaque desta tentativa: "+(profile.expedition?.items.Count??0)+" itens. Eles são guardados no resultado.";
             }
@@ -226,7 +229,7 @@ namespace ForjaDasMares.Networking
                 if(secondaryEquip!=null){secondaryEquip.transform.SetParent(itemPopup.transform,false);secondaryEquip.GetComponent<RectTransform>().anchoredPosition=new Vector2(760,-490);secondaryEquip.gameObject.SetActive(open&&!deliveries&&channel.Catalog.Find(value.definitionId).category==WeaponCategory.Daggers);}
                 remove.interactable=management&&!deliveries&&value!=null&&InventoryRules.Equipped(profile,selected);if(!deliveries&&InventoryRules.Equipped(profile,selected))equip.interactable=false;
                 discard.interactable=management&&!deliveries&&value!=null&&!InventoryRules.Equipped(profile,selected)&&!(channel.HomeMode&&channel.Hub.UsingRemote);
-                if(open){var other=profile.Item(compared);ownDetails.text=ItemDescriptions.Describe(channel.Catalog,value,other)+(InventoryRules.Equipped(profile,selected)?"\nEQUIPADO NESTE MOMENTO":"");otherDetails.text=(other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):"Escolha COMPARAR COM OUTRO ITEM. A comparação inicial usa o item equipado no mesmo slot.")+"\n\nAO EQUIPAR O ITEM SELECIONADO\n"+ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value);foreach(var t in new[]{ownDetails,otherDetails})t.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,t.preferredHeight+30));}
+                if(open){var other=profile.Item(compared);inspectedIcon.sprite=channel.Catalog.Find(value.definitionId).icon;inspectedIcon.enabled=inspectedIcon.sprite!=null;comparedIcon.sprite=other!=null?channel.Catalog.Find(other.definitionId).icon:null;comparedIcon.enabled=comparedIcon.sprite!=null;ownDetails.text=ItemDescriptions.Describe(channel.Catalog,value,other)+(InventoryRules.Equipped(profile,selected)?"\nEQUIPADO NESTE MOMENTO":"");otherDetails.text=(other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):"Escolha COMPARAR COM OUTRO ITEM. A comparação inicial usa o item equipado no mesmo slot.")+"\n\nAO EQUIPAR O ITEM SELECIONADO\n"+ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value);foreach(var t in new[]{ownDetails,otherDetails})t.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,t.preferredHeight+30));}
             }
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }

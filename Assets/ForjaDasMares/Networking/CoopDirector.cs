@@ -105,7 +105,7 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < dungeon.Encounter.Enemies.Capacity; i++) enemyFrames.Add(new ActorFrame { slot = i });
             replica = gameObject.AddComponent<CoopReplicaView>(); replica.Configure(dungeon.Encounter.Enemies, effects, warnings);
             progression = GetComponent<CoopProgression>(); profiles = GetComponent<CoopProfileChannel>();
-            profiles.Configure(this, progression);
+            profiles.Configure(this, progression);if(Campaign!=null){var adventures=GetComponent<CampaignAdventureChannel>()??gameObject.AddComponent<CampaignAdventureChannel>();adventures.Configure(this);}
             network.ConnectionApprovalCallback = Approve;
             network.OnClientConnectedCallback += Connected; network.OnClientDisconnectCallback += Disconnected;
             network.OnTransportFailure+=TransportFailed;network.OnServerStopped+=ServerStopped;
@@ -130,7 +130,7 @@ namespace ForjaDasMares.Networking
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.frame.v1", ReceiveFrame);
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.hero.v1", ReceiveHero);
             network.CustomMessagingManager.RegisterNamedMessageHandler("fdm.ready.v1", ReceiveReady);
-            profiles.Bind();
+            profiles.Bind();GetComponent<CampaignAdventureChannel>()?.Bind();
             handlers = true;
         }
         public bool HostDirect(string pin, ushort port, bool lan = true)
@@ -239,7 +239,7 @@ namespace ForjaDasMares.Networking
             dungeon.ConfigureTest(Campaign!=null?Campaign.Level.seed:12345, true, biome); dungeon.Encounter.enabled = false; loadingDeadline = Time.unscaledTime + 30;
             if (!progression.Begin()) { SetPhase(CoopPhase.Lobby, progression.Error); return; }
             for (int i = 0; i < actors.Length; i++) if (seats[i].connected)
-            { seats[i].loaded = i == localSlot; actors[i].Roster.ResetHero(); actors[i].SetAuthority(false,network.IsServer); actors[i].Motor.Teleport(arena.Spawn.position + Vector3.right * (i * .9f), Quaternion.identity); }
+            { seats[i].loaded = i == localSlot; actors[i].GetComponent<CombatBuildEffects>()?.ResetRun();actors[i].Roster.ResetHero(); actors[i].SetAuthority(false,network.IsServer); actors[i].Motor.Teleport(arena.Spawn.position + Vector3.right * (i * .9f), Quaternion.identity); }
             UpdateSoloBonus();for(int i=0;i<4;i++)if(seats[i].connected)actors[i].Health.Restore();
             follow.Configure(actors[localSlot].transform, 1 << 9); follow.Snap();
         }
@@ -369,7 +369,7 @@ namespace ForjaDasMares.Networking
         }
         bool TryReviveAlly(CoopActor rescuer)
         {
-            if(!network.IsServer||dungeon.Encounter.Enemies.ActiveCount!=0)return false;
+            if(!network.IsServer||dungeon.Encounter.Enemies.ThreatNear(rescuer.transform.position,6))return false;
             for(int i=0;i<actors.Length;i++)
             {
                 var fallen=actors[i];if(!seats[i].connected||fallen==rescuer||fallen.Health.IsAlive)continue;
@@ -411,7 +411,7 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < actors.Length; i++)
             {
                 var actor = actors[i]; var value = playerFrames[i]; value.connected = seats[i].connected; value.hero = actor.Roster.Selected; Fill(value, actor.Health, actor.transform);
-                value.charge=actor.Combat.ChargeProgress;value.super=actor.Combat.SuperProgress;value.attackRange=actor.Combat.BasicAttack!=null?actor.Combat.BasicAttack.range:3;
+                value.counter=actor.GetComponent<CombatBuildEffects>()?.CounterReady??false;value.boons=actor.GetComponent<CombatBuildEffects>()?.PackedBoons??0;value.charge=actor.Combat.ChargeProgress;value.super=actor.Combat.SuperProgress;value.attackRange=actor.Combat.BasicAttack!=null?actor.Combat.BasicAttack.range:3;
                 value.variant=actor.Combat.AnimationVariant;value.actionVersion=actor.Combat.ActionVersion;value.impact=actor.Combat.ImpactTime;
                 value.state = (int)actor.Presentation.State; value.animation = actor.Combat.NormalizedTime; value.specialCooldown = actor.Combat.SpecialCooldownRemaining; value.dodgeCooldown = actor.Motor.DodgeCooldownRemaining;value.fury=actor.Combat.FuryRemaining; frame.players.Add(value);
                 var profile = progression.Profile(i)?.Profile; var loadout = profile?.Loadout(actor.Roster.Current.heroId);
@@ -420,7 +420,7 @@ namespace ForjaDasMares.Networking
             }
             var enemies = dungeon.Encounter.Enemies.Actors;
             for (int i = 0; i < enemies.Length; i++) if (enemies[i].IsSpawned)
-            { var value = enemyFrames[i]; value.spawnWarning=enemies[i].SpawnRemaining;value.kind = (int)enemies[i].Profile.kind; value.state = (int)enemies[i].Brain.State; Fill(value, enemies[i].Health, enemies[i].transform); frame.enemies.Add(value); }
+            { var value = enemyFrames[i]; value.opening=enemies[i].Profile.miniboss&&enemies[i].Combat.IsRecovering;value.ailments=enemies[i].GetComponent<CombatAilments>()?.Bits??0;value.spawnWarning=enemies[i].SpawnRemaining;value.kind = (int)enemies[i].Profile.kind; value.state = (int)enemies[i].Brain.State; Fill(value, enemies[i].Health, enemies[i].transform); frame.enemies.Add(value); }
             replica.CaptureEffects(frame.effects); frame.world = dungeon.CaptureReplica();
             foreach (var link in connections)
             {

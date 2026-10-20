@@ -28,7 +28,7 @@ namespace ForjaDasMares
                 if (duplicate) continue;
                 Vector3 point = contacts[i].bounds.center, delta = point - origin; delta.y = 0;
                 if (!MeleeGeometry.Contains(delta,direction,radius,arc,attack.width,attack.footprint)) continue;
-                if (Physics.Linecast(origin, point, geometry, QueryTriggerInteraction.Ignore)) continue;
+                if (Physics.Linecast(origin, point,out var obstruction, geometry, QueryTriggerInteraction.Ignore)&&obstruction.collider.GetComponentInParent<Health>()!=health) continue;
                 Remember(health);
                 if (health.ApplyHit(attack, delta.sqrMagnitude > 0.001f ? delta.normalized : direction, source, damageScale)) hits++;
             }
