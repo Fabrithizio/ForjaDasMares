@@ -5,7 +5,7 @@ namespace ForjaDasMares.Networking
 {
     public sealed class CampaignAdventureHud:MonoBehaviour
     {
-        CoopDirector session;CampaignAdventureChannel channel;RectTransform root;GameObject panel,pingBar;Text title,summary,eventInfo,counter;Button use;
+        CoopDirector session;CampaignAdventureChannel channel;RectTransform root;GameObject panel,pingBar;Text title,summary,eventInfo,counter,boons;Button use;
         static readonly string[] PingNames={"VENHA AQUI","FOCO NO ALVO","PERIGO","SAQUE AQUI"};static readonly Color[] PingColors={Color.cyan,new Color(1,.55f,.2f),new Color(1,.25f,.15f),RusticHudTheme.Gold};
         readonly Button[] choices=new Button[3];readonly Text[] markers=new Text[4];int nearby=-1,lastChallenge=-1;float resultUntil;string resultNotice;bool built;InputAction ping;
         public void Configure(CoopDirector owner,CampaignAdventureChannel network,RectTransform parent){session=owner;channel=network;root=parent;}
@@ -21,6 +21,7 @@ namespace ForjaDasMares.Networking
             string[] labels={"AQUI","ALVO","PERIGO","SAQUE"};for(int i=0;i<4;i++){int kind=i;var button=RusticHudTheme.Button(bar,"Ping_"+i,new Vector2(0,1),new Vector2(i*70,0),new Vector2(66,42),labels[i],()=>channel.Request(AdventureAction.Ping,0,kind));button.GetComponentInChildren<Text>().fontSize=12;}
             eventInfo=RusticHudTheme.Label(root,"OptionalEventProgress",new Vector2(.5f,1),new Vector2(0,-125),new Vector2(650,64),"",17);eventInfo.alignment=TextAnchor.MiddleCenter;
             counter=RusticHudTheme.Label(root,"PerfectDodge",new Vector2(.5f,0),new Vector2(0,150),new Vector2(550,36),"",19);counter.alignment=TextAnchor.MiddleCenter;counter.color=Color.cyan;
+            boons=RusticHudTheme.Label(root,"ExpeditionBoons",new Vector2(0,1),new Vector2(190,-125),new Vector2(290,34),"",12);boons.raycastTarget=false;boons.color=RusticHudTheme.Gold;
             for(int i=0;i<4;i++){markers[i]=RusticHudTheme.Label(root,"PartyPing_"+i,Vector2.one*.5f,Vector2.zero,new Vector2(190,48),"",17);markers[i].alignment=TextAnchor.MiddleCenter;markers[i].raycastTarget=false;}
             ping=new InputAction("QuickPing",InputActionType.Button);ping.AddBinding("<Keyboard>/g");ping.AddBinding("<Gamepad>/dpad/up");ping.Enable();panel.SetActive(false);
         }
@@ -28,8 +29,9 @@ namespace ForjaDasMares.Networking
         {
             if(session==null)return;if(!built){Build();if(!built)return;}
             bool visible=session.Phase==CoopPhase.Playing&&session.LocalSlot>=0&&!(GetComponent<CoopInventoryHud>()?.IsOpen??false)&&!(GetComponent<CampaignSessionMenu>()?.IsOpen??false);
-            pingBar.SetActive(visible);var features=session.Campaign?.Features;var actor=session.Actor(session.LocalSlot);panel.SetActive(false);eventInfo.gameObject.SetActive(false);counter.gameObject.SetActive(false);
+            pingBar.SetActive(visible);var features=session.Campaign?.Features;var actor=session.Actor(session.LocalSlot);panel.SetActive(false);eventInfo.gameObject.SetActive(false);counter.gameObject.SetActive(false);boons.gameObject.SetActive(false);
             for(int i=0;i<4;i++)markers[i].gameObject.SetActive(false);if(!visible||features==null||actor==null)return;
+            var build=actor.GetComponent<CombatBuildEffects>();if(build!=null&&build.PackedBoons!=0){boons.gameObject.SetActive(true);boons.text="ALTARES · dano +"+Mathf.RoundToInt((build.Power-1)*100)+"% · ritmo +"+Mathf.RoundToInt((build.Tempo-1)*100)+"%\nProteção temporária "+Mathf.RoundToInt(build.Shelter*100)+"%";}
             if(ping.WasPressedThisFrame())channel.Request(AdventureAction.Ping,0,0);
             counter.gameObject.SetActive(actor.CounterReady);counter.text="ESQUIVA PERFEITA · próximo ataque +25%";
             foreach(var challenge in features.Nodes)if(challenge.kind==ExpeditionFeatureKind.Challenge&&challenge.state.stage!=lastChallenge){lastChallenge=challenge.state.stage;if(lastChallenge>=2){resultUntil=Time.unscaledTime+8;resultNotice=lastChallenge==4?"DESAFIO FALHOU · a campanha continua":lastChallenge==3?"DESAFIO VENCIDO · salvando recompensa…":"DESAFIO VENCIDO · recompensa recebida pelo grupo";}}

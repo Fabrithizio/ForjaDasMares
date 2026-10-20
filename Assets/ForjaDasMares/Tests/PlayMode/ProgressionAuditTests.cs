@@ -42,6 +42,10 @@ namespace ForjaDasMares.Tests
             string prefix = Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "ProgressionAudit")) + Path.DirectorySeparatorChar;
             if (directory != null && Path.GetFullPath(directory).StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && Directory.Exists(directory)) Directory.Delete(directory, true);
         }
+        [Test] public void OptionalThemeDoesNotRequireCampaignIdsButRejectsMissingExplicitItem()
+        {
+            Assert.DoesNotThrow(()=>catalog.Validate());catalog.minibossThemes[0].preferredItem="missing-item";Assert.Throws<InvalidOperationException>(()=>catalog.Validate());catalog.minibossThemes[0].preferredItem="item0";Assert.DoesNotThrow(()=>catalog.Validate());
+        }
         string Begin() { Assert.That(service.BeginExpedition("warrior", "Audit"), Is.True); return service.Profile.expedition.runId; }
         string Item(string definition) => service.Profile.inventory.Find(value => value.definitionId == definition).instanceId;
         [Test] public void GrantAndCompletionAreAppliedOnceAndSurviveReload()

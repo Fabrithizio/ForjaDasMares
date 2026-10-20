@@ -1,3 +1,21 @@
+# Versão 0.14 — instruções atuais
+
+Abra o atalho único **Jogos/Jogar Campanha Forja das Mares** depois da atualização. O executável atual fica em Builds/Atual/Windows/ForjaDasMaresCampanha.exe; mantenha a pasta inteira com seus arquivos de dados. APK atual: Builds/Atual/Android/ForjaDasMaresCampanha.apk. Atualize a instalação com.forjadasmares.campaign; não limpe os dados. A pasta antiga de envio ao irmão não foi atualizada nesta rodada.
+
+Todos precisam da mesma versão/protocolo10 para jogar. No início, PERSONAGEM abre mochila, equipamentos e talentos sem precisar criar sala. Itens equipados aparecem como imagem nos slots e saem da grade da mochila. Clique no slot para detalhes; comparação e reciclagem confirmada continuam disponíveis.
+
+Segure o ataque para repetir o combo; soltar a carga avançada prepara o golpe pesado. A esquiva perfeita concede um próximo ataque mais forte por uma janela curta. Machados/adagas aplicam sangramento; martelos fraturam defesa; cajado/arma mágica queimam; a arma especial de puxão reúne alvos. Esses efeitos respeitam as restrições de classe e os limites descritos na revisão.
+
+Explore os altares em segurança e escolha Poder, Ritmo ou Abrigo (uma escolha por altar/jogador, só nesta expedição). Esconderijos dão prêmio único ao grupo. Barris avisam antes de explodir e ferem ambos os lados. Paredes rachadas podem ser quebradas. Pontes frágeis expõem perigo sinalizado; a alavanca do setor reforça/desarma a passagem.
+
+O desafio opcional pede confirmação quando estiver perto e sem ameaças. Catacumbas: ondas; floresta: proteger selo; fortaleza: escoltar guia. Acompanhe vida, tempo e progresso. Sair da área, perder objetivo ou esgotar tempo falha o evento; a campanha continua. Não há prêmio repetido por reabrir o mesmo evento.
+
+G/direcional↑ marca AQUI. Os botões AQUI/ALVO/PERIGO/SAQUE funcionam no PC e toque; marcações também aparecem no minimapa. Nas configurações há volume de efeitos, vibração e impacto de câmera opcionais. Para rede, use criar/entrar por código; configurações Unity Services anteriores são preservadas. Sem migração de host: se ele sair, a sala termina com segurança.
+
+Testes e limitações efetivamente verificados nesta revisão: REVISAO_0_14_2026-10-20.md. Não usar as instruções de envio/versionamento dos registros históricos abaixo.
+
+---
+
 # Jogar a campanha 0.12.0 (PC)
 
 ## PC e Android juntos

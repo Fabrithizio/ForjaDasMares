@@ -1,3 +1,19 @@
+# Atualização 0.14 — arsenal, efeitos e exploração
+
+O arsenal0.13 acrescentou nove malhas/ícones originais e12 clipes reais para a Brasa. MeleeGeometry centraliza cone/linha/círculo usados pelo acerto e indicador. ProgressionStats mostra dano numérico, defesa percentual limitada, chance crítica e multiplicador crítico; ItemStat.CriticalDamage foi acrescentado ao final do enum para preservar saves.
+
+CombatBuildEffects aplica perks do equipamento, sinergias limitadas, escolhas temporárias de altares e contra-ataque da esquiva perfeita. CombatAilments guarda estados da vítima, limpa no reaproveitamento e só simula dano na autoridade. ActorImpactFeedback usa sons originais, rastro compartilhado e pausa na ação de HeroModelView sem alterar Time.timeScale ou congelar locomoção. CombatAudioPool limita os novos sons a oito vozes; avisos existentes têm pool separado. Configurações permitem volume de efeitos e impacto de câmera/vibração opcionais.
+
+CampaignFeatures estende a masmorra existente com dois altares, esconderijos, desafio opcional por bioma, barris, parede quebrável e ponte frágil. Usa dados ExpeditionFeatureDefinition e NavMesh existente, sem substituir geração ou encontros. SideActivityBusy impede iniciar encontro principal durante o desafio. Waves/Defend/Escort usam EnemyPool com orçamento finito e objetivo auxiliar; sucesso não conclui sala principal. Recompensas usam CoopRewardLedger e regras do catálogo com IDs separados. Pontes expõem uma área de perigo sobre o chão existente, sem simulação de queda. Arte é modular provisória original.
+
+CampaignAdventureChannel aceita apenas intenções limitadas por conexão; o host valida identidade, fase, vida, proximidade e visão. O cliente não escolhe dano, recompensa nem coordenadas finais de marcação. CampaignRun snapshot transporta nós/pings; ActorFrame transporta bênçãos, contra-ataque e estados visuais. Protocolo10 exige versão0.14 nos participantes. Não foram adicionados pacotes. Perfil/save permanece versão2, com os limites de confiança no host já documentados.
+
+EquipmentPaperDoll continua sendo apenas prévia visual isolada; os slots usam ícones reais e silhuetas quando vazios. AdventurePolishInstaller.Upgrade migra somente os dados desta revisão. CampaignInstaller gera saídas estáveis Builds/Atual/Windows e Builds/Atual/Android; mesmo pacote Android com.forjadasmares.campaign, sem instalar outra aplicação a cada build.
+
+Evidências atuais e limites: REVISAO_0_14_2026-10-20.md. Os blocos abaixo são históricos.
+
+---
+
 # Atualização 0.12 — propriedade, talentos e economia
 
 InventoryRules centraliza posse visual, capacidade livre da mochila e valor de reciclagem. A coleção persistente conserva IDs únicos de itens possuídos; loadouts referenciam esses IDs. A interface exclui todos os IDs equipados da mochila/saque, sem copiar ou apagar o item. A mesma instância não pode equipar dois heróis. Desequipar com mochila cheia falha sem perder o equipamento.

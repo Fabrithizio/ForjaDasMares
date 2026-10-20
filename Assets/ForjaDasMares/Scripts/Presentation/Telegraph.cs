@@ -6,7 +6,7 @@ namespace ForjaDasMares
         Mesh circle, line, cone;
         MeshFilter filter;
         Renderer body;
-        AudioSource audio;
+        AudioSource warningAudio;
         AudioClip cue;
         MaterialPropertyBlock properties;
         readonly Vector3[] vertices = new Vector3[34];
@@ -25,7 +25,7 @@ namespace ForjaDasMares
         public Color Tint => color;
         public void Prepare(Mesh round, Mesh rectangle, AudioClip warning)
         {
-            circle = round; line = rectangle; cue = warning; filter = GetComponent<MeshFilter>(); body = GetComponent<Renderer>(); audio = GetComponent<AudioSource>(); properties = new MaterialPropertyBlock();
+            circle = round; line = rectangle; cue = warning; filter = GetComponent<MeshFilter>(); body = GetComponent<Renderer>(); warningAudio = GetComponent<AudioSource>(); properties = new MaterialPropertyBlock();
             cone = new Mesh { name = "Original_Pooled_Warning_Cone" }; cone.MarkDynamic();
             for (int i = 0; i < 32; i++) { triangles[i * 3] = 0; triangles[i * 3 + 1] = i + 1; triangles[i * 3 + 2] = i + 2; }
         }
@@ -46,12 +46,12 @@ namespace ForjaDasMares
             else if (shape == TelegraphShape.Line)
             { filter.sharedMesh = line; transform.position += direction.normalized * length * 0.5f; transform.localScale = new Vector3(radius * 2, 0.025f, length); }
             else { filter.sharedMesh = circle; transform.localScale = new Vector3(radius * 2, 0.015f, radius * 2); }
-            gameObject.SetActive(true); Paint(); if (sound) audio.PlayOneShot(cue);
+            gameObject.SetActive(true); Paint(); if (sound && warningAudio != null){warningAudio.volume=.18f*Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f));warningAudio.PlayOneShot(cue); }
         }
         void Update() { remaining -= Time.deltaTime; if (remaining <= 0 || owner == null) Hide(); else Paint(); }
         void Paint() { properties.SetColor("_BaseColor", Color.Lerp(color, Color.yellow, Mathf.PingPong(Time.time * 5, 0.4f))); body.SetPropertyBlock(properties); }
         public void Hide() => gameObject.SetActive(false);
-        void OnDisable() { owner = null; if (audio != null) audio.Stop(); }
+        void OnDisable() { owner = null; if (warningAudio != null) warningAudio.Stop(); }
         void OnDestroy() { if (cone != null) Destroy(cone); }
     }
 }

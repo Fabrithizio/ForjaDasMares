@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact }
     public sealed class HudIcon : MaskableGraphic
     {
         public HudSymbol symbol;
@@ -23,6 +23,14 @@ namespace ForjaDasMares
             vh.Clear();
             switch (symbol)
             {
+                case HudSymbol.Shield:
+                    Line(vh,new Vector2(-11,10),new Vector2(11,10));Line(vh,new Vector2(11,10),new Vector2(8,-5));Line(vh,new Vector2(8,-5),new Vector2(0,-13));Line(vh,new Vector2(0,-13),new Vector2(-8,-5));Line(vh,new Vector2(-8,-5),new Vector2(-11,10));Line(vh,new Vector2(0,7),new Vector2(0,-9));break;
+                case HudSymbol.Armor:
+                    Line(vh,new Vector2(-5,11),new Vector2(-13,6));Line(vh,new Vector2(-13,6),new Vector2(-8,0));Line(vh,new Vector2(-8,0),new Vector2(-7,-12));Line(vh,new Vector2(-7,-12),new Vector2(7,-12));Line(vh,new Vector2(7,-12),new Vector2(8,0));Line(vh,new Vector2(8,0),new Vector2(13,6));Line(vh,new Vector2(13,6),new Vector2(5,11));Line(vh,new Vector2(5,11),new Vector2(0,7));Line(vh,new Vector2(0,7),new Vector2(-5,11));Line(vh,new Vector2(-7,-4),new Vector2(7,-4));break;
+                case HudSymbol.Accessory:
+                    Ring(vh,10);Line(vh,new Vector2(-5,9),new Vector2(0,14));Line(vh,new Vector2(0,14),new Vector2(5,9));break;
+                case HudSymbol.Artifact:
+                    Line(vh,new Vector2(0,14),new Vector2(-9,1));Line(vh,new Vector2(-9,1),new Vector2(0,-14));Line(vh,new Vector2(0,-14),new Vector2(9,1));Line(vh,new Vector2(9,1),new Vector2(0,14));Line(vh,new Vector2(0,14),new Vector2(0,-14));Line(vh,new Vector2(-9,1),new Vector2(9,1));break;
                 case HudSymbol.Fury:
                     Line(vh,new Vector2(0,-12),new Vector2(-9,-5),3);Line(vh,new Vector2(-9,-5),new Vector2(-7,6),3);Line(vh,new Vector2(-7,6),new Vector2(-2,2),3);Line(vh,new Vector2(-2,2),new Vector2(1,13),3);Line(vh,new Vector2(1,13),new Vector2(9,0),3);Line(vh,new Vector2(9,0),new Vector2(8,-6),3);Line(vh,new Vector2(8,-6),new Vector2(0,-12),3);Line(vh,new Vector2(0,-5),new Vector2(1,3),3);break;
                 case HudSymbol.Sword:

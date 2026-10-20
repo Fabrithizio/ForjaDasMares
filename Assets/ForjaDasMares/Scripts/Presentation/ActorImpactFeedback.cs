@@ -34,7 +34,7 @@ namespace ForjaDasMares
             }
             if(trail!=null)trail.emitting=health.IsAlive&&hero.State==HeroState.Attack&&hero.ActionProgress>.2f&&hero.ActionProgress<.7f&&(hero.EquippedWeapon==null||hero.EquippedWeapon.attacks[0].shape==AttackShape.Arc);
             Vector3 delta=transform.position-previous;delta.y=0;previous=transform.position;if(!positioned){positioned=true;return;}
-            if(hero.State==HeroState.Walk&&delta.sqrMagnitude<1){stepClock+=delta.magnitude;if(stepClock>.95f){stepClock=0;CombatAudioPool.Play(data.step,data.volume*.35f);}}else stepClock=0;
+            if(hero.State==HeroState.Walk&&delta.sqrMagnitude<1){stepClock+=delta.magnitude;float stride=delta.magnitude/Mathf.Max(.001f,Time.deltaTime)>3.2f?1.23f:.46f;if(stepClock>stride){stepClock-=stride;CombatAudioPool.Play(data.step,data.volume*.35f);}}else stepClock=0;
         }
     }
 }
