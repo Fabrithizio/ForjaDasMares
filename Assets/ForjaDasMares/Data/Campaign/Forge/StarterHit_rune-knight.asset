@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: StarterHit_rune-knight
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 0
+  width: 0.55
   maximumTargets: 1
   damage: 8
-  range: 1.8
+  range: 2.3
   arc: 55
   windup: 0.16
   recovery: 0.44

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: SkillHit_cais-blade
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 1
+  width: 0.65
   maximumTargets: 0
   damage: 22
   range: 3

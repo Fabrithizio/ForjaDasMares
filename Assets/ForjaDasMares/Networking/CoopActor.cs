@@ -35,7 +35,7 @@ namespace ForjaDasMares.Networking
             string signature = frame.hero + ":" + frame.mainItem + ":" + frame.secondaryItem;
             if (signature == gearSignature) return; gearSignature = signature;
             if (mainGear == null) { mainGear = CreateGear("ReplicaMain", new Vector3(.55f, 1, .3f)); secondaryGear = CreateGear("ReplicaSecondary", new Vector3(-.55f, 1, .3f)); }
-            var main = catalog.Find(frame.mainItem); var secondary = catalog.Find(frame.secondaryItem);
+            var main = catalog.Find(frame.mainItem);Presentation.SetWeapon(main); var secondary = catalog.Find(frame.secondaryItem);
             var model=Presentation.Visible.GetComponentInChildren<HeroModelView>(true);
             EquipmentVisualPlacement.Mount(mainGear.transform,model!=null?model.PrimarySocket:Presentation.Visible,model!=null,new Vector3(.55f,1,.3f),Quaternion.identity);
             EquipmentVisualPlacement.Mount(secondaryGear.transform,model!=null?model.SecondarySocket:Presentation.Visible,model!=null,new Vector3(-.55f,1,.3f),Quaternion.identity);
@@ -57,8 +57,7 @@ namespace ForjaDasMares.Networking
         void ShowGear(MeshRenderer renderer, EquipmentDefinition item)
         {
             renderer.gameObject.SetActive(item != null); if (item == null) return;
-            EquipmentVisualPlacement.SetWorldScale(renderer.transform,item.visualScale);
-            gearColor ??= new MaterialPropertyBlock(); gearColor.SetColor("_BaseColor", item.color); renderer.SetPropertyBlock(gearColor);
+            var mesh=renderer.GetComponent<EquipmentMeshView>()??renderer.gameObject.AddComponent<EquipmentMeshView>();mesh.Apply(item);
         }
         public void ClearReplicaGear(){replicaFury=0;hasFrame=false;if(mainGear!=null)mainGear.gameObject.SetActive(false);if(secondaryGear!=null)secondaryGear.gameObject.SetActive(false);gearSignature=null;}
         public void SetAuthority(bool value,bool equipmentPresentation=false)

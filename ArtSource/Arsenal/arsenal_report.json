@@ -1,0 +1,53 @@
+{
+  "Sword": {
+    "triangles": 668,
+    "vertices": 356
+  },
+  "Axe": {
+    "triangles": 728,
+    "vertices": 388
+  },
+  "Hammer": {
+    "triangles": 760,
+    "vertices": 404
+  },
+  "Bow": {
+    "triangles": 484,
+    "vertices": 264
+  },
+  "Daggers": {
+    "triangles": 668,
+    "vertices": 356
+  },
+  "Staff": {
+    "triangles": 476,
+    "vertices": 264
+  },
+  "Grimoire": {
+    "triangles": 712,
+    "vertices": 372
+  },
+  "Shield": {
+    "triangles": 472,
+    "vertices": 244
+  },
+  "MagicWeapon": {
+    "triangles": 764,
+    "vertices": 408
+  },
+  "newClips": [
+    "SwordSlash",
+    "SwordReturn",
+    "SwordThrust",
+    "AxeCleave",
+    "AxeBackhand",
+    "AxeSpin",
+    "HammerSweep",
+    "HammerBack",
+    "HammerSlam",
+    "HeavySword",
+    "HeavyAxe",
+    "HeavyHammer"
+  ],
+  "originalActionsPreserved": 13
+}

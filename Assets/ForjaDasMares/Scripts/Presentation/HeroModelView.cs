@@ -17,6 +17,15 @@ namespace ForjaDasMares
         static readonly int Run=Animator.StringToHash("Base Layer.Run");
         static int[] Hashes(string prefix,string[] names)
         {var result=new int[names.Length];for(int i=0;i<names.Length;i++)result[i]=Animator.StringToHash(prefix+names[i]);return result;}
+        static readonly string[][] WeaponMoves={new[]{"SwordSlash","SwordReturn","SwordThrust","HeavySword"},new[]{"AxeCleave","AxeBackhand","AxeSpin","HeavyAxe"},new[]{"HammerSweep","HammerBack","HammerSlam","HeavyHammer"}};
+        static readonly int[][] WeaponBase={Hashes("Base Layer.",WeaponMoves[0]),Hashes("Base Layer.",WeaponMoves[1]),Hashes("Base Layer.",WeaponMoves[2])};
+        static readonly int[][] WeaponUpper={Hashes("Upper Body.",WeaponMoves[0]),Hashes("Upper Body.",WeaponMoves[1]),Hashes("Upper Body.",WeaponMoves[2])};
+        WeaponCategory weaponCategory;
+        public void SetWeaponCategory(WeaponCategory value)=>weaponCategory=value;
+        int AttackHash(int variant,bool upper,bool skill)
+        {
+            int group=weaponCategory==WeaponCategory.Axe?1:weaponCategory==WeaponCategory.Hammer?2:0;int index=skill?2:Mathf.Clamp(variant,0,3);int hash=(upper?WeaponUpper:WeaponBase)[group][index];return animator.HasState(upper?1:0,hash)?hash:upper?UpperAttacks[Mathf.Clamp(variant,0,4)]:BaseAttacks[Mathf.Clamp(variant,0,4)];
+        }
         int lastState=-1,lastUpper=-1,lastVersion=-1;
         bool running,wantsDefaultWeapon=true;
         float phase,upperWeight;
@@ -50,7 +59,7 @@ namespace ForjaDasMares
             float split=Mathf.Clamp(impact,.05f,.9f),time=Mathf.Clamp01(normalizedAttack);
             animator.SetFloat(ActionTime,action?(time<=split?time/split*contact:Mathf.Lerp(contact,1,(time-split)/(1-split))):time);
             bool masked=LocomotionActive&&(action||state==HeroState.Hit||state==HeroState.Victory)&&animator.layerCount>1;
-            int target=LocomotionActive?(running?Run:BaseStates[1]):attackVariant?BaseAttacks[variantIndex]:BaseStates[(int)state];
+            int target=LocomotionActive?(running?Run:BaseStates[1]):action&&variant!=4?AttackHash(variantIndex,false,state==HeroState.Skill):attackVariant?BaseAttacks[variantIndex]:BaseStates[(int)state];
             if(!LocomotionActive&&state==HeroState.Walk)target=BaseStates[0];
             if(lastState!=target||!masked&&action&&lastVersion!=version)
             {
@@ -60,7 +69,7 @@ namespace ForjaDasMares
             }
             if(animator.layerCount>1)
             {
-                int upper=attackVariant?UpperAttacks[variantIndex]:UpperStates[(int)state];
+                int upper=action&&variant!=4?AttackHash(variantIndex,true,state==HeroState.Skill):attackVariant?UpperAttacks[variantIndex]:UpperStates[(int)state];
                 if(masked&&(upper!=lastUpper||action&&version!=lastVersion))
                 {animator.CrossFadeInFixedTime(upper,.07f,1,0);lastUpper=upper;}
                 upperWeight=Mathf.MoveTowards(upperWeight,masked?1:0,Time.deltaTime/0.10f);

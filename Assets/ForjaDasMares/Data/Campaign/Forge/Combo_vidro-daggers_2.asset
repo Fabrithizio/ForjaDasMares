@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Combo_vidro-daggers_2
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 1
+  width: 0.55
   maximumTargets: 2
   damage: 13
-  range: 1.8
+  range: 2.3
   arc: 140
   windup: 0.114999995
   recovery: 0.33600003

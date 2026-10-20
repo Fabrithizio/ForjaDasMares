@@ -65,7 +65,7 @@ namespace ForjaDasMares.Tests
         {
             roster.Select(3); Position(-5); Assert.That(combat.TrySpecial(), Is.True); combat.Simulate(0.12f);
             Assert.That(motor.IsCharging, Is.True); Assert.That(motor.IsInvulnerable, Is.False);
-            roster.TestDamage(); Assert.That(roster.Ally.Current, Is.EqualTo(134)); Assert.That(roster.Health.Current, Is.EqualTo(196));
+            roster.TestDamage(); Assert.That(roster.Ally.Current, Is.EqualTo(134)); Assert.That(roster.Health.Current, Is.EqualTo(197));
             yield return new WaitForSeconds(3.1f); Assert.That(roster.Ally.ProtectionRemaining, Is.Zero);
             session.ResetArena(); motor.Teleport(new Vector3(0, 0.06f, 11), Quaternion.identity); combat.TrySpecial(); combat.Simulate(0.12f); motor.Simulate(0.3f, Vector2.zero);
             Assert.That(motor.transform.position.z, Is.LessThan(11.85f));

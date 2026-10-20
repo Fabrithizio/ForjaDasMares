@@ -108,7 +108,7 @@ namespace ForjaDasMares.Networking.Tests
             var frame=new WorldFrame{campaignLevel=2,campaign=new CampaignSnapshot{clock=12.5f,occupied=3,progress=new[]{.4f,1f}}};
             frame.players.Add(new ActorFrame{variant=2,actionVersion=12,impact=.3f});
             var copy=JsonUtility.FromJson<WorldFrame>(JsonUtility.ToJson(frame));Assert.AreEqual(2,copy.campaignLevel);Assert.AreEqual(.4f,copy.campaign.progress[0]);Assert.AreEqual(2,copy.players[0].variant);
-            Assert.AreEqual(8,CoopLimits.Protocol);
+            Assert.AreEqual(9,CoopLimits.Protocol);
         }
         [UnityTest] public IEnumerator SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent()
         {

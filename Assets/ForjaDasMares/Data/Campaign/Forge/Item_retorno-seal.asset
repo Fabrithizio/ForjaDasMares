@@ -15,6 +15,9 @@ MonoBehaviour:
   itemId: retorno-seal
   displayName: Selo de Retorno
   icon: {fileID: 21300000, guid: 04ab27022ab633d49b847d7a14b7464f, type: 3}
+  visualMesh: {fileID: 0}
+  visualMaterials: []
+  authoredScale: {x: 1, y: 1, z: 1}
   description: "Cooldown menor e recupera\xE7\xE3o lenta limitada. N\xE3o revive."
   slot: 4
   category: 9

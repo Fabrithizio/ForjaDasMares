@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Combo_basalto-hammer_0
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 1
+  width: 1
   maximumTargets: 4
   damage: 24
-  range: 2.2
+  range: 2.8
   arc: 360
   windup: 0.3
   recovery: 0.595

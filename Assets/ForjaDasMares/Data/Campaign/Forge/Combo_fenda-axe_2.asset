@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Combo_fenda-axe_2
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 2
+  width: 0.65
   maximumTargets: 3
   damage: 24
   range: 2.6
-  arc: 240
+  arc: 360
   windup: 0.2
   recovery: 0.6
   knockback: 5.25

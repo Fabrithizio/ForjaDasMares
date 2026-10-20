@@ -14,7 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
   itemId: initiation-rune-knight
   displayName: "L\xE2mina de Vig\xEDlia"
-  icon: {fileID: 21300000, guid: e62fd945de5cda84e938ed352dae7669, type: 3}
+  icon: {fileID: 21300000, guid: 10f12e78fd1de8e4693548480550dee2, type: 3}
+  visualMesh: {fileID: 4300000, guid: e957fd6761eea4f419fce7433180e5d4, type: 2}
+  visualMaterials:
+  - {fileID: 2100000, guid: 0b6427bf383087541bd3b3ac565b05e2, type: 2}
+  - {fileID: 2100000, guid: d00e78e40f63a94479ee3ba05e735ac9, type: 2}
+  - {fileID: 2100000, guid: b3f143626b015b94a86fe24258befc63, type: 2}
+  - {fileID: 2100000, guid: 3080fcf51212ed2438258e08171b4075, type: 2}
+  authoredScale: {x: 0.8, y: 0.8, z: 0.8}
   description: Arma comum inicial. Ataque concentrado em um alvo, sem efeitos extras.
     Encontre armas para definir sua build.
   slot: 0

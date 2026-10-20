@@ -2,12 +2,14 @@ using UnityEngine;
 
 namespace ForjaDasMares
 {
+    public enum MeleeFootprint { Cone, Line, Circle }
     public enum AttackShape { Arc, Projectile }
     public enum ControlEffect { None, Slow, Root }
     [CreateAssetMenu(menuName = "Forja/Attack")]
     public sealed class AttackDefinition : ScriptableObject
     {
         public AttackShape shape;
+        public MeleeFootprint footprint;[Min(.1f)]public float width=.65f;
         [Min(0)] public int maximumTargets; // Zero preserves area attacks; one is a focused starter strike.
         [Min(1)] public int damage = 26;
         [Min(0.1f)] public float range = 2.8f;

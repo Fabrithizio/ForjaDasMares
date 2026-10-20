@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Combo_cais-blade_1
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 0
+  footprint: 0
+  width: 0.65
   maximumTargets: 2
   damage: 16
   range: 3.2400002

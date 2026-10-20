@@ -52,7 +52,7 @@ namespace ForjaDasMares
         public bool ApplyDamage(int damage)
         {
             if (damage <= 0 || current <= 0 || (dodgeSource != null && dodgeSource.IsInvulnerable)) return false;
-            int finalDamage = Mathf.Max(1, Mathf.CeilToInt(damage * (1f - armor) * (1f - (protectionTime > 0 ? protection : 0f))));
+            int finalDamage = ProgressionStats.MitigatedDamage(damage,armor,protectionTime>0?protection:0);
             current = Mathf.Max(0, current - finalDamage);
             Damaged?.Invoke();
             Changed?.Invoke();

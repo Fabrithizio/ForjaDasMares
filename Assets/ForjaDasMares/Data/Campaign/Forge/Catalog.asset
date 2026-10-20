@@ -39,6 +39,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c57b8ebdf86837f40b7917ae6a6bbd71, type: 2}
   - {fileID: 11400000, guid: 880ac46a4184e504697fb47ebd29b4dd, type: 2}
   - {fileID: 11400000, guid: d316b942529797642b4f01b39715e7fa, type: 2}
+  baseCriticalMultiplier: 1.5
+  maximumDefensePoints: 75
   talents:
   - id: 0
     displayName: Vigor
@@ -170,6 +172,9 @@ MonoBehaviour:
   - stat: 8
     minimum: 0.1
     maximum: 0.3
+  - stat: 9
+    minimum: 0.06
+    maximum: 0.18
   heroes:
   - heroId: warrior
     affinity: 1

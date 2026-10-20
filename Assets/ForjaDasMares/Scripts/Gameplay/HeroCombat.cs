@@ -43,6 +43,8 @@ namespace ForjaDasMares
         int combo;
         bool active, special, resolved, chargeWindow;
         AttackDefinition[] equipmentAttacks;
+        float criticalMultiplier=1.5f;
+        public int GeometryMask=>geometry.value;
         float damageMultiplier = 1, attackSpeed = 1, cooldownMultiplier = 1, criticalChance, elementalDamage, strikeScale = 1;
         bool twinStrike, secondResolved;
         AttackDefinition legendaryEcho;
@@ -51,7 +53,7 @@ namespace ForjaDasMares
         public float AttackSpeed => Mathf.Min(2.5f,attackSpeed*(furyRemaining>0&&flow!=null?Mathf.Clamp(flow.furyAttackSpeed,1,2):1));
         public void AddTargets(int mask)=>targets|=mask;
         public void ApplyEquipment(AttackDefinition[] attacks, StatSnapshot stats, float rarityPower, bool twin, AttackDefinition echo = null, AbilityDefinition ability = null)
-        { equipmentAttacks = attacks; weaponAbility=ability; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
+        { equipmentAttacks = attacks; weaponAbility=ability; damageMultiplier = stats.damageMultiplier * rarityPower; attackSpeed = stats.attackSpeed; cooldownMultiplier = stats.cooldownMultiplier; criticalChance = stats.criticalChance;criticalMultiplier=stats.criticalMultiplier>=1?stats.criticalMultiplier:1.5f; elementalDamage = stats.elementalDamage; twinStrike = twin; legendaryEcho = echo; }
         public bool IsAttacking => active && !special;
         public bool IsUsingSpecial => active && special;
         public bool IsBusy => active;
@@ -128,7 +130,7 @@ namespace ForjaDasMares
             active = true; special = ability; elapsed = 0; length = Mathf.Max(0.05f, duration); resolved = chargeWindow = false;
             heavy = ultimate = false; AnimationVariant = 0; ActionVersion++;
             facing = transform.forward; facing.y = 0; facing.Normalize();
-            strikeScale = ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance);
+            strikeScale = ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
             secondResolved = echoResolved = false; motor.LockFacing(currentAttack.windup / (ability ? 1 : attackSpeed)); resolver.Clear();
         }
         public void Simulate(float deltaTime)

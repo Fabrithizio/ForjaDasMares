@@ -13,13 +13,12 @@ namespace ForjaDasMares
         public int Area(Vector3 origin, float radius, Vector3 direction, float arc, AttackDefinition attack, Health source, int targets, int geometry, bool clear = true, float damageScale = 1)
         {
             if (clear) Clear();
-            int count = Physics.OverlapSphereNonAlloc(origin, radius, contacts, targets, QueryTriggerInteraction.Ignore), hits = 0;
+            int count = Physics.OverlapSphereNonAlloc(origin, attack.footprint==MeleeFootprint.Line&&arc<359.9f?Mathf.Sqrt(radius*radius+attack.width*attack.width*.25f):radius, contacts, targets, QueryTriggerInteraction.Ignore), hits = 0;
             if(attack.maximumTargets>0)
             {
                 // Limited strikes choose the closest physical target, independent of collider enumeration.
                 for(int i=1;i<count;i++){var value=contacts[i];float distance=(value.bounds.center-origin).sqrMagnitude;int j=i-1;while(j>=0&&(contacts[j].bounds.center-origin).sqrMagnitude>distance){contacts[j+1]=contacts[j];j--;}contacts[j+1]=value;}
             }
-            float dot = Mathf.Cos(arc * 0.5f * Mathf.Deg2Rad);
             for (int i = 0; i < count; i++)
             {
                 if(attack.maximumTargets>0&&seenCount>=attack.maximumTargets)break;
@@ -28,7 +27,7 @@ namespace ForjaDasMares
                 bool duplicate = false; for (int j = 0; j < seenCount; j++) if (seen[j] == health) { duplicate = true; break; }
                 if (duplicate) continue;
                 Vector3 point = contacts[i].bounds.center, delta = point - origin; delta.y = 0;
-                if (delta.sqrMagnitude > radius * radius || (delta.sqrMagnitude > 0.001f && Vector3.Dot(direction, delta.normalized) < dot)) continue;
+                if (!MeleeGeometry.Contains(delta,direction,radius,arc,attack.width,attack.footprint)) continue;
                 if (Physics.Linecast(origin, point, geometry, QueryTriggerInteraction.Ignore)) continue;
                 Remember(health);
                 if (health.ApplyHit(attack, delta.sqrMagnitude > 0.001f ? delta.normalized : direction, source, damageScale)) hits++;

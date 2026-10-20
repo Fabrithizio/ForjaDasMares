@@ -8,7 +8,7 @@ namespace ForjaDasMares.Networking
     {
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         CoopDirector session; string directory; int expected; float clock, lobby, playing, elapsed; bool spawned, recordedMovement, killRecorded;
-        Vector3 initial; EnemyActor sample;
+        Vector3 initial; EnemyActor sample;ArenaInput arsenalInput;float arsenalUntil;int arsenalVersion=-1,arsenalBudget;
         void Start()
         {
             var args = Environment.GetCommandLineArgs(); directory = Arg(args, "-netProbe");
@@ -52,11 +52,27 @@ namespace ForjaDasMares.Networking
                 }
                 if (session.IsHost && sample != null && playing > 6 && !sample.Health.IsAlive && !killRecorded) { killRecorded = true; Debug.Log("COOP_PROBE_REMOTE_KILL confirmed"); }
             }
+            if(arsenalUntil>0)
+            {
+                if(Time.unscaledTime>=arsenalUntil||session.Phase!=CoopPhase.Playing){arsenalInput?.SetUiAttackHeld(false);arsenalUntil=0;}
+                else if(session.LocalSlot>=0&&arsenalBudget>0)
+                {
+                    var actor=session.Actor(session.LocalSlot);var view=actor.GetComponent<HeroAttackArea>();var p=actor.Presentation;
+                    if(p.State==HeroState.Attack&&p.ActionProgress>.4f&&p.ActionVersion!=arsenalVersion&&view!=null&&view.Visible)
+                    {
+                        arsenalVersion=p.ActionVersion;arsenalBudget--;string weapon=p.EquippedWeapon!=null?p.EquippedWeapon.itemId:"default";string file="arsenal-"+weapon+"-"+arsenalVersion+"-"+p.ActionVariant;ScreenCapture.CaptureScreenshot(Path.Combine(directory,file+".png"));
+                        var model=p.Visible.GetComponentInChildren<HeroModelView>();var clips=model!=null?model.Animator.GetCurrentAnimatorClipInfo(0):new AnimatorClipInfo[0];File.WriteAllText(Path.Combine(directory,file+".json"),JsonUtility.ToJson(new ArsenalEvidence{weapon=weapon,variant=p.ActionVariant,version=p.ActionVersion,time=p.ActionProgress,area=view.Visible,clip=clips.Length>0?clips[0].clip.name:"geometric"},true));
+                    }
+                }
+            }
             clock -= Time.unscaledDeltaTime; if (clock > 0) return; clock = 1;
             string control = Path.Combine(directory, "control.txt");
             if (File.Exists(control))
             {
                 string command = File.ReadAllText(control).Trim(); File.Delete(control);
+                if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=UnityEngine.Object.FindFirstObjectByType<ArenaInput>();arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
+                if(command=="arsenal-release"){arsenalInput?.SetUiAttackHeld(false);arsenalUntil=0;}
+                if(command.StartsWith("arsenal-equip:")&&session.LocalSlot>=0){string definition=command.Substring(14);var channel=session.GetComponent<CoopProfileChannel>();var p=channel.LocalProfile;var item=p.inventory.Find(x=>x.definitionId==definition);if(item!=null)channel.Request(CoopInventoryAction.Equip,item.instanceId,EquipmentSlot.MainHand);}
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
                 if(command=="profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.OpenInventory();
                 if(command=="close-profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.CloseInventory();
@@ -116,6 +132,8 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < 4; i++) { var profile = session.IsHost ? profiles.Profile(i)?.Profile : i == session.LocalSlot ? session.GetComponent<CoopProfileChannel>().LocalProfile : null; if (profile == null) continue; report.xp[i] = profile.expedition?.experience ?? profile.experience; report.items[i] = profile.inventory.Count; }
             File.WriteAllText(Path.Combine(directory, "probe.json"), JsonUtility.ToJson(report, true));
         }
+        void OnDisable(){arsenalInput?.SetUiAttackHeld(false);}
+        [Serializable]sealed class ArsenalEvidence {public string weapon,clip;public int variant,version;public float time;public bool area;}
         [Serializable] sealed class ProbeReport
         { public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif

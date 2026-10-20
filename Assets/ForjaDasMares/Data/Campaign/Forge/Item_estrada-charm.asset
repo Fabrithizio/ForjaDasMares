@@ -15,6 +15,9 @@ MonoBehaviour:
   itemId: estrada-charm
   displayName: Pingente da Estrada
   icon: {fileID: 21300000, guid: 41a09786c711ef84a81660aa8eeac61e, type: 3}
+  visualMesh: {fileID: 0}
+  visualMaterials: []
+  authoredScale: {x: 1, y: 1, z: 1}
   description: "Movimento e cr\xEDtico, sem b\xF4nus cumulativos por reequipar."
   slot: 3
   category: 9
@@ -31,6 +34,8 @@ MonoBehaviour:
     value: 0.05
   - stat: 4
     value: 0.04
+  - stat: 9
+    value: 0.15
   frontalBlock: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   visualScale: {x: 0.15, y: 1, z: 0.2}

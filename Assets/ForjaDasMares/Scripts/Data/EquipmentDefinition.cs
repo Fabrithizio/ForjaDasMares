@@ -5,19 +5,20 @@ namespace ForjaDasMares
     public enum EquipmentSlot { MainHand, OffHand, Armor, Accessory, Artifact }
     public enum WeaponCategory { Sword, Axe, Hammer, Bow, Daggers, Staff, Grimoire, Shield, MagicWeapon, None }
     public enum ItemRarity { Common, Uncommon, Rare, Epic, Legendary }
-    public enum ItemStat { Health, Damage, Defense, MoveSpeed, CriticalChance, AttackSpeed, CooldownReduction, ElementalDamage, Recovery }
+    public enum ItemStat { Health, Damage, Defense, MoveSpeed, CriticalChance, AttackSpeed, CooldownReduction, ElementalDamage, Recovery, CriticalDamage }
     [Flags] public enum HeroAffinity { Warrior = 1, Ranger = 2, Arcanist = 4, RuneKnight = 8, All = 15 }
     [Serializable] public struct StatModifier
     {
         public ItemStat stat; public float value;
         public StatModifier(ItemStat type, float amount) { stat = type; value = amount; }
-        public static float Limit(ItemStat stat) => stat == ItemStat.Health ? 80 : stat == ItemStat.Defense ? 40 : stat == ItemStat.Recovery ? 2 : .3f;
+        public static float Limit(ItemStat stat) => stat == ItemStat.CriticalDamage ? .5f : stat == ItemStat.Health ? 80 : stat == ItemStat.Defense ? 40 : stat == ItemStat.Recovery ? 2 : .3f;
     }
     [CreateAssetMenu(menuName = "Forja/Progression/Equipment")]
     public sealed class EquipmentDefinition : ScriptableObject
     {
         public string itemId, displayName;
         public Sprite icon;
+        public Mesh visualMesh;public Material[] visualMaterials;public Vector3 authoredScale=Vector3.one;
         [TextArea] public string description;
         public EquipmentSlot slot;
         public WeaponCategory category = WeaponCategory.None;

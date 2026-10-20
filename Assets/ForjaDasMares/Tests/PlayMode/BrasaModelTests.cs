@@ -83,7 +83,7 @@ namespace ForjaDasMares.Tests
             for(int variant=0;variant<5;variant++)
             {
                 model.Animate(variant==4?HeroState.Skill:HeroState.Attack,.5f,0,true,variant,variant+1,.3f);model.Animator.Update(.1f);
-                string name=new[]{"Attack","Attack2","Attack3","Charged","Super"}[variant];
+                string name=new[]{"SwordSlash","SwordReturn","SwordThrust","HeavySword","Super"}[variant];
                 Assert.IsTrue(model.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer."+name),name);
                 foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
                 {skin.BakeMesh(baked);Assert.That(baked.bounds.size.magnitude,Is.LessThan(6),"Exploding or duplicated displaced skin: "+name);Assert.IsFalse(float.IsNaN(baked.bounds.center.x));}
@@ -95,7 +95,7 @@ namespace ForjaDasMares.Tests
             heroes.GetComponent<HeroPresentation>().enabled=false;
             for(int i=0;i<30;i++){model.Animate(HeroState.Attack,.5f,0,true,1,42,.25f);yield return null;}
             yield return new WaitForSeconds(.12f);
-            Assert.IsFalse(model.Animator.IsInTransition(0));Assert.IsTrue(model.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Attack2"));
+            Assert.IsFalse(model.Animator.IsInTransition(0));Assert.IsTrue(model.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.SwordReturn"));
         }
     }
 }

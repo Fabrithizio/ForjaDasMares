@@ -28,7 +28,7 @@ namespace ForjaDasMares.Networking
     }
     public static class CoopLimits
     {
-        public const int Protocol = 8, Players = 4, CommandBytes = 21, MaximumSnapshotBytes = 49152;
+        public const int Protocol = 9, Players = 4, CommandBytes = 21, MaximumSnapshotBytes = 49152;
         public static bool ValidJoin(JoinIntent intent, int heroCount) => intent != null && intent.protocol == Protocol
             && Guid.TryParseExact(intent.identity, "N", out _) && intent.hero >= 0 && intent.hero < heroCount
             && intent.pin != null && intent.pin.Length <= 12;

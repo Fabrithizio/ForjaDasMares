@@ -1,0 +1,59 @@
+{
+  "materials": [
+    {
+      "name": "Arsenal_Iron",
+      "color": [
+        0.26,
+        0.34,
+        0.38,
+        1
+      ],
+      "roughness": 0.38,
+      "metallic": 0.7
+    },
+    {
+      "name": "Arsenal_Bronze",
+      "color": [
+        0.55,
+        0.29,
+        0.09,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0.65
+    },
+    {
+      "name": "Arsenal_Leather",
+      "color": [
+        0.13,
+        0.055,
+        0.025,
+        1
+      ],
+      "roughness": 0.86,
+      "metallic": 0
+    },
+    {
+      "name": "Arsenal_Rune",
+      "color": [
+        0.08,
+        0.65,
+        0.8,
+        1
+      ],
+      "roughness": 0.25,
+      "metallic": 0.25
+    },
+    {
+      "name": "Arsenal_Pages",
+      "color": [
+        0.68,
+        0.59,
+        0.37,
+        1
+      ],
+      "roughness": 0.9,
+      "metallic": 0
+    }
+  ]
+}

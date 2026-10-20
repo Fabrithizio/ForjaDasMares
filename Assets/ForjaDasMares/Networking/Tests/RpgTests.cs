@@ -49,7 +49,7 @@ namespace ForjaDasMares.Networking.Tests
         [Test]public void DifficultyRewardsAndItemDescriptionsHaveRealData()
         {
             Assert.Greater(catalog.challengeEnemy.itemChance,catalog.veteranEnemy.itemChance);Assert.Greater(catalog.veteranEnemy.itemChance,catalog.enemy.itemChance);Assert.AreEqual(ItemRarity.Uncommon,catalog.challengeEnemy.minimumRarity);Assert.That(catalog.summonedEnemy.coins,Is.GreaterThan(0));
-            var definition=catalog.equipment.First(x=>x.slot==EquipmentSlot.Artifact);var item=LootGenerator.Create(catalog,definition.itemId,ItemRarity.Rare,new System.Random(22));string description=ItemDescriptions.Describe(catalog,item);Assert.IsTrue(description.Contains(definition.displayName));foreach(var b in definition.bonuses)Assert.IsTrue(description.Contains(ItemDescriptions.Name(b.stat)));Assert.IsTrue(description.Contains("Reciclagem"));Assert.AreEqual(9,ItemDescriptions.Bonuses(catalog,item).Length);
+            var definition=catalog.equipment.First(x=>x.slot==EquipmentSlot.Artifact);var item=LootGenerator.Create(catalog,definition.itemId,ItemRarity.Rare,new System.Random(22));string description=ItemDescriptions.Describe(catalog,item);Assert.IsTrue(description.Contains(definition.displayName));foreach(var b in definition.bonuses)Assert.IsTrue(description.Contains(ItemDescriptions.Name(b.stat)));Assert.IsTrue(description.Contains("Reciclagem"));Assert.AreEqual(10,ItemDescriptions.Bonuses(catalog,item).Length);
         }
         [UnityTest]public IEnumerator InventoryDetailsAndTalentButtonsOpenRealPanels()
         {

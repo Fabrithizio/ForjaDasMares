@@ -55,7 +55,7 @@ namespace ForjaDasMares
             Stats=calculated;heroes.Health.ApplyAttributes(Stats.maximumHealth, Stats.defense); heroes.Health.ConfigureDefense(this);
             motor.ApplyMovementAttributes(Stats.speed, Stats.cooldownMultiplier);
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;
-            MainWeapon = main != null ? catalog.Find(main.definitionId) : null; var secondary = off != null ? catalog.Find(off.definitionId) : null;
+            MainWeapon = main != null ? catalog.Find(main.definitionId) : null;heroes.GetComponent<HeroPresentation>().SetWeapon(MainWeapon); var secondary = off != null ? catalog.Find(off.definitionId) : null;
             var visual = heroes.GetComponent<HeroPresentation>().Visible;
             if (visual != null)
             {
@@ -82,7 +82,7 @@ namespace ForjaDasMares
         static void Visual(MeshRenderer renderer, EquipmentDefinition weapon)
         {
             if (renderer == null) return; renderer.gameObject.SetActive(weapon != null); if (weapon == null) return;
-            EquipmentVisualPlacement.SetWorldScale(renderer.transform,weapon.visualScale); var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", weapon.color); renderer.SetPropertyBlock(block);
+            var mesh=renderer.GetComponent<EquipmentMeshView>()??renderer.gameObject.AddComponent<EquipmentMeshView>();mesh.Apply(weapon);
         }
         public float DamageMultiplier(Vector3 direction, Health source, AttackDefinition attack)
         { return Stats.block > 0 && Vector3.Dot(-direction.normalized, transform.forward) > .5f ? 1 - Stats.block : 1; }

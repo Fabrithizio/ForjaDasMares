@@ -39,6 +39,7 @@ namespace ForjaDasMares
         [Range(4, 64)] public int expeditionCapacity = 32;
         [Range(1, 20)] public int maximumLevel = 20;
         public EquipmentDefinition[] equipment;
+        [Range(1,3)]public float baseCriticalMultiplier=1.5f;[Range(0,75)]public float maximumDefensePoints=75;
         public TalentRule[] talents=HeroTalents.Defaults();
         [Min(1)]public int salvageBase=2,talentResetGold=25;
         public RewardRule veteranEnemy=new RewardRule{rewardId="Veterano",experience=3,coins=3,itemChance=.14f,instantCurrency=true};
@@ -72,6 +73,7 @@ namespace ForjaDasMares
                 if (item.slot == EquipmentSlot.MainHand && (item.attacks == null || item.attacks.Length == 0)) throw new InvalidOperationException("Weapon has no real attack: " + item.itemId);
                 if (item.attacks != null) foreach (var attack in item.attacks) if (attack == null || attack.range <= 0 || attack.damage <= 0 || attack.projectileCount < 1 || attack.projectileCount > 5) throw new InvalidOperationException("Invalid weapon attack.");
             }
+            if(float.IsNaN(baseCriticalMultiplier)||baseCriticalMultiplier<1||baseCriticalMultiplier>3||float.IsNaN(maximumDefensePoints)||maximumDefensePoints<0||maximumDefensePoints>75)throw new InvalidOperationException("Invalid damage configuration.");
             if(talents==null||talents.Length!=6||salvageBase<1||salvageBase>100||talentResetGold<1||talentResetGold>1000)throw new InvalidOperationException("Invalid talent/economy configuration.");
             for(int i=0;i<talents.Length;i++){var t=talents[i];if(t==null||(int)t.id!=i||!Enum.IsDefined(typeof(ItemStat),t.stat)||t.maximumRank<1||t.maximumRank>10||float.IsNaN(t.perRank)||t.perRank<=0||t.perRank>StatModifier.Limit(t.stat))throw new InvalidOperationException("Invalid talent rule.");}
             int total = 0; var levels = new System.Collections.Generic.HashSet<ItemRarity>();
