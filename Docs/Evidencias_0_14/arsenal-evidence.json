@@ -1,0 +1,138 @@
+[
+  {
+    "weapon": "basalto-hammer",
+    "clip": "HammerSlam",
+    "variant": 2,
+    "version": 20,
+    "time": 0.40522512793540955,
+    "area": true
+  },
+  {
+    "weapon": "basalto-hammer",
+    "clip": "HeavyHammer",
+    "variant": 3,
+    "version": 21,
+    "time": 0.41004976630210876,
+    "area": true
+  },
+  {
+    "weapon": "basalto-hammer",
+    "clip": "HammerSweep",
+    "variant": 0,
+    "version": 22,
+    "time": 0.40063416957855225,
+    "area": true
+  },
+  {
+    "weapon": "basalto-hammer",
+    "clip": "HammerBack",
+    "variant": 1,
+    "version": 23,
+    "time": 0.4062090516090393,
+    "area": true
+  },
+  {
+    "weapon": "basalto-hammer",
+    "clip": "HammerSlam",
+    "variant": 2,
+    "version": 24,
+    "time": 0.4088275730609894,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "SwordSlash",
+    "variant": 0,
+    "version": 1,
+    "time": 0.41884520649909973,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "SwordReturn",
+    "variant": 1,
+    "version": 2,
+    "time": 0.41333088278770447,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "SwordThrust",
+    "variant": 2,
+    "version": 3,
+    "time": 0.406659334897995,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "HeavySword",
+    "variant": 3,
+    "version": 4,
+    "time": 0.4092077612876892,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "SwordSlash",
+    "variant": 0,
+    "version": 5,
+    "time": 0.41373923420906067,
+    "area": true
+  },
+  {
+    "weapon": "cais-blade",
+    "clip": "SwordReturn",
+    "variant": 1,
+    "version": 6,
+    "time": 0.4016140103340149,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "AxeBackhand",
+    "variant": 1,
+    "version": 12,
+    "time": 0.40102913975715637,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "AxeSpin",
+    "variant": 2,
+    "version": 13,
+    "time": 0.4113543629646301,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "HeavyAxe",
+    "variant": 3,
+    "version": 14,
+    "time": 0.4221929609775543,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "AxeCleave",
+    "variant": 0,
+    "version": 15,
+    "time": 0.406365305185318,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "AxeBackhand",
+    "variant": 1,
+    "version": 16,
+    "time": 0.4112451374530792,
+    "area": true
+  },
+  {
+    "weapon": "fenda-axe",
+    "clip": "AxeSpin",
+    "variant": 2,
+    "version": 17,
+    "time": 0.4101380705833435,
+    "area": true
+  }
+]

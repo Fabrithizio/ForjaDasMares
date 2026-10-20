@@ -1,3 +1,17 @@
+# Revisão atual 0.14.0 — testes privados
+
+Arsenal original com ícones e12 novos clipes de ataque da Brasa; slots de equipamento com imagens; efeitos e sinergias de armas; esquiva perfeita; altares com escolhas; esconderijos; desafios de ondas/proteção/escolta; barris, parede quebrável e ponte frágil; marcações cooperativas e novos sons originais. A base dos20 pontos aprovados está integrada; modelos de cenário e heróis ainda são provisórios, e os demais heróis não receberam animações finais novas.
+
+**Abrir:** Jogos/Jogar Campanha Forja das Mares. Saídas estáveis: Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk. Android usa o mesmo pacote com.forjadasmares.campaign (versão28). Protocolo10 exige todos atualizados. Saves preservados; não apagar a instalação atual. A pasta antiga de envio ao irmão não foi atualizada.
+
+Validação:69/69 testes na reexecução final, após corrigir13 falhas de validação detectadas na suíte geral. União do resultado mais recente por caso:214 aprovados/1 ignorado, não uma única execução geral final. Dois processos Windows pelo Relay conferidos, incluindo bênçãos, marcações, retorno, baú único e encerramento do host. Vitória de diagnóstico foi administrativa. Build Windows e APK Android reais; teste físico desta revisão pendente porque o moto g15 não está no USB. Não testado entre redes diferentes ou por quatro pessoas.
+
+[Como jogar](Docs/CAMPANHA_COMO_JOGAR.md) · [revisão e limitações](Docs/REVISAO_0_14_2026-10-20.md) · [arquivos](Docs/ARQUIVOS_0_14.txt) · [evidências](Docs/Evidencias_0_14/testes.json).
+
+Aprovado com limitações para testes privados. Sem conta global, migração de host ou servidor dedicado. Arte final, balanceamento humano prolongado, outros dispositivos e medições de desempenho continuam pendentes. Histórico abaixo.
+
+---
+
 # Revisão atual 0.12.0 — Windows validado com limitações
 
 Mochila sem equipamentos duplicados na grade, atributos em cartões, talentos por nível, comparação individual de itens, reciclagem por ouro, drops imediatos, retrato e minimapa compacto. Consulte [instruções da campanha](Docs/CAMPANHA_COMO_JOGAR.md) e [revisão técnica](Docs/REVISAO_0_12_2026-10-18.md).

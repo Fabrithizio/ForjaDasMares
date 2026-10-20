@@ -17,7 +17,13 @@ namespace ForjaDasMares
         void OnEnable()=>Bind();
         void OnDisable(){Unbind();if(trail!=null){trail.emitting=false;trail.Clear();}positioned=false;}
         void OnDestroy(){if(trail!=null)Destroy(trail.gameObject);}
-        void Hurt(){if(data==null)return;var follow=Camera.main!=null?Camera.main.GetComponent<ArenaCamera>():null;if(follow!=null&&follow.Target!=null&&(follow.Target.position-transform.position).sqrMagnitude>400)return;if(Time.unscaledTime-lastSound>.055f){CombatAudioPool.Play(data.impact,data.volume);lastSound=Time.unscaledTime;}Pause();if(Camera.main!=null){var camera=Camera.main.GetComponent<ArenaCamera>();if(camera!=null&&camera.Target==transform)camera.Impact(data.cameraImpulse);}if(hero!=null&&follow!=null&&follow.Target==transform&&PlayerPrefs.GetInt("CampaignVibration",0)==1&&Application.isMobilePlatform&&Time.unscaledTime-lastVibration>1){lastVibration=Time.unscaledTime;Handheld.Vibrate();}}
+        void Hurt(){if(data==null)return;var follow=Camera.main!=null?Camera.main.GetComponent<ArenaCamera>():null;if(follow!=null&&follow.Target!=null&&(follow.Target.position-transform.position).sqrMagnitude>400)return;if(Time.unscaledTime-lastSound>.055f){CombatAudioPool.Play(data.impact,data.volume);lastSound=Time.unscaledTime;}Pause();if(Camera.main!=null){var camera=Camera.main.GetComponent<ArenaCamera>();if(camera!=null&&camera.Target==transform)camera.Impact(data.cameraImpulse);}if(hero!=null&&follow!=null&&follow.Target==transform&&PlayerPrefs.GetInt("CampaignVibration",0)==1&&Application.isMobilePlatform&&Time.unscaledTime-lastVibration>1){lastVibration=Time.unscaledTime;Vibrate();}}
+        static void Vibrate()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            Handheld.Vibrate();
+#endif
+        }
         void Hit(Health target){if(data==null||hero==null||target.Faction!=CombatFaction.Enemy||lastHitAction==hero.ActionVersion)return;lastHitAction=hero.ActionVersion;Pause();if(hero.ActionVariant>=3)CombatAudioPool.Play(data.heavy,data.volume*.5f,.92f);}
         void Pause(){if(hero!=null&&hero.Visible!=null){if(model==null||!model.gameObject.activeInHierarchy)model=hero.Visible.GetComponentInChildren<HeroModelView>();model?.PauseImpact(data.impactPause);}}
         void LateUpdate()

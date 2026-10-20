@@ -1,0 +1,37 @@
+{
+  "version": "0.14.0",
+  "protocol": 10,
+  "windowsLog": "polish014-windows2.log",
+  "androidLog": "polish014-android-final.log",
+  "developmentBuild": true,
+  "files": [
+    {
+      "file": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe",
+      "bytes": 667136,
+      "sha256": "b7cca8b82003185f22644d0ee1c23b3640de1b996802d4f5d0501e287011afa6"
+    },
+    {
+      "file": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+      "bytes": 53139800,
+      "sha256": "e91d73d1fb0350252c40a5f8de5718052c2d6e7fd88aa00aec4715468b47fc7a"
+    },
+    {
+      "file": "Builds/Atual/Windows/ForjaDasMaresCampanha_Data/Managed/ForjaDasMares.Networking.dll",
+      "bytes": 200192,
+      "sha256": "1258c1eccea25f21844f16bee4f361779c8814d0c5c74254421c44cdf523c7ca"
+    },
+    {
+      "file": "Builds/Atual/Windows/ForjaDasMaresCampanha_Data/Managed/ForjaDasMares.Runtime.dll",
+      "bytes": 297984,
+      "sha256": "741f74136dc1b7ae85b9c71e02b3da1200acedb725d1b26a1f69453048004daa"
+    }
+  ],
+  "manifest": [
+    "package: name='com.forjadasmares.campaign' versionCode='28' versionName='0.14.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+    "sdkVersion:'25'",
+    "targetSdkVersion:'35'",
+    "uses-permission: name='android.permission.VIBRATE'",
+    "native-code: 'arm64-v8a'"
+  ],
+  "physicalAndroidValidated": false
+}

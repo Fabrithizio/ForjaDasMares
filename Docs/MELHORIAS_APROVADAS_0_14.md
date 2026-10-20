@@ -24,3 +24,7 @@ Escopo: slots com imagens e as vinte ideias aprovadas na conversa. Executar por 
 20. Preparação fora da partida.
 
 Estado inicial: implementação. Itens existentes serão auditados e aprimorados; presença de um script não basta para conclusão. Limites e testes serão acrescentados por bloco.
+
+
+## Entrega integrada
+A base funcional dos20 pontos foi integrada por extensão dos sistemas existentes; detalhes por item em REVISAO_0_14_2026-10-20.md. Fonte própria Blender/áudio e dados presentes, sem download de terceiros. Windows0.14 e APK0.14 produzidos; celular desconectado, atualização física pendente.69 testes finais aprovados, sessão real de dois processos Windows pelo Relay e capturas do arsenal/ícones. Não equivale a arte final, equilíbrio aprovado por jogadores, quatro pessoas ou publicação na PlayStore.

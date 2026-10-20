@@ -1,0 +1,887 @@
+{
+  "runs": [
+    {
+      "file": "polish014-final-all.xml",
+      "total": "214",
+      "passed": "200",
+      "failed": "13",
+      "skipped": "1",
+      "duration": "498,6589908"
+    },
+    {
+      "file": "polish014-final-focused.xml",
+      "total": "69",
+      "passed": "69",
+      "failed": "0",
+      "skipped": "0",
+      "duration": "86,1277505"
+    }
+  ],
+  "combinedLatestPerCase": {
+    "Passed": 214,
+    "Skipped": 1
+  },
+  "combinedIsSingleRun": false,
+  "cases": {
+    "ForjaDasMares.Networking.Tests.AdventurePolishTests.CombatFeelHasRealAudioAndSharedMaterial": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventurePolishTests.GearSlotsUseImagesAndKeepTheirInspectionAction": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventurePolishTests.VisualPauseNeverStopsGameTime": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.AltarChecksDistanceMembershipAndDuplicateClaims": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.BleedRefreshDoesNotStackAndRestoreCleansIt": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.BoonsAreBoundedAndCounterIsConsumedOnce": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.BridgeBreaksAndLeverRestoresSafeCrossing": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.BurnSynergyChangesRealDamageAndFractureReducesDefense": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.CachePaysOnlyOnce": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.DefendEventCanBeWon": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.DestructibleWallAcceptsRealMeleeAndReleasesCollision": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.EscortEventCanBeWon": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.FeaturesUseWalkablePointsAndThreeEventModes": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.OptionalWaveCompletesAndDoesNotCompleteMainRooms": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.PerfectDodgeHasOneFiniteCounterAndKeepsMovement": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.PingsAreBoundedAndClientIntentCannotSupplyRewards": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.ReleaseChargedAttackSelectsHeavyFinisher": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.SupportHealingDeduplicatesAllyColliders": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.AdventureSystemsTests.ThemedLootRespectsClassAndConfiguredPreference": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.AttackIndicatorHasNoColliderAndCannotInflictDamage": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.ClipsExistForThreeWeaponStylesWithoutLosingLocomotion": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.FootprintsDistinguishThinLineConeAndFullCircle": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.GuaranteedCriticalAppliesConfiguredMultiplierInRealCombat": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.NineWeaponCategoriesHaveAuthoredMeshesAndRenderedIcons": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.NumericDamageAndCriticalUseTheSameBaseAndModifiers": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.RealLineAttackDeduplicatesCollidersAndRespectsWalls": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.SwordAxeAndHammerCombosHaveDifferentRealHitAreas": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.TwentyDamageAgainstTenPercentDefenseDealsEighteen": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ArsenalTests.WeaponCategorySelectsItsOwnAnimatorStates": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.AdventureSuppliesAndThreeSealsGrantOneAuthorityReward": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.CampaignFrameRoundtripContainsSharedLevelProgressAndAnimationVariants": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.CampaignLootStartsEmptyPersistsOnceAndSavesMapCompletion": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.CampaignStartsSoloWithCommonStartersAndNoBonus": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.DefeatClearsEnemiesAndHidesDefaultWeaponAndUselessResultPagination": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.EscapeTogglesSessionMenuThroughInputSystem": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.EveryCampaignMapBakesConnectedNavigationAndCreatesPuzzlesAndMist": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.FountainHealsTwoNearbyHeroesOnlyOnceAndNeverDuringCombat": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.HomeCampaignFriendsAndSettingsUseRealNavigation": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.InventoryOpensWithFiveRealEquipmentSlotsAndClassStarters": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.LateParticipantReceivesOnlyFutureRewardsAndCannotReplayPastEvents": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.NewWeaponsUseDifferentRealAttackDataAndRewardRulesReserveCapacity": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.OneIdentityCannotOpenTwoProfilesInTheSameExpedition": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.ProgressBeforeMapGenerationIsZeroAndSafeForSessionAdvertising": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.SessionMenuKeepsSimulationRunningShowsCodeAndCoordinatesInventory": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.SoloCanSolvePlatesSequentiallyAndAdmissionClosesAtTwentyPercent": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.ThreeIncreasingRoutesHaveRealDataAndBoundedNetworkMasks": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.TransportShutdownLeavesNoPlayableGhostSessionOrInventorySlot": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.TwoDistinctLivingHeroesMustHoldSeparatePlatesAndUnlockTheDoors": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.WallDartsOnlyDamageOnAuthorityAndDoNotHitRepeatedlyDuringOneFlight": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CampaignTests.WarriorHeldAttackAndSuperAreCalculatedOnAuthority": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopInternetTests.MissingOrFakeProjectCannotEnableInternet": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopInternetTests.PublicConfigurationExistsAndHasSafeDefaults": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopInternetTests.ResumeOnlyMatchesTheRequestedSessionCode": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopInternetTests.UnlinkedInternetAttemptPreservesOfflineSession": {
+      "result": "Skipped",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProgressionTests.AuthorityCompletesRealCombatsBossAndUniqueSavedVictory": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProgressionTests.EnemyRewardComesOnceFromAuthorityPoolAndInventoryIsLockedInCombat": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProgressionTests.EquipmentIntentChangesRealCombatAndRejectsIncompatibleItems": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProgressionTests.RealChestDefeatAndReloadDoNotDuplicateItems": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProgressionTests.RevivalHasExplicitHealthFractionAndDoesNotGiveInvulnerability": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProtocolTests.JoinSchemaRejectsBadVersionIdentityAndHero": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProtocolTests.NamedMessageHeaderDoesNotCountAsCommandPayload": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopProtocolTests.SnapshotRoundtripPreservesCollectionsMasksAndSlots": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.AuthorityRejectsArbitraryRewardRulesAndParticipantReplacement": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.DefeatKeepsItemsAndHalvesExperienceAndCoinsForEveryParticipant": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.FourParticipantsReceiveBossAndCompletionOnceAcrossReload": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.PartialCompletionRetryCannotDuplicateCurrencyOrItems": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.PartialDiskFailureRetriesOnlyUncommittedParticipants": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopRewardLedgerTests.ParticipantPathsRejectTraversalAndRemainInsideOwnedDirectory": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopSceneTests.EveryHeroHasOneConfiguredCommandAdapterAndNoClientDamageSimulation": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopSceneTests.HostLoadsRealDungeonAndDetectsDefeat": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.CoopSceneTests.NetworkRootDoesNotLeakIntoOfflineScene": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.DartEmittersAndEnemyArrivalHaveVisibleOrigins": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.ExistingInventoryAndExperienceSurviveChangedClassRestrictions": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.FirstEncounterAwardsImmediateCurrencyWithoutRoomLoot": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.FuryChangesSpeedWithoutAreaDamageExpiresAndClearsOnDeath": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.HomeProfileWorksWithoutCreatingRoomAndPersistsEquipment": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.LastRoomProfileCanBeOrganizedWithoutImportingItemsIntoHostProfile": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.LobbyAfterDefeatDoesNotAdvertisePreviousMapWithNextLevel": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.LobbyEquipmentChangesApplyBeforeStartingAndNewRunStartsAtFullHealth": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.MinimapExpandsAndProjectileOriginCannotCrossCover": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.RangerCanEquipDifferentDaggersInEachHandAndBowRemovesOffhandSafely": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.ReplicaWeaponIsHiddenWhenActorReturnsToAuthority": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.StarterMigrationIsIdempotentAndClassAppropriate": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.StarterStrikeHitsOnlyOnePhysicalTarget": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.ForgeTests.WeaponSkillActuallyReplacesClassSkillAndMinimapTracksPendingFight": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.BagExcludesEquippedAndUnequipRestoresExactlyOne": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.DifficultyRewardsAndItemDescriptionsHaveRealData": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.ExperienceWithinSameLevelDoesNotRebuildEquipment": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.FullBagDoesNotLoseEquipmentWhenUnequipFails": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.ImmediateRewardsAreUniqueAndSurviveDeathAndRestart": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.InventoryDetailsAndTalentButtonsOpenRealPanels": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.LiveEnemyDeathDropsImmediatelyAndPoolIsBounded": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.MinimapIsCompactAtTopLeft": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.RecyclePaysOnlyOnceAndNeverSellsEquippedItems": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.TalentPointsAffectRealStatsAndCostGoldToReset": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.RpgTests.TemporaryEquipmentSurvivesFinishAndOccupiedSlotsRejectDuplicateUse": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.EntireHundredEnemyHordeCompletesWithoutPoolFailureOrWrongSectorCredit": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.EquippedWeaponStaysInMetresOnHostReplicaAndHeroChange": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.ExpeditionEquipmentPersistsWithoutDuplicatingOnDefeatOrFullInventory": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.HordeDataAndAssetsAreRealAndBounded": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.ImportedCoverChildrenBecomeTranslucentWithoutDisablingCollision": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.OpenNavigationNeverClosesAndChangingSectorDoesNotEraseFight": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.OriginalEnemyModelsRemainUprightAfterRuntimePreparation": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.ReplicaPoolCanBecomeAuthoritativeAgain": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Networking.Tests.WildernessTests.SupplyHealsOnlyOnceAndDoesNotResurrect": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.AllEightDirectionsMoveAndDiagonalSpeedIsNormalized": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.AttackCannotHitThroughWallsOrBehindPlayer": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.CameraKeepsPlayerFramedOnWideAndNarrowScreensAndAvoidsPerimeter": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.CameraSmoothlyFollowsAChangedPlayerPosition": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.DisplacementRemainsConsistentAtThirtySixtyAndOneHundredTwentyFps": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.MovementAndDodgeCannotCrossPerimeterWall": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.ObstacleBlocksAndPlayerCanMoveAlongItsFace": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.RealInputSystemAdapterReadsNormalizedKeyboardAndGamepadCommands": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.SavedSceneHasNoMissingComponentsAndInputAssetContainsExpectedBindings": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.StrikeDealsDamageOnceEvenWithMultipleTargetCollidersAndResetRestoresEverything": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ArenaAcceptanceTests.TouchWidgetsSendVirtualGamepadCommandsWithoutSubmittingReset": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.BrasaLocomotionTests.IdleBreathesAndTransitionsRemainFiniteAfterDodgeAndTeleport": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaLocomotionTests.MovingAttacksKeepRealLegMotionOnBaseLayer": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaLocomotionTests.StanceFootRemainsAtItsWorldContactDuringWalkingAndStrafing": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaLocomotionTests.StationaryActorDoesNotRunFromDesiredMotorVelocity": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.AllEightPresentationStatesResolveToRealAnimationStates": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.AuthoredWarriorHasSkinnedGeometryEightClipsAndHandSockets": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.ComboHeavyAndSuperUseSeparateClipsWithFiniteSkinDeformation": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.EquippingSwitchingHeroesAndUnequippingPreserveTheNewModel": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.HoldingACombatPoseDoesNotRestartAnAnimatorTransitionEveryFrame": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.OnlyOneBodyRemainsVisibleAfterEquipmentAndHeroChanges": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.BrasaModelTests.WalkAndAttackMoveBonesWithoutMovingTheActorOrApplyingDamage": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.AllMaterialSlotsAreFadedWithoutChangingSharedAssets": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.BoxesNeverChangePitchOrZoom": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.ClearanceRestoresTheObstacleWithoutMovingTheCamera": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.DoesNotHideTheFloorOrRevealPreviouslyHiddenGeometry": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.PauseDoesNotInvalidateTheCameraSpring": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.SmoothedFocusCrossingABoxNeverSnapsToThePlayer": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.SnapAtAnObstructedCornerStillFramesTheHero": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.CameraObstructionTests.TranslucentGeometryStillBlocksPhysicsAndRestoresOnDisable": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.ArenaSuperButtonReflectsTheMeterAndStartsTheActualAttack": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.HeavyHitsOnceAndDoesMoreDamageThanBasic": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.HoldingRepeatsWithoutClickingAndTriggersHeavyWithCooldown": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.ProjectileHeroesKeepTheirProjectilesWithoutHugeMeleeRibbons": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.SuperHasBoundedRealVisualRibbonsWithoutExtraColliders": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.SuperPressedDuringHeldComboWaitsForRecoveryAndFiresOnlyOnce": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.SuperRequiresRealEnemyHitsCannotDoubleCountCollidersOrRefundItself": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.TouchHoldOwnsItsFingerAndBlockingClearsTheIntent": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ContinuousCombatTests.WallsBlockHeavyAndSuperAndDeathStopsHeldAttacks": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ChestKeyObjectiveRestTrapAndExitRequireTheirConditions": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ClosedDoorBlocksPlayerAndEncounterCompletionOpensIt": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.CompleteFixedRouteWinsThreeCombatsChestObjectiveTrapBossAndExit": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.DungeonCameraKeepsHeroVisibleAcrossAspectRatios": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.InputSystemInteractionActivatesNearbyRequiredCrystal": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ProgressionRouteCommitsBossChestLootExperienceAndVictoryOnce": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ResetSameSeedAndHeroSwapStartSafeNewRun": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ThousandsOfSeedsAreConnectedBoundedAndReproducible": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.DungeonAcceptanceTests.ThreeBiomesHaveRealNavigationAndDistinctConfiguredArt": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.ArenaAndDungeonLinksReturnToTheNewMap": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.CompleteRouteUsesRealEncountersObjectivesChestAndExit": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.NavigationAndEverySpawnPointRemainClear": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.OriginalRouteIsConnectedDeterministicAndDistinctFromTheReferenceMap": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.RoomEntryKeepsTheSameCameraFocusAndContinuousScenery": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.GaleriasMapTests.SavedMeshesMaterialsAndSolidCratesArePresent": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.ArcanistElementsAndBurstHaveDifferentEffects": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.ChargeHitsOnceAndKnockbackMovesTrainingTarget": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.DodgeInvulnerabilityEndsDeathStopsAndResetRestores": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.FixedTouchStickHoldsInputAndIgnoresOtherFingerRelease": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.FourProfilesAreCompleteDistinctAndSelectable": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.ProceduralPlaceholderShowsHitDeathAndVictoryStates": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.RangerProjectileDamagesAndWallBlocksIt": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.RangerTrapRootsOnlyOnceAndExpires": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.ResetRestartsComboAndSwitchingClearsOldFacingLock": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.RuneKnightProtectsAllyAndChargeStopsAtWalls": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.SwitchingHeroClearsPooledAttacksAndResetsFiniteCooldowns": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.HeroAcceptanceTests.WarriorComboRecoveryDirectionalArcAndGroupImpactWork": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.NetworkFoundationTests.DuplicateAndOldSequencesCannotRepeatActions": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.NetworkFoundationTests.LostInputTimesOutToStopMovement": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.NetworkFoundationTests.PartyTargetsLivingNearestMemberAndSurvivesHostDeath": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.NetworkFoundationTests.RejectsNonFiniteAndOverlargeInputs": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.AttributeChangeCannotHealOrResurrect": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.DamagedPrimaryRecoversValidBackup": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.DeathAndInterruptedExpeditionKeepItemsAndHalfCurrency": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.EmptyAbandonPreservesLastMeaningfulResult": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.EquippedItemCannotBeDiscarded": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.FullTemporaryLootStillGrantsEnemyExperienceOnce": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.GrantAndCompletionAreAppliedOnceAndSurviveReload": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.InvalidModifierAndRarityAreRejectedBeforeUse": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.OverflowDeliveryAndConfirmedDiscardDoNotLoseItems": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.RarityRollsUseWeightsAndDoNotRepeatAffixes": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.SecondaryRulesAndTwoHandPreviewMatchEffectiveStats": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.VersionOneMigratesAndFutureVersionIsRejected": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.WriteFailureRollsBackTransaction": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.ChestDeathAndSceneTransitionPreserveUniqueRewards": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.CompanionUsesFiniteCooldownChargesAndDoesNotRevive": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.EncounterSpawnsAndEnemyDeathGrantsOnceFromRealPool": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.EquippingChangesActualHealthSpeedAndAttackWithoutHealingOrAccumulating": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.InventoryButtonsEquipAndRequireExplicitDiscardConfirmation": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.LegendaryEchoTriggersOnceOnThirdAttackWithMultipleColliders": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.RealCatalogContainsAllCategoriesRaritiesAndValidComposition": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.ShieldReducesFrontalDamageWithoutInvulnerability": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionIntegrationTests.WeaponPatternsCauseRealDistinctHitsAndProjectiles": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.ActiveCapAndSummonLifetimeBudgetAreEnforced": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.AllFourHeroesCanDefeatEachArchetypeWithTheirActualAttacks": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.ArcherShotsStopAtImpactAndGeometryBlocksAttack": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.BossChargeActuallyDamagesOnceWithoutCrossingPlayerOrWalls": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.BossHasThreeAvoidablePatternsPhaseAndSingleReward": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.BossHealthBarReallyShrinksWithoutDependingOnMissingSprite": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.DefinitionsNavigationAndPoolsAreComplete": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.EveryHeroCanDefeatTheBoss": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.ExplosionWarnsBeforeDamageAndHitsOnlyOnce": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.FrontShieldBlocksMoreThanRearAndDeathCleansMinions": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.MultiplePlayerCollidersDoNotDuplicateAreaDamage": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.NavigationRoutesAroundExistingWall": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.PassivePlayerCanDieAndEncounterFailsThenResets": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.PveAcceptanceTests.WavesWaitForEverySpawnAndRelevantEnemyThenComplete": {
+      "result": "Passed",
+      "from": "polish014-final-all.xml"
+    },
+    "ForjaDasMares.Tests.RusticHudTests.CompactHudPreservesRealMenuAndInventoryActions": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.RusticHudTests.HealthCooldownAndHeroActionsUseLiveData": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.RusticHudTests.MenuCanCloseAndResizingKeepsSafeRootInsideCanvas": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    },
+    "ForjaDasMares.Tests.ProgressionAuditTests.OptionalThemeDoesNotRequireCampaignIdsButRejectsMissingExplicitItem": {
+      "result": "Passed",
+      "from": "polish014-final-focused.xml"
+    }
+  }
+}

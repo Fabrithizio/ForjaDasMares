@@ -126,3 +126,13 @@ As três fases estão liberadas para teste, com12,15 e18 setores. A duração de
 Na revisão0.8.1, dois clientes Windows pelo Relay testaram início solo, abertura da sala e entrada com a partida em andamento, remoção do bônus e bloqueio após20%. Consulte CAMPANHA_SOLO_2026-10-17.md para resultados finais do Android. Quatro dispositivos, redes distintas e vitória humana cronometrada continuam pendentes.
 
 Detalhes técnicos, testes e arquivos: [relatório da campanha](CAMPANHA_2026-10-17.md).
+
+## Gerar novamente a versão atual
+Com a Unity fechada, abra PowerShell na pasta do projeto e execute (ajuste somente o caminho do Editor se mudar a instalação):
+
+```powershell
+$project = (Resolve-Path '.').Path
+& 'C:\Program Files\Unity\Hub\Editor\6000.3.26f1\Editor\Unity.exe' -batchmode -nographics -buildTarget Android --burst-force-sync-compilation -projectPath $project -executeMethod ForjaDasMares.Networking.Editor.CampaignInstaller.Android -quit -logFile "$project\Builds\Atual\android-build.log"
+```
+
+Para Windows, troque Android por Win64 em buildTarget e use executeMethod ForjaDasMares.Networking.Editor.CampaignInstaller.Windows. Confira o marcador CAMPAIGN_BUILD Succeeded e o arquivo produzido. O processo Android usa Library/JavaTmp para contornar a falha local do Java/Gradle. O método mantém o pacote da campanha, sem gerar outra aplicação. APK é uma build de desenvolvimento para testes privados; não é um pacote de publicação da PlayStore.

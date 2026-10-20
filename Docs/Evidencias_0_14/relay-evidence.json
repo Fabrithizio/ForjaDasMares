@@ -1,0 +1,274 @@
+{
+  "roles": {
+    "host": {
+      "boons": [
+        1,
+        4,
+        0,
+        0
+      ],
+      "featureStages": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "pingKinds": [
+        3,
+        2,
+        -1,
+        -1
+      ],
+      "phase": "Playing",
+      "signature": "0:0,0/0[1,]1:1,0/1[0,2,]2:2,0/5[1,3,]3:3,0/2[2,4,]4:3,1/6[3,5,]5:2,1/1[4,6,]6:1,1/3[5,7,]7:0,1/1[6,8,]8:0,2/5[7,9,]9:1,2/2[8,10,]10:2,2/4[9,11,]11:3,2/7[10,]",
+      "seals": 0,
+      "sealGoal": 3,
+      "propHealth": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "explorationReward": false,
+      "profileReady": true,
+      "cloudBusy": false,
+      "publicRoom": false,
+      "solo": false,
+      "tick": 664,
+      "localSlot": 0,
+      "connected": 2,
+      "enemies": 0,
+      "effects": 0,
+      "snapshotBytes": 4840,
+      "sampleHp": -1,
+      "time": 79.72216796875,
+      "completion": 0.0,
+      "positions": [
+        {
+          "x": 5.224999904632568,
+          "y": 0.03999987244606018,
+          "z": 0.0
+        },
+        {
+          "x": 5.925000190734863,
+          "y": 0.03999987244606018,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.05999999865889549,
+          "z": -5.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.05999999865889549,
+          "z": -5.0
+        }
+      ],
+      "hp": [
+        118,
+        118,
+        100,
+        100
+      ],
+      "maximum": [
+        118,
+        118,
+        100,
+        100
+      ],
+      "xp": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "items": [
+        15,
+        15,
+        0,
+        0
+      ]
+    },
+    "client": {
+      "boons": [
+        1,
+        4,
+        0,
+        0
+      ],
+      "featureStages": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "pingKinds": [
+        3,
+        2,
+        -1,
+        -1
+      ],
+      "phase": "Playing",
+      "signature": "0:0,0/0[1,]1:1,0/1[0,2,]2:2,0/5[1,3,]3:3,0/2[2,4,]4:3,1/6[3,5,]5:2,1/1[4,6,]6:1,1/3[5,7,]7:0,1/1[6,8,]8:0,2/5[7,9,]9:1,2/2[8,10,]10:2,2/4[9,11,]11:3,2/7[10,]",
+      "seals": 0,
+      "sealGoal": 3,
+      "propHealth": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        65,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "explorationReward": false,
+      "profileReady": true,
+      "cloudBusy": false,
+      "publicRoom": false,
+      "solo": false,
+      "tick": 664,
+      "localSlot": 1,
+      "connected": 2,
+      "enemies": 0,
+      "effects": 0,
+      "snapshotBytes": 4840,
+      "sampleHp": -1,
+      "time": 57.014286041259766,
+      "completion": 0.0,
+      "positions": [
+        {
+          "x": 5.224999904632568,
+          "y": 0.03999987244606018,
+          "z": 0.0
+        },
+        {
+          "x": 5.925000190734863,
+          "y": 0.03999987244606018,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.05999999865889549,
+          "z": -5.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.05999999865889549,
+          "z": -5.0
+        }
+      ],
+      "hp": [
+        118,
+        118,
+        100,
+        100
+      ],
+      "maximum": [
+        118,
+        118,
+        100,
+        100
+      ],
+      "xp": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "items": [
+        0,
+        15,
+        0,
+        0
+      ]
+    }
+  },
+  "assertions": [
+    "two real Windows processes over Unity Relay",
+    "same generated layout",
+    "same feature states",
+    "individual boons replicated",
+    "same altar rejects second choice",
+    "host/client pings replicated",
+    "snapshot below transport limit"
+  ],
+  "testProfiles": true,
+  "differentNetworks": false,
+  "physicalAndroid": false
+}
