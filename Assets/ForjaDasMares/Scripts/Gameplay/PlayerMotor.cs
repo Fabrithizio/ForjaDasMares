@@ -17,6 +17,11 @@ namespace ForjaDasMares
         [SerializeField, Min(0.01f)] float dodgeDuration = 0.16f;
         [SerializeField, Min(0.1f)] float dodgeSpeed = 12f;
         [SerializeField, Min(0f)] float dodgeCooldown = 0.65f;
+        [Header("Safe ground recovery")]
+        [SerializeField] bool recoverFromFalls=true;
+        [SerializeField] LayerMask walkableGround=1<<8;
+        [SerializeField,Min(1)] float recoveryDepth=3;
+        Vector3 safeGround;bool hasSafeGround;
         CharacterController controller;
         IPlayerCommands commands;
         Vector3 velocity, dodgeDirection, impulse;
@@ -27,6 +32,7 @@ namespace ForjaDasMares
         public bool ConfirmPerfectDodge(){if(!IsInvulnerable||perfectUsed||dodgeDuration-dodgeRemaining>invulnerableStart+.065f)return false;perfectUsed=true;var build=GetComponent<CombatBuildEffects>();if(build!=null)build.GrantCounter();var feel=GetComponent<HeroRoster>()?.Current.feedback;CombatAudioPool.Play(feel!=null?feel.perfect:null,.3f);return true;}
         float baseDodgeCooldown;
 
+        public int FallRecoveries { get; private set; }
         public float Speed => speed;
         public bool IsDodging => dodgeRemaining > 0f && !charge;
         public float DodgeProgress => IsDodging ? Mathf.Clamp01(1-dodgeRemaining/Mathf.Max(.05f,dodgeDuration)) : 0;
@@ -107,6 +113,20 @@ namespace ForjaDasMares
             dodgeRemaining = Mathf.Max(0f, dodgeRemaining - deltaTime);
             displacement += impulse * deltaTime; impulse = Vector3.MoveTowards(impulse, Vector3.zero, 20 * deltaTime);
             ActorMotion.Move(controller, displacement, deltaTime, ref verticalSpeed, gravity);
+            if(controller.isGrounded)RememberSafeGround();
+            else if(recoverFromFalls&&hasSafeGround&&transform.position.y<safeGround.y-recoveryDepth)
+            {
+                FallRecoveries++;float remainingCooldown=cooldownRemaining;
+                Teleport(safeGround,transform.rotation);cooldownRemaining=remainingCooldown;
+            }
+        }
+
+        void RememberSafeGround()
+        {
+            if(!recoverFromFalls)return;
+            if(hasSafeGround&&(transform.position-safeGround).sqrMagnitude<.09f)return;
+            if(Physics.Raycast(transform.position+Vector3.up*.35f,Vector3.down,out var ground,.8f,walkableGround,QueryTriggerInteraction.Ignore))
+            {safeGround=ground.point+Vector3.up*.06f;hasSafeGround=true;}
         }
 
         public void Teleport(Vector3 position, Quaternion rotation)
@@ -118,7 +138,7 @@ namespace ForjaDasMares
             velocity = impulse = Vector3.zero;
             verticalSpeed = dodgeRemaining = cooldownRemaining = 0f;
             facingLock = 0f; charge = false;
-            Physics.SyncTransforms();
+            Physics.SyncTransforms();RememberSafeGround();
         }
     }
 }

@@ -70,7 +70,7 @@ namespace ForjaDasMares.Networking
             if (File.Exists(control))
             {
                 string command = File.ReadAllText(control).Trim(); File.Delete(control);
-                if(command=="qa-altar"&&session.IsHost&&session.Phase==CoopPhase.Playing){var altar=session.Campaign.Features.Nodes[0];for(int slot=0;slot<4;slot++)if(session.IsConnected(slot))session.Actor(slot).Motor.Teleport(altar.root.position+Vector3.right*(slot*.7f+.5f),Quaternion.identity);}
+                if(command=="qa-altar"&&session.IsHost&&session.Phase==CoopPhase.Playing){var altar=session.Campaign.Features.Nodes[0];for(int slot=0;slot<4;slot++)if(session.IsConnected(slot))session.Actor(slot).Motor.Teleport(altar.root.position+Quaternion.Euler(0,slot*90,0)*Vector3.forward*1.2f+Vector3.up*.06f,Quaternion.identity);}
                 if(command.StartsWith("qa-boon:")&&session.LocalSlot>=0)session.GetComponent<CampaignAdventureChannel>().Request(AdventureAction.ChooseBoon,0,int.Parse(command.Substring(8)));
                 if(command.StartsWith("qa-ping:")&&session.LocalSlot>=0)session.GetComponent<CampaignAdventureChannel>().Request(AdventureAction.Ping,0,int.Parse(command.Substring(8)));
                 if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=session.LocalInput;arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
@@ -128,7 +128,7 @@ namespace ForjaDasMares.Networking
             var adventure=session.Campaign?.Adventure;if(adventure!=null){report.seals=adventure.SealCount;report.sealGoal=adventure.SealGoal;report.explorationReward=adventure.Rewarded;report.propHealth=new int[adventure.Props.Count];for(int p=0;p<report.propHealth.Length;p++)report.propHealth[p]=adventure.Props[p].Health.Current;}
             report.profileReady=session.GetComponent<CoopProfileChannel>().LocalProfile!=null;
             for(int i=0;i<4;i++)report.maximum[i]=session.Actor(i).Health.Maximum;
-            for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current; }
+            for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current;report.recoveries[i]=actor.Motor.FallRecoveries; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
             report.sampleHp = sample != null ? sample.Health.Current : -1;
             var profiles = session.GetComponent<CoopProgression>();
@@ -139,7 +139,7 @@ namespace ForjaDasMares.Networking
         void OnDisable(){arsenalInput?.SetUiAttackHeld(false);}
         [Serializable]sealed class ArsenalEvidence {public string weapon,clip;public int variant,version;public float time;public bool area;}
         [Serializable] sealed class ProbeReport
-        { public int[] boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
+        { public int[] recoveries=new int[4],boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

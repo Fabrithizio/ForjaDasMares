@@ -35,3 +35,10 @@ Os20 itens têm implementação funcional na base0.14, incluindo sistemas anteri
 Continuação autorizada: acabamento do item18 (separação e limites das marcações), ajuste da interface ao raio real de segurança dos altares e diagnóstico que usava a entrada de um ator desativado em sessões com vários jogadores. Os testes e as builds0.14.1 serão registrados após execução. A listaADB voltou vazia nesta conferência; o teste físico Android permanece pendente.
 
 Revisão0.14.1:63/63 testes PlayMode aprovados,zero falhas/ignorados (polish0141-tests.xml). Abrange aventura, arsenal, campanha, RPG, marcações sobrepostas em três larguras de tela e propriedade da entrada com outro ator ativo. Builds e sessão de quatro processos ainda em execução neste checkpoint.
+
+### Ocorrência encontrada durante a validação0.14.1
+A primeira tentativa com quatro processos chegou a4/4 conectados, mas não foi aprovada: após o reposicionamento local do diagnóstico no altar, os atores perderam o piso e o quarto não conseguiu escolher a bênção. Foram observadas posiçõesY inferiores a−40.000. Repetir o reposicionamento os estabilizou; a causa exata da ocorrência inicial ainda não foi isolada.
+
+Em resposta, ActorMotion subdivide movimentos longos em etapas limitadas; PlayerMotor registra piso verificado e recupera quedas além da profundidade configurável, mantendo vida e cooldown, sem reviver. Só a autoridade simula PlayerMotor; réplicas recebem a posição do host. O diagnóstico também passa a posicionar os quatro atores separados, com folga sobre o piso. A regressão geral e a repetição real da sessão ainda estão pendentes neste registro; não contar a tentativa que caiu como teste aprovado.
+
+A captura de cinco segundos dos ataques durante a compilação confirmou ataques normais repetidos, mas não capturou o pesado. A exigência de ver todos os12 clipes nessa janela curta não foi satisfeita e não é contabilizada como aprovação. Os12 clipes já tinham sido conferidos na0.14 e permanecem os mesmos; a nova validação de entrada exige ações reais repetidas, sem afirmar captura de todos os clipes.

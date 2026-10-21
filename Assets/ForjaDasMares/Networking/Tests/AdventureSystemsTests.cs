@@ -37,6 +37,28 @@ namespace ForjaDasMares.Networking.Tests
             try{player.transform.position=new Vector3(100,1,100);ally.transform.position=new Vector3(100,1,101);ally.layer=11;ally.AddComponent<BoxCollider>();ally.AddComponent<SphereCollider>();var source=player.AddComponent<Health>();source.Configure(100,CombatFaction.Player);var hp=ally.AddComponent<Health>();hp.Configure(100,CombatFaction.Player);hp.ApplyDamage(20);var build=player.AddComponent<CombatBuildEffects>();build.Configure(WeaponPerk.None,BuildSynergy.KindredGuard);var enemy=victim.AddComponent<Health>();enemy.Configure(10,CombatFaction.Enemy);attack.damage=20;attack.knockback=0;Physics.SyncTransforms();enemy.ApplyHit(attack,Vector3.forward,source);Assert.AreEqual(84,hp.Current);enemy.Restore();enemy.ApplyHit(attack,Vector3.forward,source);Assert.AreEqual(84,hp.Current,"Support interval must prevent immediate repeats");}
             finally{Object.DestroyImmediate(player);Object.DestroyImmediate(victim);Object.DestroyImmediate(ally);Object.DestroyImmediate(attack);}
         }
+        [UnityTest]public IEnumerator FourActorsRemainOnGroundWithLongSimulationFrames()
+        {
+            yield return Play();Vector3 spawn=session.Dungeon.Generator.Rooms[0].Center+new Vector3(0,.06f,-3);
+            for(int i=0;i<4;i++){var actor=session.Actor(i);actor.gameObject.SetActive(true);actor.SetAuthority(true);actor.Motor.enabled=false;actor.Combat.enabled=false;}
+            for(int layout=0;layout<2;layout++)
+            {
+                for(int i=0;i<4;i++)session.Actor(i).Motor.Teleport(spawn+(layout==0?new Vector3(i*.7f,0,0):new Vector3((i%2)*1.2f,0,(i/2)*1.2f)),Quaternion.identity);
+                for(int step=0;step<20;step++)for(int i=0;i<4;i++)session.Actor(i).Motor.Simulate(.6f,Vector2.zero);
+                for(int i=0;i<4;i++){Assert.That(session.Actor(i).transform.position.y,Is.InRange(-.1f,.2f),"Ground lost for slot "+i);Assert.AreEqual(0,session.Actor(i).Motor.FallRecoveries,"Stable floor should not require rescue");}
+            }
+        }
+        [UnityTest]public IEnumerator FallRecoveryPreservesHealthAndCooldownAndDoesNotRevive()
+        {
+            yield return Play();var actor=session.Actor(0);Vector3 spawn=session.Dungeon.Generator.Rooms[0].Center+new Vector3(0,.06f,-3);
+            actor.Motor.enabled=false;actor.Combat.enabled=false;actor.Motor.Teleport(spawn,Quaternion.identity);int hp=actor.Health.Current;
+            Assert.IsTrue(actor.Motor.TryDodge(Vector2.up));float cooldown=actor.Motor.DodgeCooldownRemaining;
+            actor.transform.position=spawn+Vector3.down*8;Physics.SyncTransforms();actor.Motor.Simulate(.02f,Vector2.zero);
+            Assert.That(Vector3.Distance(actor.transform.position,spawn),Is.LessThan(.2f));Assert.AreEqual(hp,actor.Health.Current);Assert.AreEqual(1,actor.Motor.FallRecoveries);
+            Assert.That(actor.Motor.DodgeCooldownRemaining,Is.InRange(cooldown-.03f,cooldown+.001f));Assert.IsFalse(actor.Motor.IsInvulnerable);
+            actor.Health.ApplyDamage(100000);actor.transform.position=spawn+Vector3.down*8;Physics.SyncTransforms();actor.Motor.Simulate(.02f,Vector2.zero);
+            Assert.IsFalse(actor.Health.IsAlive);Assert.That(actor.transform.position.y,Is.GreaterThan(-.1f));Assert.AreEqual(2,actor.Motor.FallRecoveries);
+        }
         [UnityTest]public IEnumerator AltarChecksDistanceMembershipAndDuplicateClaims()
         {
             yield return Play();var features=session.Campaign.Features;var node=features.Nodes.First(x=>x.kind==ExpeditionFeatureKind.Altar);var actor=session.Actor(0);Assert.IsFalse(features.ChooseBoon(actor.Health,1,node.state.id,0));actor.Motor.Teleport(node.root.position+Vector3.right*.7f,Quaternion.identity);yield return null;Assert.IsTrue(features.ChooseBoon(actor.Health,0,node.state.id,0));Assert.AreEqual(1,actor.GetComponent<CombatBuildEffects>().Boon(0));Assert.IsFalse(features.ChooseBoon(actor.Health,0,node.state.id,1));Assert.IsFalse(features.ChooseBoon(actor.Health,0,node.state.id,99));
