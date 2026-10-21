@@ -1,0 +1,44 @@
+[
+  {
+    "source": "polish0141-all.xml",
+    "total": "219",
+    "passed": "218",
+    "failed": "0",
+    "skipped": "1",
+    "result": "Skipped:Ignored",
+    "duration": "510,4281132",
+    "ignored": [
+      "ForjaDasMares.Networking.Tests.CoopInternetTests.UnlinkedInternetAttemptPreservesOfflineSession"
+    ]
+  },
+  {
+    "source": "polish0141-safety-final.xml",
+    "total": "23",
+    "passed": "23",
+    "failed": "0",
+    "skipped": "0",
+    "result": "Passed",
+    "duration": "59,47405",
+    "ignored": []
+  },
+  {
+    "source": "polish0141-ui-final.xml",
+    "total": "24",
+    "passed": "24",
+    "failed": "0",
+    "skipped": "0",
+    "result": "Passed",
+    "duration": "63,9150572",
+    "ignored": []
+  },
+  {
+    "source": "polish0141-mobile-layout.xml",
+    "total": "25",
+    "passed": "25",
+    "failed": "0",
+    "skipped": "0",
+    "result": "Passed",
+    "duration": "64,9020031",
+    "ignored": []
+  }
+]

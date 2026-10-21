@@ -1,0 +1,7 @@
+{
+  "physicalAndroid": true,
+  "kind": 2,
+  "hostReceived": true,
+  "gesture": "tap on visible PERIGO button via ADB",
+  "separatedFromJoystick": true
+}

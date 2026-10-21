@@ -1,3 +1,13 @@
+# Revisão atual 0.14.1 — 21/10/2026
+
+Base funcional dos 20 pontos integrada anteriormente, agora com marcações separadas, diagnóstico de entrada corrigido e proteção do movimento contra frames longos/quedas acidentais. Suíte geral:218 aprovados,0 falhas,1 ignorado (219 casos); reexecução final de segurança/interface:25/25. Quatro clientes Windows pelo Relay passaram na conferência de mapa, bênçãos, marcações, piso sem resgates, baú único, resultado administrativo e encerramento do host. Não foi teste com quatro pessoas.
+
+Builds reais 0.14.1: Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk (código 29). Use o atalho existente Jogos/Jogar Campanha Forja das Mares. Mesmo pacote Android e saves preservados; moto g15 atualizado e conferido com o PC pelo Relay no mesmo Wi-Fi, incluindo joystick, marcações e reconexão. Sem nova pasta de envio ao irmão.
+
+[Relatório atual e limitações](REVISAO_0_14_1_2026-10-21.md) · [evidências](Evidencias_0_14_1/testes.json). Aprovado com limitações para testes privados no PC e neste Android; arte, equilíbrio humano, medições móveis e lançamento comercial pendentes. Histórico abaixo.
+
+---
+
 # Revisão atual 0.14.0 — testes privados
 
 Arsenal original com ícones e12 novos clipes de ataque da Brasa; slots de equipamento com imagens; efeitos e sinergias de armas; esquiva perfeita; altares com escolhas; esconderijos; desafios de ondas/proteção/escolta; barris, parede quebrável e ponte frágil; marcações cooperativas e novos sons originais. A base dos20 pontos aprovados está integrada; modelos de cenário e heróis ainda são provisórios, e os demais heróis não receberam animações finais novas.

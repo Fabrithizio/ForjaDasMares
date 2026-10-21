@@ -230,3 +230,9 @@ Campanha usa EnemyDefinitions/prefabs clonados, preservando arena/masmorras ante
 EquipmentDefinition contém ícone de categoria e sequência de ataques. Profile.Item resolve banco+expedição sem unir as coleções; transações preservam IDs, regras de equipagem e finalização única. CoopProgression valida equipagem em campanha aberta sem perigos próximos. CoopProfileChannel omite o diário de eventos interno do espelho, preservando o diário no host. EquipmentVisualPlacement compensa lossyScale do pai ao montar arma nos ossos importados e réplicas. Não altera o collider ou os atributos do herói.
 
 CameraOcclusion guarda conjuntos de renderers filhos por collider e aplica material parcialmente transparente sem desligar colisão. CampaignCombatReadout apresenta sons e números por deltas de estado, com pools/frequência limitada. Fontes de arte editáveis e galeria: ArtSource/ExpeditionSet. DependênciasUnity/pacotes/serviços permanecem nas versões anteriores; sem novos serviços pagos ou segredos. Relatório e limitações: PAISAGENS_E_HORDAS_0_10_2026-10-17.md.
+
+
+## Correção0.14.1: chão e interface
+ActorMotion subdivide frames longos (passo alvo0,05s, máximo32). PlayerMotor guarda piso de layer configurável e resgata queda acidental após3m, preservando vida e cooldown e sem reviver; autoridade apenas. Mapas verticais/queda intencional exigem configuração e novo teste. FallRecoveries é telemetria local do diagnóstico, não campo do protocolo10. CampaignAdventureHud posiciona quatro rótulos em candidatos sem sobreposição dentro da interface; CoopSmokeProbe usa CoopDirector.LocalInput explícito. Sem mudanças de saves ou dependências. Evidências em Evidencias_0_14_1.
+
+No layout móvel, QuickPingPosition separa a barra de marcações do joystick padrão; os quatro botões têm largura suficiente para os textos. Teste físico PC–moto g15 no mesmo Wi-Fi concluído na0.14.1, incluindo toque, reconexão e recompensas. Relatório: REVISAO_0_14_1_2026-10-21.md.

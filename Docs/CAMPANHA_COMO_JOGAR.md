@@ -1,3 +1,6 @@
+# Atualização 0.14.1
+Saídas fixas Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk. Protocolo 10/save v2; Android código 29. Relatório atual: REVISAO_0_14_1_2026-10-21.md. Teste físico PC–moto g15 executado no mesmo Wi-Fi; não desinstalar a campanha atual. Instruções anteriores abaixo continuam válidas, exceto números de versão históricos.
+
 # Versão 0.14 — instruções atuais
 
 Abra o atalho único **Jogos/Jogar Campanha Forja das Mares** depois da atualização. O executável atual fica em Builds/Atual/Windows/ForjaDasMaresCampanha.exe; mantenha a pasta inteira com seus arquivos de dados. APK atual: Builds/Atual/Android/ForjaDasMaresCampanha.apk. Atualize a instalação com.forjadasmares.campaign; não limpe os dados. A pasta antiga de envio ao irmão não foi atualizada nesta rodada.

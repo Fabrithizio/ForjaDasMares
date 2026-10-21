@@ -1,0 +1,54 @@
+{
+  "attacks": [
+    {
+      "weapon": "cais-blade",
+      "clip": "SwordSlash",
+      "variant": 0,
+      "version": 1,
+      "time": 0.5254623293876648,
+      "area": true
+    },
+    {
+      "weapon": "cais-blade",
+      "clip": "SwordReturn",
+      "variant": 1,
+      "version": 2,
+      "time": 0.4072478413581848,
+      "area": true
+    },
+    {
+      "weapon": "cais-blade",
+      "clip": "HeavySword",
+      "variant": 3,
+      "version": 3,
+      "time": 0.434798002243042,
+      "area": true
+    },
+    {
+      "weapon": "cais-blade",
+      "clip": "SwordThrust",
+      "variant": 2,
+      "version": 4,
+      "time": 0.7469804883003235,
+      "area": true
+    },
+    {
+      "weapon": "cais-blade",
+      "clip": "SwordSlash",
+      "variant": 0,
+      "version": 5,
+      "time": 0.6723238825798035,
+      "area": true
+    },
+    {
+      "weapon": "cais-blade",
+      "clip": "SwordReturn",
+      "variant": 1,
+      "version": 6,
+      "time": 0.6803516149520874,
+      "area": true
+    }
+  ],
+  "twoClientsConnected": true,
+  "doesNotAssertAllTwelveClips": true
+}

@@ -42,3 +42,7 @@ A primeira tentativa com quatro processos chegou a4/4 conectados, mas não foi a
 Em resposta, ActorMotion subdivide movimentos longos em etapas limitadas; PlayerMotor registra piso verificado e recupera quedas além da profundidade configurável, mantendo vida e cooldown, sem reviver. Só a autoridade simula PlayerMotor; réplicas recebem a posição do host. O diagnóstico também passa a posicionar os quatro atores separados, com folga sobre o piso. A regressão geral e a repetição real da sessão ainda estão pendentes neste registro; não contar a tentativa que caiu como teste aprovado.
 
 A captura de cinco segundos dos ataques durante a compilação confirmou ataques normais repetidos, mas não capturou o pesado. A exigência de ver todos os12 clipes nessa janela curta não foi satisfeita e não é contabilizada como aprovação. Os12 clipes já tinham sido conferidos na0.14 e permanecem os mesmos; a nova validação de entrada exige ações reais repetidas, sem afirmar captura de todos os clipes.
+
+
+## Fechamento 0.14.1 — 21/10
+A regressão geral terminou com 218 aprovados/0 falhas/1 ignorado (219 casos); a reexecução final de segurança/interface passou 25/25. Builds Windows/Android finais produzidas. A repetição com quatro processos Windows pelo Relay passou, inclusive estabilidade de piso em 20 amostras sem resgate, marcações e recompensas únicas. Relatório completo em REVISAO_0_14_1_2026-10-21.md. Redes diferentes, quatro pessoas e qualidade final de arte/equilíbrio continuam pendentes. Os registros anteriores de falha foram preservados.

@@ -1,0 +1,35 @@
+{
+  "version": "0.14.1",
+  "androidCode": 29,
+  "protocol": 10,
+  "saveVersion": 2,
+  "physicalAndroidTested": true,
+  "files": [
+    {
+      "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe",
+      "bytes": 667136,
+      "sha256": "b7cca8b82003185f22644d0ee1c23b3640de1b996802d4f5d0501e287011afa6"
+    },
+    {
+      "path": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+      "bytes": 80462899,
+      "sha256": "ce3c03642ee852d08244350655d28454a18946a372ba78cb9064c67d5a3f63fa"
+    },
+    {
+      "path": "Builds/Atual/Windows/ForjaDasMaresCampanha_Data/Managed/ForjaDasMares.Networking.dll",
+      "bytes": 201216,
+      "sha256": "eb1adbf17fab05025d0ceee0813dea1400d12b2a97165ec915f964a29e86c32a"
+    },
+    {
+      "path": "Builds/Atual/Windows/ForjaDasMaresCampanha_Data/Managed/ForjaDasMares.Runtime.dll",
+      "bytes": 299008,
+      "sha256": "a82ce2ef639540fd85405d8816adc10541a6c1cba844b68b017bfd9823180a52"
+    }
+  ],
+  "androidManifest": [
+    "package: name='com.forjadasmares.campaign' versionCode='29' versionName='0.14.1' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+    "sdkVersion:'25'",
+    "targetSdkVersion:'35'",
+    "native-code: 'arm64-v8a'"
+  ]
+}
