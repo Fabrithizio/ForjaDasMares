@@ -40,6 +40,23 @@ namespace ForjaDasMares.Networking.Tests
             var reader=session.LocalInput;Assert.AreSame(session.Actor(0).GetComponent<ArenaInput>(),reader);var other=session.Actor(1);other.gameObject.SetActive(true);yield return null;
             Assert.AreSame(reader,session.LocalInput);Assert.AreNotSame(other.GetComponent<ArenaInput>(),reader);Assert.IsTrue(reader.enabled);other.gameObject.SetActive(false);
         }
+        [Test]public void MobilePingsClearTheMovementStick()
+        {
+            var mobile=new Rect(CampaignAdventureHud.QuickPingPosition(true),new Vector2(320,46));
+            var stick=new Rect(new Vector2(190,170)-Vector2.one*85,Vector2.one*170);
+            Assert.IsFalse(mobile.Overlaps(stick));Assert.GreaterOrEqual(mobile.yMin,stick.yMax+20);
+            Assert.AreEqual(new Vector2(230,180),CampaignAdventureHud.QuickPingPosition(false));
+        }
+        [Test]public void QuickPingButtonLabelsFitOnOneLine()
+        {
+            int count=0;
+            foreach(var button in Object.FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+            {
+                if(!button.name.StartsWith("Ping_"))continue;
+                var label=button.GetComponentInChildren<Text>();Assert.NotNull(label);Assert.LessOrEqual(label.preferredWidth,label.rectTransform.rect.width,"Clipped quick ping: "+label.text);count++;
+            }
+            Assert.AreEqual(4,count);
+        }
         [Test]public void VisualPauseNeverStopsGameTime()
         {
             float original=Time.timeScale;var model=session.Actor(0).Presentation.Visible.GetComponentInChildren<HeroModelView>();model.PauseImpact(.04f);Assert.AreEqual(original,Time.timeScale);

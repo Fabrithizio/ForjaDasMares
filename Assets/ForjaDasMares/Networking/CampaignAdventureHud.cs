@@ -18,8 +18,8 @@ namespace ForjaDasMares.Networking
             summary=RusticHudTheme.Label(rect,"Summary",new Vector2(0,1),new Vector2(18,-52),new Vector2(760,45),"",16);
             for(int i=0;i<3;i++){int choice=i;choices[i]=RusticHudTheme.Button(rect,"Boon_"+i,new Vector2(0,1),new Vector2(18+i*255,-105),new Vector2(246,64),CombatPerkDescriptions.Boon(i),()=>channel.Request(AdventureAction.ChooseBoon,nearby,choice));choices[i].GetComponentInChildren<Text>().fontSize=16;}
             use=RusticHudTheme.Button(rect,"AcceptChallenge",new Vector2(0,1),new Vector2(18,-105),new Vector2(760,64),"",()=>channel.Request(AdventureAction.UseFeature,nearby));
-            var bar=RusticHudTheme.Rect(root,"QuickPings",Vector2.zero,new Vector2(230,180),new Vector2(280,46));pingBar=bar.gameObject;
-            string[] labels={"AQUI","ALVO","PERIGO","SAQUE"};for(int i=0;i<4;i++){int kind=i;var button=RusticHudTheme.Button(bar,"Ping_"+i,new Vector2(0,1),new Vector2(i*70,0),new Vector2(66,42),labels[i],()=>channel.Request(AdventureAction.Ping,0,kind));button.GetComponentInChildren<Text>().fontSize=12;}
+            var bar=RusticHudTheme.Rect(root,"QuickPings",Vector2.zero,QuickPingPosition(Application.isMobilePlatform),new Vector2(320,46));pingBar=bar.gameObject;
+            string[] labels={"AQUI","ALVO","PERIGO","SAQUE"};for(int i=0;i<4;i++){int kind=i;var button=RusticHudTheme.Button(bar,"Ping_"+i,new Vector2(0,1),new Vector2(i*80,0),new Vector2(76,42),labels[i],()=>channel.Request(AdventureAction.Ping,0,kind));button.GetComponentInChildren<Text>().fontSize=12;}
             eventInfo=RusticHudTheme.Label(root,"OptionalEventProgress",new Vector2(.5f,1),new Vector2(0,-125),new Vector2(650,64),"",17);eventInfo.alignment=TextAnchor.MiddleCenter;
             counter=RusticHudTheme.Label(root,"PerfectDodge",new Vector2(.5f,0),new Vector2(0,150),new Vector2(550,36),"",19);counter.alignment=TextAnchor.MiddleCenter;counter.color=Color.cyan;
             boons=RusticHudTheme.Label(root,"ExpeditionBoons",new Vector2(0,1),new Vector2(190,-125),new Vector2(290,34),"",12);boons.raycastTarget=false;boons.color=RusticHudTheme.Gold;
@@ -60,6 +60,7 @@ namespace ForjaDasMares.Networking
                 markers[i].gameObject.SetActive(true);markers[i].rectTransform.anchoredPosition=point;markers[i].text="◆ "+PingNames[Mathf.Clamp(mark.kind,0,3)]+" · P"+(i+1);markers[i].color=PingColors[Mathf.Clamp(mark.kind,0,3)];
             }
         }
+        public static Vector2 QuickPingPosition(bool mobile) => new Vector2(230,mobile?300:180);
         public static Vector2 PlaceMarker(Vector2 desired,Rect bounds,Vector2 size,Vector2[] previous,int count)
         {
             Vector2 half=size*.5f;
