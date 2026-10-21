@@ -4,7 +4,7 @@ Base funcional dos 20 pontos integrada anteriormente, agora com marcações sepa
 
 Builds reais 0.14.1: Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk (código 29). Use o atalho existente Jogos/Jogar Campanha Forja das Mares. Mesmo pacote Android e saves preservados; moto g15 atualizado e conferido com o PC pelo Relay no mesmo Wi-Fi, incluindo joystick, marcações e reconexão. Sem nova pasta de envio ao irmão.
 
-[Relatório atual e limitações](Docs/REVISAO_0_14_1_2026-10-21.md) · [evidências](Docs/Evidencias_0_14_1/testes.json). Aprovado com limitações para testes privados no PC e neste Android; arte, equilíbrio humano, medições móveis e lançamento comercial pendentes. Histórico abaixo.
+[Lista de teste do jogador](Docs/TESTE_RAPIDO_JOGADOR_0_14_1.md) · [Relatório atual e limitações](Docs/REVISAO_0_14_1_2026-10-21.md) · [evidências](Docs/Evidencias_0_14_1/testes.json). Aprovado com limitações para testes privados no PC e neste Android; arte, equilíbrio humano, medições móveis e lançamento comercial pendentes. Histórico abaixo.
 
 ---
 
