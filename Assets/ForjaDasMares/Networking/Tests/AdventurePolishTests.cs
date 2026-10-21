@@ -40,22 +40,16 @@ namespace ForjaDasMares.Networking.Tests
             var reader=session.LocalInput;Assert.AreSame(session.Actor(0).GetComponent<ArenaInput>(),reader);var other=session.Actor(1);other.gameObject.SetActive(true);yield return null;
             Assert.AreSame(reader,session.LocalInput);Assert.AreNotSame(other.GetComponent<ArenaInput>(),reader);Assert.IsTrue(reader.enabled);other.gameObject.SetActive(false);
         }
-        [Test]public void MobilePingsClearTheMovementStick()
+        [UnityTest]public IEnumerator FixedPingButtonsAreAbsentDuringGameplay()
         {
-            var mobile=new Rect(CampaignAdventureHud.QuickPingPosition(true),new Vector2(320,46));
-            var stick=new Rect(new Vector2(190,170)-Vector2.one*85,Vector2.one*170);
-            Assert.IsFalse(mobile.Overlaps(stick));Assert.GreaterOrEqual(mobile.yMin,stick.yMax+20);
-            Assert.AreEqual(new Vector2(230,180),CampaignAdventureHud.QuickPingPosition(false));
-        }
-        [Test]public void QuickPingButtonLabelsFitOnOneLine()
-        {
-            int count=0;
+            Assert.IsTrue(session.HostDirect("CLEANHUD",7897,false));yield return null;session.StartGame();
+            float until=Time.realtimeSinceStartup+12;
+            while(session.Phase!=CoopPhase.Playing&&Time.realtimeSinceStartup<until)yield return null;
+            Assert.AreEqual(CoopPhase.Playing,session.Phase);yield return null;
             foreach(var button in Object.FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None))
-            {
-                if(!button.name.StartsWith("Ping_"))continue;
-                var label=button.GetComponentInChildren<Text>();Assert.NotNull(label);Assert.LessOrEqual(label.preferredWidth,label.rectTransform.rect.width,"Clipped quick ping: "+label.text);count++;
-            }
-            Assert.AreEqual(4,count);
+                Assert.IsFalse(button.name.StartsWith("Ping_"),"Permanent ping button remained in HUD");
+            foreach(var rect in Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+                Assert.AreNotEqual("QuickPings",rect.name,"Removed toolbar must not occupy or intercept the screen");
         }
         [Test]public void VisualPauseNeverStopsGameTime()
         {

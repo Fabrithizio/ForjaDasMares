@@ -1,3 +1,11 @@
+# Atualização 0.14.2 — HUD mais limpo
+
+Retirados os botões fixos AQUI/ALVO/PERIGO/SAQUE do PC e celular. APK atual: Builds/Atual/Android/ForjaDasMaresCampanha.apk (0.14.2/código30); envie como Documento no WhatsApp. PC: atalho existente Jogar Campanha Forja das Mares. Protocolo10/savev2 preservados; atualizar por cima, sem apagar dados.
+
+24/24 testes focados aprovados; builds Windows e Android reais. [Relatório desta correção](REVISAO_0_14_2.md). Histórico abaixo.
+
+---
+
 # Revisão atual 0.14.1 — 21/10/2026
 
 Base funcional dos 20 pontos integrada anteriormente, agora com marcações separadas, diagnóstico de entrada corrigido e proteção do movimento contra frames longos/quedas acidentais. Suíte geral:218 aprovados,0 falhas,1 ignorado (219 casos); reexecução final de segurança/interface:25/25. Quatro clientes Windows pelo Relay passaram na conferência de mapa, bênçãos, marcações, piso sem resgates, baú único, resultado administrativo e encerramento do host. Não foi teste com quatro pessoas.

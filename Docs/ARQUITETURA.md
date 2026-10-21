@@ -236,3 +236,7 @@ CameraOcclusion guarda conjuntos de renderers filhos por collider e aplica mater
 ActorMotion subdivide frames longos (passo alvo0,05s, máximo32). PlayerMotor guarda piso de layer configurável e resgata queda acidental após3m, preservando vida e cooldown e sem reviver; autoridade apenas. Mapas verticais/queda intencional exigem configuração e novo teste. FallRecoveries é telemetria local do diagnóstico, não campo do protocolo10. CampaignAdventureHud posiciona quatro rótulos em candidatos sem sobreposição dentro da interface; CoopSmokeProbe usa CoopDirector.LocalInput explícito. Sem mudanças de saves ou dependências. Evidências em Evidencias_0_14_1.
 
 No layout móvel, QuickPingPosition separa a barra de marcações do joystick padrão; os quatro botões têm largura suficiente para os textos. Teste físico PC–moto g15 no mesmo Wi-Fi concluído na0.14.1, incluindo toque, reconexão e recompensas. Relatório: REVISAO_0_14_1_2026-10-21.md.
+
+
+## HUD0.14.2
+Removida a construção do painel QuickPings e seus quatro botões. Sem área invisível de interação; G/direcional para cima e a apresentação de marcações opcionais continuam usando o canal existente. Sem mudança do protocolo10 ou saves.

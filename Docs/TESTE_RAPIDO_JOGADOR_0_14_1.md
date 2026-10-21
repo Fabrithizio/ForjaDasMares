@@ -1,4 +1,4 @@
-# Lista de teste do jogador — 0.14.1
+# Lista de teste do jogador — atualizada para 0.14.2
 
 Marque o que conferiu. Esta lista descreve a versão atual; seu save antigo continua valendo.
 
@@ -17,8 +17,7 @@ Marque o que conferiu. Esta lista descreve a versão atual; seu save antigo cont
 | Personagem e mochila | I; também no menu inicial/da sala | Personagem; durante a fase: Menu → Personagem e equipamentos |
 | Ampliar minimapa | M | Tocar no minimapa |
 | Menu da sala | Esc | Menu, no canto superior direito |
-| Marcar AQUI | G | Botão AQUI |
-| Outras marcações | Clicar ALVO/PERIGO/SAQUE | Tocar ALVO/PERIGO/SAQUE |
+| Marcar AQUI (opcional) | G | Sem botão fixo |
 
 Controle Xbox/compatível: analógico esquerdo anda; A ataca; B esquiva; X usa habilidade; Y interage; RB usa super; direcional para cima marca AQUI; Start abre menu. Hardware de gamepad não foi conferido nesta revisão.
 
@@ -105,7 +104,7 @@ Controle Xbox/compatível: analógico esquerdo anda; A ataca; B esquiva; X usa h
 - [ ] Retrato e vida no HUD; minimapa compacto no topo esquerdo; habilidades/cooldowns visíveis.
 - [ ] Menu durante a fase mostra código da sala, grupo, convites, mapa/objetivos, configurações e saída.
 - [ ] Marcações de aliados aparecem no mundo e minimapa; rótulos próximos procuram posições separadas.
-- [ ] No celular, marcações ficam acima do joystick e os botões de combate à direita.
+- [ ] Os quatro botões fixos de marcação foram removidos; no celular, joystick à esquerda e combate à direita.
 - [ ] Configurações incluem volume, efeitos, transparência dos controles, tremor e vibração opcionais.
 
 ## Online: PC e celular

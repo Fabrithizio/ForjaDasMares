@@ -1,0 +1,25 @@
+{
+  "version": "0.14.2",
+  "androidCode": 30,
+  "protocol": 10,
+  "saveVersion": 2,
+  "tests": {
+    "total": "24",
+    "passed": "24",
+    "failed": "0",
+    "skipped": "0",
+    "result": "Passed"
+  },
+  "apk": {
+    "path": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+    "bytes": 53053169,
+    "sha256": "45daa1eb64ad6b21d16a38b76a30fb190a2acb6c0750569ae2565bdf661d1730"
+  },
+  "physicalAndroidTested": false,
+  "androidManifest": [
+    "package: name='com.forjadasmares.campaign' versionCode='30' versionName='0.14.2' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+    "sdkVersion:'25'",
+    "targetSdkVersion:'35'",
+    "native-code: 'arm64-v8a'"
+  ]
+}

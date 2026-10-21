@@ -1,3 +1,6 @@
+# Atualização 0.14.2
+A barra fixa de marcações foi removida. APK atual em Builds/Atual/Android/ForjaDasMaresCampanha.apk, código30. AQUI permanece como atalho opcional G/direcional para cima. Instruções históricas de botões de marcação abaixo foram superadas por esta correção.
+
 # Atualização 0.14.1
 Saídas fixas Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk. Protocolo 10/save v2; Android código 29. Relatório atual: REVISAO_0_14_1_2026-10-21.md. Teste físico PC–moto g15 executado no mesmo Wi-Fi; não desinstalar a campanha atual. Instruções anteriores abaixo continuam válidas, exceto números de versão históricos.
 

@@ -46,3 +46,7 @@ A captura de cinco segundos dos ataques durante a compilação confirmou ataques
 
 ## Fechamento 0.14.1 — 21/10
 A regressão geral terminou com 218 aprovados/0 falhas/1 ignorado (219 casos); a reexecução final de segurança/interface passou 25/25. Builds Windows/Android finais produzidas. A repetição com quatro processos Windows pelo Relay passou, inclusive estabilidade de piso em 20 amostras sem resgate, marcações e recompensas únicas. Relatório completo em REVISAO_0_14_1_2026-10-21.md. Redes diferentes, quatro pessoas e qualidade final de arte/equilíbrio continuam pendentes. Os registros anteriores de falha foram preservados.
+
+
+## Ajuste solicitado0.14.2
+O usuário preferiu retirar os quatro botões fixos de marcação da tela. Barra removida no PC/Android, preservado o atalho opcional. Teste de ausência da barra em partida e builds concluídos; detalhes em REVISAO_0_14_2.md.
