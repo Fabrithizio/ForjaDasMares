@@ -28,3 +28,10 @@ Estado inicial: implementação. Itens existentes serão auditados e aprimorados
 
 ## Entrega integrada
 A base funcional dos20 pontos foi integrada por extensão dos sistemas existentes; detalhes por item em REVISAO_0_14_2026-10-20.md. Fonte própria Blender/áudio e dados presentes, sem download de terceiros. Windows0.14 e APK0.14 produzidos; celular desconectado, atualização física pendente.69 testes finais aprovados, sessão real de dois processos Windows pelo Relay e capturas do arsenal/ícones. Não equivale a arte final, equilíbrio aprovado por jogadores, quatro pessoas ou publicação na PlayStore.
+
+## Conferência dos20 itens — revisão0.14.1
+Os20 itens têm implementação funcional na base0.14, incluindo sistemas anteriores reutilizados. A tabela detalhada de REVISAO_0_14_2026-10-20.md registra a implementação de cada um. Isso não significa arte final ou validação em todos os aparelhos.
+
+Continuação autorizada: acabamento do item18 (separação e limites das marcações), ajuste da interface ao raio real de segurança dos altares e diagnóstico que usava a entrada de um ator desativado em sessões com vários jogadores. Os testes e as builds0.14.1 serão registrados após execução. A listaADB voltou vazia nesta conferência; o teste físico Android permanece pendente.
+
+Revisão0.14.1:63/63 testes PlayMode aprovados,zero falhas/ignorados (polish0141-tests.xml). Abrange aventura, arsenal, campanha, RPG, marcações sobrepostas em três larguras de tela e propriedade da entrada com outro ator ativo. Builds e sessão de quatro processos ainda em execução neste checkpoint.

@@ -20,6 +20,26 @@ namespace ForjaDasMares.Networking.Tests
         {
             var feel=session.Actor(0).Roster.Current.feedback;Assert.NotNull(feel);foreach(var clip in new[]{feel.impact,feel.swing,feel.heavy,feel.step,feel.reward,feel.perfect}){Assert.NotNull(clip);Assert.Greater(clip.samples,100);Assert.Greater(clip.length,.05f);}Assert.NotNull(feel.trailMaterial);Assert.LessOrEqual(feel.impactPause,.06f);
         }
+        [Test]public void FourOverlappingPingsFitDifferentAspectRatiosWithoutCoveringEachOther()
+        {
+            var points=new Vector2[4];var size=new Vector2(190,48);
+            foreach(float width in new[]{720f,1280f,1600f})foreach(Vector2 corner in new[]{Vector2.zero,new Vector2(-5000,-5000),new Vector2(5000,5000)})
+            {
+                var bounds=new Rect(-width*.5f,-215,width,415);
+                for(int i=0;i<4;i++)
+                {
+                    points[i]=CampaignAdventureHud.PlaceMarker(corner,bounds,size,points,i);
+                    Assert.GreaterOrEqual(points[i].x-size.x*.5f,bounds.xMin);Assert.LessOrEqual(points[i].x+size.x*.5f,bounds.xMax);
+                    Assert.GreaterOrEqual(points[i].y-size.y*.5f,bounds.yMin);Assert.LessOrEqual(points[i].y+size.y*.5f,bounds.yMax);
+                    for(int j=0;j<i;j++)Assert.IsFalse(Mathf.Abs(points[i].x-points[j].x)<size.x&&Mathf.Abs(points[i].y-points[j].y)<size.y,"Overlapping ally pings");
+                }
+            }
+        }
+        [UnityTest]public IEnumerator LocalInputRemainsTheActualReaderWhenAnotherActorBecomesActive()
+        {
+            var reader=session.LocalInput;Assert.AreSame(session.Actor(0).GetComponent<ArenaInput>(),reader);var other=session.Actor(1);other.gameObject.SetActive(true);yield return null;
+            Assert.AreSame(reader,session.LocalInput);Assert.AreNotSame(other.GetComponent<ArenaInput>(),reader);Assert.IsTrue(reader.enabled);other.gameObject.SetActive(false);
+        }
         [Test]public void VisualPauseNeverStopsGameTime()
         {
             float original=Time.timeScale;var model=session.Actor(0).Presentation.Visible.GetComponentInChildren<HeroModelView>();model.PauseImpact(.04f);Assert.AreEqual(original,Time.timeScale);

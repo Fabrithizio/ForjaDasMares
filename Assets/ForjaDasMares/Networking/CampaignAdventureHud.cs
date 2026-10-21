@@ -7,6 +7,7 @@ namespace ForjaDasMares.Networking
     {
         CoopDirector session;CampaignAdventureChannel channel;RectTransform root;GameObject panel,pingBar;Text title,summary,eventInfo,counter,boons;Button use;
         static readonly string[] PingNames={"VENHA AQUI","FOCO NO ALVO","PERIGO","SAQUE AQUI"};static readonly Color[] PingColors={Color.cyan,new Color(1,.55f,.2f),new Color(1,.25f,.15f),RusticHudTheme.Gold};
+        readonly Vector2[] markerPositions=new Vector2[4];
         readonly Button[] choices=new Button[3];readonly Text[] markers=new Text[4];int nearby=-1,lastChallenge=-1;float resultUntil;string resultNotice;bool built;InputAction ping;
         public void Configure(CoopDirector owner,CampaignAdventureChannel network,RectTransform parent){session=owner;channel=network;root=parent;}
         void Build()
@@ -40,7 +41,7 @@ namespace ForjaDasMares.Networking
             // Replicas identify the active event from the authenticated snapshot, not local simulation.
             if(!session.IsHost)foreach(var feature in features.Nodes)if(feature.kind==ExpeditionFeatureKind.Challenge&&feature.state.stage==1){eventInfo.gameObject.SetActive(true);eventInfo.text="DESAFIO · "+Mathf.RoundToInt(feature.state.progress*100)+"% · "+Mathf.CeilToInt(feature.state.remaining)+"s · objetivo "+feature.health.Current;}
             var node=features.Nearby(actor.Health);
-            if(node!=null&&actor.Health.IsAlive&&!(node.kind==ExpeditionFeatureKind.Altar&&(node.state.claimed&(1u<<session.LocalSlot))!=0)&&!session.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position,10))
+            if(node!=null&&actor.Health.IsAlive&&!(node.kind==ExpeditionFeatureKind.Altar&&(node.state.claimed&(1u<<session.LocalSlot))!=0)&&!session.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position,12))
             {
                 nearby=node.state.id;panel.SetActive(true);bool altar=node.kind==ExpeditionFeatureKind.Altar;for(int i=0;i<3;i++)choices[i].gameObject.SetActive(altar);use.gameObject.SetActive(!altar);
                 title.text=altar?"ALTAR DA EXPEDIÇÃO · escolha uma melhoria":node.kind==ExpeditionFeatureKind.Cache?"ESCONDERIJO ENCONTRADO":"DESAFIO OPCIONAL · "+(session.Campaign.Level.features.optionalEvent==OptionalEventKind.Waves?"ONDAS":session.Campaign.Level.features.optionalEvent==OptionalEventKind.Defend?"PROTEGER O SELO":"ESCOLTAR O GUIA");
@@ -48,7 +49,30 @@ namespace ForjaDasMares.Networking
                 use.GetComponentInChildren<Text>().text=node.kind==ExpeditionFeatureKind.Cache?"RECOLHER RECOMPENSA":"ACEITAR DESAFIO · recompensa extra ao vencer";
             }
             if(features.Pings==null)return;
-            for(int i=0;i<4;i++){var mark=features.Pings[i];if(mark==null||mark.remaining<=0)continue;var screen=Camera.main.WorldToScreenPoint(mark.position+Vector3.up*1.6f);if(screen.z>0&&RectTransformUtility.ScreenPointToLocalPointInRectangle(root,screen,null,out var point)){markers[i].gameObject.SetActive(true);markers[i].rectTransform.anchoredPosition=point;markers[i].text="◆ "+PingNames[Mathf.Clamp(mark.kind,0,3)]+" · P"+(i+1);markers[i].color=PingColors[Mathf.Clamp(mark.kind,0,3)];}}
+            var camera=Camera.main;if(camera==null)return;int placed=0;
+            Rect limits=root.rect;limits.yMin+=145;limits.yMax-=160;
+            for(int i=0;i<4;i++)
+            {
+                var mark=features.Pings[i];if(mark==null||mark.remaining<=0)continue;var screen=camera.WorldToScreenPoint(mark.position+Vector3.up*1.6f);
+                if(screen.z<=0||!RectTransformUtility.ScreenPointToLocalPointInRectangle(root,screen,null,out var point))continue;
+                // Keep labels readable at screen edges and when allies mark the same spot.
+                point=PlaceMarker(point,limits,markers[i].rectTransform.sizeDelta,markerPositions,placed);markerPositions[placed++]=point;
+                markers[i].gameObject.SetActive(true);markers[i].rectTransform.anchoredPosition=point;markers[i].text="◆ "+PingNames[Mathf.Clamp(mark.kind,0,3)]+" · P"+(i+1);markers[i].color=PingColors[Mathf.Clamp(mark.kind,0,3)];
+            }
+        }
+        public static Vector2 PlaceMarker(Vector2 desired,Rect bounds,Vector2 size,Vector2[] previous,int count)
+        {
+            Vector2 half=size*.5f;
+            float left=bounds.xMin+half.x,right=Mathf.Max(left,bounds.xMax-half.x),bottom=bounds.yMin+half.y,top=Mathf.Max(bottom,bounds.yMax-half.y);
+            desired=new Vector2(Mathf.Clamp(desired.x,left,right),Mathf.Clamp(desired.y,bottom,top));
+            Vector2 best=desired;float distance=float.PositiveInfinity;
+            for(int column=-1;column<=1;column++)for(int row=-4;row<=4;row++)
+            {
+                Vector2 point=new Vector2(Mathf.Clamp(desired.x+column*(size.x+8),left,right),Mathf.Clamp(desired.y+row*(size.y+6),bottom,top));bool overlaps=false;
+                for(int i=0;i<count;i++)if(Mathf.Abs(point.x-previous[i].x)<size.x+4&&Mathf.Abs(point.y-previous[i].y)<size.y+4){overlaps=true;break;}
+                float candidate=(point-desired).sqrMagnitude;if(!overlaps&&candidate<distance){distance=candidate;best=point;}
+            }
+            return best;
         }
         void OnEnable(){ping?.Enable();}
         void OnDisable(){ping?.Disable();}

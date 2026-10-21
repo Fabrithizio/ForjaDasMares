@@ -45,6 +45,7 @@ namespace ForjaDasMares.Networking
         public string Pin { get; private set; } = "";
         public bool IsHost => network.IsHost;
         public int LocalSlot => localSlot;
+        public ArenaInput LocalInput => input;
         public string ParticipantIdentity=>identity;
         public int SelectedHero => selectedHero;
         public uint LastTick => tick;

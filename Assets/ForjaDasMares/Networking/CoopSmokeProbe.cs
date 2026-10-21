@@ -73,7 +73,7 @@ namespace ForjaDasMares.Networking
                 if(command=="qa-altar"&&session.IsHost&&session.Phase==CoopPhase.Playing){var altar=session.Campaign.Features.Nodes[0];for(int slot=0;slot<4;slot++)if(session.IsConnected(slot))session.Actor(slot).Motor.Teleport(altar.root.position+Vector3.right*(slot*.7f+.5f),Quaternion.identity);}
                 if(command.StartsWith("qa-boon:")&&session.LocalSlot>=0)session.GetComponent<CampaignAdventureChannel>().Request(AdventureAction.ChooseBoon,0,int.Parse(command.Substring(8)));
                 if(command.StartsWith("qa-ping:")&&session.LocalSlot>=0)session.GetComponent<CampaignAdventureChannel>().Request(AdventureAction.Ping,0,int.Parse(command.Substring(8)));
-                if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=UnityEngine.Object.FindFirstObjectByType<ArenaInput>();arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
+                if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=session.LocalInput;arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
                 if(command=="arsenal-release"){arsenalInput?.SetUiAttackHeld(false);arsenalUntil=0;}
                 if(command.StartsWith("arsenal-equip:")&&session.LocalSlot>=0){string definition=command.Substring(14);var channel=session.GetComponent<CoopProfileChannel>();var p=channel.LocalProfile;var item=p.inventory.Find(x=>x.definitionId==definition);if(item!=null)channel.Request(CoopInventoryAction.Equip,item.instanceId,EquipmentSlot.MainHand);}
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
