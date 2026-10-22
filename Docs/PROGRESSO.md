@@ -1,3 +1,9 @@
+# Revisão de clareza e funcionalidade — análise
+
+Identificadas divergências entre permissão de equipagem na interface e no host, bloqueio por projéteis/áreas do pool compartilhado e recusa sem motivo visível. Mira do Arcanista exige reproduzir divergência entre direção guardada do ataque, emissor móvel e pose. Plano em blocos, sem implementação nesta revisão: [análise e critérios](ANALISE_CLAREZA_FUNCIONALIDADE_0_15.md). Não foram executados novos testes ou alteradas builds/saves.
+
+---
+
 # Atualização 0.15.0 — Prisma, o Arcanista
 
 Modelo original do mago com 25 clipes reais, manto/rig, animações de cajado, grimório e orbe, efeitos/sons e encaixes de arma configurados nos dados. Mantidos ataque segurado, pesado, habilidades, Convergência, equipamentos/talentos, arenas e jogo cooperativo. Corrigidos perfil sonoro por herói, indicador do super e relógio da animação de esquiva remota. Foco de Brasa preserva sua identidade.
