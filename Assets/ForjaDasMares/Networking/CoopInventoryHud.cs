@@ -8,13 +8,14 @@ namespace ForjaDasMares.Networking
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
-        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails;string compared;Button compareButton;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
         System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];readonly Image[] equippedIcons=new Image[5];readonly HudIcon[] emptySlots=new HudIcon[5];
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
         Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
+        string lastNotice;
         bool management;int category=-1;bool classOnly=true;
         CoopActor ActiveActor=>director.Actor(director.LocalSlot>=0?director.LocalSlot:0);
         readonly System.Collections.Generic.List<ItemInstance> filtered=new System.Collections.Generic.List<ItemInstance>();
@@ -25,7 +26,23 @@ namespace ForjaDasMares.Networking
             var hero=channel.Catalog.Hero(ActiveActor.Roster.Current.heroId);
             foreach(var item in source){if(!deliveries&&InventoryRules.Equipped(channel.LocalProfile,item.instanceId))continue;var def=channel.Catalog.Find(item.definitionId);if(def==null||category>=0&&(int)def.slot!=category&&!(category==1&&def.category==WeaponCategory.Daggers&&hero!=null&&hero.allowSecondaryWeapon)||classOnly&&hero!=null&&(def.compatibleHeroes&hero.affinity)==0)continue;filtered.Add(item);}
         }
-        bool CanManageNow=>channel.HomeMode||director.Phase==CoopPhase.Lobby&&director.LocalSlot>=0||director.LocalSlot>=0&&ActiveActor.Health.IsAlive&&director.Phase!=CoopPhase.Loading&&(director.EncounterStatus!=EncounterState.Spawning&&director.EncounterStatus!=EncounterState.Fighting||director.Dungeon.OpenLandscape&&!director.Dungeon.Encounter.Enemies.ThreatNear(ActiveActor.transform.position,12));
+        bool CanManageNow
+        {
+            get
+            {
+                if (channel.HomeMode) return true;
+                if (director.LocalSlot < 0) return false;
+                if (director.Manager.IsServer) return channel.CanManageLocal;
+                var actor = ActiveActor;
+                if (actor == null) return false;
+                if (director.Phase == CoopPhase.Lobby) return true;
+                // Replicas cannot predict every host-owned effect. The host validates again
+                // and returns its reason if an effect is still active when the request arrives.
+                return actor.Health.IsAlive && director.Phase != CoopPhase.Loading && director.Phase != CoopPhase.Connecting
+                    && (director.EncounterStatus != EncounterState.Spawning && director.EncounterStatus != EncounterState.Fighting
+                        || director.Dungeon.OpenLandscape && !director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position, 12));
+            }
+        }
         int page, revision = -1,lastHero=-1; string selected, pendingDiscard; bool results;
         public void Configure(CoopDirector session) => director = session;
         void Start()
@@ -97,6 +114,7 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Button(rect,"CloseItem",new Vector2(1,1),new Vector2(-20,-15),new Vector2(140,40),"VOLTAR",()=>{itemPopup.SetActive(false);selected=null;Refresh();});
             compareButton=RusticHudTheme.Button(rect,"CompareOther",new Vector2(0,1),new Vector2(595,-545),new Vector2(535,44),"COMPARAR COM OUTRO ITEM",CycleCompare);
             var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(510,-10),new Vector2(48,48));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(1080,-10),new Vector2(48,48));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
+            itemNotice=RusticHudTheme.Label(rect,"EquipmentNotice",new Vector2(0,1),new Vector2(25,-590),new Vector2(1100,26),"",17);
             itemPopup.SetActive(false);
         }
         Text ScrollableDetails(Transform parent,string name,Vector2 pos)
@@ -144,13 +162,14 @@ namespace ForjaDasMares.Networking
             }
             if (overlay == null || !overlay.activeSelf) return;
             if (director.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
-            if (revision != channel.Revision||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
+            RefreshEquipmentNotice();
+            if (revision != channel.Revision||lastNotice!=channel.Message||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
         }
         void Select(int row)
         { var items = CurrentItems; int index = page * 8 + row; if (index >= items.Count) return; selected = items[index].instanceId; pendingDiscard = null; Refresh();OpenItem(); }
         void Refresh()
         {
-            var profile = channel.LocalProfile; if (profile == null) return; revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
+            var profile = channel.LocalProfile; if (profile == null) return; lastNotice=channel.Message;revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
             if(profileSource!=null){profileSource.gameObject.SetActive(channel.HomeMode&&!results);profileSource.GetComponentInChildren<Text>().text=channel.Hub.Description;profileSource.interactable=channel.Hub.HasRemote;}
             if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"SÓ ESTA CLASSE":"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
             if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/8));
@@ -231,7 +250,15 @@ namespace ForjaDasMares.Networking
                 discard.interactable=management&&!deliveries&&value!=null&&!InventoryRules.Equipped(profile,selected)&&!(channel.HomeMode&&channel.Hub.UsingRemote);
                 if(open){var other=profile.Item(compared);inspectedIcon.sprite=channel.Catalog.Find(value.definitionId).icon;inspectedIcon.enabled=inspectedIcon.sprite!=null;comparedIcon.sprite=other!=null?channel.Catalog.Find(other.definitionId).icon:null;comparedIcon.enabled=comparedIcon.sprite!=null;ownDetails.text=ItemDescriptions.Describe(channel.Catalog,value,other)+(InventoryRules.Equipped(profile,selected)?"\nEQUIPADO NESTE MOMENTO":"");otherDetails.text=(other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):"Escolha COMPARAR COM OUTRO ITEM. A comparação inicial usa o item equipado no mesmo slot.")+"\n\nAO EQUIPAR O ITEM SELECIONADO\n"+ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value);foreach(var t in new[]{ownDetails,otherDetails})t.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,t.preferredHeight+30));}
             }
+            RefreshEquipmentNotice();
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
+        }
+        void RefreshEquipmentNotice()
+        {
+            if (itemNotice == null || !itemPopup.activeSelf) return;
+            itemNotice.text = !channel.HomeMode && director.Manager.IsServer && !channel.CanManageLocal
+                ? channel.LocalManagementBlockReason
+                : channel.Message ?? "Selecione EQUIPAR para usar este item.";
         }
         void Equip() { if(deliveries){if(selected!=null)channel.Request(CoopInventoryAction.ClaimDelivery,selected,EquipmentSlot.MainHand);return;} var item = channel.LocalProfile?.Item(selected); if (item == null) return; pendingDiscard = null; channel.Request(CoopInventoryAction.Equip, selected, channel.Catalog.Find(item.definitionId).slot); }
         void Unequip()

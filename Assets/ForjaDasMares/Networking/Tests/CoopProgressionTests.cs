@@ -15,6 +15,43 @@ namespace ForjaDasMares.Networking.Tests
             Assert.IsNotNull(progression.Catalog); Assert.IsTrue(session.HostDirect("REWARDQA", 7791, false)); yield return null;
         }
         [UnityTearDown] public IEnumerator Close() { if (session != null) session.Close(); yield return null; yield return null; }
+        [Test] public void EffectOwnershipDoesNotTreatAnotherActorAsTheOwner()
+        {
+            var actor = session.Actor(0);
+            var other = new GameObject("EquipmentOwnershipQA").AddComponent<Health>();
+            try
+            {
+                var pool = actor.Combat.Pool;
+                Assert.IsTrue(pool.Shoot(Vector3.zero, Vector3.forward, actor.Combat.BasicAttack, actor.Health, 0, 0));
+                Assert.IsTrue(pool.HasActiveEffectsOwnedBy(actor.Health));
+                Assert.IsFalse(pool.HasActiveEffectsOwnedBy(other));
+                Assert.IsFalse(pool.HasActiveEffectsOwnedBy(null));
+                pool.ClearOwned(actor.Health);
+                Assert.IsFalse(pool.HasActiveEffectsOwnedBy(actor.Health));
+            }
+            finally { Object.DestroyImmediate(other.gameObject); }
+        }
+        [Test] public void InvalidSlotHasExplicitManagementReason()
+        {
+            Assert.IsFalse(progression.CanManage(-1));
+            Assert.IsNotEmpty(progression.ManagementBlockReason(-1));
+            Assert.IsTrue(progression.CanManage(0));
+            Assert.IsNull(progression.ManagementBlockReason(0));
+        }
+        [Test] public void ArcanistCanEquipItsStaffInLobbyAndGetsAnIncompatibilityReason()
+        {
+            session.SelectHero(2);
+            var profile = channel.LocalProfile;
+            var staff = profile.inventory.Find(i => i.definitionId == "sal-staff");
+            var axe = profile.inventory.Find(i => i.definitionId == "fenda-axe");
+            Assert.IsNotNull(staff);
+            channel.Request(CoopInventoryAction.Equip, staff.instanceId, EquipmentSlot.MainHand);
+            Assert.AreEqual(staff.instanceId, channel.LocalProfile.Loadout("arcanist").items[0]);
+            Assert.AreEqual(AttackShape.Projectile, session.Actor(0).Combat.BasicAttack.shape);
+            channel.Request(CoopInventoryAction.Equip, axe.instanceId, EquipmentSlot.MainHand);
+            Assert.AreEqual(staff.instanceId, channel.LocalProfile.Loadout("arcanist").items[0]);
+            Assert.IsNotEmpty(channel.Message);
+        }
         [Test] public void EquipmentIntentChangesRealCombatAndRejectsIncompatibleItems()
         {
             var actor = session.Actor(0); var profile = channel.LocalProfile;
@@ -51,6 +88,7 @@ namespace ForjaDasMares.Networking.Tests
             Assert.IsNotNull(target); Assert.IsFalse(progression.CanManage(0));
             var item = channel.LocalProfile.inventory.Find(i => i.definitionId == "fenda-axe"); channel.Request(CoopInventoryAction.Equip, item.instanceId, EquipmentSlot.MainHand);
             Assert.IsNull(actor.GetComponent<HeroEquipment>().MainWeapon);
+            Assert.AreEqual(progression.ManagementBlockReason(0), channel.Message);
             int before = channel.LocalProfile.expedition.experience; target.Health.ApplyDamage(9999); int after = channel.LocalProfile.expedition.experience;
             Assert.AreEqual(before + progression.Catalog.enemy.experience, after); target.Health.ApplyDamage(9999); Assert.AreEqual(after, channel.LocalProfile.expedition.experience);
         }

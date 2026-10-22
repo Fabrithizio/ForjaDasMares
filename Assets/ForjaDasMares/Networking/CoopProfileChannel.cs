@@ -14,6 +14,8 @@ namespace ForjaDasMares.Networking
     {
         CoopDirector director; CoopProgression authority;
         readonly int[] sent = new int[4];
+        readonly string[] response = new string[4];
+        readonly bool[] responsePending = new bool[4];
         readonly int[] wireSequence = new int[4];
         readonly float[] lastRequest = new float[4];
         readonly float[] lastResync=new float[4];float initialRetry;
@@ -27,10 +29,12 @@ namespace ForjaDasMares.Networking
         public int DeliveryCount => HomeMode?Hub.DeliveryCount: director.Manager.IsServer && director.LocalSlot >= 0 ? authority.Profile(director.LocalSlot)?.Profile.deliveries.Count ?? 0 : local?.deliveryCount ?? 0;
         public int Revision => HomeMode?Hub.Revision: director.Manager.IsServer && director.LocalSlot >= 0 ? authority.Revision(director.LocalSlot) : local?.revision ?? 0;
         public ProgressionCatalog Catalog => authority.Catalog;
+        public bool CanManageLocal => director.LocalSlot >= 0 && authority.CanManage(director.LocalSlot);
+        public string LocalManagementBlockReason => director.LocalSlot >= 0 ? authority.ManagementBlockReason(director.LocalSlot) : "Aguarde a conexão com a sala.";
         public void Configure(CoopDirector session, CoopProgression progression) { director = session; authority = progression;Hub=GetComponent<CampaignProfileHub>();if(Hub==null)Hub=gameObject.AddComponent<CampaignProfileHub>();Hub.Configure(session,progression,this); }
         public void Bind()
         {
-            Array.Clear(sent, 0, sent.Length); Array.Clear(wireSequence, 0, wireSequence.Length); local = null;
+            Array.Clear(responsePending, 0, responsePending.Length); Array.Clear(response, 0, response.Length); Array.Clear(sent, 0, sent.Length); Array.Clear(wireSequence, 0, wireSequence.Length); local = null;
             initialRetry=0;Array.Clear(lastResync,0,lastResync.Length);GetComponent<CampaignLootDrops>()?.Bind(director);
             director.Manager.CustomMessagingManager.RegisterNamedMessageHandler("fdm.profile.v1", Receive);
             director.Manager.CustomMessagingManager.RegisterNamedMessageHandler("fdm.inventory.v1", ReceiveIntent);
@@ -52,16 +56,16 @@ namespace ForjaDasMares.Networking
         public void Resend(int slot) => sent[slot] = 0;
         public void Sync(ulong client, int slot)
         {
-            var source = authority.Profile(slot); if (source == null || sent[slot] == authority.Revision(slot)) return;
-            if (client == director.Manager.LocalClientId) { if(HomeMode||sent[slot]==0)Hub.OwnSession();sent[slot] = authority.Revision(slot); return; }
+            var source = authority.Profile(slot); if (source == null || !responsePending[slot] && sent[slot] == authority.Revision(slot)) return;
+            if (client == director.Manager.LocalClientId) { if(HomeMode||sent[slot]==0)Hub.OwnSession();sent[slot] = authority.Revision(slot); responsePending[slot] = false; response[slot] = null; return; }
             var value = source.Profile;
             // History and the full delivery stock are not resent in every packet. Inventory/run/result are bounded by the catalog.
             var visible = new PlayerProfile { talents=value.talents,starterGranted=value.starterGranted,campaignCleared=value.campaignCleared, experience = value.experience, coins = value.coins, inventory = value.inventory, loadouts = value.loadouts, options = value.options, expedition = value.expedition==null?null:new ExpeditionData{bankedExperience=value.expedition.bankedExperience,bankedCoins=value.expedition.bankedCoins,runId=value.expedition.runId,heroId=value.expedition.heroId,location=value.expedition.location,experience=value.expedition.experience,coins=value.expedition.coins,items=value.expedition.items}, lastResult = value.lastResult, deliveries = value.deliveries.GetRange(0, Math.Min(8, value.deliveries.Count)), completedRuns = new List<string>() };
-            var packet = new CoopProfileFrame { scope=director.ParticipantIdentity,revision = ++wireSequence[slot], deliveryCount = value.deliveries.Count, hasRun = value.expedition != null, hasResult = value.lastResult != null, profile = visible, message = authority.Error ?? source.Message };
+            var packet = new CoopProfileFrame { scope=director.ParticipantIdentity,revision = ++wireSequence[slot], deliveryCount = value.deliveries.Count, hasRun = value.expedition != null, hasResult = value.lastResult != null, profile = visible, message = response[slot] ?? authority.Error ?? source.Message };
             byte[] bytes = Encoding.UTF8.GetBytes(JsonUtility.ToJson(packet));
             if (bytes.Length > CoopLimits.MaximumSnapshotBytes) { Message = "Perfil excedeu o limite de replicação."; return; }
             using var writer = new FastBufferWriter(bytes.Length + 4, Allocator.Temp); writer.WriteValueSafe(bytes.Length); writer.WriteBytesSafe(bytes);
-            director.Manager.CustomMessagingManager.SendNamedMessage("fdm.profile.v1", client, writer, NetworkDelivery.ReliableFragmentedSequenced); sent[slot] = authority.Revision(slot);
+            director.Manager.CustomMessagingManager.SendNamedMessage("fdm.profile.v1", client, writer, NetworkDelivery.ReliableFragmentedSequenced); sent[slot] = authority.Revision(slot); responsePending[slot] = false; response[slot] = null;
         }
         void Receive(ulong sender, FastBufferReader reader)
         {
@@ -96,15 +100,23 @@ namespace ForjaDasMares.Networking
             try { intent = JsonUtility.FromJson<CoopInventoryIntent>(Encoding.UTF8.GetString(bytes)); } catch (Exception) { return; }
             Apply(slot, intent);
         }
+        void Respond(int slot, string message)
+        {
+            response[slot] = message;
+            if (slot == director.LocalSlot) Message = message;
+            responsePending[slot] = true;
+        }
         void Apply(int slot, CoopInventoryIntent intent)
         {
-            if (intent == null || !Enum.IsDefined(typeof(CoopInventoryAction), intent.action) || !Enum.IsDefined(typeof(EquipmentSlot), intent.slot) || intent.item != null && intent.item.Length > 64 || !authority.CanManage(slot)) return;
+            if (intent == null || !Enum.IsDefined(typeof(CoopInventoryAction), intent.action) || !Enum.IsDefined(typeof(EquipmentSlot), intent.slot) || intent.item != null && intent.item.Length > 64) return;
+            var blocked = authority.ManagementBlockReason(slot);
+            if (blocked != null) { Respond(slot, blocked); return; }
             var profile = authority.Profile(slot); if (profile == null) return; string hero=string.IsNullOrEmpty(intent.hero)?director.Actor(slot).Roster.Current.heroId:intent.hero;
             if(authority.Catalog.Hero(hero)==null||director.Phase!=CoopPhase.Lobby&&hero!=director.Actor(slot).Roster.Current.heroId)return;
-            bool success = intent.action == CoopInventoryAction.Equip ? profile.Equip(hero, intent.item, intent.slot)
+            _ = intent.action == CoopInventoryAction.Equip ? profile.Equip(hero, intent.item, intent.slot)
                 : intent.action == CoopInventoryAction.Unequip ? profile.Unequip(hero, intent.slot)
                 : intent.action == CoopInventoryAction.ClaimDelivery ? profile.ClaimDelivery(intent.item) : intent.action==CoopInventoryAction.Discard?profile.Discard(intent.item, intent.confirmed):intent.action==CoopInventoryAction.SpendTalent?profile.SpendTalent(hero,(TalentId)intent.talent):profile.ResetTalents(hero,intent.confirmed);
-            Message = profile.Message; if (!success) sent[slot] = 0;
+            Respond(slot, profile.Message);
         }
     }
 }

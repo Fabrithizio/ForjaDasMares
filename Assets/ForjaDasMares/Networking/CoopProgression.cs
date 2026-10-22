@@ -166,13 +166,24 @@ namespace ForjaDasMares.Networking
                 if(!profiles[i].MarkCampaignClear(director.Campaign.Selected))Error=profiles[i].Message;
             spawned.Clear(); return true;
         }
-        public bool CanManage(int slot)
+        public bool CanManage(int slot) => ManagementBlockReason(slot) == null;
+        public string ManagementBlockReason(int slot)
         {
-            if(slot<0||slot>=4)return false;var actor = director.Actor(slot); var state = director.Dungeon.Encounter.State;
-            if(director.Phase==CoopPhase.Lobby)return actor!=null&&director.IsConnected(slot)&&!actor.Combat.IsBusy;
-            return actor != null && director.IsConnected(slot) && actor.Health.IsAlive && !actor.Combat.IsBusy
-                && director.Phase != CoopPhase.Loading && director.Phase != CoopPhase.Connecting
-                && (state != EncounterState.Spawning && state != EncounterState.Fighting || director.Dungeon.OpenLandscape&&!director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position,12)) && actor.Combat.Pool.ActiveProjectiles == 0 && actor.Combat.Pool.ActiveZones == 0;
+            if (slot < 0 || slot >= 4 || !director.IsConnected(slot)) return "Aguarde a conexão com a sala.";
+            var actor = director.Actor(slot);
+            if (actor == null) return "Aguarde o carregamento do herói.";
+            if (director.Phase == CoopPhase.Loading || director.Phase == CoopPhase.Connecting)
+                return "Aguarde o carregamento da partida.";
+            if (actor.Combat.IsBusy) return "Aguarde seu ataque ou habilidade terminar.";
+            if (director.Phase == CoopPhase.Lobby) return null;
+            if (!actor.Health.IsAlive) return "Reapareça antes de alterar o equipamento.";
+            var state = director.Dungeon.Encounter.State;
+            if ((state == EncounterState.Spawning || state == EncounterState.Fighting)
+                && (!director.Dungeon.OpenLandscape || director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position, 12)))
+                return "Afaste-se dos inimigos para alterar o equipamento.";
+            if (actor.Combat.Pool.HasActiveEffectsOwnedBy(actor.Health))
+                return "Aguarde seus projéteis e efeitos terminarem.";
+            return null;
         }
         void Update()
         {

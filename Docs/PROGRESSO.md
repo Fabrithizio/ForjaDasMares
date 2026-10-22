@@ -1,3 +1,11 @@
+# Atualização 0.15.1 — primeiro bloco de clareza: equipagem
+
+Instalada primeiro a 0.15.0 solicitada no moto g15 e depois atualizada a mesma instalação para 0.15.1/código32, preservando dados. Corrigido bloqueio de equipagem por efeitos de outros atores; condições do host centralizadas com motivos; resposta de recusa retornada ao solicitante e aviso no painel de comparação. Mantidas regras de classe/nível/slot e saves v2.
+
+**Verificado:** 8/8 testes PlayMode de progressão/equipagem aprovados; builds Windows e Android Succeeded errors0, exit0. Instalação USB Success e versão do pacote conferida. Ainda faltam teste visual e sessão real com dois jogadores desta correção. Cliente pode mostrar botão antes de saber que um efeito próprio continua ativo no host; autoridade recusa com motivo. Mira do Arcanista, reorganização geral da mochila e menus continuam pendentes: não foram alteradas neste bloco. [Relatório e arquivos](EQUIPAGEM_0_15_1.md).
+
+---
+
 # Revisão de clareza e funcionalidade — análise
 
 Identificadas divergências entre permissão de equipagem na interface e no host, bloqueio por projéteis/áreas do pool compartilhado e recusa sem motivo visível. Mira do Arcanista exige reproduzir divergência entre direção guardada do ataque, emissor móvel e pose. Plano em blocos, sem implementação nesta revisão: [análise e critérios](ANALISE_CLAREZA_FUNCIONALIDADE_0_15.md). Não foram executados novos testes ou alteradas builds/saves.

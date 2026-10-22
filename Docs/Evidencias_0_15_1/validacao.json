@@ -1,0 +1,30 @@
+{
+  "version": "0.15.1",
+  "androidCode": 32,
+  "package": "com.forjadasmares.campaign",
+  "tests": {
+    "suite": "CoopProgressionTests",
+    "passed": 8,
+    "failed": 0
+  },
+  "windows": {
+    "result": "Succeeded",
+    "errors": 0,
+    "editorExit": 0
+  },
+  "android": {
+    "result": "Succeeded",
+    "errors": 0,
+    "editorExit": 0,
+    "bytes": 53951867,
+    "sha256": "af1f31700cc5bcd501ffc7a354b702bae77c5eee3af3b82f5675c3d253ebefdb"
+  },
+  "phone": {
+    "model": "moto g15",
+    "install": "adb install -r: Success",
+    "verifiedVersion": "0.15.1",
+    "verifiedCode": 32,
+    "gameplayTested": false
+  },
+  "multiplayerSessionTestedThisBlock": false
+}
