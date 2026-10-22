@@ -15,6 +15,9 @@ MonoBehaviour:
   itemId: cinderfocus
   displayName: Foco de Brasa
   icon: {fileID: 21300000, guid: 2a0179b2a3f1f3e4fb623b06e034ea97, type: 3}
+  customGrip: 1
+  socketPosition: {x: 0, y: 0, z: 0.5}
+  socketEuler: {x: -90, y: 0, z: 0}
   visualMesh: {fileID: 4300000, guid: 416d0d2414d315b4a981583df7f0ae29, type: 2}
   visualMaterials:
   - {fileID: 2100000, guid: 0b6427bf383087541bd3b3ac565b05e2, type: 2}

@@ -6,7 +6,7 @@ namespace ForjaDasMares
     public sealed class HeroPowerFeedback : MonoBehaviour
     {
         [SerializeField] HeroCombat combat;
-        LineRenderer[] lines;
+        LineRenderer[] lines;HeroPresentation presentation;
         [SerializeField] Material material;
         MaterialPropertyBlock properties;
         int version=-1;
@@ -19,7 +19,7 @@ namespace ForjaDasMares
         void Awake()
         {
             if(material==null){Debug.LogError("Hero power feedback requires its ribbon material.",this);enabled=false;return;}
-            properties=new MaterialPropertyBlock();
+            presentation=GetComponent<HeroPresentation>();properties=new MaterialPropertyBlock();
             lines=new LineRenderer[10];
             for(int i=0;i<lines.Length;i++)
             {
@@ -32,6 +32,7 @@ namespace ForjaDasMares
         void LateUpdate()
         {
             if(combat==null)return;
+            if(presentation!=null&&presentation.HasCastingView){remaining=0;if(lines!=null)foreach(var line in lines)line.enabled=false;return;}
             if(version!=combat.ActionVersion){version=combat.ActionVersion;emitted=false;}
             if(!emitted&&combat.IsBusy&&combat.NormalizedTime>=combat.ImpactTime)
             {

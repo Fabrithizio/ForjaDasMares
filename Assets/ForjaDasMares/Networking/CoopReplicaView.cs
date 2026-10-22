@@ -72,7 +72,8 @@ namespace ForjaDasMares.Networking
                     var go = GameObject.CreatePrimitive(value.kind == 0 ? PrimitiveType.Sphere : PrimitiveType.Cylinder); go.name = "NetworkVisualEffect_" + value.slot;
                     Destroy(go.GetComponent<Collider>()); go.transform.SetParent(transform); go.GetComponent<Renderer>().sharedMaterial = effects.SharedMaterial; proxies[value.slot] = go;
                 }
-                var proxy = proxies[value.slot]; proxy.SetActive(true); proxy.transform.SetPositionAndRotation(value.position, Quaternion.LookRotation(value.direction)); proxy.transform.localScale = value.scale;
+                var proxy = proxies[value.slot];bool restart=!proxy.activeSelf||(proxy.transform.position-value.position).sqrMagnitude>4; proxy.SetActive(true);
+                if(value.kind==0&&effects.ProjectileTrailMaterial!=null){var trail=proxy.GetComponent<PooledProjectileTrail>()??proxy.AddComponent<PooledProjectileTrail>();trail.Configure(effects.ProjectileTrailMaterial,value.color,value.scale.x*.5f,restart);} proxy.transform.SetPositionAndRotation(value.position, Quaternion.LookRotation(value.direction)); proxy.transform.localScale = value.scale;
                 color.SetColor("_BaseColor", value.color); proxy.GetComponent<Renderer>().SetPropertyBlock(color);
             }
             for (int i = 0; i < proxies.Count; i++) if (!seen.Contains(i)) { if (proxies[i] != null) proxies[i].SetActive(false); if (marks[i] != null) marks[i].Hide(); }

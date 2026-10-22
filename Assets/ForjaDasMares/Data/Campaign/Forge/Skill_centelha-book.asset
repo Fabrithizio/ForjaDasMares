@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 465b275875f92a04fbb68b6c8140216b, type: 3}
   m_Name: Skill_centelha-book
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AbilityDefinition
-  displayName: Selo Imobilizante
+  displayName: Selo de Cinzas
   effect: 1
   hit: {fileID: 11400000, guid: f9f2efbb70584314fbd16dce7cd6354b, type: 2}
-  cooldown: 8
-  radius: 3
+  cooldown: 9
+  radius: 2.5
   trapLifetime: 6
-  placementDistance: 2.2
+  placementDistance: 3.5
   chargeDuration: 0.3
   chargeSpeed: 13
   protectionDuration: 3

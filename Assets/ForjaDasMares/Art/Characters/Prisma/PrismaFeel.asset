@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebdbd1a8152b024295a22de10c5f623, type: 3}
+  m_Name: PrismaFeel
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatFeelDefinition
+  impact: {fileID: 8300000, guid: 9d156c5b10ba52247be19fec22a70553, type: 3}
+  swing: {fileID: 8300000, guid: e03faced947732742b1fd30522a99c9b, type: 3}
+  heavy: {fileID: 8300000, guid: 9f667e2bc87b3234c8be940dd0130a53, type: 3}
+  step: {fileID: 8300000, guid: 4133bdd5b6e04ea4fa4cdd9c021ac967, type: 3}
+  reward: {fileID: 8300000, guid: 8605c3ae0e646c749827c234082a1c0c, type: 3}
+  perfect: {fileID: 8300000, guid: bd3dbe3219fff404183f7507753d097f, type: 3}
+  trailMaterial: {fileID: 2100000, guid: 23fa448d97c27d64db7c9519ebffa889, type: 2}
+  volume: 0.24
+  impactPause: 0.018
+  cameraImpulse: 0.01

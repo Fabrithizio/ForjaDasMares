@@ -502,6 +502,11 @@ MonoBehaviour:
   dodgeDuration: 0.16
   dodgeSpeed: 12
   dodgeCooldown: 0.65
+  recoverFromFalls: 1
+  walkableGround:
+    serializedVersion: 2
+    m_Bits: 256
+  recoveryDepth: 3
 --- !u!114 &60716050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,6 +570,7 @@ MonoBehaviour:
   allies:
     serializedVersion: 2
     m_Bits: 6144
+  flow: {fileID: 0}
 --- !u!114 &60716053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2833,7 +2839,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &636012042
 Transform:
   m_ObjectHideFlags: 0
@@ -4301,7 +4307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &782272043
 Transform:
   m_ObjectHideFlags: 0
@@ -5851,7 +5857,10 @@ MonoBehaviour:
   followTime: 0.12
   collisionRadius: 0.2
   collisionPadding: 0.1
-  minimumFramingDistance: 5
+  obstructionReleaseDelay: 0.2
+  visibilityRadius: 0.3
+  obstructionOpacity: 0.35
+  zoomOutTime: 0.28
   blockers:
     serializedVersion: 2
     m_Bits: 512
@@ -7358,7 +7367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1332585663
 Transform:
   m_ObjectHideFlags: 0
@@ -7750,6 +7759,7 @@ Transform:
   - {fileID: 636012042}
   - {fileID: 1882041463}
   - {fileID: 1941062620}
+  - {fileID: 1414541257}
   m_Father: {fileID: 60716045}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1398791422
@@ -7872,6 +7882,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatEffectPool
   material: {fileID: 2100000, guid: 145bf6acecd879e44a08fc7d10d09ebb, type: 2}
+  projectileTrailMaterial: {fileID: 2100000, guid: 23fa448d97c27d64db7c9519ebffa889, type: 2}
   projectileMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   zoneMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   projectileCapacity: 32
@@ -7891,6 +7902,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1414541256
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1388244794}
+    m_Modifications:
+    - target: {fileID: 1606288737276257961, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_Name
+      value: Prisma_Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+--- !u!4 &1414541257 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+  m_PrefabInstance: {fileID: 1414541256}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1435622224
 GameObject:
   m_ObjectHideFlags: 0
@@ -8414,6 +8487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ProgressionSceneBridge
   catalog: {fileID: 11400000, guid: fca3fc89fef0dfd48a5fcfc3d85d9876, type: 2}
+  dungeonSceneName: ProgressionDungeon
   heroes: {fileID: 60716055}
   equipment: {fileID: 60716056}
   encounter: {fileID: 1873054188}
@@ -10542,7 +10616,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1882041463
 Transform:
   m_ObjectHideFlags: 0
@@ -10906,6 +10980,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1536
   fallThreshold: -4
+  mobileFrameRate: 60
   heroes: {fileID: 60716055}
   movableTargets:
   - {fileID: 1011635944}
@@ -11008,7 +11083,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1941062620
 Transform:
   m_ObjectHideFlags: 0

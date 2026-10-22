@@ -45,7 +45,7 @@ namespace ForjaDasMares.Networking
             hints[0].description=(weapon!=null?weapon.displayName:"Ataque básico")+" · segure para atacar e carregar o pesado";
             hints[1].description=(ability!=null?ability.displayName:"Habilidade")+" · habilidade da arma / classe";
             hints[2].description="Esquiva · janela curta de invulnerabilidade e recuperação";hints[3].description="Interagir · baús, alavancas e saída";
-            hints[4].description=actor.Roster.Current.heroId=="warrior"?"FÚRIA · +"+Mathf.RoundToInt((actor.Roster.Current.onlineFlow.furyAttackSpeed-1)*100)+"% de cadência por "+actor.Roster.Current.onlineFlow.furyDuration.ToString("F1")+"s; preserva a arma equipada":"SUPER · requer a barra cheia";hints[5].description="Personagem · equipamentos, mochila e comparação";
+            hints[4].description=actor.Roster.Current.heroId=="warrior"?"FÚRIA · +"+Mathf.RoundToInt((actor.Roster.Current.onlineFlow.furyAttackSpeed-1)*100)+"% de cadência por "+actor.Roster.Current.onlineFlow.furyDuration.ToString("F1")+"s; preserva a arma equipada":actor.Roster.Current.heroId=="arcanist"?"CONVERGÊNCIA · explosão prismática de 6m; imobiliza inimigos por 1,5s. Requer a barra cheia":"SUPER · requer a barra cheia";hints[5].description="Personagem · equipamentos, mochila e comparação";
         }
         void OnDestroy(){if(fill!=null)Destroy(fill);}
     }

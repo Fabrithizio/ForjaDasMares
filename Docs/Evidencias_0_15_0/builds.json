@@ -1,0 +1,16 @@
+{
+  "version": "0.15.0",
+  "androidCode": 31,
+  "package": "com.forjadasmares.campaign",
+  "protocol": 10,
+  "saveVersion": 2,
+  "windowsBuild": "Succeeded errors=0 exit=0",
+  "androidBuild": "Succeeded errors=0 exit=0",
+  "apkBytes": 53945755,
+  "apkSHA256": "85C105DF6A4C135676CDE9230DE410813BF58433FDF64CA7701487E62995D0F4",
+  "windowsExecutableBytes": 667136,
+  "androidPhysicalTested": false,
+  "androidAbi": "arm64-v8a",
+  "minimumApi": 25,
+  "targetApi": 35
+}

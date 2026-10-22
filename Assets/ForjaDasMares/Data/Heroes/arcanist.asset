@@ -15,8 +15,10 @@ MonoBehaviour:
   heroId: arcanist
   displayName: ARCANISTA - Prisma
   role: 'ARCANISTA '
-  strengths: Tres elementos e controle de grupos
-  weaknesses: Vida baixa
+  strengths: "Conjura\xE7\xE3o \xE0 dist\xE2ncia; cajado glacial, grim\xF3rio de
+    selos e orbe de dispers\xE3o. Converg\xEAncia prende grupos."
+  weaknesses: "Vida baixa; precisa manter dist\xE2ncia. O pesado e o super t\xEAm
+    prepara\xE7\xE3o."
   maximumHealth: 80
   armor: 0
   speed: 5.5
@@ -35,6 +37,6 @@ MonoBehaviour:
   special: {fileID: 11400000, guid: 317221a2fdaf1c04f8773c8b6c6f4efb, type: 2}
   onlineFlow: {fileID: 11400000, guid: 5b55d485cbba5334da289d450377f415, type: 2}
   attackAreaMaterial: {fileID: 2100000, guid: 83cbef8ba67e7164eb3c1255d080104b, type: 2}
-  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
+  feedback: {fileID: 11400000, guid: abfed30352f3a6347aab54d4b2decef6, type: 2}
   color: {r: 0.65, g: 0.35, b: 1, a: 1}
   visualSlot: 2

@@ -10,13 +10,14 @@ namespace ForjaDasMares
         [SerializeField] HeroCombat combat;
         [SerializeField] Health health;
         [SerializeField] Animator animator;
+        public bool HasCastingView{get;private set;}
         Transform visible;
         HeroModelView visibleView;
         float hitTime, victoryTime;
         Vector3 previousPosition;
         bool hasPosition;
         public EquipmentDefinition EquippedWeapon {get;private set;}
-        public float ActionProgress=>ReplicaMode?replicaAnimation:combat.NormalizedTime;
+        public float ActionProgress=>ReplicaMode?replicaAnimation:State==HeroState.Dodge?(motor.IsDodging?motor.DodgeProgress:1):State==HeroState.Hit?Mathf.Clamp01(1-hitTime/.2f):combat.NormalizedTime;
         void Start(){var feedback=GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;
         public int ActionVersion=>ReplicaMode?replicaVersion:combat.ActionVersion;
@@ -24,8 +25,10 @@ namespace ForjaDasMares
         public HeroState State { get; private set; }
         public Transform Visible => visible;
         public bool ReplicaMode { get; set; }
+        public float ChargeProgress=>ReplicaMode?replicaCharge:combat.ChargeProgress;
+        float replicaCharge;
         float replicaAnimation,replicaImpact=.25f;int replicaVariant,replicaVersion;
-        public void ApplyReplica(HeroState value, float time,int variant=0,int version=0,float impact=.25f) { State = value; replicaAnimation = Mathf.Clamp01(time);replicaVariant=variant;replicaVersion=version;replicaImpact=impact; }
+        public void ApplyReplica(HeroState value, float time,int variant=0,int version=0,float impact=.25f,float charge=0) { replicaCharge=Mathf.Clamp01(charge);State = value; replicaAnimation = Mathf.Clamp01(time);replicaVariant=variant;replicaVersion=version;replicaImpact=impact; }
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }
@@ -33,14 +36,14 @@ namespace ForjaDasMares
         void Hit() { hitTime = 0.2f; victoryTime = 0; }
         public void Show(int slot)
         {
-            GetComponent<ActorImpactFeedback>()?.ResetVisual();
+            var feedback=GetComponent<ActorImpactFeedback>();if(feedback!=null){feedback.ResetVisual();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);}
             for (int i = 0; i < models.Length; i++) models[i].gameObject.SetActive(i == slot);
-            visible = models[Mathf.Clamp(slot, 0, models.Length - 1)]; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();hasPosition=false;
+            visible = models[Mathf.Clamp(slot, 0, models.Length - 1)];HasCastingView=visible.GetComponentInChildren<PrismaCastingView>(true)!=null; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();hasPosition=false;
             if(visibleView != null)
             {
                 foreach(var view in visible.GetComponentsInChildren<HeroModelView>(true))if(view!=visibleView)view.gameObject.SetActive(false);
                 // Legacy referenced parts stay serialized but must never draw over the skin.
-                foreach(string name in new[]{"Body_Placeholder","Head_Placeholder","FacingMarker","GreatSword"})
+                foreach(string name in new[]{"Body_Placeholder","Head_Placeholder","FacingMarker","GreatSword","Staff","Focus","Bow","RuneBlade","Shield"})
                 { var part=visible.Find(name);if(part!=null)part.gameObject.SetActive(false); }
             }
         }
@@ -62,7 +65,7 @@ namespace ForjaDasMares
             {
                 visibleView.SetWeaponCategory(EquippedWeapon!=null?EquippedWeapon.category:WeaponCategory.Sword);
                 visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity;
-                float time=ReplicaMode?replicaAnimation:State==HeroState.Dodge?motor.DodgeProgress:State==HeroState.Hit?1-hitTime/.2f:combat.NormalizedTime;
+                float time=ActionProgress;
                 visibleView.Animate(State, time, actualSpeed, health.IsAlive, ReplicaMode?replicaVariant:combat.AnimationVariant, ReplicaMode?replicaVersion:combat.ActionVersion, ReplicaMode?replicaImpact:combat.ImpactTime);
                 return;
             }

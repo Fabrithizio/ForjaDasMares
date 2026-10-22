@@ -1,3 +1,13 @@
+# Atualização 0.15.0 — Prisma, o Arcanista
+
+Modelo original do mago com 25 clipes reais, manto/rig, animações de cajado, grimório e orbe, efeitos/sons e encaixes de arma configurados nos dados. Mantidos ataque segurado, pesado, habilidades, Convergência, equipamentos/talentos, arenas e jogo cooperativo. Corrigidos perfil sonoro por herói, indicador do super e relógio da animação de esquiva remota. Foco de Brasa preserva sua identidade.
+
+**Testar:** use o atalho habitual em Jogos e escolha a terceira classe, ARCANISTA — Prisma. Segure ataque; E/habilidade; Espaço/esquiva; Q/super cheio; I/Personagem. Builds atuais: Builds/Atual/Windows/ForjaDasMaresCampanha.exe e Builds/Atual/Android/ForjaDasMaresCampanha.apk (0.15.0/código31). Mesmo pacote Android, protocolo10 e saves v2; não desinstalar para atualizar.
+
+57/57 testes finais focados; duas instâncias Windows reais pelo Relay conferidas. Consolidação por caso: 231 aprovados/0 falhas/1 ignorado, não uma única execução geral final. Builds Windows e Android reais, errors0/exit0. Teste físico Android desta versão pendente: celular ausente no USB. Arte/equilíbrio ainda de protótipo. [Relatório, arquivos e limitações](PRISMA_0_15_0.md). Histórico abaixo.
+
+---
+
 # Atualização 0.14.2 — HUD mais limpo
 
 Retirados os botões fixos AQUI/ALVO/PERIGO/SAQUE do PC e celular. APK atual: Builds/Atual/Android/ForjaDasMaresCampanha.apk (0.14.2/código30); envie como Documento no WhatsApp. PC: atalho existente Jogar Campanha Forja das Mares. Protocolo10/savev2 preservados; atualizar por cima, sem apagar dados.

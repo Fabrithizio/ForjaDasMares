@@ -18,6 +18,7 @@ namespace ForjaDasMares
     {
         public string itemId, displayName;
         public Sprite icon;
+        public bool customGrip;public Vector3 socketPosition;public Vector3 socketEuler;
         public Mesh visualMesh;public Material[] visualMaterials;public Vector3 authoredScale=Vector3.one;
         [TextArea] public string description;
         public EquipmentSlot slot;

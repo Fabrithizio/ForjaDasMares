@@ -17,14 +17,18 @@ namespace ForjaDasMares
         static readonly int Run=Animator.StringToHash("Base Layer.Run");
         static int[] Hashes(string prefix,string[] names)
         {var result=new int[names.Length];for(int i=0;i<names.Length;i++)result[i]=Animator.StringToHash(prefix+names[i]);return result;}
-        static readonly string[][] WeaponMoves={new[]{"SwordSlash","SwordReturn","SwordThrust","HeavySword"},new[]{"AxeCleave","AxeBackhand","AxeSpin","HeavyAxe"},new[]{"HammerSweep","HammerBack","HammerSlam","HeavyHammer"}};
-        static readonly int[][] WeaponBase={Hashes("Base Layer.",WeaponMoves[0]),Hashes("Base Layer.",WeaponMoves[1]),Hashes("Base Layer.",WeaponMoves[2])};
-        static readonly int[][] WeaponUpper={Hashes("Upper Body.",WeaponMoves[0]),Hashes("Upper Body.",WeaponMoves[1]),Hashes("Upper Body.",WeaponMoves[2])};
+        static readonly string[][] WeaponMoves={new[]{"SwordSlash","SwordReturn","SwordThrust","HeavySword"},new[]{"AxeCleave","AxeBackhand","AxeSpin","HeavyAxe"},new[]{"HammerSweep","HammerBack","HammerSlam","HeavyHammer"},new[]{"StaffBolt","StaffReturn","StaffRelease","HeavyStaff"},new[]{"BookWord","BookPage","BookSeal","HeavyBook"},new[]{"OrbCast","OrbReturn","OrbBurst","HeavyOrb"}};
+        static readonly int[][] WeaponBase={Hashes("Base Layer.",WeaponMoves[0]),Hashes("Base Layer.",WeaponMoves[1]),Hashes("Base Layer.",WeaponMoves[2]),Hashes("Base Layer.",WeaponMoves[3]),Hashes("Base Layer.",WeaponMoves[4]),Hashes("Base Layer.",WeaponMoves[5])};
+        static readonly int[][] WeaponUpper={Hashes("Upper Body.",WeaponMoves[0]),Hashes("Upper Body.",WeaponMoves[1]),Hashes("Upper Body.",WeaponMoves[2]),Hashes("Upper Body.",WeaponMoves[3]),Hashes("Upper Body.",WeaponMoves[4]),Hashes("Upper Body.",WeaponMoves[5])};
         WeaponCategory weaponCategory;
         public void SetWeaponCategory(WeaponCategory value)=>weaponCategory=value;
         int AttackHash(int variant,bool upper,bool skill)
         {
-            int group=weaponCategory==WeaponCategory.Axe?1:weaponCategory==WeaponCategory.Hammer?2:0;int index=skill?2:Mathf.Clamp(variant,0,3);int hash=(upper?WeaponUpper:WeaponBase)[group][index];return animator.HasState(upper?1:0,hash)?hash:upper?UpperAttacks[Mathf.Clamp(variant,0,4)]:BaseAttacks[Mathf.Clamp(variant,0,4)];
+            int group=weaponCategory==WeaponCategory.Axe?1:weaponCategory==WeaponCategory.Hammer?2:weaponCategory==WeaponCategory.Staff?3:weaponCategory==WeaponCategory.Grimoire?4:weaponCategory==WeaponCategory.MagicWeapon?5:0;
+            // Caster specials have their own two-handed ritual, not the basic third shot.
+            if(skill&&group>=3)return upper?UpperStates[3]:BaseStates[3];
+            int index=skill?2:Mathf.Clamp(variant,0,3);int hash=(upper?WeaponUpper:WeaponBase)[group][index];
+            return animator.HasState(upper?1:0,hash)?hash:skill?(upper?UpperStates[3]:BaseStates[3]):upper?UpperAttacks[Mathf.Clamp(variant,0,4)]:BaseAttacks[Mathf.Clamp(variant,0,4)];
         }
         int lastState=-1,lastUpper=-1,lastVersion=-1;
         bool running,wantsDefaultWeapon=true;

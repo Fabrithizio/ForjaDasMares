@@ -1,3 +1,9 @@
+# Novidade 0.15.0 — testar o mago
+
+Escolha ARCANISTA — Prisma na seleção (terceira classe). WASD/setas para mover, mouse para mirar e segure ataque para sequência/pesado; E para habilidade da arma, Espaço para esquiva e Q com o super cheio para Convergência. No celular, use os botões equivalentes. I/Personagem mostra modelo, equipamentos e talentos. Cajado, grimório e orbe mudam o combate; o equipamento inicial continua comum e fraco. Mesmos executável, pacote Android e saves; ambos os jogadores devem atualizar. Detalhes e testes em [PRISMA_0_15_0.md](PRISMA_0_15_0.md).
+
+---
+
 # Atualização 0.14.2
 A barra fixa de marcações foi removida. APK atual em Builds/Atual/Android/ForjaDasMaresCampanha.apk, código30. AQUI permanece como atalho opcional G/direcional para cima. Instruções históricas de botões de marcação abaixo foram superadas por esta correção.
 

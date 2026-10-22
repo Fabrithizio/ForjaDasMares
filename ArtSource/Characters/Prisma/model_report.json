@@ -1,0 +1,33 @@
+{
+  "vertices": 2010,
+  "triangles": 3690,
+  "bones": 19,
+  "actions": {
+    "Idle": 49,
+    "Walk": 25,
+    "Run": 25,
+    "Attack": 25,
+    "Attack2": 25,
+    "Attack3": 25,
+    "Charged": 33,
+    "Skill": 33,
+    "Super": 41,
+    "Dodge": 19,
+    "Hit": 13,
+    "Dead": 31,
+    "Victory": 49,
+    "StaffBolt": 25,
+    "StaffReturn": 25,
+    "StaffRelease": 25,
+    "HeavyStaff": 33,
+    "BookWord": 25,
+    "BookPage": 25,
+    "BookSeal": 25,
+    "HeavyBook": 33,
+    "OrbCast": 25,
+    "OrbReturn": 25,
+    "OrbBurst": 25,
+    "HeavyOrb": 33
+  },
+  "materials": 12
+}

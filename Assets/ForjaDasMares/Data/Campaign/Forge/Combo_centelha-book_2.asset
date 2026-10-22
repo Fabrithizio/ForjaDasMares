@@ -13,19 +13,21 @@ MonoBehaviour:
   m_Name: Combo_centelha-book_2
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 1
+  footprint: 0
+  width: 0.65
   maximumTargets: 0
-  damage: 17
-  range: 8
+  damage: 18
+  range: 9
   arc: 1
   windup: 0.22
   recovery: 0.696
   knockback: 0
-  projectileSpeed: 14
+  projectileSpeed: 13
   projectileRadius: 0.14
-  splashRadius: 1
+  splashRadius: 1.7
   control: 0
-  controlDuration: 1.1
-  slowMultiplier: 0.6
-  color: {r: 0.65, g: 0.85, b: 1, a: 1}
-  projectileCount: 3
-  projectileSpread: 18
+  controlDuration: 0.35
+  slowMultiplier: 0.65
+  color: {r: 1, g: 0.33, b: 0.12, a: 1}
+  projectileCount: 1
+  projectileSpread: 12

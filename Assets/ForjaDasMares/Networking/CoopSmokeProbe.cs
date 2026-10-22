@@ -16,6 +16,7 @@ namespace ForjaDasMares.Networking
             session = GetComponent<CoopDirector>(); int.TryParse(Arg(args, "-netExpected"), out expected); if (expected == 0) expected = 4;
             Directory.CreateDirectory(directory); session.ProbeInput = true;
             if(session.Campaign!=null&&int.TryParse(Arg(args,"-netCampaignLevel"),out int level))session.SelectCampaignLevel(level);
+            if(int.TryParse(Arg(args,"-netHero"),out int hero))session.SelectHero(hero);
             var cloud = session.GetComponent<CoopCloud>();
             if(Arg(args,"-netCloudMode")=="find")cloud.FindCampaignGroup();
             if (Arg(args, "-netCloudMode") == "host") cloud.Create();
@@ -58,7 +59,7 @@ namespace ForjaDasMares.Networking
                 else if(session.LocalSlot>=0&&arsenalBudget>0)
                 {
                     var actor=session.Actor(session.LocalSlot);var view=actor.GetComponent<HeroAttackArea>();var p=actor.Presentation;
-                    if(p.State==HeroState.Attack&&p.ActionProgress>.4f&&p.ActionVersion!=arsenalVersion&&view!=null&&view.Visible)
+                    if(p.State==HeroState.Attack&&p.ActionProgress>.4f&&p.ActionVersion!=arsenalVersion&&view!=null&&(view.Visible||p.EquippedWeapon!=null&&p.EquippedWeapon.attacks[0].shape==AttackShape.Projectile))
                     {
                         arsenalVersion=p.ActionVersion;arsenalBudget--;string weapon=p.EquippedWeapon!=null?p.EquippedWeapon.itemId:"default";string file="arsenal-"+weapon+"-"+arsenalVersion+"-"+p.ActionVariant;ScreenCapture.CaptureScreenshot(Path.Combine(directory,file+".png"));
                         var model=p.Visible.GetComponentInChildren<HeroModelView>();var clips=model!=null?model.Animator.GetCurrentAnimatorClipInfo(0):new AnimatorClipInfo[0];File.WriteAllText(Path.Combine(directory,file+".json"),JsonUtility.ToJson(new ArsenalEvidence{weapon=weapon,variant=p.ActionVariant,version=p.ActionVersion,time=p.ActionProgress,area=view.Visible,clip=clips.Length>0?clips[0].clip.name:"geometric"},true));
@@ -76,6 +77,7 @@ namespace ForjaDasMares.Networking
                 if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=session.LocalInput;arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
                 if(command=="arsenal-release"){arsenalInput?.SetUiAttackHeld(false);arsenalUntil=0;}
                 if(command.StartsWith("arsenal-equip:")&&session.LocalSlot>=0){string definition=command.Substring(14);var channel=session.GetComponent<CoopProfileChannel>();var p=channel.LocalProfile;var item=p.inventory.Find(x=>x.definitionId==definition);if(item!=null)channel.Request(CoopInventoryAction.Equip,item.instanceId,EquipmentSlot.MainHand);}
+                if(command=="cast-special")session.Request(HeroButtons.Special);
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
                 if(command=="profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.OpenInventory();
                 if(command=="close-profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.CloseInventory();
@@ -128,7 +130,10 @@ namespace ForjaDasMares.Networking
             var adventure=session.Campaign?.Adventure;if(adventure!=null){report.seals=adventure.SealCount;report.sealGoal=adventure.SealGoal;report.explorationReward=adventure.Rewarded;report.propHealth=new int[adventure.Props.Count];for(int p=0;p<report.propHealth.Length;p++)report.propHealth[p]=adventure.Props[p].Health.Current;}
             report.profileReady=session.GetComponent<CoopProfileChannel>().LocalProfile!=null;
             for(int i=0;i<4;i++)report.maximum[i]=session.Actor(i).Health.Maximum;
-            for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current;report.recoveries[i]=actor.Motor.FallRecoveries; }
+            for (int i = 0; i < 4; i++) { var actor = session.Actor(i); if (actor == null) continue; report.positions[i] = actor.transform.position; report.hp[i] = actor.Health.Current;report.heroes[i]=actor.Roster.Current.heroId;report.variants[i]=actor.Presentation.ActionVariant;
+                var model=actor.Presentation.Visible.GetComponentInChildren<HeroModelView>();if(model!=null){var clips=model.Animator.GetCurrentAnimatorClipInfo(0);report.clips[i]=clips.Length>0?clips[0].clip.name:"none";}
+                foreach(var line in actor.Presentation.Visible.GetComponentsInChildren<LineRenderer>())if(line.enabled&&line.name.StartsWith("PrismaGlyph_"))report.glyphs[i]++;
+                report.recoveries[i]=actor.Motor.FallRecoveries; }
             if (session.Dungeon.Generator.Layout != null) report.signature = session.Dungeon.Generator.Layout.Signature();
             report.sampleHp = sample != null ? sample.Health.Current : -1;
             var profiles = session.GetComponent<CoopProgression>();
@@ -139,7 +144,7 @@ namespace ForjaDasMares.Networking
         void OnDisable(){arsenalInput?.SetUiAttackHeld(false);}
         [Serializable]sealed class ArsenalEvidence {public string weapon,clip;public int variant,version;public float time;public bool area;}
         [Serializable] sealed class ProbeReport
-        { public int[] recoveries=new int[4],boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
+        {public string[] heroes=new string[4],clips=new string[4];public int[] variants=new int[4],glyphs=new int[4]; public int[] recoveries=new int[4],boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

@@ -19,9 +19,10 @@ namespace ForjaDasMares
             if(view==null||presentation==null)return;bool skill=presentation.State==HeroState.Skill;
             if(!roster.Health.IsAlive||!skill&&presentation.State!=HeroState.Attack){view.enabled=false;return;}
             var weapon=presentation.EquippedWeapon;var attacks=weapon!=null?weapon.attacks:roster.Current.attacks;var ability=weapon!=null&&weapon.ability!=null?weapon.ability:roster.Current.special;
-            var attack=skill?ability?.hit:attacks[presentation.ActionVariant>=3?0:Mathf.Clamp(presentation.ActionVariant,0,attacks.Length-1)];
-            if(attack==null||attack.shape==AttackShape.Projectile||skill&&ability.effect==AbilityEffect.Trap){view.enabled=false;return;}
-            float range=skill&&ability.effect!=AbilityEffect.WeaponStrike?ability.radius:attack.range,arc=skill&&ability.effect!=AbilityEffect.WeaponStrike?360:attack.arc;
+            bool super=presentation.ActionVariant==4&&roster.Current.onlineFlow!=null&&roster.Current.onlineFlow.superAttack!=null;
+            var attack=super?roster.Current.onlineFlow.superAttack:skill?ability?.hit:attacks[presentation.ActionVariant>=3?0:Mathf.Clamp(presentation.ActionVariant,0,attacks.Length-1)];
+            if(attack==null||attack.shape==AttackShape.Projectile||!super&&skill&&ability.effect==AbilityEffect.Trap){view.enabled=false;return;}
+            float range=super?attack.range:skill&&ability.effect!=AbilityEffect.WeaponStrike?ability.radius:attack.range,arc=super||skill&&ability.effect!=AbilityEffect.WeaponStrike?360:attack.arc;
             if(!skill&&presentation.ActionVariant==3&&roster.Current.onlineFlow!=null){range*=Mathf.Max(1,roster.Current.onlineFlow.heavyRangeMultiplier);arc=Mathf.Max(160,arc);}
             var origin=combat.StrikeOrigin;var facing=transform.forward;float yaw=transform.eulerAngles.y;
             if(version!=presentation.ActionVersion||previous!=attack||(origin-previousOrigin).sqrMagnitude>.01f||Mathf.Abs(Mathf.DeltaAngle(previousYaw,yaw))>1)

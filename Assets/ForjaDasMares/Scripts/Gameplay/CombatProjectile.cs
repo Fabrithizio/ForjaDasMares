@@ -25,6 +25,8 @@ namespace ForjaDasMares
             transform.localScale = Vector3.one * (data.projectileRadius * 2f);
             properties.SetColor("_BaseColor", data.color); GetComponent<Renderer>().SetPropertyBlock(properties);
             gameObject.SetActive(true);
+            var effectPool=GetComponentInParent<CombatEffectPool>();var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
+            if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true);}
         }
         void Update()
         {

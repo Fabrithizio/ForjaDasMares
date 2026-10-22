@@ -60,8 +60,8 @@ namespace ForjaDasMares
             if (visual != null)
             {
                 var model = visual.GetComponentInChildren<HeroModelView>(true);
-                Mount(mainVisual,model!=null?model.PrimarySocket:visual,model!=null,mainRestPosition,mainRestRotation);
-                Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation);
+                Mount(mainVisual,model!=null?model.PrimarySocket:visual,model!=null,mainRestPosition,mainRestRotation,MainWeapon);
+                Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation,secondary);
             }
             combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null,MainWeapon!=null?MainWeapon.ability:null);
             var effects=GetComponent<CombatBuildEffects>()??gameObject.AddComponent<CombatBuildEffects>();BuildSynergy synergy=BuildSynergy.None;if(loadout!=null)foreach(var id in loadout.items){var owned=profile.Item(id);var item=owned!=null?catalog.Find(owned.definitionId):null;if(item!=null)synergy|=item.synergy;}effects.Configure(MainWeapon!=null?MainWeapon.perk:WeaponPerk.None,synergy);
@@ -76,9 +76,9 @@ namespace ForjaDasMares
                 else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
             }
         }
-        static void Mount(MeshRenderer visual,Transform parent,bool socket,Vector3 restPosition,Quaternion restRotation)
+        static void Mount(MeshRenderer visual,Transform parent,bool socket,Vector3 restPosition,Quaternion restRotation,EquipmentDefinition item)
         {
-            if(visual!=null)EquipmentVisualPlacement.Mount(visual.transform,parent,socket,restPosition,restRotation);
+            if(visual!=null)EquipmentVisualPlacement.Mount(visual.transform,parent,socket,restPosition,restRotation,item);
         }
         static void Visual(MeshRenderer renderer, EquipmentDefinition weapon)
         {

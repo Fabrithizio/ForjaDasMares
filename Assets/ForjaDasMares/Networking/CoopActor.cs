@@ -38,8 +38,8 @@ namespace ForjaDasMares.Networking
             if (mainGear == null) { mainGear = CreateGear("ReplicaMain", new Vector3(.55f, 1, .3f)); secondaryGear = CreateGear("ReplicaSecondary", new Vector3(-.55f, 1, .3f)); }
             var main = catalog.Find(frame.mainItem);Presentation.SetWeapon(main); var secondary = catalog.Find(frame.secondaryItem);
             var model=Presentation.Visible.GetComponentInChildren<HeroModelView>(true);
-            EquipmentVisualPlacement.Mount(mainGear.transform,model!=null?model.PrimarySocket:Presentation.Visible,model!=null,new Vector3(.55f,1,.3f),Quaternion.identity);
-            EquipmentVisualPlacement.Mount(secondaryGear.transform,model!=null?model.SecondarySocket:Presentation.Visible,model!=null,new Vector3(-.55f,1,.3f),Quaternion.identity);
+            EquipmentVisualPlacement.Mount(mainGear.transform,model!=null?model.PrimarySocket:Presentation.Visible,model!=null,new Vector3(.55f,1,.3f),Quaternion.identity,main);
+            EquipmentVisualPlacement.Mount(secondaryGear.transform,model!=null?model.SecondarySocket:Presentation.Visible,model!=null,new Vector3(-.55f,1,.3f),Quaternion.identity,secondary);
             ShowGear(mainGear,main);ShowGear(secondaryGear,secondary);
             if(model!=null)model.ShowDefaultWeapon(main==null);
             foreach (Transform body in transform) if (body.name.StartsWith("HeroVisual_"))
@@ -75,7 +75,7 @@ namespace ForjaDasMares.Networking
             replicaCounter=frame.counter;Health.SetReplicaState(frame.hp, frame.maximum);GetComponent<CombatBuildEffects>()?.SetReplicaBoons(frame.boons);replicaFury=Mathf.Clamp(frame.fury,0,12);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
             destination = frame.position; orientation = Quaternion.Euler(0, frame.yaw, 0);
             if (!hasFrame || (destination - transform.position).sqrMagnitude > 16) transform.SetPositionAndRotation(destination, orientation);
-            hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact);
+            hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact,frame.charge);
         }
         void LateUpdate()
         {

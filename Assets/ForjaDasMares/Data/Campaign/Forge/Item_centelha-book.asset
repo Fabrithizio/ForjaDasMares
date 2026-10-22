@@ -15,6 +15,9 @@ MonoBehaviour:
   itemId: centelha-book
   displayName: "C\xF3dice das Tr\xEAs Centelhas"
   icon: {fileID: 21300000, guid: 629f7e508ccdfcf43950f0dc38bc0d15, type: 3}
+  customGrip: 1
+  socketPosition: {x: 0, y: 0, z: 0}
+  socketEuler: {x: -90, y: 0, z: 0}
   visualMesh: {fileID: 4300000, guid: 562df82f0d8d5c44d8078d38a4ad3b39, type: 2}
   visualMaterials:
   - {fileID: 2100000, guid: 07457c5a57724be4db66cbdbf2087a8f, type: 2}
@@ -22,8 +25,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d00e78e40f63a94479ee3ba05e735ac9, type: 2}
   - {fileID: 2100000, guid: 3080fcf51212ed2438258e08171b4075, type: 2}
   authoredScale: {x: 1, y: 1, z: 1}
-  description: "Tr\xEAs proj\xE9teis em leque: cada um encerra ao primeiro impacto.
-    Arcanista."
+  description: "Grim\xF3rio de brasas. Sequ\xEAncia de fogo com explos\xE3o final.
+    E grava \xE0 frente um selo que prende quem entrar."
   slot: 0
   category: 6
   compatibleHeroes: 4

@@ -27,6 +27,7 @@ namespace ForjaDasMares
             foreach(var t in model.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
             foreach(var collider in model.GetComponentsInChildren<Collider>(true))collider.enabled=false;
             foreach(var behavior in model.GetComponentsInChildren<MonoBehaviour>(true))behavior.enabled=false;
+            foreach(var line in model.GetComponentsInChildren<LineRenderer>(true))line.enabled=false;
             foreach(var effect in model.GetComponentsInChildren<TrailRenderer>(true)){effect.emitting=false;effect.Clear();effect.enabled=false;}
             foreach(var renderer in model.GetComponentsInChildren<Renderer>(true)){renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;}
             var animator=model.GetComponentInChildren<Animator>();if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");}

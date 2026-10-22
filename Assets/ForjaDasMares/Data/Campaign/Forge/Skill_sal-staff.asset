@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 465b275875f92a04fbb68b6c8140216b, type: 3}
   m_Name: Skill_sal-staff
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AbilityDefinition
-  displayName: Ruptura Elemental
+  displayName: Pulso Glacial
   effect: 2
   hit: {fileID: 11400000, guid: 55bf6c89f9df359479626b94d6727f92, type: 2}
   cooldown: 8
   radius: 3
   trapLifetime: 6
-  placementDistance: 2.2
+  placementDistance: 3.5
   chargeDuration: 0.3
   chargeSpeed: 13
   protectionDuration: 3

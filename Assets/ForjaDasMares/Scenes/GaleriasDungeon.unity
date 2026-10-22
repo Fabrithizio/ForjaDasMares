@@ -871,6 +871,11 @@ MonoBehaviour:
   dodgeDuration: 0.16
   dodgeSpeed: 12
   dodgeCooldown: 0.65
+  recoverFromFalls: 1
+  walkableGround:
+    serializedVersion: 2
+    m_Bits: 256
+  recoveryDepth: 3
 --- !u!114 &60716050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3031,6 +3036,68 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 543444328}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &568656520
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1388244794}
+    m_Modifications:
+    - target: {fileID: 1606288737276257961, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_Name
+      value: Prisma_Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+--- !u!4 &568656521 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3696104582459483654, guid: 2bbb72291f784c7459eabf94c19fd930, type: 3}
+  m_PrefabInstance: {fileID: 568656520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &595845469
 GameObject:
   m_ObjectHideFlags: 0
@@ -3217,7 +3284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &636012042
 Transform:
   m_ObjectHideFlags: 0
@@ -4951,7 +5018,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &782272043
 Transform:
   m_ObjectHideFlags: 0
@@ -8258,7 +8325,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1332585663
 Transform:
   m_ObjectHideFlags: 0
@@ -8650,6 +8717,7 @@ Transform:
   - {fileID: 636012042}
   - {fileID: 1882041463}
   - {fileID: 1941062620}
+  - {fileID: 568656521}
   m_Father: {fileID: 60716045}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1398791422
@@ -8772,6 +8840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatEffectPool
   material: {fileID: 2100000, guid: 145bf6acecd879e44a08fc7d10d09ebb, type: 2}
+  projectileTrailMaterial: {fileID: 2100000, guid: 23fa448d97c27d64db7c9519ebffa889, type: 2}
   projectileMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   zoneMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   projectileCapacity: 32
@@ -11453,7 +11522,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1882041463
 Transform:
   m_ObjectHideFlags: 0
@@ -11920,7 +11989,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1941062620
 Transform:
   m_ObjectHideFlags: 0

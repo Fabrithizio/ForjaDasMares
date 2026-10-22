@@ -5,6 +5,7 @@ namespace ForjaDasMares
     public sealed class ActorImpactFeedback:MonoBehaviour
     {
         Health health;CombatFeelDefinition data;HeroPresentation hero;HeroModelView model;TrailRenderer trail;
+        public CombatFeelDefinition Settings=>data;
         int action=-1,lastHitAction=-2;float stepClock,lastSound,lastVibration;Vector3 previous;bool positioned;
         public void Configure(Health owner,CombatFeelDefinition settings,HeroPresentation presentation=null)
         {

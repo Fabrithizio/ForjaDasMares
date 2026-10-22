@@ -240,3 +240,13 @@ No layout móvel, QuickPingPosition separa a barra de marcações do joystick pa
 
 ## HUD0.14.2
 Removida a construção do painel QuickPings e seus quatro botões. Sem área invisível de interação; G/direcional para cima e a apresentação de marcações opcionais continuam usando o canal existente. Sem mudança do protocolo10 ou saves.
+
+## Prisma 0.15.0 — apresentação do Arcanista
+
+Prisma usa HeroModelView/Animator genérico com 25 clipes e máscara de tronco; o mesmo BrasaFootPlant é reutilizado para pés. As oito cenas mantêm as raízes HeroVisual_arcanist e recebem uma única instância do prefab autoral. HeroPresentation desliga as partes geométricas antigas e troca também o CombatFeelDefinition quando muda a classe. EquipmentPaperDoll copia somente a apresentação, desabilitando linhas e scripts para não criar outro ator funcional.
+
+HeroModelView resolve animações de cajado, grimório e orbe com fallback para os estados genéricos. EquipmentDefinition tem customGrip/socketPosition/socketEuler opcionais; EquipmentVisualPlacement aplica o mesmo encaixe e compensação de escala na autoridade e nas réplicas. Itens antigos sem customGrip preservam o encaixe anterior. É apresentação, sem alteração de colisores ou atributos.
+
+PrismaCastingView lê HeroPresentation (incluindo carga replicada), com oito linhas e arrays reutilizados. PooledProjectileTrail permanece vinculado aos slots finitos do pool/proxies. Efeitos não concedem dano. HeroAttackArea usa os dados do super quando variante4; os golpes continuam resolvidos uma única vez pelos sistemas existentes. Foco de Brasa conserva sua explosão e cadência específicas.
+
+CoopDirector envia HeroPresentation.ActionProgress, que seleciona o relógio de ataque, esquiva ou reação a dano. O campo animation já existia: protocolo10 e salvamento v2 não mudam. Dados de dano/controle, RNG, inventário e recompensas continuam na autoridade. Sem novo serviço/pacote; teste desta revisão em Android físico continua necessário. Fontes, valores e evidências: PRISMA_0_15_0.md.

@@ -25,7 +25,7 @@ MonoBehaviour:
   projectileSpeed: 17
   projectileRadius: 0.15
   splashRadius: 0
-  control: 1
+  control: 0
   controlDuration: 2
   slowMultiplier: 0.5
   color: {r: 0, g: 1, b: 1, a: 1}

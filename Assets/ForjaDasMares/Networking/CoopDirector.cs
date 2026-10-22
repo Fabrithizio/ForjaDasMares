@@ -414,7 +414,7 @@ namespace ForjaDasMares.Networking
                 var actor = actors[i]; var value = playerFrames[i]; value.connected = seats[i].connected; value.hero = actor.Roster.Selected; Fill(value, actor.Health, actor.transform);
                 value.counter=actor.GetComponent<CombatBuildEffects>()?.CounterReady??false;value.boons=actor.GetComponent<CombatBuildEffects>()?.PackedBoons??0;value.charge=actor.Combat.ChargeProgress;value.super=actor.Combat.SuperProgress;value.attackRange=actor.Combat.BasicAttack!=null?actor.Combat.BasicAttack.range:3;
                 value.variant=actor.Combat.AnimationVariant;value.actionVersion=actor.Combat.ActionVersion;value.impact=actor.Combat.ImpactTime;
-                value.state = (int)actor.Presentation.State; value.animation = actor.Combat.NormalizedTime; value.specialCooldown = actor.Combat.SpecialCooldownRemaining; value.dodgeCooldown = actor.Motor.DodgeCooldownRemaining;value.fury=actor.Combat.FuryRemaining; frame.players.Add(value);
+                value.state = (int)actor.Presentation.State; value.animation = actor.Presentation.ActionProgress; value.specialCooldown = actor.Combat.SpecialCooldownRemaining; value.dodgeCooldown = actor.Motor.DodgeCooldownRemaining;value.fury=actor.Combat.FuryRemaining; frame.players.Add(value);
                 var profile = progression.Profile(i)?.Profile; var loadout = profile?.Loadout(actor.Roster.Current.heroId);
                 value.mainItem = profile?.Item(loadout?.items[0])?.definitionId;
                 value.secondaryItem = profile?.Item(loadout?.items[1])?.definitionId;

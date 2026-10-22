@@ -5,6 +5,9 @@ namespace ForjaDasMares
     public sealed class CombatEffectPool : MonoBehaviour
     {
         [SerializeField] Material material;
+        [SerializeField] Material projectileTrailMaterial;
+        public Material ProjectileTrailMaterial=>projectileTrailMaterial;
+        public void ConfigureTrail(Material value)=>projectileTrailMaterial=value;
         [SerializeField] Mesh projectileMesh, zoneMesh;
         [SerializeField, Min(1)] int projectileCapacity = 32, zoneCapacity = 12;
         CombatProjectile[] projectiles;

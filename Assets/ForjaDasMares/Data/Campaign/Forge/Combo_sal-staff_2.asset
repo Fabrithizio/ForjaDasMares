@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Combo_sal-staff_2
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 1
+  footprint: 0
+  width: 0.65
   maximumTargets: 0
   damage: 17
   range: 10
@@ -20,12 +22,12 @@ MonoBehaviour:
   windup: 0.17999999
   recovery: 0.696
   knockback: 0
-  projectileSpeed: 12
+  projectileSpeed: 17
   projectileRadius: 0.14
-  splashRadius: 1.2
+  splashRadius: 1.3
   control: 1
   controlDuration: 1.1
-  slowMultiplier: 0.6
-  color: {r: 0.65, g: 0.85, b: 1, a: 1}
+  slowMultiplier: 0.65
+  color: {r: 0.18, g: 0.8, b: 1, a: 1}
   projectileCount: 1
-  projectileSpread: 0
+  projectileSpread: 12

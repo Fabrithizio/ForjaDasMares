@@ -13,19 +13,21 @@ MonoBehaviour:
   m_Name: Combo_mare-orb_1
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
   shape: 1
+  footprint: 0
+  width: 0.65
   maximumTargets: 0
   damage: 13
-  range: 9
+  range: 8
   arc: 1
   windup: 0.18
   recovery: 0.7225
   knockback: 0
-  projectileSpeed: 10
+  projectileSpeed: 16
   projectileRadius: 0.14
-  splashRadius: 1.5
-  control: 2
+  splashRadius: 0
+  control: 0
   controlDuration: 0.35
-  slowMultiplier: 0.6
-  color: {r: 0.65, g: 0.85, b: 1, a: 1}
+  slowMultiplier: 0.65
+  color: {r: 0.72, g: 0.38, b: 1, a: 1}
   projectileCount: 1
-  projectileSpread: 0
+  projectileSpread: 12

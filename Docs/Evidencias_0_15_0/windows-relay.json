@@ -1,0 +1,176 @@
+{
+  "version": "0.15.0",
+  "transport": "Unity Relay",
+  "platforms": [
+    "Windows",
+    "Windows"
+  ],
+  "humanPlayers": 0,
+  "physicalAndroid": false,
+  "weapons": {
+    "sal-staff": [
+      {
+        "weapon": "sal-staff",
+        "clip": "StaffBolt",
+        "variant": 0,
+        "version": 1,
+        "time": 0.4527811110019684,
+        "area": false
+      },
+      {
+        "weapon": "sal-staff",
+        "clip": "StaffReturn",
+        "variant": 1,
+        "version": 2,
+        "time": 0.41815727949142456,
+        "area": false
+      },
+      {
+        "weapon": "sal-staff",
+        "clip": "HeavyStaff",
+        "variant": 3,
+        "version": 3,
+        "time": 0.40760624408721924,
+        "area": false
+      },
+      {
+        "weapon": "sal-staff",
+        "clip": "StaffRelease",
+        "variant": 2,
+        "version": 4,
+        "time": 0.4246324300765991,
+        "area": false
+      },
+      {
+        "weapon": "sal-staff",
+        "clip": "StaffBolt",
+        "variant": 0,
+        "version": 5,
+        "time": 0.43593963980674744,
+        "area": false
+      },
+      {
+        "weapon": "sal-staff",
+        "clip": "StaffReturn",
+        "variant": 1,
+        "version": 6,
+        "time": 0.4344233572483063,
+        "area": false
+      }
+    ],
+    "centelha-book": [
+      {
+        "weapon": "centelha-book",
+        "clip": "HeavyBook",
+        "variant": 3,
+        "version": 10,
+        "time": 0.41665077209472656,
+        "area": false
+      },
+      {
+        "weapon": "centelha-book",
+        "clip": "BookSeal",
+        "variant": 2,
+        "version": 11,
+        "time": 0.443388432264328,
+        "area": false
+      },
+      {
+        "weapon": "centelha-book",
+        "clip": "BookWord",
+        "variant": 0,
+        "version": 12,
+        "time": 0.4335300028324127,
+        "area": false
+      },
+      {
+        "weapon": "centelha-book",
+        "clip": "BookPage",
+        "variant": 1,
+        "version": 13,
+        "time": 0.4004403054714203,
+        "area": false
+      },
+      {
+        "weapon": "centelha-book",
+        "clip": "BookWord",
+        "variant": 0,
+        "version": 8,
+        "time": 0.4469369053840637,
+        "area": false
+      },
+      {
+        "weapon": "centelha-book",
+        "clip": "BookPage",
+        "variant": 1,
+        "version": 9,
+        "time": 0.4128890931606293,
+        "area": false
+      }
+    ],
+    "mare-orb": [
+      {
+        "weapon": "mare-orb",
+        "clip": "OrbCast",
+        "variant": 0,
+        "version": 15,
+        "time": 0.4150767922401428,
+        "area": false
+      },
+      {
+        "weapon": "mare-orb",
+        "clip": "OrbReturn",
+        "variant": 1,
+        "version": 16,
+        "time": 0.40321269631385803,
+        "area": false
+      },
+      {
+        "weapon": "mare-orb",
+        "clip": "HeavyOrb",
+        "variant": 3,
+        "version": 17,
+        "time": 0.42096349596977234,
+        "area": false
+      },
+      {
+        "weapon": "mare-orb",
+        "clip": "OrbBurst",
+        "variant": 2,
+        "version": 18,
+        "time": 0.4040663242340088,
+        "area": false
+      },
+      {
+        "weapon": "mare-orb",
+        "clip": "OrbCast",
+        "variant": 0,
+        "version": 19,
+        "time": 0.40008047223091125,
+        "area": false
+      }
+    ]
+  },
+  "remoteClips": [
+    "BookPage",
+    "BookSeal",
+    "BookWord",
+    "HeavyBook",
+    "HeavyOrb",
+    "HeavyStaff",
+    "Idle",
+    "OrbBurst",
+    "OrbCast",
+    "OrbReturn",
+    "StaffRelease",
+    "StaffReturn"
+  ],
+  "slots": {
+    "host": 0,
+    "client": 1
+  },
+  "sameMap": true,
+  "maximumRemoteGlyphsObserved": 2,
+  "noRelevantRuntimeExceptions": true,
+  "safeHostClosure": true
+}

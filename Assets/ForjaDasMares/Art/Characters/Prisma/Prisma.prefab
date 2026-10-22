@@ -1,0 +1,226 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1606288737276257961
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3696104582459483654}
+  - component: {fileID: 3585328437597583112}
+  - component: {fileID: 4368923956163659892}
+  - component: {fileID: 8430919255105694139}
+  m_Layer: 0
+  m_Name: Prisma
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3696104582459483654
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606288737276257961}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7166680645475479470}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3585328437597583112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606288737276257961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd3554375db8064781b4e94dab166fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroModelView
+  animator: {fileID: 3860999707463939540}
+  primarySocket: {fileID: 2023560218243880008}
+  secondarySocket: {fileID: 7427775980889742409}
+  defaultWeapon: {fileID: 6266843421740959791}
+  walkStride: 0.9173
+  runStride: 2.4571
+--- !u!114 &4368923956163659892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606288737276257961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f26ccc08cec4f0e47bfa0ce0e9ed1cd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BrasaFootPlant
+  view: {fileID: 3585328437597583112}
+  leftThigh: {fileID: 5801091919380213684}
+  leftShin: {fileID: 7656569901413802585}
+  leftFoot: {fileID: 4228201569636318840}
+  rightThigh: {fileID: 6274430651976801982}
+  rightShin: {fileID: 8094623092236970884}
+  rightFoot: {fileID: 9200318322096754379}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  ankleHeight: 0.135
+  halfWidth: 0.19
+  stepReach: 0.34
+--- !u!114 &8430919255105694139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606288737276257961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 871f0c0198c678a4f8b152706c9c492a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PrismaCastingView
+  model: {fileID: 3585328437597583112}
+  material: {fileID: 2100000, guid: 23fa448d97c27d64db7c9519ebffa889, type: 2}
+--- !u!1001 &7277697627578615877
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3696104582459483654}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.045
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_Name
+      value: Prisma
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 6c2ea513cfff13847bcd5f501cca7d8a, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+--- !u!4 &2023560218243880008 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8712972292034862093, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3860999707463939540 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4228201569636318840 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -2426871193187568067, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5801091919380213684 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5440896784730871823, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6266843421740959791 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3605095825519919210, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6274430651976801982 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5481775741720815877, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7166680645475479470 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7427775980889742409 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 282409048322233356, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7656569901413802585 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1062298298661038620, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8094623092236970884 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7734242149067938879, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9200318322096754379 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7254863961590430066, guid: 52d3b0b69d9a1c24db96f903b3f1a478, type: 3}
+  m_PrefabInstance: {fileID: 7277697627578615877}
+  m_PrefabAsset: {fileID: 0}
