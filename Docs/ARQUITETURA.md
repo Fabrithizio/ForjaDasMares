@@ -1,3 +1,11 @@
+# Atualização 0.15.2 — direção consistente de combate
+
+IWorldAimCommands fornece uma direção de mundo opcional. ValidatedHeroCommands conserva apenas a última mira finita/normalizada e válida por sequência/timeout. HeroCombat captura essa intenção no começo da ação e mantém a orientação de conjurações com projétil até o fim da ação, sem interromper a locomoção. CombatProjectile alinha transform.forward ao voo ao reutilizar o pool; a replicação visual existente usa esse mesmo transform. Não foram acrescentados bytes aos comandos nem mudados protocolo10/saves v2.
+
+AimTargetSelector faz varredura sem alocação por ciclo sobre os Health já existentes do pool de inimigos. Retenção exige alvo vivo, ativo, presente, dentro do alcance e com visão livre. Um candidato precisa superar a razão/distância mínima configuradas no CoopDirector; alvo inválido é liberado imediatamente na próxima varredura. Mouse permanece manual. [Validação e limites](MIRA_0_15_2.md).
+
+---
+
 # Atualização 0.14 — arsenal, efeitos e exploração
 
 O arsenal0.13 acrescentou nove malhas/ícones originais e12 clipes reais para a Brasa. MeleeGeometry centraliza cone/linha/círculo usados pelo acerto e indicador. ProgressionStats mostra dano numérico, defesa percentual limitada, chance crítica e multiplicador crítico; ItemStat.CriticalDamage foi acrescentado ao final do enum para preservar saves.

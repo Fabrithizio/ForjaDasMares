@@ -148,6 +148,55 @@ namespace ForjaDasMares.Networking.Tests
                 finally{Object.DestroyImmediate(go);}
             }
         }
+        [Test] public void AcceptedAimIsUsedWhenAnAttackStartsBetweenNetworkPackets()
+        {
+            Mage.SetAuthority(true);Mage.Motor.enabled=Mage.Combat.enabled=false;
+            Mage.Motor.Teleport(new Vector3(100,.06f,100),Quaternion.identity);
+            Assert.IsTrue(Mage.Commands.Accept(1,Vector2.up,Vector2.right,HeroButtons.Attack));
+            Assert.IsTrue(Mage.Combat.TryAttack());
+            Assert.Greater(Vector3.Dot(Mage.transform.forward,Vector3.right),.999f);
+        }
+        [Test] public void ProjectileVisualAndReplicatedHeadingMatchItsFlightDirection()
+        {
+            var pool=Mage.Combat.Pool;pool.Clear();
+            Vector3 direction=new Vector3(1,0,-1).normalized;
+            Assert.IsTrue(pool.Shoot(new Vector3(100,1,100),direction,Weapon(WeaponCategory.Staff).attacks[0],Mage.Health,1<<10,1<<9));
+            var shot=pool.Projectiles.First(x=>x.gameObject.activeSelf);
+            Assert.Greater(Vector3.Dot(shot.transform.forward,direction),.999f);
+            pool.Clear();
+        }
+        [Test] public void MovingInEightDirectionsKeepsTheCommittedCastAndUsesLatestAimNext()
+        {
+            Mage.SetAuthority(true);Mage.Motor.enabled=Mage.Combat.enabled=false;
+            for(int i=0;i<8;i++)
+            {
+                Mage.Combat.ResetCombat();Mage.Motor.Teleport(new Vector3(100,.06f,100),Quaternion.identity);
+                Vector3 direction=Quaternion.Euler(0,i*45,0)*Vector3.forward;
+                Assert.IsTrue(Mage.Commands.Accept((uint)(i*2+10),Vector2.up,new Vector2(direction.x,direction.z),HeroButtons.Attack));
+                Assert.IsTrue(Mage.Combat.TryAttack());
+                Mage.Motor.Simulate(.04f,Vector2.right);
+                Vector3 opposite=-direction;
+                Assert.IsTrue(Mage.Commands.Accept((uint)(i*2+11),Vector2.right,new Vector2(opposite.x,opposite.z),HeroButtons.Attack));
+                Assert.IsTrue(Mage.Motor.FacingLocked);
+                Mage.Combat.Simulate(.3f);
+                var shot=Mage.Combat.Pool.Projectiles.First(x=>x.gameObject.activeSelf);
+                Assert.Greater(Vector3.Dot(shot.transform.forward,direction),.999f,"Cast direction "+i);
+                Assert.Greater(Vector3.Dot(Mage.transform.forward,direction),.999f,"Pose direction "+i);
+                Mage.Combat.Simulate(2);Mage.Combat.Pool.Clear();
+                Assert.IsTrue(Mage.Combat.TryAttack());
+                Assert.Greater(Vector3.Dot(Mage.transform.forward,opposite),.999f,"Next cast "+i);
+            }
+        }
+        [Test] public void ValidatedAimRejectsInvalidAndOldPacketsAndClearsOnReset()
+        {
+            var input=Mage.Commands;input.Clear();
+            Assert.IsTrue(input.Accept(5,Vector2.zero,Vector2.right,HeroButtons.None));
+            Assert.AreEqual(Vector3.right,input.AimDirection);
+            Assert.IsFalse(input.Accept(4,Vector2.zero,Vector2.up,HeroButtons.None));
+            Assert.IsFalse(input.Accept(6,Vector2.zero,new Vector2(float.NaN,0),HeroButtons.None));
+            Assert.AreEqual(Vector3.right,input.AimDirection);
+            input.Clear();Assert.AreEqual(Vector3.zero,input.AimDirection);
+        }
         EquipmentDefinition Weapon(WeaponCategory kind)=>catalog.equipment.First(x=>x.category==kind&&!x.starter);
     }
 }

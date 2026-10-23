@@ -3,6 +3,11 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     // Input adapters supply intentions. Gameplay never reads keyboard or touch APIs.
+    public interface IWorldAimCommands
+    {
+        Vector3 AimDirection { get; }
+    }
+
     public interface IPlayerCommands
     {
         Vector2 Move { get; }

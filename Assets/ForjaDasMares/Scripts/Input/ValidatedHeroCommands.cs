@@ -2,9 +2,10 @@ using UnityEngine;
 namespace ForjaDasMares
 {
     [System.Flags] public enum HeroButtons : byte { None = 0, Attack = 1, Dodge = 2, Special = 4, Interact = 8, Super = 16 }
-    public sealed class ValidatedHeroCommands : MonoBehaviour, IHeroCommands, IContinuousCombatCommands
+    public sealed class ValidatedHeroCommands : MonoBehaviour, IHeroCommands, IContinuousCombatCommands, IWorldAimCommands
     {
-        Vector2 move;
+        Vector2 move, desiredAim;
+        public Vector3 AimDirection => CombatBlocked ? Vector3.zero : new Vector3(desiredAim.x, 0, desiredAim.y);
         HeroButtons pending;
         float receivedAt = -100;
         uint lastSequence;
@@ -25,10 +26,10 @@ namespace ForjaDasMares
         public bool Accept(uint sequence, Vector2 movement, Vector2 aim, HeroButtons buttons)
         {
             if (!IsValid(movement, aim, buttons) || received && unchecked((int)(sequence - lastSequence)) <= 0) return false;
-            received = true; lastSequence = sequence; receivedAt = Time.unscaledTime; move = Vector2.ClampMagnitude(movement, 1); pending |= buttons;attackHeld=(buttons&HeroButtons.Attack)!=0;
+            received = true; lastSequence = sequence; receivedAt = Time.unscaledTime; desiredAim = aim.sqrMagnitude > .0001f ? aim.normalized : Vector2.zero; move = Vector2.ClampMagnitude(movement, 1); pending |= buttons;attackHeld=(buttons&HeroButtons.Attack)!=0;
             return true;
         }
-        public void Clear() { move = Vector2.zero;attackHeld=false; pending = HeroButtons.None; received = false; receivedAt = -100; }
+        public void Clear() { desiredAim = move = Vector2.zero;attackHeld=false; pending = HeroButtons.None; received = false; receivedAt = -100; }
         bool Take(HeroButtons button) { bool value = !CombatBlocked&&(pending & button) != 0; pending &= ~button; return value; }
         public bool TakeAttack() => Take(HeroButtons.Attack);
         public bool TakeDodge() => Take(HeroButtons.Dodge);

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Failed(Child)" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2,6165023">
+  <test-suite type="TestSuite" id="1274" name="Forja das Mares - Campanha" fullname="Forja das Mares - Campanha" runstate="Runnable" testcasecount="237" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.616502" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1141" name="ForjaDasMares.Networking.Tests.dll" fullname="C:/Users/Fabricio_S/Desktop/Jogos/ForjaDasMares/Library/ScriptAssemblies/ForjaDasMares.Networking.Tests.dll" runstate="Runnable" testcasecount="127" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.594987" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15448" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1142" name="ForjaDasMares" fullname="ForjaDasMares" runstate="Runnable" testcasecount="127" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.589412" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1143" name="Networking" fullname="ForjaDasMares.Networking" runstate="Runnable" testcasecount="127" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.586471" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1144" name="Tests" fullname="ForjaDasMares.Networking.Tests" runstate="Runnable" testcasecount="127" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.583171" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1104" name="PrismaTests" fullname="ForjaDasMares.Networking.Tests.PrismaTests" classname="ForjaDasMares.Networking.Tests.PrismaTests" runstate="Runnable" testcasecount="14" result="Failed" site="Child" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="2.576853" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1117" name="AcceptedAimIsUsedWhenAnAttackStartsBetweenNetworkPackets" fullname="ForjaDasMares.Networking.Tests.PrismaTests.AcceptedAimIsUsedWhenAnAttackStartsBetweenNetworkPackets" methodname="AcceptedAimIsUsedWhenAnAttackStartsBetweenNetworkPackets" classname="ForjaDasMares.Networking.Tests.PrismaTests" runstate="Runnable" seed="1067114320" result="Failed" start-time="2026-10-22 15:15:51Z" end-time="2026-10-22 15:15:53Z" duration="1.944111" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: greater than 0.999000013f
+  But was:  0.0f
+]]></message>
+                  <stack-trace><![CDATA[at ForjaDasMares.Networking.Tests.PrismaTests.AcceptedAimIsUsedWhenAnAttackStartsBetweenNetworkPackets () [0x00090] in C:\Users\Fabricio_S\Desktop\Jogos\ForjaDasMares\Assets\ForjaDasMares\Networking\Tests\PrismaTests.cs:157
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1118" name="ProjectileVisualAndReplicatedHeadingMatchItsFlightDirection" fullname="ForjaDasMares.Networking.Tests.PrismaTests.ProjectileVisualAndReplicatedHeadingMatchItsFlightDirection" methodname="ProjectileVisualAndReplicatedHeadingMatchItsFlightDirection" classname="ForjaDasMares.Networking.Tests.PrismaTests" runstate="Runnable" seed="786437663" result="Failed" start-time="2026-10-22 15:15:53Z" end-time="2026-10-22 15:15:53Z" duration="0.606615" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: greater than 0.999000013f
+  But was:  -0.707106769f
+]]></message>
+                  <stack-trace><![CDATA[at ForjaDasMares.Networking.Tests.PrismaTests.ProjectileVisualAndReplicatedHeadingMatchItsFlightDirection () [0x000a5] in C:\Users\Fabricio_S\Desktop\Jogos\ForjaDasMares\Assets\ForjaDasMares\Networking\Tests\PrismaTests.cs:165
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[COOP_PHASE Closed
+Saving results to: C:/Users/Fabricio_S/AppData/LocalLow/ForjaDasMaresPrototype/Forja das Mares - Campanha\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

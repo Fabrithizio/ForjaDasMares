@@ -131,9 +131,14 @@ namespace ForjaDasMares
         {
             active = true; special = ability; elapsed = 0; length = Mathf.Max(0.05f, duration); resolved = chargeWindow = false;
             heavy = ultimate = false; AnimationVariant = 0; ActionVersion++;
-            facing = transform.forward; facing.y = 0; facing.Normalize();
+            var desired = motor.Commands is IWorldAimCommands aimed ? aimed.AimDirection : Vector3.zero;
+            desired.y = 0;
+            facing = desired.sqrMagnitude > .0001f ? desired.normalized : transform.forward;
+            facing.y = 0; facing.Normalize();
+            transform.rotation = Quaternion.LookRotation(facing);
             strikeScale = (GetComponent<CombatBuildEffects>()?.ConsumeCounter()??1)*ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
-            secondResolved = echoResolved = false; motor.LockFacing(currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
+            secondResolved = echoResolved = false; // A cast keeps its pose aligned with the committed shot while movement stays free.
+            motor.LockFacing(currentAttack.shape == AttackShape.Projectile ? length : currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
         }
         public void Simulate(float deltaTime)
         {

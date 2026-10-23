@@ -19,7 +19,9 @@ namespace ForjaDasMares
         public void Fire(Vector3 position, Vector3 forward, AttackDefinition data, Health source, int targetMask, int wallMask, float scale = 1)
         {
             if (properties == null) properties = new MaterialPropertyBlock();
-            transform.position = position; forward.y = 0; direction = forward.normalized;
+            forward.y = 0;
+            direction = forward.sqrMagnitude > .0001f ? forward.normalized : Vector3.forward;
+            transform.SetPositionAndRotation(position, Quaternion.LookRotation(direction));
             attack = data; owner = source; targets = targetMask; geometry = wallMask; distance = 0f;
             damageScale = scale;
             transform.localScale = Vector3.one * (data.projectileRadius * 2f);

@@ -40,6 +40,9 @@ namespace ForjaDasMares.Networking
         bool handlers, closing, ready, cloudMode, localLoaded;
         float loadingDeadline;
         HeroButtons touchButtons;
+        readonly AimTargetSelector mobileAim = new AimTargetSelector();
+        [SerializeField, Range(.1f, .95f)] float autoAimSwitchRatio = .7f;
+        [SerializeField, Min(0)] float autoAimSwitchAdvantage = .75f;
         public CoopPhase Phase { get; private set; } = CoopPhase.Offline;
         public string Message { get; private set; } = "Sala privada: teste local ou rede local.";
         public string Pin { get; private set; } = "";
@@ -234,6 +237,7 @@ namespace ForjaDasMares.Networking
         public void StartGame()
         {
             if (!network.IsServer || Phase != CoopPhase.Lobby || ConnectedCount == 0) return;
+            mobileAim.Reset();
             expedition++;
             if(Campaign!=null){Campaign.Authority=true;Campaign.Prepare(Campaign.Selected);biome=Campaign.Level.biomeIndex;}
             SetPhase(CoopPhase.Loading, "Gerando a masmorra compartilhada…");
@@ -310,13 +314,13 @@ namespace ForjaDasMares.Networking
             forward.y = 0; if (forward.sqrMagnitude < .01f) forward = actor.transform.forward;
             if(Application.isMobilePlatform&&!input.HasPointer)
             {
-                float range=Mathf.Min(12,actor.AimRange+1),best=range*range;
+                mobileAim.BeginScan(actor.transform.position, Mathf.Min(12, actor.AimRange + 1), 1 << 9);
                 foreach(var enemy in dungeon.Encounter.Enemies.Actors)
-                {
-                    if(!enemy.IsAlive)continue;Vector3 offset=enemy.transform.position-actor.transform.position;offset.y=0;float distance=offset.sqrMagnitude;
-                    if(distance<best&&!Physics.Linecast(actor.transform.position+Vector3.up,enemy.transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore)){best=distance;forward=offset;}
-                }
+                    if(enemy.IsAlive) mobileAim.Consider(enemy.Health);
+                var target = mobileAim.EndScan(autoAimSwitchRatio, autoAimSwitchAdvantage);
+                if(target != null) { forward = target.transform.position - actor.transform.position; forward.y = 0; }
             }
+            else mobileAim.Reset();
             forward.Normalize(); return new Vector2(forward.x, forward.z);
         }
         void SendInput()

@@ -1,3 +1,11 @@
+# Atualização 0.15.2 — mira e disparos do Arcanista
+
+Corrigidos o uso de direção antiga ao começar um ataque entre pacotes e a orientação visual/replicada dos projéteis. Cada conjuração mantém sua direção, com movimento livre; a próxima usa a última mira válida recebida. Mira automática móvel agora retém alvos com critérios de troca, visão e alcance configuráveis. Sem mudanças de dano ou de salvamento.
+
+**Verificado:** duas falhas reproduzidas antes da correção; **30/30 testes PlayMode aprovados depois**, Unity exit0. Build Windows Succeeded/errors0/exit0, versão0.15.2 aberta e conferida na tela inicial. Build Android em compilação. Celular ausente no USB: teste físico e instalação pendentes. Nova sessão real PC–Android não executada neste bloco. [Relatório, arquivos e testes](MIRA_0_15_2.md). Itens/mochila e fluxo de menus permanecem para os próximos blocos.
+
+---
+
 # Atualização 0.15.1 — primeiro bloco de clareza: equipagem
 
 Instalada primeiro a 0.15.0 solicitada no moto g15 e depois atualizada a mesma instalação para 0.15.1/código32, preservando dados. Corrigido bloqueio de equipagem por efeitos de outros atores; condições do host centralizadas com motivos; resposta de recusa retornada ao solicitante e aviso no painel de comparação. Mantidas regras de classe/nível/slot e saves v2.
