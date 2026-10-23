@@ -1,3 +1,11 @@
+# Atualização 0.15.4 — apresentação modular
+
+MenuArtwork usa duas texturas Resources originais com recorte proporcional sem raycast. CampaignHome/CampaignHud preservam as ações reais de CoopCloud/CoopDirector. CampaignHeroPicker consulta HeroRoster.At e usa SelectHero; não instancia atores adicionais. Solo aguarda Lobby e conexão concluída antes de StartGame. Mensagens de erro são traduzidas para o jogador, com diagnóstico completo no log; nenhum serviço novo foi criado.
+
+PresentationQuality pertence ao objeto da interface da cena, mantém cópia runtime do URP Asset e restaura a referência na destruição. PC mantém Deferred+SMAA/FXAA; celular mantém Forward+MSAA. Bordas de RoundedHudGraphic e HudIcon têm cobertura alfa de um pixel físico para Canvas overlay, que não depende da câmera. Savev2 e protocolo10 preservados. [Verificações e limitações](APRESENTACAO_0_15_4.md).
+
+---
+
 # Atualização 0.15.3 — apresentação do inventário
 
 CoopInventoryHud apresenta as listas existentes sem reordenar dados persistidos. ItemDescriptions centraliza resumo, restrições e comparação usando ProgressionStats.Calculate, separando ficha do herói de comparação item a item. InventoryRules.EquippedBy consulta a propriedade de slots; a autoridade de transações permanece no ProfileService/CoopProgression. Entregas só são exibidas como recebidas após a propriedade aparecer no perfil. CampaignProfileHub distingue perfil deste aparelho de cópia da sala, sem criar conta global. Protocolo10, savev2 e fórmulas preservados. [Testes e limites](INVENTARIO_0_15_3.md).

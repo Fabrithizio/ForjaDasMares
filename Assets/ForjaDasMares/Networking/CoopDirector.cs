@@ -76,6 +76,7 @@ namespace ForjaDasMares.Networking
             {var gear=actors[i]?.GetComponent<HeroEquipment>();if(gear!=null)gear.SetCampaignSolo(false);}
         }
         public int HeroCount => template.Count;
+        public HeroDefinition HeroAt(int index)=>template.At(index);
         public string HeroName => actors[localSlot >= 0 ? localSlot : 0].Roster.Current.displayName;
         public int ConnectedCount { get { int value = 0; foreach (var seat in seats) if (seat.connected) value++; return value; } }
         public CoopActor Actor(int slot) => slot >= 0 && slot < actors.Length ? actors[slot] : null;

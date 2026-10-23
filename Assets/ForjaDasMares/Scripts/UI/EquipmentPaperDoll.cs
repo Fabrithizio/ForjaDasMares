@@ -9,10 +9,11 @@ namespace ForjaDasMares
         RawImage image;GameObject world,model;Camera preview;RenderTexture texture;string signature;bool portrait;int dirty;static int sequence;
         public void Configure(RawImage target,bool headOnly=false)
         {
-            portrait=headOnly;image=target;if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)return;texture=new RenderTexture(portrait?128:256,portrait?128:384,16,RenderTextureFormat.ARGB32);texture.Create();image.texture=texture;
+            portrait=headOnly;image=target;if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)return;texture=new RenderTexture(portrait?192:384,portrait?192:512,16,RenderTextureFormat.ARGB32);texture.filterMode=FilterMode.Bilinear;texture.Create();image.texture=texture;
             world=new GameObject("EquipmentPreviewWorld");world.transform.position=new Vector3(-20000+(++sequence)*20,-20000,-20000);
             var cameraObject=new GameObject("PreviewCamera");cameraObject.transform.SetParent(world.transform,false);preview=cameraObject.AddComponent<Camera>();
-            preview.targetTexture=texture;preview.cullingMask=1<<31;preview.clearFlags=CameraClearFlags.SolidColor;preview.backgroundColor=new Color(.07f,.09f,.075f,1);preview.orthographic=true;preview.orthographicSize=portrait ? .45f : 1.15f;preview.nearClipPlane=.1f;preview.farClipPlane=10;preview.allowHDR=false;preview.allowMSAA=false;
+            preview.targetTexture=texture;preview.cullingMask=1<<31;preview.clearFlags=CameraClearFlags.SolidColor;preview.backgroundColor=new Color(.07f,.09f,.075f,1);preview.orthographic=true;preview.orthographicSize=portrait ? .45f : 1.15f;preview.nearClipPlane=.1f;preview.farClipPlane=10;preview.allowHDR=false;preview.allowMSAA=true;
+            var aa=preview.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();aa.renderPostProcessing=true;aa.antialiasing=UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
             cameraObject.transform.localPosition=new Vector3(0,portrait?1.65f:1.15f,4);cameraObject.transform.rotation=Quaternion.LookRotation(world.transform.position+Vector3.up*(portrait?1.65f:1)-cameraObject.transform.position);
             var lamp=new GameObject("PreviewLight");lamp.transform.SetParent(world.transform,false);lamp.transform.localPosition=new Vector3(-1,2,3);var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.range=8;light.intensity=12;light.cullingMask=1<<31;light.shadows=LightShadows.None;
             if(Camera.main!=null)Camera.main.cullingMask&=~(1<<31);

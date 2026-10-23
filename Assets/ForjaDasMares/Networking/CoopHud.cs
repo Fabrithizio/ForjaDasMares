@@ -20,6 +20,7 @@ namespace ForjaDasMares.Networking
         public void Configure(CoopDirector director, ArenaInput input) { session = director; controls = input; }
         void Start()
         {
+            (gameObject.GetComponent<PresentationQuality>()??gameObject.AddComponent<PresentationQuality>()).Configure(Camera.main);
             previousSleep=Screen.sleepTimeout;if(Application.isMobilePlatform)Screen.sleepTimeout=SleepTimeout.NeverSleep;
             font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             root = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>(); root.SetParent(transform, false);

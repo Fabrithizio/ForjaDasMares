@@ -1,0 +1,47 @@
+{
+  "AimTargetSelectorTests": {
+    "total": "3",
+    "passed": "3",
+    "failed": "0"
+  },
+  "CampaignPresentationTests": {
+    "total": "19",
+    "passed": "19",
+    "failed": "0"
+  },
+  "CampaignTests": {
+    "total": "21",
+    "passed": "21",
+    "failed": "0"
+  },
+  "CoopProgressionTests": {
+    "total": "8",
+    "passed": "8",
+    "failed": "0"
+  },
+  "CoopProtocolTests": {
+    "total": "3",
+    "passed": "3",
+    "failed": "0"
+  },
+  "InventoryClarityTests": {
+    "total": "12",
+    "passed": "12",
+    "failed": "0"
+  },
+  "PrismaTests": {
+    "total": "16",
+    "passed": "16",
+    "failed": "0"
+  },
+  "ProgressionAuditTests": {
+    "total": "14",
+    "passed": "14",
+    "failed": "0"
+  },
+  "RusticHudTests": {
+    "total": "3",
+    "passed": "3",
+    "failed": "0"
+  }
+}

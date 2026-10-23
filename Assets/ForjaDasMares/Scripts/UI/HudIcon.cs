@@ -10,11 +10,16 @@ namespace ForjaDasMares
         {
             Rect rect = rectTransform.rect; float scale = Mathf.Min(rect.width, rect.height) / 32;
             a = rect.center + a * scale; b = rect.center + b * scale;
-            Vector2 normal = new Vector2(-(b - a).y, (b - a).x).normalized * width * scale * .5f;
-            int i = vh.currentVertCount;
-            vh.AddVert(a + normal, color, Vector2.zero); vh.AddVert(b + normal, color, Vector2.zero);
-            vh.AddVert(b - normal, color, Vector2.zero); vh.AddVert(a - normal, color, Vector2.zero);
-            vh.AddTriangle(i, i + 1, i + 2); vh.AddTriangle(i, i + 2, i + 3);
+            Vector2 direction=(b-a).normalized,perpendicular=new Vector2(-direction.y,direction.x);
+            float half=width*scale*.5f,feather=1f/Mathf.Max(.25f,canvas!=null?canvas.scaleFactor:1);
+            Vector2 normal=perpendicular*half,outer=perpendicular*(half+feather),cap=direction*feather;
+            int start=vh.currentVertCount;Color transparent=color;transparent.a=0;
+            vh.AddVert(a+outer-cap,transparent,Vector2.zero);vh.AddVert(b+outer+cap,transparent,Vector2.zero);
+            vh.AddVert(b-outer+cap,transparent,Vector2.zero);vh.AddVert(a-outer-cap,transparent,Vector2.zero);
+            vh.AddVert(a+normal,color,Vector2.zero);vh.AddVert(b+normal,color,Vector2.zero);
+            vh.AddVert(b-normal,color,Vector2.zero);vh.AddVert(a-normal,color,Vector2.zero);
+            for(int i=0;i<4;i++){int next=(i+1)%4;vh.AddTriangle(start+i,start+next,start+4+i);vh.AddTriangle(start+next,start+4+next,start+4+i);}
+            vh.AddTriangle(start+4,start+5,start+6);vh.AddTriangle(start+4,start+6,start+7);
         }
         void Ring(VertexHelper vh, float radius)
         { for (int i = 0; i < 24; i++) { float a = i * Mathf.PI / 12, b = (i + 1) * Mathf.PI / 12; Line(vh, new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius, new Vector2(Mathf.Cos(b), Mathf.Sin(b)) * radius, 1.5f); } }

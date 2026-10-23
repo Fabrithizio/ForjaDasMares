@@ -1,0 +1,12 @@
+{
+  "clients": "two Windows processes through Relay",
+  "sameMap": true,
+  "soloAutoStart": true,
+  "privateLobbyCreationByUi": true,
+  "hostStartByUi": true,
+  "clientLeavePreservedHost": true,
+  "sameIdentityReturnedToSlot": 1,
+  "physicalAndroid": false,
+  "differentNetworks": false,
+  "hostExitClosedClient": true
+}

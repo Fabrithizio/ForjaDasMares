@@ -1,0 +1,105 @@
+{
+  "heroes": [
+    "arcanist",
+    "warrior",
+    "warrior",
+    "warrior"
+  ],
+  "clips": [
+    "Idle",
+    "none",
+    "none",
+    "none"
+  ],
+  "variants": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "glyphs": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "recoveries": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "boons": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "featureStages": [],
+  "pingKinds": [],
+  "phase": "Lobby",
+  "signature": "",
+  "seals": 0,
+  "sealGoal": 0,
+  "propHealth": [],
+  "explorationReward": false,
+  "profileReady": true,
+  "cloudBusy": false,
+  "publicRoom": true,
+  "solo": true,
+  "tick": 11,
+  "localSlot": 0,
+  "connected": 1,
+  "enemies": 0,
+  "effects": 0,
+  "snapshotBytes": 0,
+  "sampleHp": -1,
+  "time": 13.007354736328125,
+  "completion": 0.0,
+  "positions": [
+    {
+      "x": 0.0,
+      "y": 0.05999999865889549,
+      "z": -5.0
+    },
+    {
+      "x": 0.0,
+      "y": 0.05999999865889549,
+      "z": -5.0
+    },
+    {
+      "x": 0.0,
+      "y": 0.05999999865889549,
+      "z": -5.0
+    },
+    {
+      "x": 0.0,
+      "y": 0.05999999865889549,
+      "z": -5.0
+    }
+  ],
+  "hp": [
+    72,
+    100,
+    100,
+    100
+  ],
+  "maximum": [
+    72,
+    100,
+    100,
+    100
+  ],
+  "xp": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "items": [
+    4,
+    0,
+    0,
+    0
+  ]
+}

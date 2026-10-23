@@ -1,0 +1,12 @@
+{
+  "sameMap": true,
+  "windowsClients": 2,
+  "heroIds": [
+    "warrior",
+    "arcanist"
+  ],
+  "hostExitClosedClient": true,
+  "physicalAndroid": false,
+  "fourPlayers": false,
+  "differentNetworks": false
+}

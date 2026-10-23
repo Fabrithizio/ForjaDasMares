@@ -1,0 +1,49 @@
+{
+  "version": "0.15.4",
+  "androidCode": 35,
+  "package": "com.forjadasmares.campaign",
+  "protocol": 10,
+  "saveVersion": 2,
+  "tests": {
+    "passed": 99,
+    "failed": 0,
+    "unityExit": 0
+  },
+  "windows": {
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe",
+    "result": "Succeeded",
+    "errors": 0,
+    "unityExit": 0
+  },
+  "android": {
+    "path": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+    "result": "Succeeded",
+    "errors": 0,
+    "unityExit": 0,
+    "bytes": 85294742,
+    "sha256": "74dbe489619542a0fb0c5611b9c790a3cbbce7b7cf5d68a444df7c725c61278e",
+    "minSdk": 25,
+    "targetSdk": 35,
+    "abi": "arm64-v8a"
+  },
+  "androidInstall": {
+    "completed": false,
+    "reason": "moto g15 absent from adb devices at completion; reconnect requested",
+    "newPhysicalGameplayTest": false
+  },
+  "manualQa": {
+    "windows": "native menu/campaign/hero selection/private room/start buttons; solo auto-start; final two-column hero cards and host shutdown message",
+    "relay": "two Windows instances, same map, heroes, leave/rejoin, host closure; isolated public-group query fallback verified",
+    "physicalAndroid": false,
+    "differentNetworks": false,
+    "fourPlayers": false
+  },
+  "art": {
+    "generator": "built-in image_gen",
+    "paths": [
+      "Assets/ForjaDasMares/Resources/MenuArt/RoutesBackdrop.png",
+      "Assets/ForjaDasMares/Resources/MenuArt/CampaignMap.png"
+    ],
+    "kind": "menu illustrations, not new playable 3D maps"
+  }
+}

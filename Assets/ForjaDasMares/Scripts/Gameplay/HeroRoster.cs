@@ -14,6 +14,7 @@ namespace ForjaDasMares
         int selected;
         public HeroDefinition Current => heroes[selected];
         public int Count => heroes.Length;
+        public HeroDefinition At(int index)=>heroes[Mathf.Clamp(index,0,heroes.Length-1)];
         public int Selected => selected;
         public Health Health => health;
         public Health Ally => ally;

@@ -21,6 +21,7 @@ namespace ForjaDasMares.Networking
     {
         CoopDirector director; ISession session; CancellationTokenSource operation;
         bool busy, disposing,advertising,advertDirty;float advertClock;string advertKey="";string testPool="";
+        public string LastError {get;private set;}
         public bool PublicRoom=>session!=null&&!session.IsPrivate;
         public bool CanChangeVisibility=>session!=null&&session.IsHost&&director.Campaign!=null;
         public void ToggleVisibility()
@@ -74,10 +75,10 @@ namespace ForjaDasMares.Networking
             if (Busy || director.Manager.IsListening) return;
             if (!Configured) { Message = "Internet indisponível: vincule o projeto em Unity Services e confira Forja das Mares/Internet/Configuração."; return; }
             if (!host && !find && (string.IsNullOrWhiteSpace(code) || code.Length > 12)) { Message = "Informe o código privado da sala."; return; }
-            busy = true; operation = new CancellationTokenSource(TimeSpan.FromSeconds(settings.ConnectionTimeoutSeconds));
+            LastError=null;busy = true; operation = new CancellationTokenSource(TimeSpan.FromSeconds(settings.ConnectionTimeoutSeconds));
             try
             {
-                Message = "Inicializando serviços e autenticação anônima…";
+                Message = "Conectando à internet…";
                 if (UnityServices.State != ServicesInitializationState.Initialized)
                 {
                     var options = new InitializationOptions().SetEnvironmentName(settings.Environment);
@@ -104,8 +105,19 @@ namespace ForjaDasMares.Networking
                 director.CompleteCloudConnection(session.Code,session.IsPrivate);advertDirty=true; Message = (session.IsPrivate?"Sala privada: ":"Grupo aberto da fase: ")+session.Code;
             }
             catch (Exception error)
-            { Message = error is OperationCanceledException ? "Conexão cancelada ou tempo esgotado." : "Falha nos serviços: " + error.Message; director.Close(); await DisposeSession(); }
+            { Message = FriendlyConnectionError(error);Debug.LogWarning("CLOUD_CONNECTION_FAILED "+error.GetType().Name+": "+error.Message); LastError=Message; director.Close(); await DisposeSession(); }
             finally { busy = false; operation?.Dispose(); operation = null; }
+        }
+        public static string FriendlyConnectionError(Exception error)
+        {
+            if(error is OperationCanceledException)return "Conexão cancelada ou tempo esgotado.";
+            if(error is SessionException failure)
+            {
+                if(failure.Error==SessionError.SessionNotFound||failure.Error==SessionError.SessionDeleted||failure.Error==SessionError.InvalidSessionIdentifier)return "Sala não encontrada ou encerrada. Peça um código novo ao host.";
+                if(failure.Error==SessionError.RateLimitExceeded)return "Muitas tentativas seguidas. Aguarde alguns segundos antes de tentar novamente.";
+                if(failure.Error==SessionError.Forbidden)return "Esta sala não aceita sua entrada agora. Confira o código com o host.";
+            }
+            return "Não foi possível conectar à sala. Confira a internet e tente novamente; a sala pode ter encerrado ou ficado sem vagas.";
         }
         async Task<ISession> JoinOrResume(string code, CancellationToken cancellation)
         {

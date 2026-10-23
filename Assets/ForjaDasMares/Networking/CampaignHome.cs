@@ -18,16 +18,19 @@ namespace ForjaDasMares.Networking
             try{saved=JsonUtility.FromJson<Invitations>(PlayerPrefs.GetString(InviteKey,""))??new Invitations();}catch(ArgumentException){saved=new Invitations();}
             saved.entries??=new List<Invitation>();saved.entries.RemoveAll(x=>x==null||string.IsNullOrWhiteSpace(x.name)||string.IsNullOrWhiteSpace(x.code)||x.name.Length>24||x.code.Length>12);if(saved.entries.Count>6)saved.entries.RemoveRange(6,saved.entries.Count-6);
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey,.8f));
+            MenuArtwork.Fill(parent,"HomeKeyArt","MenuArt/RoutesBackdrop",Color.white);
             main=Page(parent,"Home");friends=Page(parent,"Friends");options=Page(parent,"Options");confirm=Page(parent,"ConfirmExit");
-            Label(main,"FORJA DAS MARÉS",60,75,1160,100,52);
-            Label(main,"AS ROTAS DA MARÉ",65,180,1100,60,26);
-            Label(main,"Explore ruínas. Enfrente as hordas. Volte com histórias.",65,265,1100,55,22);
-            Button(main,"Campaign",65,330,560,"CAMPANHA · SOLO OU EM GRUPO",()=>play());
-            Button(main,"Profile",65,405,560,"PERSONAGEM · EQUIPAMENTOS E MOCHILA",()=>profile());
-            Button(main,"Friends",65,480,560,"AMIGOS E CONVITES",()=>Show(friends));
-            Button(main,"Settings",65,555,560,"CONFIGURAÇÕES",()=>Show(options));
-            Button(main,"Quit",65,630,560,"SAIR DO JOGO",()=>Show(confirm));
-            Label(main,"1–4 JOGADORES\n\nSolo ou grupo: sem bônus de atributos.\nSalas por código ou grupo aberto.\n\nVersão de testes "+Application.version+"",720,365,470,260,22);
+            Label(main,"FORJA\nDAS MARÉS",64,62,640,155,62);
+            Label(main,"AS ROTAS DA MARÉ",68,220,550,38,21).color=RusticHudTheme.Gold;
+            Label(main,"Sua próxima expedição começa aqui.",68,264,550,40,19);
+            var primary=Button(main,"Campaign",65,330,470,"JOGAR · CAMPANHA",()=>play());primary.GetComponent<RoundedHudGraphic>().borderColor=RusticHudTheme.Gold;
+            Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
+            Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
+            Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
+            Button(main,"Quit",310,549,225,"SAIR",()=>Show(confirm));
+            Label(main,"1–4 jogadores · PC e Android\nEscolha a fase e entre solo ou com seu grupo.",68,625,630,60,17);
+            var badge=RusticHudTheme.Rect(main.transform,"VersionCard",new Vector2(1,0),new Vector2(-40,40),new Vector2(310,65));RusticHudTheme.Panel(badge,new Color(.025f,.05f,.055f,.85f),16);
+            RusticHudTheme.Label(badge,"Version",Vector2.one*.5f,Vector2.zero,new Vector2(280,60),"EXPEDIÇÕES COOPERATIVAS\nVersão de testes "+Application.version,17,TextAnchor.MiddleCenter);
             Label(friends,"AMIGOS E CONVITES",40,30,1100,65,32);
             Label(friends,"Agenda neste aparelho: guarde o nome e o código que seu amigo compartilhar.\nCódigos expiram quando o host encerra a sala. Sem presença online ou contas de amigos ainda.",40,100,1180,70,18);
             alias=Field(friends,"FriendName",40,195,330,"Nome do amigo",24);code=Field(friends,"FriendCode",390,195,240,"Código da sala",12);
@@ -39,7 +42,9 @@ namespace ForjaDasMares.Networking
             Label(options,"Volume geral",50,165,500,60,24);
             Button(options,"VolumeDown",50,235,240,"DIMINUIR",()=>Volume(-.1f));Button(options,"VolumeUp",320,235,240,"AUMENTAR",()=>Volume(.1f));
             volume=Label(options,"",600,235,400,60,24);Volume(0);
-            Label(options,"PC: WASD/setas · mouse segurado para atacar · E habilidade · Espaço esquiva · F interagir\nCelular: joystick à esquerda; ataque, esquiva, habilidade e interação à direita.\nO host mantém os saves da campanha. Não há migração de host.",50,350,1150,160,22);
+            var graphics=Button(options,"GraphicsQuality",50,310,510,"GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected),()=>{var quality=director.GetComponent<PresentationQuality>();if(quality==null)quality=UnityEngine.Object.FindFirstObjectByType<PresentationQuality>();quality?.Cycle();options.transform.Find("GraphicsQuality").GetComponentInChildren<Text>().text="GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected);});
+            Label(options,"Nítido: bordas mais suaves. Econômico: resolução menor para aparelhos lentos.",50,380,1150,45,18);
+            Label(options,"PC: WASD/setas · mouse segurado para atacar · E habilidade · Espaço esquiva · F interagir\nCelular: joystick à esquerda; ataque, esquiva, habilidade e interação à direita.\nO host mantém os saves da campanha. Não há migração de host.",50,440,1150,150,20);
             Button(options,"Back",50,620,500,"VOLTAR AO INÍCIO",()=>Show(main));
             Label(confirm,"ENCERRAR O JOGO?",150,220,1000,100,36);
             Button(confirm,"Cancel",150,400,430,"CONTINUAR AQUI",()=>Show(main));Button(confirm,"Confirm",690,400,430,"ENCERRAR",Application.Quit);
@@ -59,7 +64,7 @@ namespace ForjaDasMares.Networking
         void Persist(){PlayerPrefs.SetString(InviteKey,JsonUtility.ToJson(saved));PlayerPrefs.Save();}
         void Refresh(){for(int i=0;i<entries.Length;i++){entries[i].gameObject.SetActive(i<saved.entries.Count);if(i<saved.entries.Count)entries[i].GetComponentInChildren<Text>().text=saved.entries[i].name+" · "+saved.entries[i].code+"    ENTRAR NA SALA";}}
         static GameObject Page(Transform parent,string name)
-        {var r=RusticHudTheme.Rect(parent,name,Vector2.one*.5f,Vector2.zero,new Vector2(1280,720));RusticHudTheme.Panel(r,new Color(.085f,.13f,.11f,1),25);return r.gameObject;}
+        {var r=RusticHudTheme.Rect(parent,name,Vector2.one*.5f,Vector2.zero,new Vector2(1280,720));if(name!="Home")RusticHudTheme.Panel(r,new Color(.025f,.05f,.045f,.96f),25);return r.gameObject;}
         static Text Label(GameObject p,string s,float x,float y,float w,float h,int font)=>RusticHudTheme.Label(p.transform,"Text",new Vector2(0,1),new Vector2(x,-y),new Vector2(w,h),s,font);
         static Button Button(GameObject p,string name,float x,float y,float width,string text,UnityEngine.Events.UnityAction action)=>RusticHudTheme.Button(p.transform,name,new Vector2(0,1),new Vector2(x,-y),new Vector2(width,60),text,action);
         static InputField Field(GameObject p,string name,float x,float y,float width,string placeholder,int limit)

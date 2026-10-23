@@ -1,3 +1,9 @@
+# Atualização 0.15.4 — apresentação e entrada na campanha
+
+Artes originais integradas ao início e campanha; seleção de herói por cartões, entrada solo/privada/grupo/código, grupo do lobby, conexão/carregamento/cancelamento e avisos do host organizados. Bordas da interface suavizadas; antialiasing da cena configurado por plataforma, com três modos gráficos. **99/99 testes finais aprovados, Unity exit0.** Builds finais Windows e Android Succeeded/errors0/exit0. Solo, lobby e dois clientes Windows reais pelo Relay conferidos; saída/retorno do cliente, encerramento do host e criação de grupo aberto verificados. APK0.15.4/código35 gerado. **Instalação e teste físico Android pendentes: moto g15 ausente no USB**, reconexão solicitada. Sem teste entre redes diferentes ou quatro pessoas. Resultados na evidência de entrega. [Arquivos e limites](APRESENTACAO_0_15_4.md). [Artes e prompts](ARTES_MENU_0_15_4.md).
+
+---
+
 # Atualização 0.15.3 — mochila e itens mais claros
 
 Abas MOCHILA/SAQUE/ENTREGAS, categorias e filtros legíveis, slots com ícones e função, resumo do item com classe/nível/slot/dano/bônus, comparação pela fórmula real e detalhes avançados opcionais. Recebimento aguarda propriedade confirmada; reciclagem mantém confirmação explícita. Perfil local e cópia da sala identificados. **56/56 testes finais aprovados, exit0**; conferência visual/equipagem Windows em perfil isolado. Builds Windows e Android Succeeded/errors0/exit0. moto g15 atualizado por cima para 0.15.3/código34; conferidos mochila, comparação e equipagem por toque em perfil isolado. Aplicativo devolvido ao modo normal. Sem nova sessão de rede neste bloco. [Arquivos, teste e limites](INVENTARIO_0_15_3.md).
