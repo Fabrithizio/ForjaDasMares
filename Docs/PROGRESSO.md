@@ -1,3 +1,9 @@
+# Atualização 0.15.3 — mochila e itens mais claros
+
+Abas MOCHILA/SAQUE/ENTREGAS, categorias e filtros legíveis, slots com ícones e função, resumo do item com classe/nível/slot/dano/bônus, comparação pela fórmula real e detalhes avançados opcionais. Recebimento aguarda propriedade confirmada; reciclagem mantém confirmação explícita. Perfil local e cópia da sala identificados. **56/56 testes finais aprovados, exit0**; conferência visual/equipagem Windows em perfil isolado. Builds Windows e Android Succeeded/errors0/exit0. moto g15 atualizado por cima para 0.15.3/código34; conferidos mochila, comparação e equipagem por toque em perfil isolado. Aplicativo devolvido ao modo normal. Sem nova sessão de rede neste bloco. [Arquivos, teste e limites](INVENTARIO_0_15_3.md).
+
+---
+
 # Atualização 0.15.2 — mira e disparos do Arcanista
 
 Corrigidos o uso de direção antiga ao começar um ataque entre pacotes e a orientação visual/replicada dos projéteis. Cada conjuração mantém sua direção, com movimento livre; a próxima usa a última mira válida recebida. Mira automática móvel agora retém alvos com critérios de troca, visão e alcance configuráveis. Sem mudanças de dano ou de salvamento.

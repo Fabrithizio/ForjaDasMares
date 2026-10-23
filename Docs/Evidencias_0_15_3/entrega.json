@@ -1,0 +1,44 @@
+{
+  "version": "0.15.3",
+  "androidVersionCode": 34,
+  "package": "com.forjadasmares.campaign",
+  "saveVersion": 2,
+  "protocolVersion": 10,
+  "tests": {
+    "total": 56,
+    "passed": 56,
+    "failed": 0,
+    "unityExitCode": 0
+  },
+  "windowsBuild": {
+    "result": "Succeeded",
+    "errors": 0,
+    "unityExitCode": 0,
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe"
+  },
+  "androidBuild": {
+    "result": "Succeeded",
+    "errors": 0,
+    "unityExitCode": 0,
+    "path": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+    "bytes": 53966479,
+    "sha256": "e7878366dd554dc14f072362c20ee825ada975f294d8053d0af9ef196b3ec2f1"
+  },
+  "androidInstall": {
+    "result": "Success",
+    "replaceExisting": true,
+    "verifiedVersion": "0.15.3",
+    "verifiedVersionCode": 34,
+    "device": "moto g15"
+  },
+  "visualQa": {
+    "windows": "1280x720, isolated profile: inventory, summary, advanced details, actual equip",
+    "android": "physical moto g15 2400x1080: inventory, summary, comparison and actual equip by tap; isolated save; normal launch restored",
+    "newCrossPlatformNetworkSession": false
+  },
+  "limits": [
+    "No new full campaign or network regression session",
+    "Preview of large grimoires may clip at edge of model viewport",
+    "Cached room profile is not a global account"
+  ]
+}

@@ -34,7 +34,7 @@ namespace ForjaDasMares.Networking
                 return service;
             }
         }
-        public string Description=>UsingRemote?"ÚLTIMA SALA · alterações validadas ao retornar ao mesmo host":"ESTE APARELHO · perfil usado ao hospedar suas partidas";
+        public string Description=>UsingRemote?"PERFIL DA ÚLTIMA SALA · valida ao voltar para ela":HasRemote?"PERFIL DESTE APARELHO · trocar para o da última sala":"PERFIL DESTE APARELHO";
         public void Toggle(){Load();if(cached==null)return;plan.remote=!plan.remote;prepared=null;revision++;Persist();}
         void Changed()=>revision++;
         void Persist(){try{Directory.CreateDirectory(Root);string temporary=PlanPath+".tmp";File.WriteAllText(temporary,JsonUtility.ToJson(plan));if(File.Exists(PlanPath))File.Replace(temporary,PlanPath,PlanPath+".bak");else File.Move(temporary,PlanPath);}catch(Exception){channel.SetNotice("Não foi possível guardar a organização do perfil.");}}
@@ -67,7 +67,7 @@ namespace ForjaDasMares.Networking
             if(success&&UsingRemote)
             {
                 plan.pending.RemoveAll(x=>x.hero==hero&&x.slot==slot);if(plan.pending.Count>=20)plan.pending.RemoveAt(0);
-                plan.pending.Add(new CoopInventoryIntent{action=action,item=item,slot=slot,hero=hero,confirmed=confirmed});Persist();
+                plan.pending.Add(new CoopInventoryIntent{action=action,item=item,slot=slot,hero=hero,confirmed=confirmed});Persist();channel.SetNotice("Organização salva nesta cópia. Será validada ao voltar à sala de origem.");
             }
         }
         void Update()

@@ -5,6 +5,11 @@ namespace ForjaDasMares
     {
         public static bool Equipped(PlayerProfile profile,string id)
         {if(string.IsNullOrEmpty(id))return false;foreach(var set in profile.loadouts)foreach(var value in set.items)if(value==id)return true;return false;}
+        public static bool EquippedBy(PlayerProfile profile,string heroId,string id)
+        {
+            if(profile==null||string.IsNullOrEmpty(id))return false;var set=profile.Loadout(heroId);
+            if(set!=null)foreach(var value in set.items)if(value==id)return true;return false;
+        }
         public static int BagCount(PlayerProfile profile)
         {int count=0;foreach(var item in profile.inventory)if(!Equipped(profile,item.instanceId))count++;return count;}
         public static int SellValue(ProgressionCatalog catalog,ItemInstance item)

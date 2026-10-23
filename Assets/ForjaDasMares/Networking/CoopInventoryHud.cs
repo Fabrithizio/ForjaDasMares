@@ -15,7 +15,11 @@ namespace ForjaDasMares.Networking
         System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];readonly Image[] equippedIcons=new Image[5];readonly HudIcon[] emptySlots=new HudIcon[5];
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
         Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
-        string lastNotice;
+        string lastNotice, selectionMessage, itemContextNotice, pendingClaim;
+        int selectionRevision;float claimUntil;bool advancedDetails,itemContextBlocked;
+        Button bagSource,advancedButton,resetComparison,clearFilters;Text pageLabel,emptyHint,sourceHint;
+        readonly Text[] rowBadges=new Text[8];
+        System.Comparison<ItemInstance> itemOrder;
         bool management;int category=-1;bool classOnly=true;
         CoopActor ActiveActor=>director.Actor(director.LocalSlot>=0?director.LocalSlot:0);
         readonly System.Collections.Generic.List<ItemInstance> filtered=new System.Collections.Generic.List<ItemInstance>();
@@ -25,6 +29,7 @@ namespace ForjaDasMares.Networking
             filtered.Clear();var source=SourceItems;if(source==null)return;
             var hero=channel.Catalog.Hero(ActiveActor.Roster.Current.heroId);
             foreach(var item in source){if(!deliveries&&InventoryRules.Equipped(channel.LocalProfile,item.instanceId))continue;var def=channel.Catalog.Find(item.definitionId);if(def==null||category>=0&&(int)def.slot!=category&&!(category==1&&def.category==WeaponCategory.Daggers&&hero!=null&&hero.allowSecondaryWeapon)||classOnly&&hero!=null&&(def.compatibleHeroes&hero.affinity)==0)continue;filtered.Add(item);}
+            if(itemOrder!=null)filtered.Sort(itemOrder);
         }
         bool CanManageNow
         {
@@ -47,6 +52,7 @@ namespace ForjaDasMares.Networking
         public void Configure(CoopDirector session) => director = session;
         void Start()
         {
+            itemOrder=CompareInventoryItems;
             channel = director.GetComponent<CoopProfileChannel>(); font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var parent = GetComponent<CoopHud>().SafeRoot;
             inventoryButton=TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
@@ -56,7 +62,7 @@ namespace ForjaDasMares.Networking
             header = Label(overlay.transform, "", new Vector2(30, -20), new Vector2(1000, 50), 23);
             closeButton=Button(overlay.transform, "FECHAR", new Vector2(1080, -20), new Vector2(150, 44), Close);
             for (int i = 0; i < rows.Length; i++)
-            { int row = i; rows[i] = Button(overlay.transform, "", new Vector2(30, -95 - i * 57), new Vector2(560, 50), () => Select(row)); }
+            { int row = i; rows[i] = Button(overlay.transform, "", new Vector2(30, -95 - i * 57), new Vector2(560, 50), () => Select(row)); rows[i].name="InventoryItem_"+i; }
             previous=Button(overlay.transform, "ANTERIOR", new Vector2(30, -560), new Vector2(170, 42), () => { page = Mathf.Max(0, page - 1); selected = null; Refresh(); });
             next=Button(overlay.transform, "PRÓXIMA", new Vector2(215, -560), new Vector2(170, 42), () => { var items = CurrentItems; if (items != null && (page + 1) * 8 < items.Count) page++; selected = null; Refresh(); });
             detail = Label(overlay.transform, "", new Vector2(620, -95), new Vector2(600, 415), 19);
@@ -71,31 +77,41 @@ namespace ForjaDasMares.Networking
         {
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
             overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,RusticHudTheme.Ink,22);
-            stockView=Button(overlay.transform,"ENTREGAS",new Vector2(400,-560),new Vector2(170,42),()=>{deliveries=!deliveries;expeditionView=false;selected=null;page=0;Refresh();});RusticHudTheme.Skin(stockView);
+            bagSource=Button(overlay.transform,"MOCHILA",new Vector2(30,-555),new Vector2(160,42),()=>SelectSource(0));bagSource.name="BagSource";RusticHudTheme.Skin(bagSource);
+            stockView=Button(overlay.transform,"ENTREGAS",new Vector2(370,-555),new Vector2(160,42),()=>SelectSource(2));stockView.name="DeliverySource";RusticHudTheme.Skin(stockView);
             for(int i=0;i<rows.Length;i++)
             {
-                var r=(RectTransform)rows[i].transform;r.anchoredPosition=new Vector2(30+i%4*118,-128-i/4*125);r.sizeDelta=new Vector2(110,112);RusticHudTheme.Skin(rows[i]);
-                var text=rows[i].GetComponentInChildren<Text>();var tr=(RectTransform)text.transform;tr.sizeDelta=new Vector2(106,48);tr.anchoredPosition=new Vector2(2,-62);text.fontSize=13;
-                var iconRect=RusticHudTheme.Rect(rows[i].transform,"ItemIcon",new Vector2(.5f,1),new Vector2(0,-5),new Vector2(54,54));icons[i]=iconRect.gameObject.AddComponent<Image>();icons[i].preserveAspect=true;icons[i].raycastTarget=false;
+                var r=(RectTransform)rows[i].transform;r.anchoredPosition=new Vector2(30+i%4*128,-128-i/4*125);r.sizeDelta=new Vector2(120,112);RusticHudTheme.Skin(rows[i]);
+                var text=rows[i].GetComponentInChildren<Text>();var tr=(RectTransform)text.transform;tr.sizeDelta=new Vector2(114,42);tr.anchoredPosition=new Vector2(3,-53);text.fontSize=13;text.resizeTextForBestFit=true;text.resizeTextMinSize=11;text.resizeTextMaxSize=13;
+                var iconRect=RusticHudTheme.Rect(rows[i].transform,"ItemIcon",new Vector2(.5f,1),new Vector2(0,-5),new Vector2(46,46));icons[i]=iconRect.gameObject.AddComponent<Image>();icons[i].preserveAspect=true;icons[i].raycastTarget=false;
+                rowBadges[i]=RusticHudTheme.Label(rows[i].transform,"ItemState",new Vector2(0,1),new Vector2(3,-94),new Vector2(114,16),"",10);rowBadges[i].alignment=TextAnchor.MiddleCenter;
             }
             string[] categories={"TODOS","ARMAS","SECUND.","ARMADURA","ACESSÓRIO","ARTEFATO"};
             for(int i=0;i<6;i++){int slot=i-1;var tab=categoryTabs[i]=Button(overlay.transform,categories[i],new Vector2(30+i*79,-80),new Vector2(75,34),()=>{category=slot;page=0;selected=null;Refresh();});RusticHudTheme.Skin(tab);tab.GetComponentInChildren<Text>().fontSize=10;}
             classFilter=Button(overlay.transform,"FILTRO DE CLASSE",new Vector2(30,-48),new Vector2(240,26),()=>{classOnly=!classOnly;page=0;selected=null;Refresh();});RusticHudTheme.Skin(classFilter);classFilter.GetComponentInChildren<Text>().fontSize=12;
-            profileSource=Button(overlay.transform,"PERFIL",new Vector2(550,-58),new Vector2(650,20),()=>{channel.Hub.Toggle();selected=null;page=0;Refresh();});RusticHudTheme.Skin(profileSource);profileSource.GetComponentInChildren<Text>().fontSize=12;
+            profileSource=Button(overlay.transform,"PERFIL",new Vector2(560,-58),new Vector2(640,28),()=>{channel.Hub.Toggle();selected=null;page=0;Refresh();});RusticHudTheme.Skin(profileSource);profileSource.GetComponentInChildren<Text>().fontSize=14;
             heroChoice=Button(overlay.transform,"TROCAR HERÓI",new Vector2(820,-20),new Vector2(240,34),()=>{director.SelectHero((director.SelectedHero+1)%director.HeroCount);selected=null;Refresh();});RusticHudTheme.Skin(heroChoice);heroChoice.GetComponentInChildren<Text>().fontSize=13;
-            expeditionButton=Button(overlay.transform,"SAQUE ATUAL",new Vector2(400,-610),new Vector2(170,42),()=>{expeditionView=!expeditionView;deliveries=false;selected=null;Refresh();});RusticHudTheme.Skin(expeditionButton);
+            expeditionButton=Button(overlay.transform,"SAQUE",new Vector2(200,-555),new Vector2(160,42),()=>SelectSource(1));expeditionButton.name="ExpeditionSource";RusticHudTheme.Skin(expeditionButton);
+            previous.GetComponent<RectTransform>().anchoredPosition=new Vector2(30,-610);previous.GetComponent<RectTransform>().sizeDelta=new Vector2(120,42);
+            next.GetComponent<RectTransform>().anchoredPosition=new Vector2(410,-610);next.GetComponent<RectTransform>().sizeDelta=new Vector2(120,42);
+            previous.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(120,42);next.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(120,42);
+            previous.GetComponentInChildren<Text>().fontSize=14;next.GetComponentInChildren<Text>().fontSize=14;
+            pageLabel=RusticHudTheme.Label(overlay.transform,"InventoryPage",new Vector2(0,1),new Vector2(155,-610),new Vector2(250,42),"",15);pageLabel.alignment=TextAnchor.MiddleCenter;
+            emptyHint=RusticHudTheme.Label(overlay.transform,"EmptyInventory",new Vector2(0,1),new Vector2(30,-140),new Vector2(505,165),"",21);
+            clearFilters=RusticHudTheme.Button(overlay.transform,"ClearInventoryFilters",new Vector2(0,1),new Vector2(30,-315),new Vector2(505,42),"MOSTRAR TODOS OS ITENS",()=>{classOnly=false;category=-1;page=0;selected=null;Refresh();});
+            sourceHint=RusticHudTheme.Label(overlay.transform,"InventorySourceHint",new Vector2(0,1),new Vector2(580,-540),new Vector2(600,110),"",17);
             var viewport=RusticHudTheme.Rect(overlay.transform,"ResultScroll",new Vector2(0,1),new Vector2(40,-125),new Vector2(1160,430));viewport.gameObject.AddComponent<RectMask2D>();viewport.gameObject.AddComponent<Image>().color=Color.clear;
             resultScroll=viewport.gameObject.AddComponent<ScrollRect>();resultScroll.viewport=viewport;resultScroll.horizontal=false;resultScroll.movementType=ScrollRect.MovementType.Clamped;resultScroll.scrollSensitivity=32;
             resultText=RusticHudTheme.Label(viewport,"ResultContent",new Vector2(0,1),Vector2.zero,new Vector2(1130,430),"",20);resultContent=(RectTransform)resultText.transform;resultScroll.content=resultContent;resultScroll.gameObject.SetActive(false);
-            var previewRect=RusticHudTheme.Rect(overlay.transform,"HeroPreview",new Vector2(0,1),new Vector2(745,-112),new Vector2(185,280));
+            var previewRect=RusticHudTheme.Rect(overlay.transform,"HeroPreview",new Vector2(0,1),new Vector2(785,-112),new Vector2(185,280));
             var raw=previewRect.gameObject.AddComponent<RawImage>();raw.raycastTarget=false;paperDoll=overlay.AddComponent<EquipmentPaperDoll>();paperDoll.Configure(raw);
-            Vector2[] points={new Vector2(540,-130),new Vector2(965,-130),new Vector2(540,-255),new Vector2(965,-255),new Vector2(750,-405)};
+            Vector2[] points={new Vector2(580,-130),new Vector2(1005,-130),new Vector2(580,-255),new Vector2(1005,-255),new Vector2(800,-405)};
             for(int i=0;i<5;i++)
             {
                 int slot=i;equipmentSlots[i]=Button(overlay.transform,"EquipmentSlot_"+i,points[i],new Vector2(175,100),()=>SelectEquipped(slot));RusticHudTheme.Skin(equipmentSlots[i]);
-                var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,100);text.fontSize=15;text.text="";
-                var iconRect=RusticHudTheme.Rect(equipmentSlots[i].transform,"EquippedItemIcon",Vector2.one*.5f,Vector2.zero,new Vector2(82,82));equippedIcons[i]=iconRect.gameObject.AddComponent<Image>();equippedIcons[i].preserveAspect=true;equippedIcons[i].raycastTarget=false;
-                var silhouette=RusticHudTheme.Rect(equipmentSlots[i].transform,"EmptySlot",Vector2.one*.5f,Vector2.zero,new Vector2(50,50));emptySlots[i]=silhouette.gameObject.AddComponent<HudIcon>();emptySlots[i].symbol=i==0?HudSymbol.Sword:i==1?HudSymbol.Shield:i==2?HudSymbol.Armor:i==3?HudSymbol.Accessory:HudSymbol.Artifact;emptySlots[i].color=new Color(.5f,.53f,.47f,.5f);emptySlots[i].raycastTarget=false;
+                var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,22);((RectTransform)text.transform).anchoredPosition=new Vector2(0,-76);text.fontSize=12;text.text="";
+                var iconRect=RusticHudTheme.Rect(equipmentSlots[i].transform,"EquippedItemIcon",Vector2.one*.5f,new Vector2(0,8),new Vector2(64,64));equippedIcons[i]=iconRect.gameObject.AddComponent<Image>();equippedIcons[i].preserveAspect=true;equippedIcons[i].raycastTarget=false;
+                var silhouette=RusticHudTheme.Rect(equipmentSlots[i].transform,"EmptySlot",Vector2.one*.5f,new Vector2(0,8),new Vector2(50,50));emptySlots[i]=silhouette.gameObject.AddComponent<HudIcon>();emptySlots[i].symbol=i==0?HudSymbol.Sword:i==1?HudSymbol.Shield:i==2?HudSymbol.Armor:i==3?HudSymbol.Accessory:HudSymbol.Artifact;emptySlots[i].color=new Color(.5f,.53f,.47f,.5f);emptySlots[i].raycastTarget=false;
             }
             detailViewport=RusticHudTheme.Rect(overlay.transform,"ItemDetailsScroll",new Vector2(0,1),new Vector2(30,-382),new Vector2(475,165));detailViewport.gameObject.AddComponent<RectMask2D>();detailViewport.gameObject.AddComponent<Image>().color=Color.clear;
             var scroll=detailViewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=detailViewport;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
@@ -112,7 +128,10 @@ namespace ForjaDasMares.Networking
             ownDetails=ScrollableDetails(rect,"SelectedItem",new Vector2(25,-70));otherDetails=ScrollableDetails(rect,"ComparedItem",new Vector2(595,-70));
             RusticHudTheme.Label(rect,"Title",new Vector2(0,1),new Vector2(25,-15),new Vector2(850,40),"ITEM SELECIONADO",22);RusticHudTheme.Label(rect,"ComparisonTitle",new Vector2(0,1),new Vector2(595,-15),new Vector2(500,40),"COMPARAÇÃO",22);
             RusticHudTheme.Button(rect,"CloseItem",new Vector2(1,1),new Vector2(-20,-15),new Vector2(140,40),"VOLTAR",()=>{itemPopup.SetActive(false);selected=null;Refresh();});
-            compareButton=RusticHudTheme.Button(rect,"CompareOther",new Vector2(0,1),new Vector2(595,-545),new Vector2(535,44),"COMPARAR COM OUTRO ITEM",CycleCompare);
+            compareButton=RusticHudTheme.Button(rect,"CompareOther",new Vector2(0,1),new Vector2(595,-545),new Vector2(320,40),"OUTRO ITEM DE REFERÊNCIA",CycleCompare);
+            resetComparison=RusticHudTheme.Button(rect,"CompareEquipped",new Vector2(0,1),new Vector2(925,-545),new Vector2(205,40),"USAR EQUIPADO",CompareEquipped);
+            advancedButton=RusticHudTheme.Button(rect,"ToggleAdvanced",new Vector2(0,1),new Vector2(25,-545),new Vector2(535,40),"VER DETALHES AVANÇADOS",()=>{advancedDetails=!advancedDetails;Refresh();ResetInspectionScroll();});
+            compareButton.GetComponentInChildren<Text>().fontSize=14;resetComparison.GetComponentInChildren<Text>().fontSize=14;advancedButton.GetComponentInChildren<Text>().fontSize=16;
             var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(510,-10),new Vector2(48,48));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(1080,-10),new Vector2(48,48));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
             itemNotice=RusticHudTheme.Label(rect,"EquipmentNotice",new Vector2(0,1),new Vector2(25,-590),new Vector2(1100,26),"",17);
             itemPopup.SetActive(false);
@@ -121,13 +140,13 @@ namespace ForjaDasMares.Networking
         {
             var viewport=RusticHudTheme.Rect(parent,name,new Vector2(0,1),pos,new Vector2(535,405));viewport.gameObject.AddComponent<RectMask2D>();viewport.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
-            var text=RusticHudTheme.Label(viewport,"Content",new Vector2(0,1),new Vector2(12,-10),new Vector2(505,400),"",18);text.alignment=TextAnchor.UpperLeft;scroll.content=text.rectTransform;return text;
+            var text=RusticHudTheme.Label(viewport,"Content",new Vector2(0,1),new Vector2(12,-10),new Vector2(505,400),"",19);text.alignment=TextAnchor.UpperLeft;scroll.content=text.rectTransform;return text;
         }
         void OpenItem()
         {
-            if(itemPopup==null||selected==null)return;compared=null;var p=channel.LocalProfile;var item=p.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(item==null)return;
+            if(itemPopup==null||selected==null)return;advancedDetails=false;selectionMessage=channel.Message;selectionRevision=channel.Revision;compared=null;var p=channel.LocalProfile;var item=p.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(item==null)return;
             var set=p.Loadout(ActiveActor.Roster.Current.heroId);compared=set?.items[(int)channel.Catalog.Find(item.definitionId).slot];if(compared==selected)compared=null;
-            itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();
+            itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();
         }
         void CycleCompare()
         {
@@ -135,7 +154,12 @@ namespace ForjaDasMares.Networking
             var slot=channel.Catalog.Find(chosen.definitionId).slot;list.RemoveAll(x=>x.instanceId==selected||channel.Catalog.Find(x.definitionId).slot!=slot);int index=list.FindIndex(x=>x.instanceId==compared);compared=list.Count>0?list[(index+1)%list.Count].instanceId:null;Refresh();
         }
         void SelectEquipped(int slot)
-        {deliveries=false;expeditionView=false;var actor=ActiveActor;var set=channel.LocalProfile?.Loadout(actor.Roster.Current.heroId);selected=set!=null?set.items[slot]:null;pendingDiscard=null;Refresh();if(selected==null)notice.text=RusticHudTheme.SlotName((EquipmentSlot)slot)+" · vazio. Selecione uma peça compatível na mochila.";OpenItem();}
+        {
+            deliveries=expeditionView=false;var set=channel.LocalProfile?.Loadout(ActiveActor.Roster.Current.heroId);
+            selected=set?.items[slot];pendingDiscard=null;
+            if(string.IsNullOrEmpty(selected)){category=slot;classOnly=true;page=0;channel.SetNotice(RusticHudTheme.SlotName((EquipmentSlot)slot)+" vazio. Selecione um item compatível na mochila.");}
+            Refresh();OpenItem();
+        }
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
         public void OpenInventory()=>Show(false);
         public void CloseInventory(){if(IsOpen)Close();}
@@ -143,7 +167,7 @@ namespace ForjaDasMares.Networking
         {
             if (channel.LocalProfile == null || director.LocalSlot < 0&&!channel.HomeMode) return;
             GetComponent<CampaignSessionMenu>()?.Close();
-            sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);results = result; deliveries=false; expeditionView=false;selected = pendingDiscard = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); director.SetInputBlocked(true); Refresh();
+            sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);results = result; deliveries=false; expeditionView=false;selected = pendingDiscard = pendingClaim = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); director.SetInputBlocked(true); Refresh();
         }
         Button TopRight(Transform parent,string label,float y,UnityEngine.Events.UnityAction action)
         {
@@ -151,7 +175,7 @@ namespace ForjaDasMares.Networking
             if(director.Campaign!=null){rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(30,label=="INVENTÁRIO"?20:75);RusticHudTheme.Skin(button);}
             else{rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.one;rect.anchoredPosition=new Vector2(-15,y);}return button;
         }
-        void Close() { sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = null; director.SetInputBlocked(false); }
+        void Close() { sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = pendingClaim = null; director.SetInputBlocked(false); }
         void Update()
         {
             if(inventoryButton!=null)
@@ -162,6 +186,12 @@ namespace ForjaDasMares.Networking
             }
             if (overlay == null || !overlay.activeSelf) return;
             if (director.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
+            if(pendingClaim!=null)
+            {
+                if(channel.LocalProfile?.Item(pendingClaim)!=null)
+                {string received=pendingClaim;SelectSource(0);selected=received;Refresh();OpenItem();}
+                else if(Time.unscaledTime>claimUntil){pendingClaim=null;Refresh();}
+            }
             RefreshEquipmentNotice();
             if (revision != channel.Revision||lastNotice!=channel.Message||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
         }
@@ -171,14 +201,27 @@ namespace ForjaDasMares.Networking
         {
             var profile = channel.LocalProfile; if (profile == null) return; lastNotice=channel.Message;revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
             if(profileSource!=null){profileSource.gameObject.SetActive(channel.HomeMode&&!results);profileSource.GetComponentInChildren<Text>().text=channel.Hub.Description;profileSource.interactable=channel.Hub.HasRemote;}
-            if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"SÓ ESTA CLASSE":"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
+            if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"CLASSE: "+RusticHudTheme.ClassNames(channel.Catalog.Hero(ActiveActor.Roster.Current.heroId).affinity).ToUpperInvariant():"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
             if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/8));
-            if(expeditionButton!=null){expeditionButton.gameObject.SetActive(!results);expeditionButton.interactable=profile.expedition!=null;expeditionButton.GetComponentInChildren<Text>().text=expeditionView?"VER MOCHILA":"SAQUE ATUAL · "+(profile.expedition?.items.Count??0);}
-            header.text = results ? "RESULTADO COOPERATIVO" : expeditionView?"SAQUE ATUAL — pode equipar fora de combate":deliveries?"ENTREGAS GUARDADAS — "+channel.DeliveryCount:"PERSONAGEM · Nv "+ProgressionStats.Level(profile.experience)+" · "+profile.coins+" OURO · MOCHILA " + InventoryRules.BagCount(profile) + "/" + channel.Catalog.inventoryCapacity;
+            RefreshNavigation(profile);
+            header.text = results ? "RESULTADO DA PARTIDA" : "PERSONAGEM · NV "+ProgressionStats.Level(profile.experience)+" · "+profile.coins+" OURO";
             for (int i = 0; i < rows.Length; i++)
             {
                 int index = page * 8 + i; bool visible = !results && index < CurrentItems.Count; rows[i].gameObject.SetActive(visible);
-                if (visible) { var item = CurrentItems[index]; rows[i].GetComponentInChildren<Text>().text = channel.Catalog.Find(item.definitionId).displayName + "\n" + RusticHudTheme.RarityName(item.rarity);if(icons[i]!=null){icons[i].sprite=channel.Catalog.Find(item.definitionId).icon;icons[i].enabled=icons[i].sprite!=null;}var color=channel.Catalog.Rarity(item.rarity).color;rows[i].GetComponentInChildren<Text>().color=color; }
+                if (visible)
+                {
+                    var item=CurrentItems[index];var definition=channel.Catalog.Find(item.definitionId);var label=rows[i].GetComponentInChildren<Text>();
+                    label.text=definition.displayName;label.color=channel.Catalog.Rarity(item.rarity).color;
+                    if(icons[i]!=null){icons[i].sprite=definition.icon;icons[i].enabled=icons[i].sprite!=null;}
+                    if(rowBadges[i]!=null)
+                    {
+                        bool compatible=(definition.compatibleHeroes&channel.Catalog.Hero(ActiveActor.Roster.Current.heroId).affinity)!=0;
+                        bool level=ProgressionStats.Level(profile.experience,channel.Catalog.maximumLevel)>=definition.minimumLevel;
+                        rowBadges[i].text=!compatible?"OUTRA CLASSE":!level?"REQUER NV "+definition.minimumLevel:RusticHudTheme.RarityName(item.rarity)+" · "+ShortSlot(definition.slot);
+                        rowBadges[i].color=compatible&&level?RusticHudTheme.Muted:new Color(1,.58f,.42f);
+                        icons[i].color=compatible&&level?Color.white:new Color(.6f,.6f,.6f,1);
+                    }
+                }
             }
             previous.gameObject.SetActive(!results);next.gameObject.SetActive(!results);previous.interactable=page>0;next.interactable=CurrentItems!=null&&(page+1)*8<CurrentItems.Count;
             equip.gameObject.SetActive(!results); remove.gameObject.SetActive(!results); discard.gameObject.SetActive(!results);
@@ -189,33 +232,15 @@ namespace ForjaDasMares.Networking
                 detail.text = result != null ? result.outcome + "\nXP " + result.experience + " | moedas " + result.coins + "\nItens obtidos: " + result.items.Count : "Nenhuma partida concluída nesta sessão.";
                 if (result != null) foreach (var item in result.items) detail.text += "\n" + channel.Catalog.Find(item.definitionId).displayName + " — " + RusticHudTheme.RarityName(item.rarity);
             }
-            else if (value == null)
-            {
-                var stats=ProgressionStats.Calculate(actor.Roster.Current,profile,channel.Catalog);
-                detail.text=actor.Roster.Current.displayName+" · nível "+stats.level+"\nVida "+stats.maximumHealth+" · defesa "+(stats.defense*100).ToString("F0")+"%\nDano ×"+stats.damageMultiplier.ToString("F2")+" · cadência ×"+stats.attackSpeed.ToString("F2")+"\nCrítico "+(stats.criticalChance*100).ToString("F0")+"% · velocidade "+stats.speed.ToString("F1")+"\nXP "+profile.experience+" · moedas "+profile.coins+"\nSelecione um item para comparar. Use os filtros de slot e classe.";
-            }
-            else
-            {
-                var definition = channel.Catalog.Find(value.definitionId); var before = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog);
-                var after = ProgressionStats.Calculate(actor.Roster.Current, profile, channel.Catalog, selected, definition.slot, true);
-
-                var currentItem=profile.Item(profile.Loadout(actor.Roster.Current.heroId)?.items[0]);var currentWeapon=currentItem!=null?channel.Catalog.Find(currentItem.definitionId):null;
-                var currentAttack=currentWeapon!=null?currentWeapon.attacks[0]:actor.Roster.Current.attacks[0];var comparedAttack=definition.slot==EquipmentSlot.MainHand?definition.attacks[0]:currentAttack;
-                float currentPower=currentItem!=null?channel.Catalog.Rarity(currentItem.rarity).power:1,comparedPower=definition.slot==EquipmentSlot.MainHand?channel.Catalog.Rarity(value.rarity).power:currentPower;
-                int baseBefore=Mathf.RoundToInt(currentAttack.damage*ProgressionStats.StrikeMultiplier(before.damageMultiplier*currentPower,before.elementalDamage,false));int baseAfter=Mathf.RoundToInt(comparedAttack.damage*ProgressionStats.StrikeMultiplier(after.damageMultiplier*comparedPower,after.elementalDamage,false));
-                detail.text=definition.displayName+" · "+RusticHudTheme.RarityName(value.rarity)+"\n"+RusticHudTheme.SlotName(definition.slot)+" · nível "+definition.minimumLevel+"\nClasse: "+RusticHudTheme.ClassNames(definition.compatibleHeroes)+"\nGolpe base: "+baseBefore+" → "+baseAfter+" (antes de defesa/crítico)\nVida "+before.maximumHealth+" → "+after.maximumHealth+"\nDefesa "+(before.defense*100).ToString("F0")+"% → "+(after.defense*100).ToString("F0")+"%\nCadência ×"+before.attackSpeed.ToString("F2")+" → ×"+after.attackSpeed.ToString("F2")+"\nCrítico "+(before.criticalChance*100).ToString("F0")+"% → "+(after.criticalChance*100).ToString("F0")+"%\nVelocidade "+before.speed.ToString("F1")+" → "+after.speed.ToString("F1")+"\n"+definition.description;
-                if(definition.ability!=null)detail.text+="\nHabilidade: "+definition.ability.displayName+" · "+definition.ability.cooldown.ToString("F1")+"s de recuperação";
-                if(definition.attacks!=null&&definition.attacks.Length>0){var attack=definition.attacks[0];detail.text+="\nAlcance "+attack.range.ToString("F1")+"m · sequência "+definition.attacks.Length+" ataques\nComo usar: equipe e segure ATAQUE.\nSegure para o pesado; Q/SUPER quando cheio.";}
-                if (!ProgressionStats.CanEquip(profile, channel.Catalog, actor.Roster.Current.heroId, value, definition.slot, out string reason)) detail.text += "\n" + reason;
-                var loadout = profile.Loadout(actor.Roster.Current.heroId); if (loadout != null) for (int i = 0; i < loadout.items.Length; i++) if (loadout.items[i] == selected) detail.text += "\nEQUIPADO: " + RusticHudTheme.SlotName((EquipmentSlot)i);
-            }
+            else if(value==null)detail.text="Selecione um item para ver classe, slot, bônus e comparação.";
+            else detail.text=ItemDescriptions.Describe(channel.Catalog,value)+"\n\n"+ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value);
             if(resultScroll!=null)
             {
                 resultScroll.gameObject.SetActive(results);detail.gameObject.SetActive(!results);
                 if(results){resultText.text=detail.text+"\n\nTodos os itens recebidos estão na mochila ou no estoque de entregas.";resultContent.sizeDelta=new Vector2(1130,Mathf.Max(430,resultText.preferredHeight+24));}
             }
             if(deliveries&&value!=null)detail.text=channel.Catalog.Find(value.definitionId).displayName+"\n"+RusticHudTheme.RarityName(value.rarity)+"\nGuardado no estoque. Receba na mochila antes de equipar.\nEspaços livres: "+(channel.Catalog.inventoryCapacity-InventoryRules.BagCount(profile));
-            if(stockView!=null){stockView.gameObject.SetActive(!results);stockView.interactable=deliveries||channel.DeliveryCount>0;stockView.GetComponentInChildren<Text>().text=deliveries?"VOLTAR À MOCHILA":"ENTREGAS · "+channel.DeliveryCount;}
+
             equip.GetComponentInChildren<Text>().text=deliveries?"RECEBER ITEM":"EQUIPAR";
             if(paperDoll!=null)
             {
@@ -225,7 +250,7 @@ namespace ForjaDasMares.Networking
                 for(int i=0;i<5;i++)
                 {
                     equipmentSlots[i].gameObject.SetActive(!results);var equipped=set!=null?profile.Item(set.items[i]):null;
-                    var definition=equipped!=null?channel.Catalog.Find(equipped.definitionId):null;equippedIcons[i].sprite=definition!=null?definition.icon:null;equippedIcons[i].enabled=equippedIcons[i].sprite!=null;emptySlots[i].gameObject.SetActive(!equippedIcons[i].enabled);equipmentSlots[i].GetComponentInChildren<Text>().text="";equipmentSlots[i].GetComponent<Image>().color=equipped!=null?Color.Lerp(RusticHudTheme.Surface,channel.Catalog.Rarity(equipped.rarity).color,.18f):RusticHudTheme.Surface;
+                    var definition=equipped!=null?channel.Catalog.Find(equipped.definitionId):null;equippedIcons[i].sprite=definition!=null?definition.icon:null;equippedIcons[i].enabled=equippedIcons[i].sprite!=null;emptySlots[i].gameObject.SetActive(!equippedIcons[i].enabled);equipmentSlots[i].GetComponentInChildren<Text>().text=names[i];equipmentSlots[i].GetComponent<Image>().color=equipped!=null?Color.Lerp(RusticHudTheme.Surface,channel.Catalog.Rarity(equipped.rarity).color,.18f):RusticHudTheme.Surface;
                 }
                 if(!results&&!deliveries&&!expeditionView&&InventoryRules.BagCount(profile)==0)detail.text+="Sua mochila está vazia. Vença inimigos, abra baús e veja SAQUE ATUAL para equipar durante esta tentativa.\nSaque desta tentativa: "+(profile.expedition?.items.Count??0)+" itens. Eles são guardados no resultado.";
             }
@@ -238,7 +263,7 @@ namespace ForjaDasMares.Networking
             if(detailViewport!=null)detail.rectTransform.sizeDelta=new Vector2(450,Mathf.Max(165,detail.preferredHeight+20));
             bool canEquip=value!=null&&ProgressionStats.CanEquip(profile,channel.Catalog,actor.Roster.Current.heroId,value,channel.Catalog.Find(value.definitionId).slot,out _);
             equip.interactable=!results&&management&&(deliveries?value!=null&&InventoryRules.BagCount(profile)<channel.Catalog.inventoryCapacity:canEquip);remove.interactable=!results&&!deliveries&&management&&value!=null;discard.interactable=remove.interactable&&!(channel.HomeMode&&channel.Hub.UsingRemote);if(channel.HomeMode&&channel.Hub.UsingRemote&&deliveries)equip.interactable=false;
-            discard.GetComponentInChildren<Text>().text = pendingDiscard == selected && selected != null ? "CONFIRMAR?" : "RECICLAR · "+InventoryRules.SellValue(channel.Catalog,value)+" OURO";
+            discard.GetComponentInChildren<Text>().text = pendingDiscard == selected && selected != null ? "CONFIRMAR RECICLAGEM" : "RECICLAR · "+InventoryRules.SellValue(channel.Catalog,value)+" OURO";
             if(itemPopup!=null)
             {
                 sheet.SetOverviewVisible(!results);detailViewport.gameObject.SetActive(false);
@@ -246,21 +271,106 @@ namespace ForjaDasMares.Networking
                 foreach(var button in new[]{equip,remove,discard}){button.gameObject.SetActive(open);button.transform.SetParent(itemPopup.transform,false);}
                 equip.GetComponent<RectTransform>().anchoredPosition=new Vector2(25,-490);remove.GetComponent<RectTransform>().anchoredPosition=new Vector2(225,-490);discard.GetComponent<RectTransform>().anchoredPosition=new Vector2(425,-490);discard.GetComponent<RectTransform>().sizeDelta=new Vector2(310,44);discard.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(310,44);
                 if(secondaryEquip!=null){secondaryEquip.transform.SetParent(itemPopup.transform,false);secondaryEquip.GetComponent<RectTransform>().anchoredPosition=new Vector2(760,-490);secondaryEquip.gameObject.SetActive(open&&!deliveries&&channel.Catalog.Find(value.definitionId).category==WeaponCategory.Daggers);}
-                remove.interactable=management&&!deliveries&&value!=null&&InventoryRules.Equipped(profile,selected);if(!deliveries&&InventoryRules.Equipped(profile,selected))equip.interactable=false;
+                remove.interactable=management&&!deliveries&&value!=null&&EquippedHere(profile,selected);if(!deliveries&&InventoryRules.Equipped(profile,selected))equip.interactable=false;
                 discard.interactable=management&&!deliveries&&value!=null&&!InventoryRules.Equipped(profile,selected)&&!(channel.HomeMode&&channel.Hub.UsingRemote);
-                if(open){var other=profile.Item(compared);inspectedIcon.sprite=channel.Catalog.Find(value.definitionId).icon;inspectedIcon.enabled=inspectedIcon.sprite!=null;comparedIcon.sprite=other!=null?channel.Catalog.Find(other.definitionId).icon:null;comparedIcon.enabled=comparedIcon.sprite!=null;ownDetails.text=ItemDescriptions.Describe(channel.Catalog,value,other)+(InventoryRules.Equipped(profile,selected)?"\nEQUIPADO NESTE MOMENTO":"");otherDetails.text=(other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):"Escolha COMPARAR COM OUTRO ITEM. A comparação inicial usa o item equipado no mesmo slot.")+"\n\nAO EQUIPAR O ITEM SELECIONADO\n"+ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value);foreach(var t in new[]{ownDetails,otherDetails})t.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,t.preferredHeight+30));}
+                if(open)RefreshInspection(profile,actor,value);
+
             }
             RefreshEquipmentNotice();
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }
         void RefreshEquipmentNotice()
         {
-            if (itemNotice == null || !itemPopup.activeSelf) return;
-            itemNotice.text = !channel.HomeMode && director.Manager.IsServer && !channel.CanManageLocal
-                ? channel.LocalManagementBlockReason
-                : channel.Message ?? "Selecione EQUIPAR para usar este item.";
+            if(itemNotice==null||!itemPopup.activeSelf)return;
+            string message=itemContextNotice;bool blocked=itemContextBlocked;
+            if(!channel.HomeMode&&director.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
+            else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
+            {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
+            itemNotice.text=message;itemNotice.color=pendingDiscard==selected&&selected!=null?RusticHudTheme.Gold:blocked?new Color(1,.6f,.45f):RusticHudTheme.Parchment;
         }
-        void Equip() { if(deliveries){if(selected!=null)channel.Request(CoopInventoryAction.ClaimDelivery,selected,EquipmentSlot.MainHand);return;} var item = channel.LocalProfile?.Item(selected); if (item == null) return; pendingDiscard = null; channel.Request(CoopInventoryAction.Equip, selected, channel.Catalog.Find(item.definitionId).slot); }
+        void Equip()
+        {
+            if(deliveries)
+            {
+                if(selected!=null&&pendingClaim==null){pendingClaim=selected;claimUntil=Time.unscaledTime+5;channel.Request(CoopInventoryAction.ClaimDelivery,selected,EquipmentSlot.MainHand);}
+                return;
+            }
+            var item=channel.LocalProfile?.Item(selected);if(item==null)return;
+            pendingDiscard=null;channel.Request(CoopInventoryAction.Equip,selected,channel.Catalog.Find(item.definitionId).slot);
+        }
+        void ResetInspectionScroll()
+        {
+            foreach(var text in new[]{ownDetails,otherDetails})if(text!=null)text.rectTransform.anchoredPosition=new Vector2(12,-10);
+        }
+        bool EquippedHere(PlayerProfile profile,string id)=>InventoryRules.EquippedBy(profile,ActiveActor.Roster.Current.heroId,id);
+        static string ShortSlot(EquipmentSlot slot)=>slot==EquipmentSlot.MainHand?"ARMA":slot==EquipmentSlot.OffHand?"SECUND.":slot==EquipmentSlot.Armor?"ARMADURA":slot==EquipmentSlot.Accessory?"ACESSÓRIO":"ARTEFATO";
+        int CompareInventoryItems(ItemInstance a,ItemInstance b)
+        {
+            var x=channel.Catalog.Find(a.definitionId);var y=channel.Catalog.Find(b.definitionId);
+            int order=x.slot.CompareTo(y.slot);if(order!=0)return order;
+            order=b.rarity.CompareTo(a.rarity);if(order!=0)return order;
+            order=string.CompareOrdinal(x.displayName,y.displayName);return order!=0?order:string.CompareOrdinal(a.instanceId,b.instanceId);
+        }
+        int AvailableItems(System.Collections.Generic.List<ItemInstance> items,bool includeEquipped=false)
+        {if(items==null)return 0;int count=0;foreach(var item in items)if(includeEquipped||!InventoryRules.Equipped(channel.LocalProfile,item.instanceId))count++;return count;}
+        void SelectSource(int source)
+        {
+            deliveries=source==2;expeditionView=source==1;selected=pendingDiscard=pendingClaim=null;page=0;
+            if(itemPopup!=null)itemPopup.SetActive(false);Refresh();
+        }
+        void CompareEquipped()
+        {
+            var item=channel.LocalProfile?.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(item==null)return;
+            compared=channel.LocalProfile.Loadout(ActiveActor.Roster.Current.heroId)?.items[(int)channel.Catalog.Find(item.definitionId).slot];
+            if(compared==selected)compared=null;Refresh();
+        }
+        void RefreshNavigation(PlayerProfile profile)
+        {
+            if(bagSource==null)return;
+            bagSource.gameObject.SetActive(!results);stockView.gameObject.SetActive(!results);expeditionButton.gameObject.SetActive(!results);
+            bagSource.interactable=deliveries||expeditionView;stockView.interactable=!deliveries;
+            expeditionButton.interactable=!expeditionView&&profile.expedition!=null;
+            bagSource.GetComponentInChildren<Text>().text="MOCHILA · "+InventoryRules.BagCount(profile);
+            stockView.GetComponentInChildren<Text>().text="ENTREGAS · "+channel.DeliveryCount;
+            expeditionButton.GetComponentInChildren<Text>().text="SAQUE · "+AvailableItems(profile.expedition?.items);
+            foreach(var button in new[]{bagSource,stockView,expeditionButton})button.GetComponentInChildren<Text>().fontSize=13;
+            bool empty=!results&&CurrentItems.Count==0;emptyHint.gameObject.SetActive(empty);
+            bool filters=category!=-1||classOnly;int available=AvailableItems(SourceItems,deliveries);
+            emptyHint.text=available>0?"Nenhum item corresponde aos filtros.\nTente outra categoria ou mostre todas as classes.":deliveries?"Nenhuma entrega aguardando.\nItens que não couberem na mochila ficam guardados aqui.":expeditionView?"Nenhum item solto no saque.\nDerrote inimigos e abra baús; os equipados ficam no herói.":"Sua mochila está vazia.\nBusque equipamentos nos inimigos e baús. Os equipados ficam ao redor do herói.";
+            clearFilters.gameObject.SetActive(empty&&available>0&&filters);
+            pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+7)/8)+" · "+CurrentItems.Count+" itens";
+            sourceHint.gameObject.SetActive(!results);
+            sourceHint.text=deliveries?"ENTREGAS\nItens guardados por falta de espaço. Receba um item para levá-lo à mochila; depois escolha se deseja equipar.":expeditionView?"SAQUE DA PARTIDA\nItens obtidos nesta expedição. Você pode equipar fora de perigo. Ao terminar, eles são guardados no resultado.":"MOCHILA\nItens guardados neste perfil. Clique em um item para inspecionar; os equipados aparecem nos slots ao redor do herói.";
+            if(profile.expedition==null&&!deliveries&&!expeditionView)sourceHint.text+="\nSAQUE fica disponível durante uma partida.";
+        }
+        void RefreshInspection(PlayerProfile profile,CoopActor actor,ItemInstance value)
+        {
+            var definition=channel.Catalog.Find(value.definitionId);var other=profile.Item(compared);
+            inspectedIcon.sprite=definition.icon;inspectedIcon.enabled=inspectedIcon.sprite!=null;
+            comparedIcon.sprite=other!=null?channel.Catalog.Find(other.definitionId)?.icon:null;comparedIcon.enabled=comparedIcon.sprite!=null;
+            string state=deliveries?"Guardado nas entregas; receba na mochila para equipar.":ItemDescriptions.EquipmentState(profile,channel.Catalog,actor.Roster.Current,value);
+            ownDetails.text=state+"\n\n"+(advancedDetails?ItemDescriptions.Describe(channel.Catalog,value,other):ItemDescriptions.Summary(channel.Catalog,value));
+            otherDetails.text=deliveries?"RECEBER NÃO EQUIPA AUTOMATICAMENTE\n\nLibere espaço na mochila e clique em RECEBER ITEM. Depois você poderá comparar e equipar.":"FICHA AO EQUIPAR\nComparada ao equipamento atual, sem bônus temporários da partida. Valores antes da defesa inimiga.\n\n"+(advancedDetails?ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value):ItemDescriptions.QuickPreview(actor.Roster.Current,profile,channel.Catalog,value));
+            if(!deliveries)otherDetails.text+="\n\nBÔNUS ENTRE ITENS\n"+(advancedDetails&&other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):ItemDescriptions.CompareBonuses(channel.Catalog,value,other));
+            advancedButton.GetComponentInChildren<Text>().text=advancedDetails?"VOLTAR AO RESUMO":"VER DETALHES AVANÇADOS";
+            foreach(var text in new[]{ownDetails,otherDetails})text.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,text.preferredHeight+30));
+            compareButton.interactable=!deliveries;resetComparison.interactable=!deliveries;
+            itemContextBlocked=false;
+            if(pendingDiscard==selected&&selected!=null){itemContextNotice="Reciclar este item remove a peça e devolve "+InventoryRules.SellValue(channel.Catalog,value)+" ouro. Clique em CONFIRMAR RECICLAGEM.";return;}
+            if(deliveries)
+            {
+                bool full=InventoryRules.BagCount(profile)>=channel.Catalog.inventoryCapacity;
+                itemContextBlocked=full||channel.HomeMode&&channel.Hub.UsingRemote;
+                itemContextNotice=full?"Mochila cheia. Recicle ou equipe uma peça para liberar espaço.":channel.HomeMode&&channel.Hub.UsingRemote?"Receba este item na sala de origem.":"Clique em RECEBER ITEM. Ele será levado à mochila, sem equipar automaticamente.";
+                if(pendingClaim!=null){equip.interactable=false;equip.GetComponentInChildren<Text>().text="RECEBENDO...";}
+            }
+            else
+            {
+                bool equipped=EquippedHere(profile,value.instanceId);
+                itemContextBlocked=!equipped&&!ProgressionStats.CanEquip(profile,channel.Catalog,actor.Roster.Current.heroId,value,definition.slot,out _);
+                itemContextNotice=itemContextBlocked?state:equipped?"Este item já está equipado. Use DESEQUIPAR para devolvê-lo à mochila.":"Clique em EQUIPAR para usar este item. A comparação mostra as mudanças na sua ficha.";
+            }
+        }
         void Unequip()
         { var set = channel.LocalProfile?.Loadout(ActiveActor.Roster.Current.heroId); if (set == null) return; for (int i = 0; i < set.items.Length; i++) if (set.items[i] == selected) { channel.Request(CoopInventoryAction.Unequip, null, (EquipmentSlot)i); break; } }
         void Discard()

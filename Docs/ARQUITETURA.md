@@ -1,3 +1,9 @@
+# Atualização 0.15.3 — apresentação do inventário
+
+CoopInventoryHud apresenta as listas existentes sem reordenar dados persistidos. ItemDescriptions centraliza resumo, restrições e comparação usando ProgressionStats.Calculate, separando ficha do herói de comparação item a item. InventoryRules.EquippedBy consulta a propriedade de slots; a autoridade de transações permanece no ProfileService/CoopProgression. Entregas só são exibidas como recebidas após a propriedade aparecer no perfil. CampaignProfileHub distingue perfil deste aparelho de cópia da sala, sem criar conta global. Protocolo10, savev2 e fórmulas preservados. [Testes e limites](INVENTARIO_0_15_3.md).
+
+---
+
 # Atualização 0.15.2 — direção consistente de combate
 
 IWorldAimCommands fornece uma direção de mundo opcional. ValidatedHeroCommands conserva apenas a última mira finita/normalizada e válida por sequência/timeout. HeroCombat captura essa intenção no começo da ação e mantém a orientação de conjurações com projétil até o fim da ação, sem interromper a locomoção. CombatProjectile alinha transform.forward ao voo ao reutilizar o pool; a replicação visual existente usa esse mesmo transform. Não foram acrescentados bytes aos comandos nem mudados protocolo10/saves v2.
