@@ -2,7 +2,7 @@
 
 Corrigidos o uso de direção antiga ao começar um ataque entre pacotes e a orientação visual/replicada dos projéteis. Cada conjuração mantém sua direção, com movimento livre; a próxima usa a última mira válida recebida. Mira automática móvel agora retém alvos com critérios de troca, visão e alcance configuráveis. Sem mudanças de dano ou de salvamento.
 
-**Verificado:** duas falhas reproduzidas antes da correção; **30/30 testes PlayMode aprovados depois**, Unity exit0. Build Windows Succeeded/errors0/exit0, versão0.15.2 aberta e conferida na tela inicial. Build Android em compilação. Celular ausente no USB: teste físico e instalação pendentes. Nova sessão real PC–Android não executada neste bloco. [Relatório, arquivos e testes](MIRA_0_15_2.md). Itens/mochila e fluxo de menus permanecem para os próximos blocos.
+**Verificado:** duas falhas reproduzidas antes da correção; **30/30 testes PlayMode aprovados depois**, Unity exit0. Build Windows Succeeded/errors0/exit0, versão0.15.2 aberta e conferida na tela inicial. Build Android Succeeded/errors0/exit0; APK 0.15.2/código33 conferido no manifesto, no caminho estável Builds/Atual/Android/ForjaDasMaresCampanha.apk. moto g15 reconhecido ao final e atualizado via install -r (Success); versão0.15.2/código33 conferida. Teste de jogabilidade físico ainda pendente. Nova sessão real PC–Android não executada neste bloco. [Relatório, arquivos e testes](MIRA_0_15_2.md). Itens/mochila e fluxo de menus permanecem para os próximos blocos.
 
 ---
 

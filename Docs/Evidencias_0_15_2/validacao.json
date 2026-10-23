@@ -1,0 +1,44 @@
+{
+  "version": "0.15.2",
+  "androidCode": 33,
+  "protocol": 10,
+  "saveVersion": 2,
+  "tests": {
+    "before": {
+      "total": 2,
+      "failed": 2,
+      "purpose": "Reprodução anterior da falha"
+    },
+    "after": {
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "editorExit": 0
+    }
+  },
+  "windows": {
+    "result": "Succeeded",
+    "errors": 0,
+    "editorExit": 0,
+    "opened": true,
+    "menuVersionObserved": "0.15.2"
+  },
+  "android": {
+    "result": "Succeeded",
+    "errors": 0,
+    "editorExit": 0,
+    "bytes": 53952655,
+    "sha256": "02d0bf12fb5597d9cddc385027c04b7bbd49ae5cf4699fa3edcf57ba96ddd323",
+    "manifestVersionVerified": true,
+    "installedThisDelivery": true
+  },
+  "physicalAndroidTested": false,
+  "newRealCrossplaySessionTested": false,
+  "phone": {
+    "model": "moto g15",
+    "install": "adb install -r: Success",
+    "versionVerified": "0.15.2",
+    "codeVerified": 33,
+    "dataCleared": false
+  }
+}
