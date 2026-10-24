@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares.Networking
 {
@@ -8,7 +8,7 @@ namespace ForjaDasMares.Networking
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
-        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
@@ -76,7 +76,10 @@ namespace ForjaDasMares.Networking
         void BuildPaperDoll()
         {
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
-            overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,RusticHudTheme.Ink,22);
+            overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,new Color(.035f,.06f,.05f,.72f),22);
+            var backdrop=MenuArtwork.Fill(panel,"InventoryBackdrop","MenuArt/RoutesBackdrop",new Color(.65f,.7f,.68f,1));backdrop.transform.SetAsFirstSibling();
+            var bagFrame=RusticHudTheme.Rect(panel,"BagFrame",new Vector2(0,1),new Vector2(18,-75),new Vector2(525,590));RusticHudTheme.Panel(bagFrame,new Color(.035f,.065f,.055f,.9f),18);bagFrame.SetSiblingIndex(2);
+            var heroFrame=RusticHudTheme.Rect(panel,"HeroFrame",new Vector2(0,1),new Vector2(550,-95),new Vector2(665,450));RusticHudTheme.Panel(heroFrame,new Color(.035f,.065f,.055f,.82f),18);heroFrame.SetSiblingIndex(3);
             bagSource=Button(overlay.transform,"MOCHILA",new Vector2(30,-555),new Vector2(160,42),()=>SelectSource(0));bagSource.name="BagSource";RusticHudTheme.Skin(bagSource);
             stockView=Button(overlay.transform,"ENTREGAS",new Vector2(370,-555),new Vector2(160,42),()=>SelectSource(2));stockView.name="DeliverySource";RusticHudTheme.Skin(stockView);
             for(int i=0;i<rows.Length;i++)
@@ -125,20 +128,25 @@ namespace ForjaDasMares.Networking
         {
             sheet=overlay.AddComponent<CampaignCharacterSheet>();sheet.Build(overlay.transform,director,channel);
             var rect=RusticHudTheme.Rect(overlay.transform,"ItemComparison",Vector2.one*.5f,Vector2.zero,new Vector2(1160,620));itemPopup=rect.gameObject;var surface=RusticHudTheme.Panel(rect,new Color(.065f,.079f,.067f,1),20);surface.raycastTarget=true;
-            ownDetails=ScrollableDetails(rect,"SelectedItem",new Vector2(25,-70));otherDetails=ScrollableDetails(rect,"ComparedItem",new Vector2(595,-70));
-            RusticHudTheme.Label(rect,"Title",new Vector2(0,1),new Vector2(25,-15),new Vector2(850,40),"ITEM SELECIONADO",22);RusticHudTheme.Label(rect,"ComparisonTitle",new Vector2(0,1),new Vector2(595,-15),new Vector2(500,40),"COMPARAÇÃO",22);
+            ownDetails=ScrollableDetails(rect,"SelectedItem",new Vector2(595,-80));otherDetails=ScrollableDetails(rect,"ComparedItem",new Vector2(25,-80));
+            var summary=RusticHudTheme.Rect(rect,"ComparisonSummary",new Vector2(0,1),new Vector2(25,-350),new Vector2(1105,125));summary.gameObject.AddComponent<RectMask2D>();summary.gameObject.AddComponent<Image>().color=Color.clear;RusticHudTheme.Panel(summary,new Color(.08f,.13f,.105f,1),14);
+            var summaryScroll=summary.gameObject.AddComponent<ScrollRect>();summaryScroll.viewport=summary;summaryScroll.horizontal=false;summaryScroll.movementType=ScrollRect.MovementType.Clamped;
+            comparisonSummary=RusticHudTheme.Label(summary,"Changes",new Vector2(0,1),new Vector2(14,-8),new Vector2(1075,115),"",18);comparisonSummary.alignment=TextAnchor.UpperLeft;summaryScroll.content=comparisonSummary.rectTransform;
+            RusticHudTheme.Label(rect,"Title",new Vector2(0,1),new Vector2(675,-15),new Vector2(280,55),"SELECIONADO",22);comparisonHeading=RusticHudTheme.Label(rect,"ComparisonTitle",new Vector2(0,1),new Vector2(105,-15),new Vector2(450,55),"EQUIPADO ATUALMENTE",22);
             RusticHudTheme.Button(rect,"CloseItem",new Vector2(1,1),new Vector2(-20,-15),new Vector2(140,40),"VOLTAR",()=>{itemPopup.SetActive(false);selected=null;Refresh();});
             compareButton=RusticHudTheme.Button(rect,"CompareOther",new Vector2(0,1),new Vector2(595,-545),new Vector2(320,40),"OUTRO ITEM DE REFERÊNCIA",CycleCompare);
             resetComparison=RusticHudTheme.Button(rect,"CompareEquipped",new Vector2(0,1),new Vector2(925,-545),new Vector2(205,40),"USAR EQUIPADO",CompareEquipped);
             advancedButton=RusticHudTheme.Button(rect,"ToggleAdvanced",new Vector2(0,1),new Vector2(25,-545),new Vector2(535,40),"VER DETALHES AVANÇADOS",()=>{advancedDetails=!advancedDetails;Refresh();ResetInspectionScroll();});
+            compareButton.gameObject.SetActive(false);resetComparison.gameObject.SetActive(false);
+            RusticHudTheme.Label(rect,"ComparisonLegend",new Vector2(0,1),new Vector2(595,-545),new Vector2(535,40),"▲ Melhora    ▼ Piora    — Sem alteração",17);
             compareButton.GetComponentInChildren<Text>().fontSize=14;resetComparison.GetComponentInChildren<Text>().fontSize=14;advancedButton.GetComponentInChildren<Text>().fontSize=16;
-            var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(510,-10),new Vector2(48,48));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(1080,-10),new Vector2(48,48));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
+            var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(595,-10),new Vector2(68,68));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(25,-10),new Vector2(68,68));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
             itemNotice=RusticHudTheme.Label(rect,"EquipmentNotice",new Vector2(0,1),new Vector2(25,-590),new Vector2(1100,26),"",17);
             itemPopup.SetActive(false);
         }
         Text ScrollableDetails(Transform parent,string name,Vector2 pos)
         {
-            var viewport=RusticHudTheme.Rect(parent,name,new Vector2(0,1),pos,new Vector2(535,405));viewport.gameObject.AddComponent<RectMask2D>();viewport.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
+            var viewport=RusticHudTheme.Rect(parent,name,new Vector2(0,1),pos,new Vector2(535,260));viewport.gameObject.AddComponent<RectMask2D>();viewport.gameObject.AddComponent<Image>().color=Color.clear;RusticHudTheme.Panel(viewport,RusticHudTheme.Surface,14);
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
             var text=RusticHudTheme.Label(viewport,"Content",new Vector2(0,1),new Vector2(12,-10),new Vector2(505,400),"",19);text.alignment=TextAnchor.UpperLeft;scroll.content=text.rectTransform;return text;
         }
@@ -148,11 +156,7 @@ namespace ForjaDasMares.Networking
             var set=p.Loadout(ActiveActor.Roster.Current.heroId);compared=set?.items[(int)channel.Catalog.Find(item.definitionId).slot];if(compared==selected)compared=null;
             itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();
         }
-        void CycleCompare()
-        {
-            var p=channel.LocalProfile;var chosen=p.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(chosen==null)return;var list=new System.Collections.Generic.List<ItemInstance>(p.inventory);if(p.expedition!=null)list.AddRange(p.expedition.items);
-            var slot=channel.Catalog.Find(chosen.definitionId).slot;list.RemoveAll(x=>x.instanceId==selected||channel.Catalog.Find(x.definitionId).slot!=slot);int index=list.FindIndex(x=>x.instanceId==compared);compared=list.Count>0?list[(index+1)%list.Count].instanceId:null;Refresh();
-        }
+        void CycleCompare() => CompareEquipped();
         void SelectEquipped(int slot)
         {
             deliveries=expeditionView=false;var set=channel.LocalProfile?.Loadout(ActiveActor.Roster.Current.heroId);
@@ -301,6 +305,7 @@ namespace ForjaDasMares.Networking
         void ResetInspectionScroll()
         {
             foreach(var text in new[]{ownDetails,otherDetails})if(text!=null)text.rectTransform.anchoredPosition=new Vector2(12,-10);
+            if(comparisonSummary!=null)comparisonSummary.rectTransform.anchoredPosition=new Vector2(14,-8);
         }
         bool EquippedHere(PlayerProfile profile,string id)=>InventoryRules.EquippedBy(profile,ActiveActor.Roster.Current.heroId,id);
         static string ShortSlot(EquipmentSlot slot)=>slot==EquipmentSlot.MainHand?"ARMA":slot==EquipmentSlot.OffHand?"SECUND.":slot==EquipmentSlot.Armor?"ARMADURA":slot==EquipmentSlot.Accessory?"ACESSÓRIO":"ARTEFATO";
@@ -345,16 +350,25 @@ namespace ForjaDasMares.Networking
         }
         void RefreshInspection(PlayerProfile profile,CoopActor actor,ItemInstance value)
         {
-            var definition=channel.Catalog.Find(value.definitionId);var other=profile.Item(compared);
+            var definition=channel.Catalog.Find(value.definitionId);
+            // Resolve again on every profile refresh: a previous selection must never
+            // become the reference after equipment, hero or source changes.
+            var set=profile.Loadout(actor.Roster.Current.heroId);
+            int slot=(int)definition.slot;
+            if(set!=null)for(int i=0;i<set.items.Length;i++)if(set.items[i]==value.instanceId){slot=i;break;}
+            compared=set!=null&&slot<set.items.Length?set.items[slot]:null;
+            var other=profile.Item(compared);
             inspectedIcon.sprite=definition.icon;inspectedIcon.enabled=inspectedIcon.sprite!=null;
             comparedIcon.sprite=other!=null?channel.Catalog.Find(other.definitionId)?.icon:null;comparedIcon.enabled=comparedIcon.sprite!=null;
+            comparisonHeading.text=other==null?"SLOT VAZIO":other.instanceId==value.instanceId?"JÁ EQUIPADO":"EQUIPADO ATUALMENTE";
             string state=deliveries?"Guardado nas entregas; receba na mochila para equipar.":ItemDescriptions.EquipmentState(profile,channel.Catalog,actor.Roster.Current,value);
-            ownDetails.text=state+"\n\n"+(advancedDetails?ItemDescriptions.Describe(channel.Catalog,value,other):ItemDescriptions.Summary(channel.Catalog,value));
-            otherDetails.text=deliveries?"RECEBER NÃO EQUIPA AUTOMATICAMENTE\n\nLibere espaço na mochila e clique em RECEBER ITEM. Depois você poderá comparar e equipar.":"FICHA AO EQUIPAR\nComparada ao equipamento atual, sem bônus temporários da partida. Valores antes da defesa inimiga.\n\n"+(advancedDetails?ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value):ItemDescriptions.QuickPreview(actor.Roster.Current,profile,channel.Catalog,value));
-            if(!deliveries)otherDetails.text+="\n\nBÔNUS ENTRE ITENS\n"+(advancedDetails&&other!=null?ItemDescriptions.Describe(channel.Catalog,other,value):ItemDescriptions.CompareBonuses(channel.Catalog,value,other));
+            ownDetails.text=state+"\n\n"+(advancedDetails?ItemDescriptions.Describe(channel.Catalog,value):ItemDescriptions.Summary(channel.Catalog,value));
+            otherDetails.text=other==null?"<b>"+RusticHudTheme.SlotName((EquipmentSlot)slot)+"</b>\n\nNenhum item equipado neste slot.\n\nA comparação usa somente o equipamento deste herói; outros itens da mochila não são usados como referência.":advancedDetails?ItemDescriptions.Describe(channel.Catalog,other):ItemDescriptions.Summary(channel.Catalog,other);
+            comparisonSummary.text="<b>AO EQUIPAR · ALTERAÇÕES NA FICHA DO HERÓI</b>\n"+(deliveries?"Prévia informativa. Receber leva à mochila; não equipa automaticamente.\n":"")+(other!=null&&other.instanceId==value.instanceId?"Este item já está equipado. Não há troca a comparar.":advancedDetails?ItemDescriptions.Preview(actor.Roster.Current,profile,channel.Catalog,value):ItemDescriptions.QuickPreview(actor.Roster.Current,profile,channel.Catalog,value));
+            comparisonSummary.rectTransform.sizeDelta=new Vector2(1075,Mathf.Max(115,comparisonSummary.preferredHeight+20));
             advancedButton.GetComponentInChildren<Text>().text=advancedDetails?"VOLTAR AO RESUMO":"VER DETALHES AVANÇADOS";
-            foreach(var text in new[]{ownDetails,otherDetails})text.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(405,text.preferredHeight+30));
-            compareButton.interactable=!deliveries;resetComparison.interactable=!deliveries;
+            foreach(var text in new[]{ownDetails,otherDetails})text.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(260,text.preferredHeight+30));
+            compareButton.interactable=false;resetComparison.interactable=false;
             itemContextBlocked=false;
             if(pendingDiscard==selected&&selected!=null){itemContextNotice="Reciclar este item remove a peça e devolve "+InventoryRules.SellValue(channel.Catalog,value)+" ouro. Clique em CONFIRMAR RECICLAGEM.";return;}
             if(deliveries)

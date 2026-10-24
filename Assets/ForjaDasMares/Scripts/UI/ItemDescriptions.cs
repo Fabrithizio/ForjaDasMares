@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 namespace ForjaDasMares
 {
@@ -120,7 +120,7 @@ namespace ForjaDasMares
         static void AddChange(StringBuilder text,string label,float before,float after,string format,ref int changes,ref int shown,string unit="")
         {
             if(Mathf.Abs(before-after)<.0001f)return;changes++;if(shown>=4)return;shown++;
-            text.AppendLine(label+": "+before.ToString(format)+unit+" → "+after.ToString(format)+unit+" ("+(after>=before?"+":"−")+Mathf.Abs(after-before).ToString(format)+unit+")");
+            text.AppendLine("<color="+(after>before?"#72D7A0":"#FF998B")+">"+(after>before?"▲ ":"▼ ")+label+": "+before.ToString(format)+unit+" → "+after.ToString(format)+unit+" ("+(after>=before?"+":"−")+Mathf.Abs(after-before).ToString(format)+unit+")</color>");
         }
         public static string CompareBonuses(ProgressionCatalog catalog,ItemInstance selected,ItemInstance reference)
         {

@@ -1,3 +1,11 @@
+# Atualização 0.15.5 — inventário com comparação automática
+
+Inspeção compara exclusivamente com o item equipado no mesmo slot do herói; slot vazio explícito, sem referência alternativa da mochila. Cartões lado a lado, ícones, resumo de ganhos/perdas e detalhes roláveis. Fundo ilustrado existente e painéis de mochila/herói reorganizados. Regras de equipamento, saves v2 e protocolo10 preservados.
+
+Windows compilado Succeeded/errors0/exit0; conferência manual de duas seleções de arma contra a mesma referência equipada, detalhes avançados e armadura com slot vazio. Android compilado Succeeded/errors0/exit0, APK 0.15.5/código36 no caminho estável. Atualizado no moto g15 via install -r (Success), versão0.15.5/código36 confirmada; dados preservados. Teste físico de toque desta interface pendente. Não foram executados novos testes automatizados. [Arquivos, verificação e limites](INVENTARIO_COMPARACAO_0_15_5.md).
+
+---
+
 # Atualização 0.15.4 — apresentação e entrada na campanha
 
 Artes originais integradas ao início e campanha; seleção de herói por cartões, entrada solo/privada/grupo/código, grupo do lobby, conexão/carregamento/cancelamento e avisos do host organizados. Bordas da interface suavizadas; antialiasing da cena configurado por plataforma, com três modos gráficos. **99/99 testes finais aprovados, Unity exit0.** Builds finais Windows e Android Succeeded/errors0/exit0. Solo, lobby e dois clientes Windows reais pelo Relay conferidos; saída/retorno do cliente, encerramento do host e criação de grupo aberto verificados. APK0.15.4/código35 gerado. **Atualização em 24/10: moto g15 instalado por cima (Success), versão0.15.4/código35 conferida.** Conferidos início/campanha/heróis por toque; PC–Android reais pelo Relay com mesmo mapa, dois heróis, escolha de altar e movimento do joystick validado no host; encerramento do host retornou o Android ao início. Sessão curta com saves isolados; app devolvido ao perfil normal. Sem teste entre redes diferentes ou quatro pessoas. Resultados na evidência de entrega. [Arquivos e limites](APRESENTACAO_0_15_4.md). [Artes e prompts](ARTES_MENU_0_15_4.md).
