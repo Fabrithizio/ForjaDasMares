@@ -27,16 +27,23 @@
     "abi": "arm64-v8a"
   },
   "androidInstall": {
-    "completed": false,
-    "reason": "moto g15 absent from adb devices at completion; reconnect requested",
-    "newPhysicalGameplayTest": false
+    "completed": true,
+    "result": "Success",
+    "replaceExisting": true,
+    "device": "moto g15",
+    "verifiedVersion": "0.15.4",
+    "verifiedCode": 35,
+    "date": "2026-10-24",
+    "newPhysicalGameplayTest": true,
+    "normalLaunchRestored": true
   },
   "manualQa": {
     "windows": "native menu/campaign/hero selection/private room/start buttons; solo auto-start; final two-column hero cards and host shutdown message",
     "relay": "two Windows instances, same map, heroes, leave/rejoin, host closure; isolated public-group query fallback verified",
-    "physicalAndroid": false,
+    "physicalAndroid": true,
     "differentNetworks": false,
-    "fourPlayers": false
+    "fourPlayers": false,
+    "androidScope": "2400x1080 native start/campaign/hero UI, Relay PC-Android same map, two heroes, altar choice and joystick touch movement, host closure; isolated QA saves. Short session only."
   },
   "art": {
     "generator": "built-in image_gen",

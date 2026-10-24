@@ -1,0 +1,28 @@
+{
+  "physicalAndroid": true,
+  "device": "moto g15",
+  "version": "0.15.4",
+  "sameWifi": null,
+  "differentNetworks": false,
+  "sameMap": true,
+  "hostHeroes": [
+    "warrior",
+    "arcanist",
+    "warrior",
+    "warrior"
+  ],
+  "androidHeroes": [
+    "warrior",
+    "arcanist",
+    "warrior",
+    "warrior"
+  ],
+  "hostPhase": "Playing",
+  "androidPhase": "Playing",
+  "connected": 2,
+  "touchJoystickMovementMeters": 1.433,
+  "touchAltarSelection": true,
+  "hostExitClosedAndroid": true,
+  "scope": "short physical lobby/map/touch session, not full campaign",
+  "networkScope": "No deliberate different-network test; shared LAN not independently verified"
+}
