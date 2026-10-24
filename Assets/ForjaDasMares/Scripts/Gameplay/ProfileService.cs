@@ -75,9 +75,25 @@ namespace ForjaDasMares
         public bool Unequip(string heroId, EquipmentSlot slot)
         {
             if (!Enum.IsDefined(typeof(EquipmentSlot),slot)||Profile.Loadout(heroId) == null) return false;
-            var current=Profile.Loadout(heroId);int slots=0;for(int i=0;i<5;i++)if(i==(int)slot||slot==EquipmentSlot.MainHand&&i==1){string id=current.items[i];if(!string.IsNullOrEmpty(id)&&Profile.inventory.Exists(x=>x.instanceId==id))slots++;}
-            if(InventoryRules.BagCount(Profile)+slots>catalog.inventoryCapacity){Message="Mochila cheia. Libere espaço antes de desequipar.";return false;}
-            return Transaction(next => { var set = next.Loadout(heroId); set.items[(int)slot] = null; if (slot == EquipmentSlot.MainHand) set.items[1] = null; }, "Item desequipado.");
+            var current=Profile.Loadout(heroId);
+            if(string.IsNullOrEmpty(current.items[(int)slot])){Message="Este slot já está vazio.";return false;}
+            int released=0;for(int i=0;i<5;i++)if(i==(int)slot||slot==EquipmentSlot.MainHand&&i==1)
+                if(!string.IsNullOrEmpty(current.items[i])&&Profile.inventory.Exists(x=>x.instanceId==current.items[i]))released++;
+            bool overflow=InventoryRules.BagCount(Profile)+released>catalog.inventoryCapacity;
+            return Transaction(next =>
+            {
+                var set=next.Loadout(heroId);
+                // Remove loadout references first; capacity counts only loose items.
+                var primary=next.Item(set.items[(int)slot]);
+                var secondary=slot==EquipmentSlot.MainHand?next.Item(set.items[1]):null;
+                set.items[(int)slot]=null;if(slot==EquipmentSlot.MainHand)set.items[1]=null;
+                // Move existing instances, never clone them or turn temporary loot into
+                // permanent rewards. Expedition items keep their original lifecycle.
+                foreach(var item in new[]{primary,secondary})
+                    if(item!=null&&!InventoryRules.Equipped(next,item.instanceId)
+                        &&InventoryRules.BagCount(next)>catalog.inventoryCapacity
+                        &&next.inventory.Remove(item))next.deliveries.Add(item);
+            }, overflow?"Item desequipado. Mochila cheia: a peça excedente foi guardada em ENTREGAS.":"Item desequipado. Consulte a mochila ou o saque atual.");
         }
         public bool Discard(string itemId, bool confirmed)
         {

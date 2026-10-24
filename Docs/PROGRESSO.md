@@ -1,3 +1,11 @@
+# Correção 0.15.7 — desequipar com mochila cheia
+
+Removido bloqueio de capacidade em ProfileService.Unequip: peça permanente excedente vai para ENTREGAS; com espaço, permanece na mochila. Loot temporário mantém sua origem no saque. Instâncias são movidas sem cópias, com validação/transação de salvamento preservada; regra comum aos slots, inclusive retirada de principal/secundária.
+
+Windows Succeeded/errors0/exit0. Verificado com o perfil real: arma saiu do slot, mochila36/Entregas1→2, item exato/atributos/total de IDs/ouro preservados. Reinício confirmou slot vazio e item salvo. Android Succeeded/errors0/exit0, APK0.15.7/código38 atualizado no moto g15 via install -r Success, versão confirmada e dados preservados; interação desta correção no celular não conferida. Expectativa do teste existente de mochila cheia atualizada; suíte automatizada e sessão online não executadas neste bloco. [Arquivos, passos e limites](DESEQUIPAR_0_15_7.md).
+
+---
+
 # Atualização 0.15.6 — sete melhorias visuais do inventário
 
 Retratos/nomes/raridade destacados, tabela de oito atributos atual/ao equipar/diferença, blocos de ataque/efeito e resumo essencial sem rolagem. Ações por estado com botão principal destacado. Mochila com ícones maiores, bordas por raridade/seleção e incompatibilidade visível. Layout de toque com quatro itens por página e abas equipado/selecionado, mantendo a referência automática do slot. Novo componente de apresentação separado dos pedidos de equipamento; sem alteração de combate, economia, protocolo10 ou savev2.

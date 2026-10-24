@@ -59,11 +59,11 @@ namespace ForjaDasMares.Networking.Tests
             all.First(x=>x.name=="CloseItem").onClick.Invoke();all.First(x=>x.name=="Talents").onClick.Invoke();yield return null;Assert.IsTrue(hud.GetComponentsInChildren<Transform>(true).First(x=>x.name=="CharacterTalents").gameObject.activeInHierarchy);hud.CloseInventory();Assert.IsFalse(popup.gameObject.activeInHierarchy);
         }
 
-        [UnityTest]public IEnumerator FullBagDoesNotLoseEquipmentWhenUnequipFails()
+        [UnityTest]public IEnumerator FullBagPreservesUnequippedItemInDeliveries()
         {
             Assert.IsTrue(session.HostDirect("RPG5",7895,false));yield return null;var service=progression.Profile(0);var definition=catalog.equipment.First(x=>x.slot==EquipmentSlot.Armor);string id=service.Profile.Loadout("warrior").items[0];
             for(int i=0;i<catalog.inventoryCapacity;i++)service.Profile.inventory.Add(LootGenerator.Create(catalog,definition.itemId,ItemRarity.Common,new System.Random(i)));
-            Assert.AreEqual(catalog.inventoryCapacity,InventoryRules.BagCount(service.Profile));Assert.IsFalse(service.Unequip("warrior",EquipmentSlot.MainHand));Assert.AreEqual(id,service.Profile.Loadout("warrior").items[0]);Assert.NotNull(service.Profile.Item(id));
+            Assert.AreEqual(catalog.inventoryCapacity,InventoryRules.BagCount(service.Profile));Assert.IsTrue(service.Unequip("warrior",EquipmentSlot.MainHand));Assert.IsTrue(string.IsNullOrEmpty(service.Profile.Loadout("warrior").items[0]));Assert.IsNull(service.Profile.Item(id));Assert.AreEqual(1,service.Profile.deliveries.Count(x=>x.instanceId==id));Assert.AreEqual(catalog.inventoryCapacity,InventoryRules.BagCount(service.Profile));
         }
         [UnityTest]public IEnumerator TemporaryEquipmentSurvivesFinishAndOccupiedSlotsRejectDuplicateUse()
         {
