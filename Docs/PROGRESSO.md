@@ -1,3 +1,11 @@
+# Atualização 0.15.6 — sete melhorias visuais do inventário
+
+Retratos/nomes/raridade destacados, tabela de oito atributos atual/ao equipar/diferença, blocos de ataque/efeito e resumo essencial sem rolagem. Ações por estado com botão principal destacado. Mochila com ícones maiores, bordas por raridade/seleção e incompatibilidade visível. Layout de toque com quatro itens por página e abas equipado/selecionado, mantendo a referência automática do slot. Novo componente de apresentação separado dos pedidos de equipamento; sem alteração de combate, economia, protocolo10 ou savev2.
+
+Builds finais Windows/Android Succeeded/errors0/exit0. Conferidos no PC mochila, comparação, equipamento atual e Avançado; no moto g15, layout 2x2, paginação, abas com a mesma prévia e bloqueio de classe incompatível. APK final0.15.6/código37 instalado com install -r Success e versão confirmada; mesma aplicação/dados preservados. Reaberto e conferido no aparelho após a atualização final. Não foram executados novos testes automatizados nem uma nova sessão online neste bloco de interface. [Arquivos, passos e limites](INVENTARIO_VISUAL_0_15_6.md).
+
+---
+
 # Atualização 0.15.5 — inventário com comparação automática
 
 Inspeção compara exclusivamente com o item equipado no mesmo slot do herói; slot vazio explícito, sem referência alternativa da mochila. Cartões lado a lado, ícones, resumo de ganhos/perdas e detalhes roláveis. Fundo ilustrado existente e painéis de mochila/herói reorganizados. Regras de equipamento, saves v2 e protocolo10 preservados.

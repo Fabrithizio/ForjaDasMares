@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares.Networking
 {
@@ -8,7 +8,7 @@ namespace ForjaDasMares.Networking
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[8]; Button equip, remove, discard;
-        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;InventoryComparisonView visualComparison;bool touchLayout;int PageSize=>touchLayout?4:8;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
@@ -64,7 +64,7 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < rows.Length; i++)
             { int row = i; rows[i] = Button(overlay.transform, "", new Vector2(30, -95 - i * 57), new Vector2(560, 50), () => Select(row)); rows[i].name="InventoryItem_"+i; }
             previous=Button(overlay.transform, "ANTERIOR", new Vector2(30, -560), new Vector2(170, 42), () => { page = Mathf.Max(0, page - 1); selected = null; Refresh(); });
-            next=Button(overlay.transform, "PRÓXIMA", new Vector2(215, -560), new Vector2(170, 42), () => { var items = CurrentItems; if (items != null && (page + 1) * 8 < items.Count) page++; selected = null; Refresh(); });
+            next=Button(overlay.transform, "PRÓXIMA", new Vector2(215, -560), new Vector2(170, 42), () => { var items = CurrentItems; if (items != null && (page + 1) * PageSize < items.Count) page++; selected = null; Refresh(); });
             detail = Label(overlay.transform, "", new Vector2(620, -95), new Vector2(600, 415), 19);
             equip = Button(overlay.transform, "EQUIPAR", new Vector2(620, -535), new Vector2(185, 48), Equip);
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
@@ -75,6 +75,7 @@ namespace ForjaDasMares.Networking
         }
         void BuildPaperDoll()
         {
+            touchLayout=Application.isMobilePlatform||Screen.width<1000;
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
             overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,new Color(.035f,.06f,.05f,.72f),22);
             var backdrop=MenuArtwork.Fill(panel,"InventoryBackdrop","MenuArt/RoutesBackdrop",new Color(.65f,.7f,.68f,1));backdrop.transform.SetAsFirstSibling();
@@ -84,10 +85,11 @@ namespace ForjaDasMares.Networking
             stockView=Button(overlay.transform,"ENTREGAS",new Vector2(370,-555),new Vector2(160,42),()=>SelectSource(2));stockView.name="DeliverySource";RusticHudTheme.Skin(stockView);
             for(int i=0;i<rows.Length;i++)
             {
-                var r=(RectTransform)rows[i].transform;r.anchoredPosition=new Vector2(30+i%4*128,-128-i/4*125);r.sizeDelta=new Vector2(120,112);RusticHudTheme.Skin(rows[i]);
-                var text=rows[i].GetComponentInChildren<Text>();var tr=(RectTransform)text.transform;tr.sizeDelta=new Vector2(114,42);tr.anchoredPosition=new Vector2(3,-53);text.fontSize=13;text.resizeTextForBestFit=true;text.resizeTextMinSize=11;text.resizeTextMaxSize=13;
-                var iconRect=RusticHudTheme.Rect(rows[i].transform,"ItemIcon",new Vector2(.5f,1),new Vector2(0,-5),new Vector2(46,46));icons[i]=iconRect.gameObject.AddComponent<Image>();icons[i].preserveAspect=true;icons[i].raycastTarget=false;
-                rowBadges[i]=RusticHudTheme.Label(rows[i].transform,"ItemState",new Vector2(0,1),new Vector2(3,-94),new Vector2(114,16),"",10);rowBadges[i].alignment=TextAnchor.MiddleCenter;
+                var r=(RectTransform)rows[i].transform;r.anchoredPosition=new Vector2(30+i%(touchLayout?2:4)*(touchLayout?256:128),-128-i/(touchLayout?2:4)*125);r.sizeDelta=new Vector2(touchLayout?248:120,120);RusticHudTheme.Skin(rows[i]);
+                var text=rows[i].GetComponentInChildren<Text>();var tr=(RectTransform)text.transform;
+                tr.sizeDelta=touchLayout?new Vector2(146,76):new Vector2(114,31);tr.anchoredPosition=touchLayout?new Vector2(96,-8):new Vector2(3,-69);text.fontSize=touchLayout?18:13;text.resizeTextForBestFit=true;text.resizeTextMinSize=touchLayout?16:12;text.resizeTextMaxSize=touchLayout?18:13;
+                var iconRect=RusticHudTheme.Rect(rows[i].transform,"ItemIcon",new Vector2(0,1),touchLayout?new Vector2(8,-8):new Vector2(27,-3),Vector2.one*(touchLayout?80:66));icons[i]=iconRect.gameObject.AddComponent<Image>();icons[i].preserveAspect=true;icons[i].raycastTarget=false;
+                rowBadges[i]=RusticHudTheme.Label(rows[i].transform,"ItemState",new Vector2(0,1),touchLayout?new Vector2(96,-86):new Vector2(3,-101),touchLayout?new Vector2(146,29):new Vector2(114,16),"",touchLayout?13:10);rowBadges[i].alignment=TextAnchor.MiddleCenter;
             }
             string[] categories={"TODOS","ARMAS","SECUND.","ARMADURA","ACESSÓRIO","ARTEFATO"};
             for(int i=0;i<6;i++){int slot=i-1;var tab=categoryTabs[i]=Button(overlay.transform,categories[i],new Vector2(30+i*79,-80),new Vector2(75,34),()=>{category=slot;page=0;selected=null;Refresh();});RusticHudTheme.Skin(tab);tab.GetComponentInChildren<Text>().fontSize=10;}
@@ -142,6 +144,9 @@ namespace ForjaDasMares.Networking
             compareButton.GetComponentInChildren<Text>().fontSize=14;resetComparison.GetComponentInChildren<Text>().fontSize=14;advancedButton.GetComponentInChildren<Text>().fontSize=16;
             var icon=RusticHudTheme.Rect(rect,"InspectedIcon",new Vector2(0,1),new Vector2(595,-10),new Vector2(68,68));inspectedIcon=icon.gameObject.AddComponent<Image>();inspectedIcon.preserveAspect=true;inspectedIcon.raycastTarget=false;var otherIcon=RusticHudTheme.Rect(rect,"ComparedIcon",new Vector2(0,1),new Vector2(25,-10),new Vector2(68,68));comparedIcon=otherIcon.gameObject.AddComponent<Image>();comparedIcon.preserveAspect=true;comparedIcon.raycastTarget=false;
             itemNotice=RusticHudTheme.Label(rect,"EquipmentNotice",new Vector2(0,1),new Vector2(25,-590),new Vector2(1100,26),"",17);
+            visualComparison=new InventoryComparisonView();visualComparison.Build(rect,touchLayout);
+            var back=rect.Find("CloseItem").GetComponent<RectTransform>();back.anchoredPosition=new Vector2(-20,-545);back.SetAsLastSibling();
+            var legend=rect.Find("ComparisonLegend").GetComponent<RectTransform>();legend.sizeDelta=new Vector2(350,40);legend.GetComponent<Text>().fontSize=14;
             itemPopup.SetActive(false);
         }
         Text ScrollableDetails(Transform parent,string name,Vector2 pos)
@@ -154,7 +159,7 @@ namespace ForjaDasMares.Networking
         {
             if(itemPopup==null||selected==null)return;advancedDetails=false;selectionMessage=channel.Message;selectionRevision=channel.Revision;compared=null;var p=channel.LocalProfile;var item=p.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(item==null)return;
             var set=p.Loadout(ActiveActor.Roster.Current.heroId);compared=set?.items[(int)channel.Catalog.Find(item.definitionId).slot];if(compared==selected)compared=null;
-            itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();
+            visualComparison?.Reset();itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();
         }
         void CycleCompare() => CompareEquipped();
         void SelectEquipped(int slot)
@@ -200,22 +205,23 @@ namespace ForjaDasMares.Networking
             if (revision != channel.Revision||lastNotice!=channel.Message||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
         }
         void Select(int row)
-        { var items = CurrentItems; int index = page * 8 + row; if (index >= items.Count) return; selected = items[index].instanceId; pendingDiscard = null; Refresh();OpenItem(); }
+        { var items = CurrentItems; int index = page * PageSize + row; if (index >= items.Count) return; selected = items[index].instanceId; pendingDiscard = null; Refresh();OpenItem(); }
         void Refresh()
         {
             var profile = channel.LocalProfile; if (profile == null) return; lastNotice=channel.Message;revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
             if(profileSource!=null){profileSource.gameObject.SetActive(channel.HomeMode&&!results);profileSource.GetComponentInChildren<Text>().text=channel.Hub.Description;profileSource.interactable=channel.Hub.HasRemote;}
             if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"CLASSE: "+RusticHudTheme.ClassNames(channel.Catalog.Hero(ActiveActor.Roster.Current.heroId).affinity).ToUpperInvariant():"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
-            if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/8));
+            if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/PageSize));
             RefreshNavigation(profile);
             header.text = results ? "RESULTADO DA PARTIDA" : "PERSONAGEM · NV "+ProgressionStats.Level(profile.experience)+" · "+profile.coins+" OURO";
             for (int i = 0; i < rows.Length; i++)
             {
-                int index = page * 8 + i; bool visible = !results && index < CurrentItems.Count; rows[i].gameObject.SetActive(visible);
+                int index = page * PageSize + i; bool visible = !results && i<PageSize && index < CurrentItems.Count; rows[i].gameObject.SetActive(visible);
                 if (visible)
                 {
                     var item=CurrentItems[index];var definition=channel.Catalog.Find(item.definitionId);var label=rows[i].GetComponentInChildren<Text>();
                     label.text=definition.displayName;label.color=channel.Catalog.Rarity(item.rarity).color;
+                    var surface=rows[i].GetComponentInChildren<RoundedHudGraphic>();if(surface!=null){surface.borderColor=item.instanceId==selected?RusticHudTheme.Gold:Color.Lerp(RusticHudTheme.Copper,channel.Catalog.Rarity(item.rarity).color,.65f);surface.border=item.instanceId==selected?3:1.5f;surface.SetVerticesDirty();}
                     if(icons[i]!=null){icons[i].sprite=definition.icon;icons[i].enabled=icons[i].sprite!=null;}
                     if(rowBadges[i]!=null)
                     {
@@ -227,7 +233,7 @@ namespace ForjaDasMares.Networking
                     }
                 }
             }
-            previous.gameObject.SetActive(!results);next.gameObject.SetActive(!results);previous.interactable=page>0;next.interactable=CurrentItems!=null&&(page+1)*8<CurrentItems.Count;
+            previous.gameObject.SetActive(!results);next.gameObject.SetActive(!results);previous.interactable=page>0;next.interactable=CurrentItems!=null&&(page+1)*PageSize<CurrentItems.Count;
             equip.gameObject.SetActive(!results); remove.gameObject.SetActive(!results); discard.gameObject.SetActive(!results);
             var actor = ActiveActor; var value = deliveries?CurrentItems.Find(item=>item.instanceId==selected):profile.Item(selected);
             if (results)
@@ -277,7 +283,15 @@ namespace ForjaDasMares.Networking
                 if(secondaryEquip!=null){secondaryEquip.transform.SetParent(itemPopup.transform,false);secondaryEquip.GetComponent<RectTransform>().anchoredPosition=new Vector2(760,-490);secondaryEquip.gameObject.SetActive(open&&!deliveries&&channel.Catalog.Find(value.definitionId).category==WeaponCategory.Daggers);}
                 remove.interactable=management&&!deliveries&&value!=null&&EquippedHere(profile,selected);if(!deliveries&&InventoryRules.Equipped(profile,selected))equip.interactable=false;
                 discard.interactable=management&&!deliveries&&value!=null&&!InventoryRules.Equipped(profile,selected)&&!(channel.HomeMode&&channel.Hub.UsingRemote);
-                if(open)RefreshInspection(profile,actor,value);
+                if(open)
+                {
+                    RefreshInspection(profile,actor,value);
+                    bool equippedHere=!deliveries&&EquippedHere(profile,value.instanceId);
+                    equip.gameObject.SetActive(!equippedHere);remove.gameObject.SetActive(equippedHere);discard.gameObject.SetActive(!equippedHere&&!deliveries);
+                    var primary=equippedHere?remove:equip;primary.GetComponent<RectTransform>().anchoredPosition=new Vector2(25,-490);primary.GetComponent<RectTransform>().sizeDelta=new Vector2(320,48);primary.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(320,48);
+                    discard.GetComponent<RectTransform>().anchoredPosition=new Vector2(365,-490);discard.GetComponent<RectTransform>().sizeDelta=new Vector2(330,48);discard.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(330,48);
+                    var surface=primary.GetComponentInChildren<RoundedHudGraphic>();if(surface!=null){surface.color=new Color(.33f,.24f,.1f,1);surface.borderColor=RusticHudTheme.Gold;surface.border=2;surface.SetVerticesDirty();}
+                }
 
             }
             RefreshEquipmentNotice();
@@ -343,7 +357,7 @@ namespace ForjaDasMares.Networking
             bool filters=category!=-1||classOnly;int available=AvailableItems(SourceItems,deliveries);
             emptyHint.text=available>0?"Nenhum item corresponde aos filtros.\nTente outra categoria ou mostre todas as classes.":deliveries?"Nenhuma entrega aguardando.\nItens que não couberem na mochila ficam guardados aqui.":expeditionView?"Nenhum item solto no saque.\nDerrote inimigos e abra baús; os equipados ficam no herói.":"Sua mochila está vazia.\nBusque equipamentos nos inimigos e baús. Os equipados ficam ao redor do herói.";
             clearFilters.gameObject.SetActive(empty&&available>0&&filters);
-            pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+7)/8)+" · "+CurrentItems.Count+" itens";
+            pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+PageSize-1)/PageSize)+" · "+CurrentItems.Count+" itens";
             sourceHint.gameObject.SetActive(!results);
             sourceHint.text=deliveries?"ENTREGAS\nItens guardados por falta de espaço. Receba um item para levá-lo à mochila; depois escolha se deseja equipar.":expeditionView?"SAQUE DA PARTIDA\nItens obtidos nesta expedição. Você pode equipar fora de perigo. Ao terminar, eles são guardados no resultado.":"MOCHILA\nItens guardados neste perfil. Clique em um item para inspecionar; os equipados aparecem nos slots ao redor do herói.";
             if(profile.expedition==null&&!deliveries&&!expeditionView)sourceHint.text+="\nSAQUE fica disponível durante uma partida.";
@@ -369,6 +383,10 @@ namespace ForjaDasMares.Networking
             advancedButton.GetComponentInChildren<Text>().text=advancedDetails?"VOLTAR AO RESUMO":"VER DETALHES AVANÇADOS";
             foreach(var text in new[]{ownDetails,otherDetails})text.rectTransform.sizeDelta=new Vector2(505,Mathf.Max(260,text.preferredHeight+30));
             compareButton.interactable=false;resetComparison.interactable=false;
+            visualComparison.SetVisible(!advancedDetails);
+            ownDetails.transform.parent.gameObject.SetActive(advancedDetails);otherDetails.transform.parent.gameObject.SetActive(advancedDetails);comparisonSummary.transform.parent.gameObject.SetActive(advancedDetails);
+            inspectedIcon.gameObject.SetActive(advancedDetails);comparedIcon.gameObject.SetActive(advancedDetails);comparisonHeading.gameObject.SetActive(advancedDetails);itemPopup.transform.Find("Title").gameObject.SetActive(advancedDetails);
+            visualComparison.Refresh(channel.Catalog,profile,actor.Roster.Current,value,other,(EquipmentSlot)slot,deliveries);
             itemContextBlocked=false;
             if(pendingDiscard==selected&&selected!=null){itemContextNotice="Reciclar este item remove a peça e devolve "+InventoryRules.SellValue(channel.Catalog,value)+" ouro. Clique em CONFIRMAR RECICLAGEM.";return;}
             if(deliveries)
