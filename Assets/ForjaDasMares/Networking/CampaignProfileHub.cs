@@ -62,7 +62,7 @@ namespace ForjaDasMares.Networking
         {
             var service=Service;string hero=director.Actor(0).Roster.Current.heroId;
             if(UsingRemote&&action!=CoopInventoryAction.Equip&&action!=CoopInventoryAction.Unequip){channel.SetNotice("Receba ou descarte itens na sala de origem. Aqui você pode organizar o equipamento.");return;}
-            bool success=action==CoopInventoryAction.Equip?service.Equip(hero,item,slot):action==CoopInventoryAction.Unequip?service.Unequip(hero,slot):action==CoopInventoryAction.ClaimDelivery?service.ClaimDelivery(item):action==CoopInventoryAction.Discard?service.Discard(item,confirmed):action==CoopInventoryAction.SpendTalent?service.SpendTalent(hero,(TalentId)talent):service.ResetTalents(hero,confirmed);
+            bool success=action==CoopInventoryAction.Equip?service.Equip(hero,item,slot):action==CoopInventoryAction.Unequip?service.Unequip(hero,slot):action==CoopInventoryAction.ClaimAllDeliveries?service.ClaimAllDeliveries():action==CoopInventoryAction.ClaimDelivery?service.ClaimDelivery(item):action==CoopInventoryAction.Discard?service.Discard(item,confirmed):action==CoopInventoryAction.SpendTalent?service.SpendTalent(hero,(TalentId)talent):service.ResetTalents(hero,confirmed);
             channel.SetNotice(service.Message);
             if(success&&UsingRemote)
             {

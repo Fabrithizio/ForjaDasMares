@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass }
     public sealed class HudIcon : MaskableGraphic
     {
         public HudSymbol symbol;
@@ -28,6 +28,12 @@ namespace ForjaDasMares
             vh.Clear();
             switch (symbol)
             {
+                case HudSymbol.Heart:
+                    Line(vh,new Vector2(0,-12),new Vector2(-11,0));Line(vh,new Vector2(-11,0),new Vector2(-11,7));Line(vh,new Vector2(-11,7),new Vector2(-6,11));Line(vh,new Vector2(-6,11),new Vector2(0,6));Line(vh,new Vector2(0,6),new Vector2(6,11));Line(vh,new Vector2(6,11),new Vector2(11,7));Line(vh,new Vector2(11,7),new Vector2(11,0));Line(vh,new Vector2(11,0),new Vector2(0,-12));break;
+                case HudSymbol.Target:
+                    Ring(vh,10);Ring(vh,4);Line(vh,new Vector2(-14,0),new Vector2(-7,0));Line(vh,new Vector2(7,0),new Vector2(14,0));Line(vh,new Vector2(0,7),new Vector2(0,14));Line(vh,new Vector2(0,-14),new Vector2(0,-7));break;
+                case HudSymbol.Hourglass:
+                    Line(vh,new Vector2(-10,12),new Vector2(10,12));Line(vh,new Vector2(-10,-12),new Vector2(10,-12));Line(vh,new Vector2(-8,10),new Vector2(8,-10));Line(vh,new Vector2(8,10),new Vector2(-8,-10));Line(vh,new Vector2(-8,-8),new Vector2(8,-8));break;
                 case HudSymbol.Shield:
                     Line(vh,new Vector2(-11,10),new Vector2(11,10));Line(vh,new Vector2(11,10),new Vector2(8,-5));Line(vh,new Vector2(8,-5),new Vector2(0,-13));Line(vh,new Vector2(0,-13),new Vector2(-8,-5));Line(vh,new Vector2(-8,-5),new Vector2(-11,10));Line(vh,new Vector2(0,7),new Vector2(0,-9));break;
                 case HudSymbol.Armor:

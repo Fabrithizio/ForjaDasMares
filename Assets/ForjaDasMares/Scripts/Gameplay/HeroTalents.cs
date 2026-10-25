@@ -4,7 +4,7 @@ namespace ForjaDasMares
 {
     public enum TalentId { Vitality, Might, Guard, Haste, Precision, Focus }
     [Serializable] public sealed class TalentRule
-    {public TalentId id;public string displayName;public ItemStat stat;public float perRank;public int maximumRank=5;}
+    {public TalentId id;public string displayName;public ItemStat stat;public float perRank;public int maximumRank=5;public Sprite icon;[TextArea]public string description;}
     [Serializable] public sealed class HeroTalentAllocation
     {public string heroId;public int[] ranks=new int[6];}
     public static class HeroTalents

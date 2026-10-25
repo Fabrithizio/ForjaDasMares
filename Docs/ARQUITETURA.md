@@ -1,3 +1,9 @@
+# Atualização de contrato — 0.15.8
+
+Savev2 e seis IDs de talentos preservados. Protocolo de sessão11: acrescenta intenção ClaimAllDeliveries, validada pelo host via ProfileService. Recebimento em lote move instâncias até a capacidade da mochila numa única transação; excedentes permanecem em Entregas. A interface lista o catálogo de talentos com rolagem e metadados visuais opcionais; expansão de IDs/ranks requer futura migração de dados, sem simulação de habilidades. Detalhes atuais: [entregas e talentos](ENTREGAS_E_TALENTOS_0_15_8.md). Seções abaixo mantêm o histórico anterior.
+
+---
+
 # Atualização 0.15.4 — apresentação modular
 
 MenuArtwork usa duas texturas Resources originais com recorte proporcional sem raycast. CampaignHome/CampaignHud preservam as ações reais de CoopCloud/CoopDirector. CampaignHeroPicker consulta HeroRoster.At e usa SelectHero; não instancia atores adicionais. Solo aguarda Lobby e conexão concluída antes de StartGame. Mensagens de erro são traduzidas para o jogador, com diagnóstico completo no log; nenhum serviço novo foi criado.

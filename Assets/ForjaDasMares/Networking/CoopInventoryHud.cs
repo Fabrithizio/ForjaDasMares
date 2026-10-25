@@ -16,6 +16,7 @@ namespace ForjaDasMares.Networking
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
         Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
         string lastNotice, selectionMessage, itemContextNotice, pendingClaim;
+        Button claimAll;Text capacity;RawImage characterPreview;bool bulkPending;int bulkRevision;string bulkMessage;float bulkUntil;
         int selectionRevision;float claimUntil;bool advancedDetails,itemContextBlocked;
         Button bagSource,advancedButton,resetComparison,clearFilters;Text pageLabel,emptyHint,sourceHint;
         readonly Text[] rowBadges=new Text[8];
@@ -105,11 +106,13 @@ namespace ForjaDasMares.Networking
             emptyHint=RusticHudTheme.Label(overlay.transform,"EmptyInventory",new Vector2(0,1),new Vector2(30,-140),new Vector2(505,165),"",21);
             clearFilters=RusticHudTheme.Button(overlay.transform,"ClearInventoryFilters",new Vector2(0,1),new Vector2(30,-315),new Vector2(505,42),"MOSTRAR TODOS OS ITENS",()=>{classOnly=false;category=-1;page=0;selected=null;Refresh();});
             sourceHint=RusticHudTheme.Label(overlay.transform,"InventorySourceHint",new Vector2(0,1),new Vector2(580,-540),new Vector2(600,110),"",17);
+            capacity=RusticHudTheme.Label(overlay.transform,"BagCapacity",new Vector2(0,1),new Vector2(285,-48),new Vector2(250,26),"",16);
+            claimAll=RusticHudTheme.Button(overlay.transform,"ClaimAllDeliveries",new Vector2(0,1),new Vector2(580,-610),new Vector2(600,44),"RECEBER TODOS",ClaimAll);
             var viewport=RusticHudTheme.Rect(overlay.transform,"ResultScroll",new Vector2(0,1),new Vector2(40,-125),new Vector2(1160,430));viewport.gameObject.AddComponent<RectMask2D>();viewport.gameObject.AddComponent<Image>().color=Color.clear;
             resultScroll=viewport.gameObject.AddComponent<ScrollRect>();resultScroll.viewport=viewport;resultScroll.horizontal=false;resultScroll.movementType=ScrollRect.MovementType.Clamped;resultScroll.scrollSensitivity=32;
             resultText=RusticHudTheme.Label(viewport,"ResultContent",new Vector2(0,1),Vector2.zero,new Vector2(1130,430),"",20);resultContent=(RectTransform)resultText.transform;resultScroll.content=resultContent;resultScroll.gameObject.SetActive(false);
             var previewRect=RusticHudTheme.Rect(overlay.transform,"HeroPreview",new Vector2(0,1),new Vector2(785,-112),new Vector2(185,280));
-            var raw=previewRect.gameObject.AddComponent<RawImage>();raw.raycastTarget=false;paperDoll=overlay.AddComponent<EquipmentPaperDoll>();paperDoll.Configure(raw);
+            var raw=characterPreview=previewRect.gameObject.AddComponent<RawImage>();raw.raycastTarget=false;paperDoll=overlay.AddComponent<EquipmentPaperDoll>();paperDoll.Configure(raw);
             Vector2[] points={new Vector2(580,-130),new Vector2(1005,-130),new Vector2(580,-255),new Vector2(1005,-255),new Vector2(800,-405)};
             for(int i=0;i<5;i++)
             {
@@ -128,7 +131,7 @@ namespace ForjaDasMares.Networking
         }
         void BuildItemPopup()
         {
-            sheet=overlay.AddComponent<CampaignCharacterSheet>();sheet.Build(overlay.transform,director,channel);
+            sheet=overlay.AddComponent<CampaignCharacterSheet>();sheet.Build(overlay.transform,director,channel,characterPreview);
             var rect=RusticHudTheme.Rect(overlay.transform,"ItemComparison",Vector2.one*.5f,Vector2.zero,new Vector2(1160,620));itemPopup=rect.gameObject;var surface=RusticHudTheme.Panel(rect,new Color(.065f,.079f,.067f,1),20);surface.raycastTarget=true;
             ownDetails=ScrollableDetails(rect,"SelectedItem",new Vector2(595,-80));otherDetails=ScrollableDetails(rect,"ComparedItem",new Vector2(25,-80));
             var summary=RusticHudTheme.Rect(rect,"ComparisonSummary",new Vector2(0,1),new Vector2(25,-350),new Vector2(1105,125));summary.gameObject.AddComponent<RectMask2D>();summary.gameObject.AddComponent<Image>().color=Color.clear;RusticHudTheme.Panel(summary,new Color(.08f,.13f,.105f,1),14);
@@ -201,6 +204,8 @@ namespace ForjaDasMares.Networking
                 {string received=pendingClaim;SelectSource(0);selected=received;Refresh();OpenItem();}
                 else if(Time.unscaledTime>claimUntil){pendingClaim=null;Refresh();}
             }
+            if(bulkPending&&(channel.Revision!=bulkRevision||channel.Message!=bulkMessage||Time.unscaledTime>bulkUntil))
+            {bulkPending=false;Refresh();}
             RefreshEquipmentNotice();
             if (revision != channel.Revision||lastNotice!=channel.Message||management!=CanManageNow||lastHero!=ActiveActor.Roster.Selected) Refresh();
         }
@@ -299,12 +304,20 @@ namespace ForjaDasMares.Networking
         }
         void RefreshEquipmentNotice()
         {
+            if(notice!=null)notice.gameObject.SetActive(sheet==null||!sheet.IsOpen);
             if(itemNotice==null||!itemPopup.activeSelf)return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
             if(!channel.HomeMode&&director.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
             else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
             {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
             itemNotice.text=message;itemNotice.color=pendingDiscard==selected&&selected!=null?RusticHudTheme.Gold:blocked?new Color(1,.6f,.45f):RusticHudTheme.Parchment;
+        }
+        void ClaimAll()
+        {
+            if(bulkPending||pendingClaim!=null)return;
+            bulkPending=true;bulkRevision=channel.Revision;bulkMessage=channel.Message;bulkUntil=Time.unscaledTime+8;
+            channel.Request(CoopInventoryAction.ClaimAllDeliveries,null,EquipmentSlot.MainHand);
+            Refresh();
         }
         void Equip()
         {
@@ -349,7 +362,11 @@ namespace ForjaDasMares.Networking
             bagSource.gameObject.SetActive(!results);stockView.gameObject.SetActive(!results);expeditionButton.gameObject.SetActive(!results);
             bagSource.interactable=deliveries||expeditionView;stockView.interactable=!deliveries;
             expeditionButton.interactable=!expeditionView&&profile.expedition!=null;
-            bagSource.GetComponentInChildren<Text>().text="MOCHILA · "+InventoryRules.BagCount(profile);
+            int used=InventoryRules.BagCount(profile),limit=channel.Catalog.inventoryCapacity,free=Mathf.Max(0,limit-used);
+            bagSource.GetComponentInChildren<Text>().text="MOCHILA · "+used+"/"+limit;
+            capacity.gameObject.SetActive(!results);capacity.text="Mochila: "+used+"/"+limit+(free==0?" · CHEIA":"");capacity.color=free==0?new Color(1,.65f,.4f):RusticHudTheme.Parchment;
+            claimAll.gameObject.SetActive(!results&&deliveries);claimAll.interactable=management&&!bulkPending&&pendingClaim==null&&free>0&&channel.DeliveryCount>0&&!(channel.HomeMode&&channel.Hub.UsingRemote);
+            claimAll.GetComponentInChildren<Text>().text=bulkPending?"RECEBENDO...":"RECEBER TODOS ("+Mathf.Min(free,channel.DeliveryCount)+")";
             stockView.GetComponentInChildren<Text>().text="ENTREGAS · "+channel.DeliveryCount;
             expeditionButton.GetComponentInChildren<Text>().text="SAQUE · "+AvailableItems(profile.expedition?.items);
             foreach(var button in new[]{bagSource,stockView,expeditionButton})button.GetComponentInChildren<Text>().fontSize=13;
@@ -360,7 +377,17 @@ namespace ForjaDasMares.Networking
             pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+PageSize-1)/PageSize)+" · "+CurrentItems.Count+" itens";
             sourceHint.gameObject.SetActive(!results);
             sourceHint.text=deliveries?"ENTREGAS\nItens guardados por falta de espaço. Receba um item para levá-lo à mochila; depois escolha se deseja equipar.":expeditionView?"SAQUE DA PARTIDA\nItens obtidos nesta expedição. Você pode equipar fora de perigo. Ao terminar, eles são guardados no resultado.":"MOCHILA\nItens guardados neste perfil. Clique em um item para inspecionar; os equipados aparecem nos slots ao redor do herói.";
-            if(profile.expedition==null&&!deliveries&&!expeditionView)sourceHint.text+="\nSAQUE fica disponível durante uma partida.";
+            if(deliveries)
+            {
+                sourceHint.rectTransform.sizeDelta=new Vector2(600,65);
+                sourceHint.text="Entregas: "+channel.DeliveryCount+" · Vagas livres na mochila: "+free+".\nReceber todos inclui todas as categorias; o que não couber fica guardado.";
+                if(channel.HomeMode&&channel.Hub.UsingRemote)sourceHint.text="ENTREGAS DA ÚLTIMA SALA\nVolte à sala de origem para receber estes itens.";
+            }
+            else
+            {
+                sourceHint.rectTransform.sizeDelta=new Vector2(600,110);
+                if(!expeditionView)sourceHint.text="MOCHILA · "+used+"/"+limit+"\nLimite compartilhado entre todas as categorias. Equipados não ocupam espaço.\nSelecione uma peça para comparar com o equipamento atual.";
+            }
         }
         void RefreshInspection(PlayerProfile profile,CoopActor actor,ItemInstance value)
         {

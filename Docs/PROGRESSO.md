@@ -1,3 +1,11 @@
+# Atualização 0.15.8 — limite visível, receber todos e tela de talentos
+
+Capacidade quantidade/limite e aviso CHEIA; recebimento em lote transacional e validado, com preservação do excedente. Talentos no estilo da quinta referência: herói real, lista rolável, ícones coloridos, detalhe atual/próximo, compra e redistribuição reais. Metadados visuais opcionais para arte futura; conteúdo continua com seis talentos. Savev2 preservado; protocolo11 exige versões compatíveis em todos os clientes.
+
+Primeira build Windows Succeeded/errors0/exit0. Conferência em perfis isolados: recebimento total/parcial sem perda/duplicação, Vigor consumiu1 ponto e aumentou8 de vida, máximo bloqueado, rolagem e redistribuição com confirmação/custo correto. Build final Windows Succeeded/errors0/exit0. Android cancelado a pedido do usuário: a partir desta etapa, manter código móvel sem gerar APK/instalar/testar celular até solicitação explícita. Nova sessão online pendente. Nenhuma suíte automatizada nova executada. [Arquivos, evidências e limites](ENTREGAS_E_TALENTOS_0_15_8.md).
+
+---
+
 # Correção 0.15.7 — desequipar com mochila cheia
 
 Removido bloqueio de capacidade em ProfileService.Unequip: peça permanente excedente vai para ENTREGAS; com espaço, permanece na mochila. Loot temporário mantém sua origem no saque. Instâncias são movidas sem cópias, com validação/transação de salvamento preservada; regra comum aos slots, inclusive retirada de principal/secundária.

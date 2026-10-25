@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 namespace ForjaDasMares.Networking
 {
-    public enum CoopInventoryAction { Equip, Unequip, ClaimDelivery, Discard, SpendTalent, ResetTalents }
+    public enum CoopInventoryAction { Equip, Unequip, ClaimDelivery, Discard, SpendTalent, ResetTalents, ClaimAllDeliveries }
     [Serializable] public sealed class CoopInventoryIntent { public CoopInventoryAction action; public string item,hero; public EquipmentSlot slot; public bool confirmed; public int talent; }
     [Serializable] public sealed class CoopProfileFrame
     { public int revision, deliveryCount; public bool hasRun, hasResult; public string message,scope; public PlayerProfile profile; }
@@ -115,6 +115,7 @@ namespace ForjaDasMares.Networking
             if(authority.Catalog.Hero(hero)==null||director.Phase!=CoopPhase.Lobby&&hero!=director.Actor(slot).Roster.Current.heroId)return;
             _ = intent.action == CoopInventoryAction.Equip ? profile.Equip(hero, intent.item, intent.slot)
                 : intent.action == CoopInventoryAction.Unequip ? profile.Unequip(hero, intent.slot)
+                : intent.action == CoopInventoryAction.ClaimAllDeliveries ? profile.ClaimAllDeliveries()
                 : intent.action == CoopInventoryAction.ClaimDelivery ? profile.ClaimDelivery(intent.item) : intent.action==CoopInventoryAction.Discard?profile.Discard(intent.item, intent.confirmed):intent.action==CoopInventoryAction.SpendTalent?profile.SpendTalent(hero,(TalentId)intent.talent):profile.ResetTalents(hero,intent.confirmed);
             Respond(slot, profile.Message);
         }

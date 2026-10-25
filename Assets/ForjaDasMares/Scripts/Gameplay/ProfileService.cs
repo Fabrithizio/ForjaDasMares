@@ -108,6 +108,18 @@ namespace ForjaDasMares
             if (!Profile.deliveries.Exists(item => item.instanceId == id)) return false;
             return Transaction(next => { var item = next.deliveries.Find(value => value.instanceId == id); next.deliveries.Remove(item); next.inventory.Add(item); }, "Entrega recebida.");
         }
+        public bool ClaimAllDeliveries()
+        {
+            int count=Mathf.Min(Mathf.Max(0,catalog.inventoryCapacity-InventoryRules.BagCount(Profile)),Profile.deliveries.Count);
+            if(Profile.deliveries.Count==0){Message="Nenhuma entrega para receber.";return false;}
+            if(count==0){Message="Mochila cheia. Libere espaço para receber as entregas.";return false;}
+            int remaining=Profile.deliveries.Count-count;
+            return Transaction(next=>
+            {
+                var received=next.deliveries.GetRange(0,count);
+                next.deliveries.RemoveRange(0,count);next.inventory.AddRange(received);
+            },(count==1?"Recebido 1 item na mochila. ":"Recebidos "+count+" itens na mochila. ")+(remaining==0?"Todas as entregas foram recebidas.":remaining==1?"1 entrega continua guardada por falta de espaço.":remaining+" entregas continuam guardadas por falta de espaço."));
+        }
         public bool SpendTalent(string heroId,TalentId id)
         {
             if(catalog.Hero(heroId)==null||!Enum.IsDefined(typeof(TalentId),id))return false;
