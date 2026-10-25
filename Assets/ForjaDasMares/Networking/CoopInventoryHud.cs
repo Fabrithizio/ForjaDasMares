@@ -3,15 +3,15 @@ using UnityEngine.UI;
 namespace ForjaDasMares.Networking
 {
     // Session inventory reads the host mirror; every mutation sends a validated intention.
-    [DefaultExecutionOrder(260)] public sealed class CoopInventoryHud : MonoBehaviour
+    [DefaultExecutionOrder(260)] public sealed partial class CoopInventoryHud : MonoBehaviour
     {
         [SerializeField] CoopDirector director;
         CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
-        readonly Button[] rows = new Button[8]; Button equip, remove, discard;
-        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;InventoryComparisonView visualComparison;bool touchLayout;int PageSize=>touchLayout?4:8;
+        readonly Button[] rows = new Button[16]; Button equip, remove, discard;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;InventoryComparisonView visualComparison;bool touchLayout;int PageSize=>touchLayout?4:director.Campaign!=null?16:8;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
-        Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[8];
+        Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[16];
         System.Collections.Generic.List<ItemInstance> SourceItems=>expeditionView?channel.LocalProfile?.expedition?.items??emptyItems:deliveries?channel.LocalProfile?.deliveries:channel.LocalProfile?.inventory;EquipmentPaperDoll paperDoll;readonly Button[] equipmentSlots=new Button[5];readonly Image[] equippedIcons=new Image[5];readonly HudIcon[] emptySlots=new HudIcon[5];
         static readonly System.Collections.Generic.List<ItemInstance> emptyItems=new System.Collections.Generic.List<ItemInstance>();
         Button classFilter,heroChoice,profileSource,secondaryEquip; readonly Button[] categoryTabs=new Button[6];
@@ -19,7 +19,7 @@ namespace ForjaDasMares.Networking
         Button claimAll;Text capacity;RawImage characterPreview;bool bulkPending;int bulkRevision;string bulkMessage;float bulkUntil;
         int selectionRevision;float claimUntil;bool advancedDetails,itemContextBlocked;
         Button bagSource,advancedButton,resetComparison,clearFilters;Text pageLabel,emptyHint,sourceHint;
-        readonly Text[] rowBadges=new Text[8];
+        readonly Text[] rowBadges=new Text[16];
         System.Comparison<ItemInstance> itemOrder;
         bool management;int category=-1;bool classOnly=true;
         CoopActor ActiveActor=>director.Actor(director.LocalSlot>=0?director.LocalSlot:0);
@@ -71,7 +71,7 @@ namespace ForjaDasMares.Networking
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
             discard = Button(overlay.transform, "DESCARTAR", new Vector2(1030, -535), new Vector2(185, 48), Discard);
             notice = Label(overlay.transform, "", new Vector2(30, -620), new Vector2(1180, 75), 18);
-            if(director.Campaign!=null){BuildPaperDoll();BuildItemPopup();}
+            if(director.Campaign!=null){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();}
             overlay.SetActive(false);
         }
         void BuildPaperDoll()
@@ -162,7 +162,7 @@ namespace ForjaDasMares.Networking
         {
             if(itemPopup==null||selected==null)return;advancedDetails=false;selectionMessage=channel.Message;selectionRevision=channel.Revision;compared=null;var p=channel.LocalProfile;var item=p.Item(selected)??CurrentItems.Find(x=>x.instanceId==selected);if(item==null)return;
             var set=p.Loadout(ActiveActor.Roster.Current.heroId);compared=set?.items[(int)channel.Catalog.Find(item.definitionId).slot];if(compared==selected)compared=null;
-            visualComparison?.Reset();itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();
+            visualComparison?.Reset();if(touchLayout){itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();}Refresh();ResetInspectionScroll();
         }
         void CycleCompare() => CompareEquipped();
         void SelectEquipped(int slot)
@@ -282,7 +282,7 @@ namespace ForjaDasMares.Networking
             if(itemPopup!=null)
             {
                 sheet.SetOverviewVisible(!results);detailViewport.gameObject.SetActive(false);
-                bool open=itemPopup.activeSelf&&!results&&value!=null;if(itemPopup.activeSelf&&!open)itemPopup.SetActive(false);
+                bool open=(desktopInventory!=null||itemPopup.activeSelf)&&!results&&value!=null;if(itemPopup.activeSelf&&(!open||results))itemPopup.SetActive(false);
                 foreach(var button in new[]{equip,remove,discard}){button.gameObject.SetActive(open);button.transform.SetParent(itemPopup.transform,false);}
                 equip.GetComponent<RectTransform>().anchoredPosition=new Vector2(25,-490);remove.GetComponent<RectTransform>().anchoredPosition=new Vector2(225,-490);discard.GetComponent<RectTransform>().anchoredPosition=new Vector2(425,-490);discard.GetComponent<RectTransform>().sizeDelta=new Vector2(310,44);discard.GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(310,44);
                 if(secondaryEquip!=null){secondaryEquip.transform.SetParent(itemPopup.transform,false);secondaryEquip.GetComponent<RectTransform>().anchoredPosition=new Vector2(760,-490);secondaryEquip.gameObject.SetActive(open&&!deliveries&&channel.Catalog.Find(value.definitionId).category==WeaponCategory.Daggers);}
@@ -299,17 +299,19 @@ namespace ForjaDasMares.Networking
                 }
 
             }
+            if(desktopInventory!=null)RefreshDesktopInventory(profile,value);
             RefreshEquipmentNotice();
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }
         void RefreshEquipmentNotice()
         {
             if(notice!=null)notice.gameObject.SetActive(sheet==null||!sheet.IsOpen);
-            if(itemNotice==null||!itemPopup.activeSelf)return;
+            if(itemNotice==null||(!itemPopup.activeSelf&&desktopInventory==null))return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
             if(!channel.HomeMode&&director.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
             else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
             {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
+            if(desktopStatus!=null)desktopStatus.text=string.IsNullOrEmpty(selected)?"":message;
             itemNotice.text=message;itemNotice.color=pendingDiscard==selected&&selected!=null?RusticHudTheme.Gold:blocked?new Color(1,.6f,.45f):RusticHudTheme.Parchment;
         }
         void ClaimAll()

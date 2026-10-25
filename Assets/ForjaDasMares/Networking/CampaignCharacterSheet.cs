@@ -89,6 +89,16 @@ namespace ForjaDasMares.Networking
             status=Label(modal,"Status",new Vector2(20,-631),new Vector2(1120,18),"",14);
             popup.SetActive(false);Refresh();
         }
+        public void ArrangeInventoryOverview()
+        {
+            for(int i=0;i<6;i++)
+            {
+                var r=(RectTransform)overview[i].transform;r.anchoredPosition=new Vector2(438+i%3*116,-524-i/3*49);r.sizeDelta=new Vector2(110,44);
+                stats[i].rectTransform.anchoredPosition=new Vector2(7,-3);stats[i].rectTransform.sizeDelta=new Vector2(98,38);stats[i].fontSize=12;stats[i].color=RusticHudTheme.Parchment;
+            }
+            var talent=(RectTransform)overview[6].transform;talent.anchoredPosition=new Vector2(438,-632);talent.sizeDelta=new Vector2(342,36);
+            overview[6].GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(322,36);overview[6].GetComponentInChildren<Text>().fontSize=14;
+        }
         void Open(){popup.SetActive(true);popup.transform.SetAsLastSibling();confirm=false;pending=false;operationNotice=null;Refresh();}
         public void SetOverviewVisible(bool visible){foreach(var go in overview)if(go!=null)go.SetActive(visible);if(!visible)Hide();}
         public bool IsOpen=>popup!=null&&popup.activeSelf;

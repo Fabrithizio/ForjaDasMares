@@ -1,3 +1,9 @@
+﻿# Atualização 0.15.9 — inventário de PC em três colunas
+
+Mochila à esquerda, identidade e personagem real ao centro, detalhes/comparação automática e ações à direita. Nome, nível, ouro e XP passaram a elementos separados, com barra de progresso; 16 itens por página e slots compactos. Funções e dados existentes preservados. Compilação Windows Succeeded/errors0/exit0 e início0.15.9 aberto; revisão visual por cliques ainda pendente, interrompida por interação na janela. Sem novo teste automatizado/online, sem gerar APK. [Arquivos, passos e limitações](INVENTARIO_LAYOUT_0_15_9.md).
+
+---
+
 # Atualização 0.15.8 — limite visível, receber todos e tela de talentos
 
 Capacidade quantidade/limite e aviso CHEIA; recebimento em lote transacional e validado, com preservação do excedente. Talentos no estilo da quinta referência: herói real, lista rolável, ícones coloridos, detalhe atual/próximo, compra e redistribuição reais. Metadados visuais opcionais para arte futura; conteúdo continua com seis talentos. Savev2 preservado; protocolo11 exige versões compatíveis em todos os clientes.
