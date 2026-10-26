@@ -1,3 +1,9 @@
+# 0.16.3 — revisão honesta das 12 melhorias
+
+Lista original revisada em REVISAO_12_MELHORIAS.md: mudanças principais implementadas, mas a lista não está 100% concluída. Animações da nova skin, sessões humanas de balanceamento/com irmão, arte individual de itens e testes físicos/desempenho móvel permanecem parciais. Reconexão direta abrupta reproduzida com dois processos de QA: host continua; cliente reiniciado não conecta. Sem correção especulativa nem teste Relay novo.
+
+Diagnóstico de desempenho corrigido para não misturar quadros de menu/lobby com combate e para reiniciar a amostra ao abrir inventário/menu. 13/13 testes focados aprovados após corrigir busca de componente no novo teste. Sem novo APK.
+
 # 0.16.2 — proporções da personagem principal
 
 Equipamentos da Sapphire Mage ajustados por categoria, com redução uniforme da escala e do deslocamento de encaixe. Outros heróis e atributos preservados. Instalador Unity verificou as dimensões efetivas de 16 equipamentos; saída 0. Build Windows Succeeded/errors=0. Cajado conferido visualmente no inventário do PC; jogo deixado aberto. Não foram executados testes reais de rede ou de Android nesta entrega. Sem APK novo. Animações continuam pendentes: apenas pose de repouso na nova skin. Guia de obtenção, prioridades e efeitos em PERSONAGEM_ANIMACOES.md.
@@ -621,3 +627,5 @@ Correções encontradas em QA: arma herdava escala dos ossos e cobria câmera �
 160testes PlayMode:159aprovados/0falhas/1ignorado;16focados aprovados. Windows0.10.1 BuildPipeline errors0. Android0.10.1/code24 ARM64 gerado via Gradle externo depois de erro de loopback no empacotador interno; assinatura/hash verificados e atualização instalada no moto g15. PC+Android Relay no Wi-Fi: entrada, equipagem, movimento, combate/derrota, limpeza e encerramento. Teste4/4 da build intermediária0.10.0:3processosWindows+1Android. Não quatro humanos/dispositivos; não vitória humana, redes diferentes ou FPS medido.
 
 Relatório/arquivos/passos manuais: PAISAGENS_E_HORDAS_0_10_2026-10-17.md, ARQUIVOS_0_10.txt, CAMPANHA_COMO_JOGAR.md e ASSETS_E_DIRECAO_0_10.md. AtalhoPC e APK compartilhável atualizados para0.10.1, salasQA encerradas e saves preservados. Aprovado com limitações para testes privados; não equivale a concluir todos os pedidos históricos ou lançamento comercial. Importantes: performance/balanceamento humano, mapas ainda modulares/encontros serializados e arte/animação final. Nenhuma compra necessária agora.
+
+Build Windows 0.16.3: Succeeded/errors=0/exit=0; executável estável atualizado.

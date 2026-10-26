@@ -29,6 +29,18 @@ namespace ForjaDasMares.Networking.Tests
             hud.OpenInventory();yield return null;
         }
         [UnityTearDown]public IEnumerator Close(){if(hud!=null)hud.CloseInventory();if(session!=null)session.Close();yield return null;yield return null;}
+        [UnityTest]public IEnumerator PerformanceSamplesOnlyGameplayAndResetsForInventory()
+        {
+            var diagnostic=UnityEngine.Object.FindFirstObjectByType<CampaignPerformanceHud>();Assert.NotNull(diagnostic);
+            yield return null;Assert.AreEqual(0,diagnostic.SampleCount,"Inventory frames must not count as gameplay.");
+            hud.CloseInventory();Assert.IsTrue(session.HostDirect("PERFQA",7895,false));
+            yield return null;Assert.AreEqual(0,diagnostic.SampleCount,"Lobby frames must not count as gameplay.");
+            session.StartGame();float deadline=Time.realtimeSinceStartup+15;
+            while(session.Phase==CoopPhase.Loading&&Time.realtimeSinceStartup<deadline)yield return null;
+            Assert.AreEqual(CoopPhase.Playing,session.Phase);yield return null;yield return null;
+            Assert.Greater(diagnostic.SampleCount,0);
+            hud.OpenInventory();yield return null;yield return null;Assert.AreEqual(0,diagnostic.SampleCount);
+        }
         [Test]public void ProjectileDescriptionsDoNotInventAreaDamageAndShowActualSpread()
         {
             var attack=ScriptableObject.CreateInstance<AttackDefinition>();

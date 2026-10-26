@@ -15,11 +15,15 @@ namespace ForjaDasMares.Networking
             readout=RusticHudTheme.Label(r,"Measurements",new Vector2(0,1),new Vector2(10,-6),new Vector2(310,110),"",14);panel.SetActive(false);
         }
         public void Toggle(){visible=!visible;if(panel!=null)panel.SetActive(visible);}
+        public int SampleCount=>count;
         void Update()
         {
             if(panel==null)return;if(Keyboard.current!=null&&Keyboard.current.f8Key.wasPressedThisFrame)Toggle();
+            bool gameplay=session.Phase==CoopPhase.Playing&&GetComponent<CoopInventoryHud>()?.IsOpen!=true&&GetComponent<CampaignSessionMenu>()?.IsOpen!=true;
+            // Menu/lobby frames must not make combat measurements look faster.
+            if(!gameplay){count=index=0;refresh=0;panel.SetActive(false);return;}
             float dt=Time.unscaledDeltaTime;if(dt>0&&dt<1){frames[index]=dt*1000;index=(index+1)%frames.Length;count=Mathf.Min(count+1,frames.Length);}
-            bool show=visible&&session.Phase==CoopPhase.Playing&&GetComponent<CoopInventoryHud>()?.IsOpen!=true&&GetComponent<CampaignSessionMenu>()?.IsOpen!=true;panel.SetActive(show);refresh-=dt;if(!show||refresh>0||count==0)return;refresh=.5f;
+            bool show=visible;panel.SetActive(show);refresh-=dt;if(!show||refresh>0||count==0)return;refresh=.5f;
             float sum=0;for(int i=0;i<count;i++){sum+=frames[i];sorted[i]=frames[i];}Array.Sort(sorted,0,count);float average=sum/count,p95=sorted[Mathf.Clamp(Mathf.CeilToInt(count*.95f)-1,0,count-1)];
             var pool=session.Dungeon.Encounter.Enemies;var effects=session.Actor(session.LocalSlot)?.Combat.Pool;
             string enemyCount=session.IsHost?pool.ActiveCount+"/"+pool.Limit:session.AppliedEnemyCount+" recebidos";
