@@ -5,6 +5,8 @@ namespace ForjaDasMares
     public sealed class HeroModelView : MonoBehaviour
     {
         [SerializeField] Animator animator;
+        [SerializeField] bool authoredAnimationsReady=true;
+        public bool AuthoredAnimationsReady=>authoredAnimationsReady;
         [SerializeField] Transform primarySocket, secondarySocket;
         [SerializeField] GameObject defaultWeapon;
         [SerializeField, Min(.1f)] float walkStride=.9173f, runStride=2.4571f;
@@ -42,8 +44,8 @@ namespace ForjaDasMares
         public float MovementSpeed {get;private set;}
         public bool LocomotionActive {get;private set;}
         public HeroState CurrentState {get;private set;}
-        public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon)
-        {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;}
+        public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon,bool animationsReady=true)
+        {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;authoredAnimationsReady=animationsReady;}
         public void ShowDefaultWeapon(bool visible){wantsDefaultWeapon=visible;if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
         void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=0;running=false;}
         float pauseUntil,heldActionTime;
@@ -52,6 +54,13 @@ namespace ForjaDasMares
         {
             if(Time.unscaledTime<pauseUntil)normalizedAttack=heldActionTime;else heldActionTime=normalizedAttack;
             if(defaultWeapon!=null)defaultWeapon.SetActive(wantsDefaultWeapon&&alive);
+            // A newly integrated skin can expose its sockets/FX while its own clips
+            // are being prepared. Never play incompatible clips on another rig.
+            if(!authoredAnimationsReady)
+            {
+                CurrentState=state;MovementSpeed=Mathf.Max(0,movement);LocomotionActive=false;
+                return;
+            }
             if(animator==null||!animator.isActiveAndEnabled||animator.runtimeAnimatorController==null)return;
             CurrentState=state;MovementSpeed=Mathf.Max(0,movement);
             LocomotionActive=alive&&movement>.12f&&state!=HeroState.Dodge&&state!=HeroState.Dead;

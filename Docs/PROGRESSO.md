@@ -1,4 +1,10 @@
-﻿# Atualização0.16.0 — clareza, mira, interface e verificação cooperativa
+﻿# Atualização0.16.1 — personagem Sapphire como Arcanista principal
+
+Modelo Meshy integrado à campanha, materiais/texturas URP e encaixes de armas configurados. Pose provisória; animações adiadas por decisão do usuário. Lógica e progresso preservados. [Detalhes](SAPPHIRE_0_16_1.md).
+
+---
+
+# Atualização0.16.0 — clareza, mira, interface e verificação cooperativa
 
 Inventário PC/toque reorganizado, identificação e descrições melhoradas, mira acompanhada até lançamento, postura/pés ajustados, guia contextual dispensável, spawn com aviso/afastamento e diagnóstico local de desempenho.76/76 testes aprovados, seguidos por31/31 testes de interface sobrepostos após ajustes finais. Build final Windows Succeeded/errors0/exit0. Duas instâncias Windows pelo Relay: mapa, ataque remoto, retorno após queda, morte/resgate, resultado, próxima fase e encerramento conferidos. Vitória/derrota administrativas não equivalem a uma partida humana completa.
 

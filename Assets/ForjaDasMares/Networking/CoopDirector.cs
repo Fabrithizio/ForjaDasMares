@@ -115,6 +115,7 @@ namespace ForjaDasMares.Networking
             network.OnClientConnectedCallback += Connected; network.OnClientDisconnectCallback += Disconnected;
             network.OnTransportFailure+=TransportFailed;network.OnServerStopped+=ServerStopped;
             ready = true;
+            if(Campaign!=null&&HeroCount>2)SelectHero(2);
             if (GetComponent<CoopCloud>() == null) gameObject.AddComponent<CoopCloud>();
             var args = Environment.GetCommandLineArgs();
             if (Arg(args, "-netProbe") != null && GetComponent<CoopSmokeProbe>() == null) gameObject.AddComponent<CoopSmokeProbe>();
