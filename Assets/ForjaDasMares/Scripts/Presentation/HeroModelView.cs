@@ -7,6 +7,17 @@ namespace ForjaDasMares
         [SerializeField] Animator animator;
         [SerializeField] bool authoredAnimationsReady=true;
         public bool AuthoredAnimationsReady=>authoredAnimationsReady;
+        [SerializeField] bool fitEquipmentToBody;
+        [SerializeField, Min(.1f)] float staffLength=1.45f, bookLength=.38f, shieldLength=.60f, focusLength=.30f, otherWeaponLength=.95f;
+        public void ConfigureEquipmentFit(bool value)=>fitEquipmentToBody=value;
+        public float EquipmentScale(EquipmentDefinition item)
+        {
+            if(!fitEquipmentToBody||item==null||item.visualMesh==null)return 1;
+            Vector3 size=Vector3.Scale(item.visualMesh.bounds.size,item.authoredScale);
+            float length=Mathf.Max(Mathf.Abs(size.x),Mathf.Abs(size.y),Mathf.Abs(size.z));
+            float maximum=item.category==WeaponCategory.Staff?staffLength:item.category==WeaponCategory.Grimoire?bookLength:item.category==WeaponCategory.Shield?shieldLength:item.category==WeaponCategory.MagicWeapon?focusLength:otherWeaponLength;
+            return length>.0001f?Mathf.Min(1,maximum/length):1;
+        }
         [SerializeField] Transform primarySocket, secondarySocket;
         [SerializeField] GameObject defaultWeapon;
         [SerializeField, Min(.1f)] float walkStride=.9173f, runStride=2.4571f;

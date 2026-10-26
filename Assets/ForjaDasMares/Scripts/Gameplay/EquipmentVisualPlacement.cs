@@ -15,10 +15,16 @@ namespace ForjaDasMares
             if(visual==null||parent==null)return;
             visual.SetParent(parent,false);
             bool custom=socket&&equipment!=null&&equipment.customGrip;
-            visual.localPosition=Divide(socket?(custom?equipment.socketPosition:new Vector3(0,-.3f,0)):restPosition,ParentScale(visual));
+            float fit=EquipmentFactor(visual,equipment);
+            visual.localPosition=Divide(fit*(socket?(custom?equipment.socketPosition:new Vector3(0,-.3f,0)):restPosition),ParentScale(visual));
             visual.localRotation=socket?Quaternion.Euler(custom?equipment.socketEuler:new Vector3(90,0,0)):restRotation;
         }
-        public static void SetWorldScale(Transform visual,Vector3 size)
-        {if(visual!=null)visual.localScale=Divide(size,ParentScale(visual));}
+        static float EquipmentFactor(Transform visual,EquipmentDefinition item)
+        {
+            var model=visual.GetComponentInParent<HeroModelView>(true);
+            return model!=null?model.EquipmentScale(item):1;
+        }
+        public static void SetWorldScale(Transform visual,Vector3 size,EquipmentDefinition item=null)
+        {if(visual!=null)visual.localScale=Divide(size*EquipmentFactor(visual,item),ParentScale(visual));}
     }
 }

@@ -79,6 +79,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroModelView
   animator: {fileID: 5154946122182785493}
   authoredAnimationsReady: 0
+  fitEquipmentToBody: 1
+  staffLength: 1.45
+  bookLength: 0.38
+  shieldLength: 0.6
+  focusLength: 0.3
+  otherWeaponLength: 0.95
   primarySocket: {fileID: 6195385678992260377}
   secondarySocket: {fileID: 2351420576326946362}
   defaultWeapon: {fileID: 5606935857666232241}
@@ -126,8 +132,8 @@ Transform:
   m_GameObject: {fileID: 5606935857666232241}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0.005707467}
-  m_LocalScale: {x: 0.009131946, y: 0.009131946, z: 0.0091319475}
+  m_LocalPosition: {x: 0, y: 0, z: 0.005251159}
+  m_LocalScale: {x: 0.008401853, y: 0.008401853, z: 0.008401855}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6195385678992260377}

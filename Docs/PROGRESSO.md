@@ -1,4 +1,10 @@
-﻿# Atualização0.16.1 — personagem Sapphire como Arcanista principal
+# 0.16.2 — proporções da personagem principal
+
+Equipamentos da Sapphire Mage ajustados por categoria, com redução uniforme da escala e do deslocamento de encaixe. Outros heróis e atributos preservados. Instalador Unity verificou as dimensões efetivas de 16 equipamentos; saída 0. Build Windows Succeeded/errors=0. Cajado conferido visualmente no inventário do PC; jogo deixado aberto. Não foram executados testes reais de rede ou de Android nesta entrega. Sem APK novo. Animações continuam pendentes: apenas pose de repouso na nova skin. Guia de obtenção, prioridades e efeitos em PERSONAGEM_ANIMACOES.md.
+
+Arquivos: HeroModelView.cs, EquipmentVisualPlacement.cs, EquipmentMeshView.cs, SapphireMageInstaller.cs, SapphireMage.prefab, CampaignCoop.unity, CampaignInstaller.cs, ProjectSettings.asset, material reserializado e documentação. Limitação: verificar encaixes durante animações quando os clips chegarem.
+
+# Atualização0.16.1 — personagem Sapphire como Arcanista principal
 
 Modelo Meshy integrado à campanha, materiais/texturas URP e encaixes de armas configurados. Pose provisória; animações adiadas por decisão do usuário. Lógica e progresso preservados. [Detalhes](SAPPHIRE_0_16_1.md).
 
