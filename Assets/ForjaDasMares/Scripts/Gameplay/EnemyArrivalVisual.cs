@@ -16,7 +16,7 @@ namespace ForjaDasMares
         void LateUpdate()
         {
             if(actor==null||ring==null)return;bool arriving=actor.SpawnRemaining>0&&actor.Health.IsAlive;ring.enabled=arriving;
-            if(arriving){float fraction=actor.SpawnRemaining/Mathf.Max(.01f,actor.Profile.spawnWarning);body.localPosition=Vector3.down*Mathf.Clamp01(fraction)*actor.Profile.height;ring.transform.localScale=Vector3.one*(1+.12f*Mathf.Sin(Time.time*16));}
+            if(arriving){float fraction=actor.SpawnRemaining/Mathf.Max(.01f,actor.SpawnDuration);body.localPosition=Vector3.down*Mathf.Clamp01(fraction)*actor.Profile.height;ring.transform.localScale=Vector3.one*(1+.12f*Mathf.Sin(Time.time*16));}
             else if(wasArriving)body.localPosition=Vector3.zero;wasArriving=arriving;
         }
         void OnDisable(){if(ring!=null)ring.enabled=false;}

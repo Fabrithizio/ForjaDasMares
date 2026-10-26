@@ -8,6 +8,7 @@ namespace ForjaDasMares.Networking
     {
         RectTransform desktopInventory,desktopDetails,desktopContent,desktopXpFill;
         Text desktopName,desktopLevel,desktopGold,desktopXp,desktopItemName,desktopItemType,desktopState,desktopBody,desktopStatus,desktopComparison;
+        readonly HudIcon[] slotMarks=new HudIcon[16];
         Image desktopItemIcon;Button desktopAdvanced;string desktopSelection;
         static readonly Vector2 InventoryTop=new Vector2(0,1);
         static void PlaceInventory(RectTransform rect,float x,float y,float width,float height)
@@ -44,7 +45,8 @@ namespace ForjaDasMares.Networking
             var title=InventoryText(parent,"InventoryTitle",73,93,220,33,"INVENTÁRIO",23);title.fontStyle=FontStyle.Bold;title.color=RusticHudTheme.Gold;
             PlaceInventory(capacity.rectTransform,282,96,124,26);capacity.fontSize=13;capacity.alignment=TextAnchor.MiddleRight;
             PlaceInventory(classFilter,30,130,376,26,12);
-            for(int i=0;i<categoryTabs.Length;i++)PlaceInventory(categoryTabs[i],30+i*63,164,60,30,9);
+            string[] categoryNames={"TODOS","ARMAS","2ª MÃO","ARMAD.","ACESS.","ARTEF."};
+            for(int i=0;i<categoryTabs.Length;i++){PlaceInventory(categoryTabs[i],30+i*63,164,60,30,10);categoryTabs[i].GetComponentInChildren<Text>().text=categoryNames[i];}
             // Sixteen distinct item instances per page; all categories still share one capacity.
             for(int i=0;i<rows.Length;i++)
             {
@@ -52,6 +54,7 @@ namespace ForjaDasMares.Networking
                 var label=row.GetComponentInChildren<Text>();PlaceInventory(label.rectTransform,3,53,84,26);label.fontSize=11;label.resizeTextMinSize=10;label.resizeTextMaxSize=11;label.alignment=TextAnchor.MiddleCenter;
                 PlaceInventory(icons[i].rectTransform,23,3,44,48);
                 rowBadges[i].gameObject.SetActive(false);
+                slotMarks[i]=RusticHudTheme.Icon(row.transform,HudSymbol.Sword,InventoryTop,new Vector2(6,-5),14);slotMarks[i].color=RusticHudTheme.Muted;
             }
             PlaceInventory(emptyHint.rectTransform,44,245,348,145);emptyHint.fontSize=18;
             PlaceInventory(clearFilters,44,402,348,38,13);
@@ -132,7 +135,10 @@ namespace ForjaDasMares.Networking
                 var d=channel.Catalog.Find(item.definitionId);var rarity=channel.Catalog.Rarity(item.rarity).color;desktopItemIcon.sprite=d.icon;desktopItemIcon.enabled=d.icon!=null;
                 desktopItemName.text=d.displayName;desktopItemName.color=rarity;desktopItemType.text=RusticHudTheme.RarityName(item.rarity)+" · "+ItemDescriptions.Category(d);
                 desktopState.text=deliveries?"ENTREGA · receba antes de equipar":ItemDescriptions.EquipmentState(profile,channel.Catalog,hero,item);
+                desktopState.color=deliveries?RusticHudTheme.Gold:EquippedHere(profile,item.instanceId)||ProgressionStats.CanEquip(profile,channel.Catalog,hero.heroId,item,d.slot,out _)?new Color(.45f,.94f,.72f):new Color(1,.58f,.42f);
                 var text=new StringBuilder();
+                if(d.displayName.Length>40)Section(text,"NOME COMPLETO",d.displayName);
+                Section(text,"COMO FUNCIONA",ItemDescriptions.RoleSummary(d));
                 Section(text,"IDENTIDADE",RusticHudTheme.SlotName(d.slot)+" · "+RusticHudTheme.ClassNames(d.compatibleHeroes)+" · nível "+d.minimumLevel+(d.twoHanded?"\nDuas mãos":d.allowsOffHand?"\nPermite mão secundária":""));
                 if(d.attacks!=null&&d.attacks.Length>0){var attack=d.attacks[0];Section(text,"ATAQUE DA ARMA",Mathf.RoundToInt(attack.damage*channel.Catalog.Rarity(item.rarity).power)+" dano sem bônus do herói\nAlcance  "+attack.range.ToString("0.#")+" m · ciclo "+(attack.windup+attack.recovery).ToString("0.##")+" s\n"+ItemDescriptions.Pattern(attack));}
                 var bonuses=ItemDescriptions.Bonuses(channel.Catalog,item);var bonus=new StringBuilder();for(int i=0;i<bonuses.Length;i++)if(bonuses[i]!=0)bonus.AppendLine("+"+ItemDescriptions.Amount((ItemStat)i,bonuses[i])+" "+ItemDescriptions.Name((ItemStat)i));
@@ -156,6 +162,7 @@ namespace ForjaDasMares.Networking
                 secondaryEquip.gameObject.SetActive(dagger);if(dagger){PlaceInventory(secondaryEquip,234,548,204,30,11);PlaceInventory(desktopAdvanced,18,548,204,30,10);}else PlaceInventory(desktopAdvanced,18,548,420,30,12);
             }
         }
+        static HudSymbol SlotSymbol(EquipmentSlot slot)=>slot==EquipmentSlot.MainHand?HudSymbol.Sword:slot==EquipmentSlot.OffHand?HudSymbol.Shield:slot==EquipmentSlot.Armor?HudSymbol.Armor:slot==EquipmentSlot.Accessory?HudSymbol.Accessory:HudSymbol.Artifact;
         static void Section(StringBuilder text,string title,string content)
         {text.Append("<color=#E8BD6E><b>").Append(title).AppendLine("</b></color>");text.AppendLine(content);text.AppendLine();}
     }

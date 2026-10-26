@@ -43,6 +43,8 @@ namespace ForjaDasMares.Networking
             feedback=Label(panel,"",30,575,1040,48,18);
             friendInfo=Label(friends.transform,"",30,180,1040,315,18);
             Button(friends.transform,"CopyFriendInvite",30,500,500,"COPIAR CONVITE PARA COMPARTILHAR",()=>Copy(true));
+            Button(options.transform,"Guide",30,510,500,"REVER PRIMEIROS PASSOS",()=>{GetComponent<CampaignFirstSteps>()?.RestartGuide();Close();},40);
+            Button(options.transform,"Performance",560,510,470,"DIAGNÓSTICO DE DESEMPENHO",()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();},40);
             Label(options.transform,"VOLUME GERAL",30,180,480,35,22);
             Button(options.transform,"VolumeDown",30,230,210,"− VOLUME",()=>Volume(-.1f));
             Button(options.transform,"VolumeUp",260,230,210,"+ VOLUME",()=>Volume(.1f));
@@ -55,7 +57,7 @@ namespace ForjaDasMares.Networking
             Button(options.transform,"Vibration",700,350,330,"VIBRAÇÃO: "+(PlayerPrefs.GetInt("CampaignVibration",0)==1?"SIM":"NÃO"),()=>ToggleOption("CampaignVibration","Vibration","VIBRAÇÃO"));
             Button(options.transform,"Effects",30,560,500,"EFEITOS: "+Mathf.RoundToInt(PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f)*100)+"%",()=>{float v=PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f);v=v<.01f?1:Mathf.Max(0,v-.2f);PlayerPrefs.SetFloat("CampaignEffectsVolume",v);PlayerPrefs.Save();options.transform.Find("Effects").GetComponentInChildren<Text>().text="EFEITOS: "+Mathf.RoundToInt(v*100)+"%";});
             Button(options.transform,"GraphicsQuality",560,560,470,"GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected),()=>{GetComponent<PresentationQuality>()?.Cycle();options.transform.Find("GraphicsQuality").GetComponentInChildren<Text>().text="GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected);});
-            Label(options.transform,"PC: WASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: FÚRIA\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,425,1040,130,19);
+            Label(options.transform,"PC: WASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: SUPER\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,410,1040,100,16);
             warning=Label(confirm.transform,"",60,215,1000,180,25);
             Button(confirm.transform,"CancelLeave",60,445,450,"CONTINUAR NA SALA",()=>Show(room));
             Button(confirm.transform,"ConfirmLeave",580,445,450,"CONFIRMAR SAÍDA",()=>{Close();director.Close();});
@@ -121,7 +123,7 @@ namespace ForjaDasMares.Networking
         void Show(GameObject page){room.SetActive(page==room);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);expedition.SetActive(page==expedition);feedback.text="";}
         static GameObject Page(Transform parent,string name){var r=RusticHudTheme.Rect(parent,name,Vector2.zero,Vector2.zero,Vector2.zero);r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;return r.gameObject;}
         static Text Label(Transform p,string text,float x,float y,float w,float h,int size)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,-y),new Vector2(w,h),text,size);
-        static Button Button(Transform p,string name,float x,float y,float w,string text,UnityEngine.Events.UnityAction action)=>RusticHudTheme.Button(p,name,new Vector2(0,1),new Vector2(x,-y),new Vector2(w,50),text,action);
+        static Button Button(Transform p,string name,float x,float y,float w,string text,UnityEngine.Events.UnityAction action,float height=50)=>RusticHudTheme.Button(p,name,new Vector2(0,1),new Vector2(x,-y),new Vector2(w,height),text,action);
         void OnEnable()
         {
             if(menuAction==null){menuAction=new InputAction("SessionMenu",InputActionType.Button);menuAction.AddBinding("<Keyboard>/escape");menuAction.AddBinding("<Gamepad>/start");menuAction.performed+=MenuPressed;}

@@ -71,7 +71,7 @@ namespace ForjaDasMares.Networking
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
             discard = Button(overlay.transform, "DESCARTAR", new Vector2(1030, -535), new Vector2(185, 48), Discard);
             notice = Label(overlay.transform, "", new Vector2(30, -620), new Vector2(1180, 75), 18);
-            if(director.Campaign!=null){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();}
+            if(director.Campaign!=null){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();else BuildTouchInventory();}
             overlay.SetActive(false);
         }
         void BuildPaperDoll()
@@ -227,6 +227,7 @@ namespace ForjaDasMares.Networking
                     var item=CurrentItems[index];var definition=channel.Catalog.Find(item.definitionId);var label=rows[i].GetComponentInChildren<Text>();
                     label.text=definition.displayName;label.color=channel.Catalog.Rarity(item.rarity).color;
                     var surface=rows[i].GetComponentInChildren<RoundedHudGraphic>();if(surface!=null){surface.borderColor=item.instanceId==selected?RusticHudTheme.Gold:Color.Lerp(RusticHudTheme.Copper,channel.Catalog.Rarity(item.rarity).color,.65f);surface.border=item.instanceId==selected?3:1.5f;surface.SetVerticesDirty();}
+                    if(slotMarks[i]!=null){slotMarks[i].symbol=SlotSymbol(definition.slot);slotMarks[i].SetVerticesDirty();}
                     if(icons[i]!=null){icons[i].sprite=definition.icon;icons[i].enabled=icons[i].sprite!=null;}
                     if(rowBadges[i]!=null)
                     {
@@ -300,12 +301,13 @@ namespace ForjaDasMares.Networking
 
             }
             if(desktopInventory!=null)RefreshDesktopInventory(profile,value);
+            if(touchIdentity!=null)RefreshTouchInventory(profile);
             RefreshEquipmentNotice();
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }
         void RefreshEquipmentNotice()
         {
-            if(notice!=null)notice.gameObject.SetActive(sheet==null||!sheet.IsOpen);
+            if(notice!=null)notice.gameObject.SetActive((sheet==null||!sheet.IsOpen)&&(itemPopup==null||!itemPopup.activeSelf));
             if(itemNotice==null||(!itemPopup.activeSelf&&desktopInventory==null))return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
             if(!channel.HomeMode&&director.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
@@ -376,7 +378,7 @@ namespace ForjaDasMares.Networking
             bool filters=category!=-1||classOnly;int available=AvailableItems(SourceItems,deliveries);
             emptyHint.text=available>0?"Nenhum item corresponde aos filtros.\nTente outra categoria ou mostre todas as classes.":deliveries?"Nenhuma entrega aguardando.\nItens que não couberem na mochila ficam guardados aqui.":expeditionView?"Nenhum item solto no saque.\nDerrote inimigos e abra baús; os equipados ficam no herói.":"Sua mochila está vazia.\nBusque equipamentos nos inimigos e baús. Os equipados ficam ao redor do herói.";
             clearFilters.gameObject.SetActive(empty&&available>0&&filters);
-            pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+PageSize-1)/PageSize)+" · "+CurrentItems.Count+" itens";
+            pageLabel.gameObject.SetActive(!results);pageLabel.text="Página "+(page+1)+" / "+Mathf.Max(1,(CurrentItems.Count+PageSize-1)/PageSize)+" · "+CurrentItems.Count+" no filtro";
             sourceHint.gameObject.SetActive(!results);
             sourceHint.text=deliveries?"ENTREGAS\nItens guardados por falta de espaço. Receba um item para levá-lo à mochila; depois escolha se deseja equipar.":expeditionView?"SAQUE DA PARTIDA\nItens obtidos nesta expedição. Você pode equipar fora de perigo. Ao terminar, eles são guardados no resultado.":"MOCHILA\nItens guardados neste perfil. Clique em um item para inspecionar; os equipados aparecem nos slots ao redor do herói.";
             if(deliveries)

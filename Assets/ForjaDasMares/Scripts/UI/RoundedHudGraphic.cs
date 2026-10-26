@@ -3,6 +3,7 @@ using UnityEngine.UI;
 namespace ForjaDasMares
 {
     // Original vector geometry: no external textures or runtime material copies.
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class RoundedHudGraphic : MaskableGraphic
     {
         public float radius = 14f, border = 1.5f;

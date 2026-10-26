@@ -95,6 +95,7 @@ namespace ForjaDasMares.Networking
             Button(loadPanel,"CancelConnection",35,-265,770,52,"CANCELAR E VOLTAR",()=>{soloPending=false;cloud.Cancel();});loading.SetActive(false);
             gameObject.AddComponent<CampaignCombatReadout>().Build(root,director);
             var minimap=new GameObject("CampaignMinimap",typeof(RectTransform));minimap.AddComponent<CampaignMinimap>().Build(root,director);
+            gameObject.AddComponent<CampaignFirstSteps>().Build(root,director);gameObject.AddComponent<CampaignPerformanceHud>().Build(root,director);
         }
         public void BeginSolo()
         {

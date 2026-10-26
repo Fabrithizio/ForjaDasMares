@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityEngine;
 namespace ForjaDasMares
 {
@@ -50,6 +50,15 @@ namespace ForjaDasMares
                 case WeaponCategory.MagicWeapon:return "Foco mágico"; default:return RusticHudTheme.SlotName(item.slot);
             }
         }
+        public static string RoleSummary(EquipmentDefinition item)
+        {
+            if(item==null)return "Item indisponível.";
+            if(item.attacks!=null&&item.attacks.Length>0)
+            {
+                var a=item.attacks[0];return a.shape==AttackShape.Projectile?"Ataque à distância. Mire no alvo e mantenha espaço para esquivar.":a.footprint==MeleeFootprint.Line?"Golpe estreito e comprido. Alinhe os inimigos à sua frente.":a.footprint==MeleeFootprint.Circle||a.arc>=359?"Golpe ao redor do herói. Aproximação e tempo de ataque são importantes.":"Golpe em cone à frente. Vire para o alvo antes de atacar.";
+            }
+            return item.frontalBlock>0?"Proteção frontal enquanto equipado. Não protege de todas as direções.":"Bônus aplicados enquanto equipado. Confira quais atributos mudam abaixo.";
+        }
         public static string Pattern(AttackDefinition attack)
         {
             if(attack==null)return "Sem ataque próprio";
@@ -76,6 +85,7 @@ namespace ForjaDasMares
             var d=catalog.Find(item.definitionId);if(d==null)return "Item não encontrado no catálogo.";
             var text=new StringBuilder();text.AppendLine(d.displayName);text.AppendLine(RusticHudTheme.RarityName(item.rarity)+" · "+Category(d));
             text.AppendLine("ONDE EQUIPA: "+RusticHudTheme.SlotName(d.slot));text.AppendLine("CLASSE: "+RusticHudTheme.ClassNames(d.compatibleHeroes)+" · nível "+d.minimumLevel);
+            text.AppendLine(RoleSummary(d));
             if(d.twoHanded)text.AppendLine("Duas mãos: não permite item na mão secundária.");
             else if(d.allowsOffHand)text.AppendLine("Permite equipamento na mão secundária.");
             if(d.attacks!=null&&d.attacks.Length>0)
@@ -135,7 +145,7 @@ namespace ForjaDasMares
         public static string Describe(ProgressionCatalog catalog,ItemInstance item,ItemInstance compare=null)
         {
             if(item==null)return "Nenhum item neste slot.";var d=catalog.Find(item.definitionId);if(d==null)return "Item não encontrado no catálogo.";var text=new StringBuilder();
-            text.AppendLine(d.displayName+" · "+RusticHudTheme.RarityName(item.rarity));text.AppendLine(RusticHudTheme.SlotName(d.slot)+" · nível "+d.minimumLevel);text.AppendLine("Classes: "+RusticHudTheme.ClassNames(d.compatibleHeroes));text.AppendLine();
+            text.AppendLine(d.displayName+" · "+RusticHudTheme.RarityName(item.rarity));text.AppendLine(RusticHudTheme.SlotName(d.slot)+" · nível "+d.minimumLevel);text.AppendLine("Classes: "+RusticHudTheme.ClassNames(d.compatibleHeroes));text.AppendLine(RoleSummary(d));text.AppendLine();
             var a=Bonuses(catalog,item);var b=Bonuses(catalog,compare);bool any=false;
             for(int i=0;i<10;i++)if(a[i]!=0||b[i]!=0){any=true;var stat=(ItemStat)i;text.Append(Name(stat)+": +"+Amount(stat,a[i]));if(compare!=null){float delta=a[i]-b[i];text.Append("  ("+(delta>=0?"+":"−")+Amount(stat,Mathf.Abs(delta))+")");}text.AppendLine();}
             if(!any)text.AppendLine("Sem bônus passivos. Usa o padrão de ataque abaixo.");

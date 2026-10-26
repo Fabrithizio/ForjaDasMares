@@ -148,6 +148,13 @@ namespace ForjaDasMares
             superBuffer = Mathf.Max(0,superBuffer - Mathf.Max(0,deltaTime));
             if (!health.IsAlive || health.IsStunned || motor.IsDodging) { if(!health.IsAlive)furyRemaining=0;active = false; chargeWindow = false; return; }
             if (!active) return;
+            // Track validated aim during projectile preparation. Commit only when the
+            // projectile is released, so lateral movement does not leave an old direction.
+            if(!resolved&&currentAttack.shape==AttackShape.Projectile&&motor.Commands is IWorldAimCommands aimed)
+            {
+                Vector3 direction=aimed.AimDirection;direction.y=0;
+                if(direction.sqrMagnitude>.0001f){facing=direction.normalized;transform.rotation=Quaternion.LookRotation(facing);}
+            }
             elapsed += Mathf.Max(0, deltaTime);
             float windup = heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : AttackSpeed);
             if (!resolved && elapsed >= windup)

@@ -73,7 +73,11 @@ namespace ForjaDasMares
                 if(planted)
                 {
                     // At rest, settle into a supported stance rather than freeze a lifted foot.
-                    if(!moving)f.anchor=Vector3.MoveTowards(f.anchor,Ground(neutral),Time.deltaTime*1.8f);
+                    if(!moving)
+                    {
+                        f.anchor=Vector3.MoveTowards(f.anchor,Ground(neutral),Time.deltaTime*1.8f);
+                        f.rotation=Quaternion.Slerp(f.rotation,actor.rotation*(i==0?leftRest:rightRest),1-Mathf.Exp(-12*Time.deltaTime));
+                    }
                     target=f.anchor;
                 }
                 else

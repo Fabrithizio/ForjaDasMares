@@ -133,7 +133,9 @@ namespace ForjaDasMares.Networking.Tests
                 hud.CloseInventory();hud.OpenInventory();Button("InventoryItem_0").onClick.Invoke();
                 StringAssert.Contains(staff.displayName,Own.text);Canvas.ForceUpdateCanvases();
                 var popup=Root.Find("ItemComparison").GetComponent<RectTransform>();Assert.LessOrEqual(popup.sizeDelta.x,Root.GetComponent<RectTransform>().sizeDelta.x);
-                Assert.IsNotNull(Own.GetComponentInParent<ScrollRect>());
+                Assert.IsNotNull(Own.GetComponentInParent<ScrollRect>(true));
+                var inline=Root.Find("SelectedItemColumn/ItemInformationScroll/Content/Information");
+                if(inline!=null){StringAssert.Contains(staff.displayName,inline.GetComponent<Text>().text);Assert.IsNotNull(inline.GetComponentInParent<ScrollRect>());}
             }finally{staff.displayName=old;}
         }
     }

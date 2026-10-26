@@ -35,3 +35,6 @@
 - Revisão visual e cliques do novo layout pendentes se a janela continuar indisponível para controle.
 - Arte dos itens/modelos segue a qualidade dos assets existentes; o layout não cria automaticamente a arte pintada da referência.
 - Layout de toque e nova sessão online não foram conferidos neste bloco.
+
+## Entrega Android posterior em25/10
+APK0.15.9/código40 gerado comUnity6000.3.26f1: Succeeded/errors0/exit0,58MB, ARM64, mínimoAPI25/target35, assinatura v2 verificada. Arquivo estável: Builds/Atual/Android/ForjaDasMaresCampanha.apk. USB não reconheceu o aparelho; o usuário recebeu o arquivo para instalação manual. Não declarar instalação/teste físico. Esta entrega não inclui o código posterior0.16.0.

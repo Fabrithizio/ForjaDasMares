@@ -21,7 +21,8 @@ namespace ForjaDasMares
         void Start(){var feedback=GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;
         public int ActionVersion=>ReplicaMode?replicaVersion:combat.ActionVersion;
-        public void SetWeapon(EquipmentDefinition value){EquippedWeapon=value;if(visibleView!=null)visibleView.SetWeaponCategory(value!=null?value.category:WeaponCategory.Sword);}
+        WeaponCategory DefaultWeaponCategory=>HasCastingView?WeaponCategory.Staff:WeaponCategory.Sword;
+        public void SetWeapon(EquipmentDefinition value){EquippedWeapon=value;if(visibleView!=null)visibleView.SetWeaponCategory(value!=null?value.category:DefaultWeaponCategory);}
         public HeroState State { get; private set; }
         public Transform Visible => visible;
         public bool ReplicaMode { get; set; }
@@ -63,7 +64,7 @@ namespace ForjaDasMares
             if (!ReplicaMode) State = !health.IsAlive ? HeroState.Dead : hitTime > 0 ? HeroState.Hit : motor.IsDodging ? HeroState.Dodge : combat.IsUsingSpecial ? HeroState.Skill : combat.IsAttacking ? HeroState.Attack : victoryTime > 0 ? HeroState.Victory : motor.PlanarVelocity.sqrMagnitude > 0.1f ? HeroState.Walk : HeroState.Idle;
             if (visibleView != null)
             {
-                visibleView.SetWeaponCategory(EquippedWeapon!=null?EquippedWeapon.category:WeaponCategory.Sword);
+                visibleView.SetWeaponCategory(EquippedWeapon!=null?EquippedWeapon.category:DefaultWeaponCategory);
                 visible.localPosition = Vector3.zero; visible.localRotation = Quaternion.identity;
                 float time=ActionProgress;
                 visibleView.Animate(State, time, actualSpeed, health.IsAlive, ReplicaMode?replicaVariant:combat.AnimationVariant, ReplicaMode?replicaVersion:combat.ActionVersion, ReplicaMode?replicaImpact:combat.ImpactTime);

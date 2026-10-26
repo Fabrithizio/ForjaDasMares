@@ -15,6 +15,7 @@ namespace ForjaDasMares
         bool live, bound;
         float recycleTime,arrival;
         public float SpawnRemaining=>arrival;
+        public float SpawnDuration=>Mathf.Max(profile!=null?profile.spawnWarning:0,pool!=null?pool.MinimumSpawnWarning:.6f);
         EnemyArrivalVisual arrivalView;
         void ArrivalView(){if(arrivalView==null){arrivalView=GetComponent<EnemyArrivalVisual>();if(arrivalView==null)arrivalView=gameObject.AddComponent<EnemyArrivalVisual>();arrivalView.Configure(this);}}
         public Health Health => health;
@@ -32,7 +33,7 @@ namespace ForjaDasMares
         void Bind() { if (bound) return; health.Changed += OnHealthChanged; bound = true; }
         public bool Activate(EnemyDefinition data, Vector3 position, Health target, EnemyPool registry, CombatEffectPool shots, TelegraphPool warnings, int targets, int geometry, EnemyActor owner)
         {
-            Bind(); live = false; profile = data; pool = registry; summoner = owner; recycleTime = 0;arrival=Mathf.Clamp(data.spawnWarning,0,2);ArrivalView();(GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>()).Configure(health,data.feedback);
+            Bind(); live = false; profile = data; pool = registry; summoner = owner; recycleTime = 0;arrival=Mathf.Clamp(Mathf.Max(data.spawnWarning,registry.MinimumSpawnWarning),0,2);ArrivalView();(GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>()).Configure(health,data.feedback);
             brain.enabled=combat.enabled=motor.enabled=enabled=true;
             transform.SetPositionAndRotation(position, Quaternion.identity);
             guard.Configure(brain); health.ConfigureDefense(guard); health.Configure(data.maximumHealth, CombatFaction.Enemy, data.armor);

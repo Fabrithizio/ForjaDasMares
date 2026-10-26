@@ -311,11 +311,11 @@ namespace ForjaDasMares.Networking
 #endif
             var actor = actors[localSlot]; Vector3 forward = actor.Motor.WorldDirection(input.Move);
             if (input.HasPointer)
-            { Ray ray = follow.GetComponent<Camera>().ScreenPointToRay(input.PointerPosition); if (new Plane(Vector3.up, Vector3.up).Raycast(ray, out float distance)) forward = ray.GetPoint(distance) - actor.transform.position; }
+            { Ray ray = follow.GetComponent<Camera>().ScreenPointToRay(input.PointerPosition); if (new Plane(Vector3.up, actor.transform.position+Vector3.up).Raycast(ray, out float distance)) forward = ray.GetPoint(distance) - actor.transform.position; }
             forward.y = 0; if (forward.sqrMagnitude < .01f) forward = actor.transform.forward;
             if(Application.isMobilePlatform&&!input.HasPointer)
             {
-                mobileAim.BeginScan(actor.transform.position, Mathf.Min(12, actor.AimRange + 1), 1 << 9);
+                mobileAim.BeginScan(actor.transform.position, Mathf.Min(12, actor.AimRange), 1 << 9);
                 foreach(var enemy in dungeon.Encounter.Enemies.Actors)
                     if(enemy.IsAlive) mobileAim.Consider(enemy.Health);
                 var target = mobileAim.EndScan(autoAimSwitchRatio, autoAimSwitchAdvantage);

@@ -165,26 +165,29 @@ namespace ForjaDasMares.Networking.Tests
             Assert.Greater(Vector3.Dot(shot.transform.forward,direction),.999f);
             pool.Clear();
         }
-        [Test] public void MovingInEightDirectionsKeepsTheCommittedCastAndUsesLatestAimNext()
+        [Test] public void MovingInEightDirectionsTracksAimUntilReleaseThenCommitsTheShot()
         {
             Mage.SetAuthority(true);Mage.Motor.enabled=Mage.Combat.enabled=false;
             for(int i=0;i<8;i++)
             {
                 Mage.Combat.ResetCombat();Mage.Motor.Teleport(new Vector3(100,.06f,100),Quaternion.identity);
                 Vector3 direction=Quaternion.Euler(0,i*45,0)*Vector3.forward;
-                Assert.IsTrue(Mage.Commands.Accept((uint)(i*2+10),Vector2.up,new Vector2(direction.x,direction.z),HeroButtons.Attack));
+                Assert.IsTrue(Mage.Commands.Accept((uint)(i*3+10),Vector2.up,new Vector2(direction.x,direction.z),HeroButtons.Attack));
                 Assert.IsTrue(Mage.Combat.TryAttack());
                 Mage.Motor.Simulate(.04f,Vector2.right);
                 Vector3 opposite=-direction;
-                Assert.IsTrue(Mage.Commands.Accept((uint)(i*2+11),Vector2.right,new Vector2(opposite.x,opposite.z),HeroButtons.Attack));
+                Assert.IsTrue(Mage.Commands.Accept((uint)(i*3+11),Vector2.right,new Vector2(opposite.x,opposite.z),HeroButtons.Attack));
                 Assert.IsTrue(Mage.Motor.FacingLocked);
                 Mage.Combat.Simulate(.3f);
                 var shot=Mage.Combat.Pool.Projectiles.First(x=>x.gameObject.activeSelf);
-                Assert.Greater(Vector3.Dot(shot.transform.forward,direction),.999f,"Cast direction "+i);
-                Assert.Greater(Vector3.Dot(Mage.transform.forward,direction),.999f,"Pose direction "+i);
+                Assert.Greater(Vector3.Dot(shot.transform.forward,opposite),.999f,"Release direction "+i);
+                Assert.Greater(Vector3.Dot(Mage.transform.forward,opposite),.999f,"Pose direction "+i);
+                Assert.IsTrue(Mage.Commands.Accept((uint)(i*3+12),Vector2.left,new Vector2(direction.x,direction.z),HeroButtons.None));
+                Mage.Combat.Simulate(.01f);
+                Assert.Greater(Vector3.Dot(shot.transform.forward,opposite),.999f,"Flight must not home after release");
                 Mage.Combat.Simulate(2);Mage.Combat.Pool.Clear();
                 Assert.IsTrue(Mage.Combat.TryAttack());
-                Assert.Greater(Vector3.Dot(Mage.transform.forward,opposite),.999f,"Next cast "+i);
+                Assert.Greater(Vector3.Dot(Mage.transform.forward,direction),.999f,"Next cast "+i);
             }
         }
         [Test] public void ValidatedAimRejectsInvalidAndOldPacketsAndClearsOnReset()

@@ -20,7 +20,8 @@ namespace ForjaDasMares
         public void Cycle(){PlayerPrefs.SetInt(Preference,(Selected+1)%3);PlayerPrefs.Save();Apply();}
         public void Apply()
         {
-            if(copy!=null){copy.renderScale=Selected==0?.8f:1;copy.msaaSampleCount=mobile?(Selected==2?4:2):1;}
+            if(mobile)Application.targetFrameRate=Selected==0?30:60;
+            if(copy!=null){copy.shadowDistance=Mathf.Min(original.shadowDistance,Selected==0?24:Selected==1?40:60);copy.renderScale=Selected==0?.8f:1;copy.msaaSampleCount=mobile?(Selected==2?4:2):1;}
             if(sceneCamera==null)return;
             sceneCamera.allowMSAA=mobile;
             var data=sceneCamera.GetUniversalAdditionalCameraData();data.renderPostProcessing=true;

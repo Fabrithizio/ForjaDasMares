@@ -3,6 +3,7 @@ using UnityEngine.UI;
 namespace ForjaDasMares
 {
     public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass }
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class HudIcon : MaskableGraphic
     {
         public HudSymbol symbol;

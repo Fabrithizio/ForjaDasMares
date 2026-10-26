@@ -1,4 +1,12 @@
-﻿# Atualização 0.15.9 — inventário de PC em três colunas
+﻿# Atualização0.16.0 — clareza, mira, interface e verificação cooperativa
+
+Inventário PC/toque reorganizado, identificação e descrições melhoradas, mira acompanhada até lançamento, postura/pés ajustados, guia contextual dispensável, spawn com aviso/afastamento e diagnóstico local de desempenho.76/76 testes aprovados, seguidos por31/31 testes de interface sobrepostos após ajustes finais. Build final Windows Succeeded/errors0/exit0. Duas instâncias Windows pelo Relay: mapa, ataque remoto, retorno após queda, morte/resgate, resultado, próxima fase e encerramento conferidos. Vitória/derrota administrativas não equivalem a uma partida humana completa.
+
+Conhecido: reconexão direta local após encerramento abrupto falhou; saída normal direta e retorno abrupto Relay funcionaram. Código móvel preparado, sem APK0.16.0 ou teste físico. Balanceamento humano, celular, redes distintas e quatro jogadores pendentes. [Implementação/cobertura](CLAREZA_0_16_0.md), [rede/evidências](REDE_VALIDACAO_0_16_0.md), [balanceamento](BALANCEAMENTO_0_16_0.md), [evolução online](ONLINE_EVOLUCAO_0_16_0.md).
+
+---
+
+# Atualização 0.15.9 — inventário de PC em três colunas
 
 Mochila à esquerda, identidade e personagem real ao centro, detalhes/comparação automática e ações à direita. Nome, nível, ouro e XP passaram a elementos separados, com barra de progresso; 16 itens por página e slots compactos. Funções e dados existentes preservados. Compilação Windows Succeeded/errors0/exit0 e início0.15.9 aberto; revisão visual por cliques ainda pendente, interrompida por interação na janela. Sem novo teste automatizado/online, sem gerar APK. [Arquivos, passos e limitações](INVENTARIO_LAYOUT_0_15_9.md).
 

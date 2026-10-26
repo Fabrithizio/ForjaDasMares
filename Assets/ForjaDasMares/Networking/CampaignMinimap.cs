@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 namespace ForjaDasMares.Networking
 {
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class CampaignMinimap:MaskableGraphic,IPointerClickHandler
     {
         CoopDirector session;RectTransform panel;Text guide;float timer;bool expanded;CanvasGroup visibility;
@@ -21,10 +22,10 @@ namespace ForjaDasMares.Networking
             if(session==null)return;bool active=session.Phase==CoopPhase.Playing;visibility.alpha=active?1:0;visibility.blocksRaycasts=active;if(!active)return;
             if(Keyboard.current!=null&&Keyboard.current.mKey.wasPressedThisFrame)Toggle();
             timer-=Time.unscaledDeltaTime;if(timer>0)return;timer=.2f;SetVerticesDirty();
-            var actor=session.Actor(session.LocalSlot);if(actor==null)return;float nearest=float.MaxValue;
-            foreach(var enemy in session.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive)nearest=Mathf.Min(nearest,Vector3.Distance(actor.transform.position,enemy.transform.position));
+            var actor=session.Actor(session.LocalSlot);if(actor==null)return;float nearest=float.MaxValue;int remaining=0;
+            foreach(var enemy in session.Dungeon.Encounter.Enemies.Actors)if(enemy.gameObject.activeInHierarchy&&enemy.Health.IsAlive){remaining++;nearest=Mathf.Min(nearest,Vector3.Distance(actor.transform.position,enemy.transform.position));}
             int fight=session.Campaign.FightRoomId;
-            guide.text=nearest<float.MaxValue?"Vermelho: inimigos · próximo "+Mathf.CeilToInt(nearest)+"m":fight>=0?"Combate pendente no setor "+(fight+1):"Azul: grupo · dourado: objetivo";
+            guide.text=nearest<float.MaxValue?remaining+" inimigos · próximo "+Mathf.CeilToInt(nearest)+"m":fight>=0?"Combate pendente no setor "+(fight+1):"Azul: grupo · dourado: objetivo";
             guide.text+=" · M: ampliar";
         }
         Vector2 Map(Vector3 world)=>new Vector2((world.x-low.x)*scale,(world.z-low.y)*scale)-((high-low)*scale)*.5f+rectTransform.rect.center;

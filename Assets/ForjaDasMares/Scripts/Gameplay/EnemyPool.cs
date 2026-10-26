@@ -12,6 +12,9 @@ namespace ForjaDasMares
         [SerializeField] LayerMask geometry, spawnBlockers, targets;
         EnemyActor[] actors;
         EnemyDefinition[] slots;
+        [SerializeField,Range(0,2)] float minimumSpawnWarning=.6f;
+        [SerializeField,Min(.5f)] float playerSpawnClearance=1.8f;
+        public float MinimumSpawnWarning=>minimumSpawnWarning;
         int limit = 12;
         public int Limit => limit;
         public EnemyActor[] Actors => actors;
@@ -51,6 +54,8 @@ namespace ForjaDasMares
                 Vector3 candidate = desired + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
                 if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 0.6f, filter)) continue;
                 Vector3 position = hit.position + Vector3.up * 0.06f;
+                var player=Party!=null?Party.Nearest(position):heroes.Health;
+                if(player!=null&&(player.transform.position-position).sqrMagnitude<playerSpawnClearance*playerSpawnClearance)continue;
                 float r = data.radius + 0.04f;
                 if (Physics.CheckCapsule(position + Vector3.up * r, position + Vector3.up * (data.height - r), r, spawnBlockers, QueryTriggerInteraction.Ignore)) continue;
                 for (int i = 0; i < actors.Length; i++)
