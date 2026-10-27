@@ -1,0 +1,33 @@
+{
+  "clips": {
+    "Idle": 91,
+    "Walk": 31,
+    "Run": 19,
+    "Attack": 31,
+    "Attack2": 31,
+    "Attack3": 31,
+    "Charged": 43,
+    "Skill": 43,
+    "Super": 61,
+    "Dodge": 19,
+    "Hit": 16,
+    "Dead": 49,
+    "Victory": 91,
+    "SwordSlash": 31,
+    "SwordReturn": 31,
+    "SwordThrust": 31,
+    "HeavySword": 43,
+    "AxeCleave": 31,
+    "AxeBackhand": 31,
+    "AxeSpin": 31,
+    "HeavyAxe": 43,
+    "HammerSweep": 31,
+    "HammerBack": 31,
+    "HammerSlam": 31,
+    "HeavyHammer": 43
+  },
+  "fps": 30,
+  "source": "Supplied Meshy running clip plus original keyed weapon actions on the supplied skeleton.",
+  "root_motion": false,
+  "providedRun": true
+}

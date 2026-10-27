@@ -75,6 +75,7 @@ namespace ForjaDasMares.Networking
                 var proxy = proxies[value.slot];bool restart=!proxy.activeSelf||(proxy.transform.position-value.position).sqrMagnitude>4; proxy.SetActive(true);
                 if(value.kind==0&&effects.ProjectileTrailMaterial!=null){var trail=proxy.GetComponent<PooledProjectileTrail>()??proxy.AddComponent<PooledProjectileTrail>();trail.Configure(effects.ProjectileTrailMaterial,value.color,value.scale.x*.5f,restart);} proxy.transform.SetPositionAndRotation(value.position, Quaternion.LookRotation(value.direction)); proxy.transform.localScale = value.scale;
                 color.SetColor("_BaseColor", value.color); proxy.GetComponent<Renderer>().SetPropertyBlock(color);
+                if(value.kind==1)(proxy.GetComponent<MagicZoneMist>()??proxy.AddComponent<MagicZoneMist>()).Configure(value.scale.x*.5f,value.color);
             }
             for (int i = 0; i < proxies.Count; i++) if (!seen.Contains(i)) { if (proxies[i] != null) proxies[i].SetActive(false); if (marks[i] != null) marks[i].Hide(); }
         }

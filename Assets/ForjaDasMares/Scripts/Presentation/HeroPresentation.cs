@@ -22,6 +22,9 @@ namespace ForjaDasMares
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;
         public int ActionVersion=>ReplicaMode?replicaVersion:combat.ActionVersion;
         public float ActionImpact=>ReplicaMode?replicaImpact:combat.ImpactTime;
+        float replicaFury;
+        public float FuryRemaining=>ReplicaMode?replicaFury:combat.FuryRemaining;
+        public void ApplyReplicaFury(float duration){replicaFury=Mathf.Clamp(duration,0,12);}
         WeaponCategory DefaultWeaponCategory=>HasCastingView?WeaponCategory.Staff:WeaponCategory.Sword;
         public void SetWeapon(EquipmentDefinition value){EquippedWeapon=value;if(visibleView!=null)visibleView.SetWeaponCategory(value!=null?value.category:DefaultWeaponCategory);}
         public HeroState State { get; private set; }
@@ -34,7 +37,7 @@ namespace ForjaDasMares
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }
-        void EnsureEnergy(){var energy=GetComponent<HeroWeaponEffects>();if(energy==null){energy=gameObject.AddComponent<HeroWeaponEffects>();energy.Configure(this,GetComponent<HeroRoster>(),combat);}}
+        void EnsureEnergy(){var energy=GetComponent<HeroWeaponEffects>();if(energy==null){energy=gameObject.AddComponent<HeroWeaponEffects>();energy.Configure(this,GetComponent<HeroRoster>(),combat);}if(GetComponent<WeaponSweepRibbon>()==null)gameObject.AddComponent<WeaponSweepRibbon>().Configure(this,combat);}
         void OnDisable() { if (health != null) health.Damaged -= Hit; }
         void Hit() { hitTime = 0.2f; victoryTime = 0; }
         public void Show(int slot)
@@ -59,6 +62,7 @@ namespace ForjaDasMares
         void LateUpdate(){if(visibleView==null)Present();}
         void Present()
         {
+            if(ReplicaMode)replicaFury=Mathf.Max(0,replicaFury-Time.deltaTime);
             if (visible == null) return;
             Vector3 delta=transform.position-previousPosition;delta.y=0;
             float actualSpeed=hasPosition&&Time.deltaTime>0&&delta.sqrMagnitude<4?delta.magnitude/Time.deltaTime:0;

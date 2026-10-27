@@ -106,7 +106,6 @@ namespace ForjaDasMares.Networking
                 actors[i] = root.GetComponent<CoopActor>(); if (actors[i] == null) actors[i] = root.AddComponent<CoopActor>(); actors[i].Configure(follow.transform);if(Campaign!=null)actors[i].Combat.AddTargets(1<<CampaignAdventure.PropLayer); playerFrames[i] = new ActorFrame { slot = i };
                 if (i > 0) root.SetActive(false);
             }
-            foreach(var actor in actors){var aura=actor.GetComponent<CampaignFuryVisual>();if(aura==null)aura=actor.gameObject.AddComponent<CampaignFuryVisual>();aura.Configure(actor);}
             for (int i = 0; i < dungeon.Encounter.Enemies.Capacity; i++) enemyFrames.Add(new ActorFrame { slot = i });
             replica = gameObject.AddComponent<CoopReplicaView>(); replica.Configure(dungeon.Encounter.Enemies, effects, warnings);
             progression = GetComponent<CoopProgression>(); profiles = GetComponent<CoopProfileChannel>();

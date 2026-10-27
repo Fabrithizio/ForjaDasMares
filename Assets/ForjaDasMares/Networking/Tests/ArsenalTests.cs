@@ -10,8 +10,9 @@ namespace ForjaDasMares.Networking.Tests
     public sealed class ArsenalTests
     {
         CoopDirector session;ProgressionCatalog catalog;
-        [UnitySetUp]public IEnumerator Load(){SceneManager.LoadScene("CampaignCoop");yield return null;yield return null;session=UnityEngine.Object.FindFirstObjectByType<CoopDirector>();session.SelectHero(0);catalog=session.GetComponent<CoopProgression>().Catalog;var profile=session.GetComponent<CoopProfileChannel>().LocalProfile;}
-        [UnityTearDown]public IEnumerator Close(){session.Close();yield return null;yield return null;}
+        float previousCapture;
+        [UnitySetUp]public IEnumerator Load(){previousCapture=Time.captureDeltaTime;Time.captureDeltaTime=1f/60;SceneManager.LoadScene("CampaignCoop");yield return null;yield return null;session=UnityEngine.Object.FindFirstObjectByType<CoopDirector>();session.SelectHero(0);catalog=session.GetComponent<CoopProgression>().Catalog;var profile=session.GetComponent<CoopProfileChannel>().LocalProfile;}
+        [UnityTearDown]public IEnumerator Close(){Time.captureDeltaTime=previousCapture;session.Close();yield return null;yield return null;}
         [Test]public void TwentyDamageAgainstTenPercentDefenseDealsEighteen()
         {
             var go=new GameObject("DefenseMathQA");var attack=ScriptableObject.CreateInstance<AttackDefinition>();try{var hp=go.AddComponent<Health>();hp.Configure(100,CombatFaction.Enemy,.10f);attack.damage=20;attack.knockback=0;Assert.IsTrue(hp.ApplyHit(attack,Vector3.forward,session.Actor(0).Health));Assert.AreEqual(82,hp.Current);hp.Configure(100,CombatFaction.Enemy,.70f);hp.ApplyHit(attack,Vector3.forward,session.Actor(0).Health);Assert.AreEqual(94,hp.Current);}finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(attack);}
@@ -41,6 +42,25 @@ namespace ForjaDasMares.Networking.Tests
             foreach(string name in names)Assert.IsTrue(model.Animator.runtimeAnimatorController.animationClips.Any(x=>x.name==name&&x.length>.1f),name);
             Assert.IsFalse(model.Animator.applyRootMotion);Assert.AreEqual(2,model.Animator.layerCount);
         }
+        [Test]public void EmberWarriorHasOneSkinAndProportionalEquipment()
+        {
+            var view=session.Actor(0).Presentation.Visible.GetComponentInChildren<HeroModelView>();Assert.IsTrue(view.name.StartsWith("EmberHero"));
+            var skins=view.GetComponentsInChildren<SkinnedMeshRenderer>();Assert.AreEqual(1,skins.Length);Assert.AreEqual(72,skins[0].bones.Length);
+            Assert.That(skins[0].bounds.size.y,Is.InRange(1.5f,2.1f));Assert.NotNull(view.GetComponent<BrasaFootPlant>());
+            var sword=catalog.equipment.First(x=>x.category==WeaponCategory.Sword);float factor=view.EquipmentScale(sword);
+            Vector3 size=Vector3.Scale(sword.visualMesh.bounds.size,sword.authoredScale)*factor;Assert.LessOrEqual(Mathf.Max(size.x,size.y,size.z),1.101f);
+        }
+        [UnityTest]public IEnumerator NormalCombatHasNoDebugConeOrLegacyWireGlyphs()
+        {
+            Assert.IsTrue(session.HostDirect("CLEANFX",7894,false));yield return null;session.StartGame();float deadline=Time.realtimeSinceStartup+10;
+            while(session.Phase==CoopPhase.Loading&&Time.realtimeSinceStartup<deadline)yield return null;
+            Assert.AreEqual(CoopPhase.Playing,session.Phase);var actor=session.Actor(0);Assert.IsTrue(actor.Combat.TryAttack());
+            var ribbon=actor.GetComponent<WeaponSweepRibbon>();Assert.NotNull(ribbon);bool seen=false;
+            for(int i=0;i<25;i++){yield return null;seen|=ribbon.Visible;}
+            Assert.IsFalse(actor.GetComponent<HeroAttackArea>().Visible);
+            Assert.IsFalse(actor.GetComponentsInChildren<LineRenderer>(true).Any(x=>x.name.StartsWith("PrismaGlyph_")||x.name.StartsWith("HeroEnergy_")));
+            Assert.IsTrue(seen,"Actual weapon motion must generate the ribbon. state="+actor.Presentation.State+" progress="+actor.Presentation.ActionProgress);Assert.AreEqual(24,ribbon.SegmentCapacity);Assert.IsNull(actor.transform.Find("MotionWeaponRibbon").GetComponent<Collider>());
+        }
         [Test]public void SwordAxeAndHammerCombosHaveDifferentRealHitAreas()
         {
             var sword=catalog.equipment.First(x=>x.category==WeaponCategory.Sword&&!x.starter);var axe=catalog.equipment.First(x=>x.category==WeaponCategory.Axe);var hammer=catalog.equipment.First(x=>x.category==WeaponCategory.Hammer);
@@ -68,7 +88,7 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTest]public IEnumerator AttackIndicatorHasNoColliderAndCannotInflictDamage()
         {
-            Assert.IsTrue(session.HostDirect("ARS1",7898,false));yield return null;session.StartGame();float deadline=Time.realtimeSinceStartup+5;while(session.Phase!=CoopPhase.Playing&&Time.realtimeSinceStartup<deadline)yield return null;Assert.AreEqual(CoopPhase.Playing,session.Phase);var actor=session.Actor(0);int hp=actor.Health.Current;Assert.IsTrue(actor.Combat.TryAttack(),"Attack did not start");var area=actor.GetComponent<HeroAttackArea>();Assert.NotNull(area);for(int i=0;i<5&&!area.Visible;i++)yield return null;Assert.IsTrue(area.Visible,"state="+actor.Presentation.State+" replica="+actor.Presentation.ReplicaMode+" busy="+actor.Combat.IsBusy);Assert.IsNull(actor.transform.Find("AttackFootprint").GetComponent<Collider>());Assert.AreEqual(hp,actor.Health.Current);yield return new WaitForSeconds(.8f);Assert.IsFalse(area.Visible);
+            Assert.IsTrue(session.HostDirect("ARS1",7898,false));yield return null;session.StartGame();float deadline=Time.realtimeSinceStartup+5;while(session.Phase!=CoopPhase.Playing&&Time.realtimeSinceStartup<deadline)yield return null;Assert.AreEqual(CoopPhase.Playing,session.Phase);var actor=session.Actor(0);int hp=actor.Health.Current;Assert.IsTrue(actor.Combat.TryAttack(),"Attack did not start");var area=actor.GetComponent<HeroAttackArea>();Assert.NotNull(area);area.ShowDebugFootprint(true);for(int i=0;i<5&&!area.Visible;i++)yield return null;Assert.IsTrue(area.Visible,"state="+actor.Presentation.State+" replica="+actor.Presentation.ReplicaMode+" busy="+actor.Combat.IsBusy);Assert.IsNull(actor.transform.Find("AttackFootprint").GetComponent<Collider>());Assert.AreEqual(hp,actor.Health.Current);yield return new WaitForSeconds(.8f);Assert.IsFalse(area.Visible);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace ForjaDasMares
             transform.localScale = new Vector3(area * 2f, 0.025f, area * 2f);
             properties.SetColor("_BaseColor", data.color); GetComponent<Renderer>().SetPropertyBlock(properties);
             gameObject.SetActive(true);
+            (GetComponent<MagicZoneMist>()??gameObject.AddComponent<MagicZoneMist>()).Configure(area,data.color);
         }
         void Update()
         {

@@ -8,6 +8,7 @@ namespace ForjaDasMares
         [SerializeField] bool authoredAnimationsReady=true;
         public bool AuthoredAnimationsReady=>authoredAnimationsReady;
         [SerializeField] bool fitEquipmentToBody;
+        public bool FitsEquipmentToBody=>fitEquipmentToBody;
         [SerializeField, Min(.1f)] float staffLength=1.45f, bookLength=.38f, shieldLength=.60f, focusLength=.30f, otherWeaponLength=.95f;
         public void ConfigureEquipmentFit(bool value)=>fitEquipmentToBody=value;
         public float EquipmentScale(EquipmentDefinition item)

@@ -7,6 +7,8 @@ namespace ForjaDasMares
         HeroPresentation presentation;HeroCombat combat;HeroRoster roster;Mesh mesh;MeshRenderer view;Material material;
         readonly Vector3[] vertices=new Vector3[35];readonly int[] triangles=new int[99];int version=-1;AttackDefinition previous;Vector3 previousOrigin;float previousYaw;
         public bool Visible=>view!=null&&view.enabled;
+        [SerializeField] bool debugFootprint;
+        public void ShowDebugFootprint(bool value){debugFootprint=value;if(!value&&view!=null)view.enabled=false;}
         public void Configure(HeroPresentation source,HeroCombat attacks,HeroRoster heroes)
         {
             presentation=source;combat=attacks;roster=heroes;if(view!=null)return;
@@ -16,7 +18,7 @@ namespace ForjaDasMares
         }
         void LateUpdate()
         {
-            if(view==null||presentation==null)return;bool skill=presentation.State==HeroState.Skill;
+            if(view==null||presentation==null)return;if(!debugFootprint){view.enabled=false;return;}bool skill=presentation.State==HeroState.Skill;
             if(!roster.Health.IsAlive||!skill&&presentation.State!=HeroState.Attack){view.enabled=false;return;}
             var weapon=presentation.EquippedWeapon;var attacks=weapon!=null?weapon.attacks:roster.Current.attacks;var ability=weapon!=null&&weapon.ability!=null?weapon.ability:roster.Current.special;
             bool super=presentation.ActionVariant==4&&roster.Current.onlineFlow!=null&&roster.Current.onlineFlow.superAttack!=null;

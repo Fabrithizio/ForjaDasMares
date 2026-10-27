@@ -55,10 +55,11 @@ namespace ForjaDasMares.Editor
             }
             EditorUtility.SetDirty(controller);AssetDatabase.SaveAssets();
             SapphireMageInstaller.Apply();
+            SapphireMageInstaller.ApplyWarrior();
             var ribbon=AssetDatabase.LoadAssetAtPath<Material>("Assets/ForjaDasMares/Resources/HeroEnergyRibbon.mat");
             foreach(var pool in UnityEngine.Object.FindObjectsByType<CombatEffectPool>(FindObjectsInactive.Include,FindObjectsSortMode.None)){pool.ConfigureTrail(ribbon);EditorUtility.SetDirty(pool);}
             UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();AssetDatabase.SaveAssets();
-            Debug.Log("HERO_POLISH_READY mageClips=25 warriorClips="+clips.Length+" ribbonsPerHero=6 particlesPerHero=64");
+            Debug.Log("HERO_POLISH_READY mageClips=25 warriorClips="+clips.Length+" wireRibbonsPerHero=0 motionMeshPerHero=1 particlesPerHero=64");
         }
     }
 }

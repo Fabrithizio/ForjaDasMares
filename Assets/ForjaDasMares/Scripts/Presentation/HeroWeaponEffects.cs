@@ -2,96 +2,64 @@ using UnityEngine;
 using UnityEngine.Rendering;
 namespace ForjaDasMares
 {
-    // Presentation only; fixed budget, no objects created per attack or gameplay RNG.
+    // Muzzle wisps, charge glow and impact sparks; no cones, circles or damage.
     [DefaultExecutionOrder(230)]
     public sealed class HeroWeaponEffects:MonoBehaviour
     {
-        HeroPresentation view;HeroRoster roster;HeroCombat combat;Health health;
-        readonly LineRenderer[] ribbons=new LineRenderer[6];readonly Vector3[][] points=new Vector3[6][];
-        ParticleSystem sparks;int version=-1,released=-1;float tail;Color tint;AttackDefinition attack;bool ready;
-        public int RibbonCapacity=>ribbons.Length;
-        public int LiveParticles=>sparks!=null?sparks.particleCount:0;
+        HeroPresentation view;HeroRoster roster;HeroCombat combat;Health health;ParticleSystem particles;
+        int version=-1,released=-1,serial;float emissionClock;bool ready;Color tint;
+        public int RibbonCapacity=>0;
+        public int LiveParticles=>particles!=null?particles.particleCount:0;
         public void Configure(HeroPresentation source,HeroRoster heroes,HeroCombat attacks)
         {
             view=source;roster=heroes;combat=attacks;health=heroes.Health;
-            Material material=Resources.Load<Material>("HeroEnergyRibbon"),particle=Resources.Load<Material>("HeroEnergySpark");
-            if(material==null||particle==null){Debug.LogError("Hero energy materials are missing.",this);enabled=false;return;}
-            for(int i=0;i<ribbons.Length;i++)
-            {
-                var go=new GameObject("HeroEnergy_"+i);go.transform.SetParent(transform,false);
-                var line=ribbons[i]=go.AddComponent<LineRenderer>();line.sharedMaterial=material;line.useWorldSpace=true;line.positionCount=40;points[i]=new Vector3[40];line.enabled=false;
-                line.shadowCastingMode=ShadowCastingMode.Off;line.receiveShadows=false;line.numCapVertices=2;
-            }
-            var emit=new GameObject("HeroEnergySparks_64");emit.transform.SetParent(transform,false);sparks=emit.AddComponent<ParticleSystem>();
-            var main=sparks.main;main.loop=false;main.playOnAwake=false;main.maxParticles=64;main.simulationSpace=ParticleSystemSimulationSpace.World;main.startLifetime=.35f;main.startSize=.045f;main.gravityModifier=.15f;
-            var emission=sparks.emission;emission.enabled=false;var shape=sparks.shape;shape.enabled=false;
-            var color=sparks.colorOverLifetime;color.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(0,1)});color.color=gradient;
-            var size=sparks.sizeOverLifetime;size.enabled=true;size.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.EaseInOut(0,1,1,0));
-            var renderer=emit.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=particle;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
-            sparks.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);ready=true;
+            var material=Resources.Load<Material>("HeroEnergySpark");
+            if(material==null){Debug.LogError("Hero energy material missing.",this);enabled=false;return;}
+            var go=new GameObject("HeroWispsAndSparks_64");go.transform.SetParent(transform,false);particles=go.AddComponent<ParticleSystem>();
+            var main=particles.main;main.loop=false;main.playOnAwake=false;main.maxParticles=64;main.simulationSpace=ParticleSystemSimulationSpace.World;main.startLifetime=.35f;main.gravityModifier=0;
+            var emission=particles.emission;emission.enabled=false;var shape=particles.shape;shape.enabled=false;
+            var color=particles.colorOverLifetime;color.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(1,.08f),new GradientAlphaKey(0,1)});color.color=gradient;
+            var size=particles.sizeOverLifetime;size.enabled=true;size.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.EaseInOut(0,1,1,0));
+            var renderer=go.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=material;renderer.renderMode=ParticleSystemRenderMode.Stretch;renderer.lengthScale=1.2f;renderer.velocityScale=.12f;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
+            particles.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);ready=true;
         }
         void OnEnable(){if(health!=null)health.DealtHit+=Hit;}
         void Start(){if(health!=null){health.DealtHit-=Hit;health.DealtHit+=Hit;}}
-        void OnDisable(){if(health!=null)health.DealtHit-=Hit;tail=0;foreach(var r in ribbons)if(r!=null)r.enabled=false;if(sparks!=null)sparks.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);}
-        void Hit(Health victim){if(ready&&victim!=null&&attack!=null)Burst(victim.transform.position+Vector3.up*.8f,tint,14,1.1f);}
-        void Burst(Vector3 at,Color color,int count,float power)
+        void OnDisable(){if(health!=null)health.DealtHit-=Hit;if(particles!=null)particles.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);}
+        void Emit(Vector3 at,Vector3 velocity,Color color,float size,float life)
+        {particles.Play();particles.Emit(new ParticleSystem.EmitParams{position=at,velocity=velocity,startColor=color,startSize=size,startLifetime=life},1);}
+        void Burst(Vector3 at,int count,bool spell,float power)
         {
-            sparks.Play();
             for(int i=0;i<count;i++)
             {
-                float angle=i*2.399963f+version*.37f;
-                var emit=new ParticleSystem.EmitParams{position=at,velocity=new Vector3(Mathf.Cos(angle),.2f+(i%4)*.2f,Mathf.Sin(angle))*power,startColor=color,startLifetime=.22f+(i%5)*.045f,startSize=.025f+(i%3)*.018f};sparks.Emit(emit,1);
+                float a=(serial++%10000)*2.399963f;Vector3 spread=new Vector3(Mathf.Cos(a),.3f+(i%4)*.2f,Mathf.Sin(a));
+                Vector3 velocity=spell?transform.forward*power+spread*.55f:spread*power;
+                Emit(at,velocity,tint,(spell?.10f:.035f)+(i%3)*.025f,.18f+(i%5)*.045f);
             }
         }
+        void Hit(Health victim){if(ready&&victim!=null)Burst(victim.transform.position+Vector3.up*.8f,18,view.HasCastingView,1.2f);}
         void LateUpdate()
         {
-            if(!ready||view==null)return;
-            if(!health.IsAlive){tail=0;foreach(var r in ribbons)r.enabled=false;return;}
-            var weapon=view.EquippedWeapon;var category=weapon!=null?weapon.category:view.HasCastingView?WeaponCategory.Staff:WeaponCategory.Sword;
-            bool supported=category==WeaponCategory.Staff||category==WeaponCategory.Grimoire||category==WeaponCategory.MagicWeapon||category==WeaponCategory.Sword||category==WeaponCategory.Axe;
-            if(!supported){foreach(var r in ribbons)r.enabled=false;return;}
-            bool book=category==WeaponCategory.Grimoire,axe=category==WeaponCategory.Axe,casting=view.HasCastingView;
-            tint=book?new Color(.72f,.30f,1,.85f):casting?new Color(.18f,.85f,1,.85f):axe?new Color(1,.38f,.08f,.8f):new Color(1,.78f,.30f,.8f);
-            var moves=weapon!=null&&weapon.attacks.Length>0?weapon.attacks:roster.Current.attacks;
-            attack=moves[Mathf.Clamp(view.ActionVariant,0,moves.Length-1)];
-            float impact=view.ActionImpact,progress=view.ActionProgress;bool action=view.State==HeroState.Attack||view.State==HeroState.Skill;
-            if(action&&view.ActionVersion!=version){version=view.ActionVersion;released=-1;tail=0;}
-            bool release=action&&released!=version&&progress>=impact;
-            if(release){released=version;tail=casting?.30f:.22f;Burst(combat.StrikeOrigin+transform.forward*.45f,tint,view.ActionVariant>=3?24:book?14:8,view.ActionVariant>=3?1.6f:.7f);}
-            tail=Mathf.Max(0,tail-Time.deltaTime);
-            var model=view.Visible!=null?view.Visible.GetComponentInChildren<HeroModelView>():null;
-            float charge=view.ChargeProgress;
-            for(int i=0;i<ribbons.Length;i++)
+            if(!ready||view==null||!health.IsAlive)return;
+            bool caster=view.HasCastingView;var weapon=view.EquippedWeapon;
+            bool book=weapon!=null&&weapon.category==WeaponCategory.Grimoire;
+            tint=caster?(book?new Color(.8f,.25f,1,.8f):new Color(.12f,.75f,1,.8f)):new Color(1,.48f,.08f,.8f);
+            bool action=view.State==HeroState.Attack||view.State==HeroState.Skill;
+            if(action&&version!=view.ActionVersion){version=view.ActionVersion;released=-1;}
+            if(action&&released!=version&&view.ActionProgress>=view.ActionImpact)
+            {released=version;if(caster)Burst(combat.StrikeOrigin+transform.forward*.30f,view.ActionVariant>=3?36:20,true,view.ActionVariant>=3?3.5f:2);}
+            bool fury=view.FuryRemaining>0;
+            float charge=view.ChargeProgress;bool preparing=caster&&(charge>.05f||action&&view.ActionProgress<view.ActionImpact);
+            emissionClock-=Time.deltaTime;if(emissionClock>0||!preparing&&!fury)return;emissionClock=.025f;
+            var model=view.Visible!=null?view.Visible.GetComponentInChildren<HeroModelView>():null;if(model==null)return;
+            float angle=(serial++%10000)*2.399963f;
+            if(preparing)
             {
-                var line=ribbons[i];bool hands=i<2;
-                line.enabled=hands?casting&&model!=null&&(charge>.05f||action&&progress<impact):tail>0;
-                if(!line.enabled)continue;
-                float fade=hands?Mathf.Max(charge,.35f):Mathf.Clamp01(tail/(casting?.30f:.22f));
-                line.startColor=line.endColor=new Color(tint.r,tint.g,tint.b,tint.a*fade);
-                line.startWidth=line.endWidth=hands?.025f+charge*.025f:casting?.04f:i==2?.13f:.045f;
-                if(!hands&&!release)continue;
-                Vector3 origin=hands?(i==0?model.PrimarySocket.position:model.SecondarySocket.position):combat.StrikeOrigin;
-                for(int j=0;j<40;j++)
-                {
-                    float u=j/39f;Vector3 p;
-                    if(hands||casting)
-                    {
-                        float a=u*Mathf.PI*2+Time.time*(i%2==0?2:-2);float radius=hands?.10f+charge*.13f:.22f+(i-2)*.075f;
-                        if(book){float side=u*4;int edge=(int)side;float t=side-edge;Vector2 v=edge==0?new Vector2(-1+2*t,-1):edge==1?new Vector2(1,-1+2*t):edge==2?new Vector2(1-2*t,1):new Vector2(-1,1-2*t);p=transform.right*v.x*radius+Vector3.up*v.y*radius;}
-                        else p=(transform.right*Mathf.Cos(a)+Vector3.up*Mathf.Sin(a))*radius;
-                        if(!hands)p+=transform.forward*(.45f+(i-2)*.10f);
-                    }
-                    else
-                    {
-                        float arc=attack.footprint==MeleeFootprint.Circle?360:Mathf.Min(attack.arc,160);float range=Mathf.Min(attack.range,axe?1.65f:1.45f)*(1-(i-2)*.075f);
-                        if(attack.footprint==MeleeFootprint.Line)p=transform.forward*(u*range)+transform.right*(i-3)*.025f;
-                        else{float a=Mathf.Lerp(-arc*.5f,arc*.5f,u)*Mathf.Deg2Rad;p=(Quaternion.AngleAxis(a,Vector3.up)*transform.forward)*range;p.y=Mathf.Sin(u*Mathf.PI)*.14f;}
-                        if(Physics.Raycast(origin,p.normalized,out var wall,p.magnitude,combat.GeometryMask,QueryTriggerInteraction.Ignore))p=p.normalized*Mathf.Max(0,wall.distance-.04f);
-                    }
-                    points[i][j]=origin+p;
-                }
-                line.SetPositions(points[i]);
+                Vector3 offset=(transform.right*Mathf.Cos(angle)+Vector3.up*Mathf.Sin(angle))*(.04f+charge*.09f);
+                Emit(model.PrimarySocket.position+offset,-offset*2+Vector3.up*.12f,tint,.10f+charge*.12f,.18f);
+                Emit(model.SecondarySocket.position-offset,offset*2+Vector3.up*.12f,book?new Color(1,.65f,.12f,.75f):tint,.08f+charge*.10f,.18f);
             }
+            if(fury)Emit(transform.position+Vector3.up*.25f+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*.28f,Vector3.up*(.7f+Mathf.Abs(Mathf.Cos(angle))),new Color(1,.25f,.025f,.65f),.055f,.4f);
         }
     }
 }

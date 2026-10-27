@@ -1,3 +1,11 @@
+# 0.18.0 — novo guerreiro e efeitos sem desenhos de teste
+
+Emberheart Hero fornecido pelo usuário integrado ao Guerreiro/Brasa: uma skin, 12.618 triângulos/72 ossos, altura 1,80 m e espada/machado até 1,10 m; maga 1,70 m preservada. Encaixe na palma calibrado, corpo antigo mantido nos assets/cenas de referência. 25 clips no novo esqueleto, incluindo corrida real fornecida, sem root motion. Gestos da maga ampliados.
+
+Cones azuis do jogador desligados por padrão, círculos decorativos/anel de Fúria removidos. Novo rastro usa posições reais da lâmina, partículas de magia/impacto e brasas de Fúria. Discos sólidos de magia trocados por partículas no chão, sem alterar a área/dano. Avisos necessários de inimigos e armadilhas preservados.
+
+34/34 testes focados aprovados, zero ignorados, após estabilizar o teste de rastro em passo fixo de 60 Hz e observar toda a janela do golpe. Build Windows 0.18.0 Succeeded/errors=0/exit=0. Guerreiro e espada conferidos visualmente no inventário do PC usando perfil isolado; conferência humana prolongada do combate e sincronização entre aparelhos não realizadas. Sem APK novo/teste físico Android. Detalhes e arquivos em GUERREIRO_E_EFEITOS_0_18_0.md.
+
 # 0.17.0 — maga e guerreiro: animações por arma e efeitos
 
 Sapphire Mage agora tem 25 clips originais no seu esqueleto, duas camadas de Animator, apoio de pés e ritmo ligado ao combate real. Oito golpes de espada/machado refinados; malha/locomoção do guerreiro preservadas. Efeitos de cajado/códice/espada/machado com energia de borda suave, pulso, faíscas e rastros; orçamento fixo de seis fitas e 64 partículas por personagem. Aura de Fúria usa material aditivo; regras de dano/progressão preservadas.

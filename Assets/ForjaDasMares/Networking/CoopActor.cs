@@ -72,7 +72,7 @@ namespace ForjaDasMares.Networking
         public void Apply(ActorFrame frame)
         {
             if (Roster.Selected != frame.hero) Roster.Select(frame.hero);
-            replicaCounter=frame.counter;Health.SetReplicaState(frame.hp, frame.maximum);GetComponent<CombatBuildEffects>()?.SetReplicaBoons(frame.boons);replicaFury=Mathf.Clamp(frame.fury,0,12);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
+            replicaCounter=frame.counter;Health.SetReplicaState(frame.hp, frame.maximum);GetComponent<CombatBuildEffects>()?.SetReplicaBoons(frame.boons);replicaFury=Mathf.Clamp(frame.fury,0,12);Presentation.ApplyReplicaFury(replicaFury);replicaCharge=Mathf.Clamp01(frame.charge);replicaSuper=Mathf.Clamp01(frame.super);replicaRange=Mathf.Clamp(frame.attackRange,.1f,20);replicaSpecial=Mathf.Max(0,frame.specialCooldown);replicaDodge=Mathf.Max(0,frame.dodgeCooldown);
             destination = frame.position; orientation = Quaternion.Euler(0, frame.yaw, 0);
             if (!hasFrame || (destination - transform.position).sqrMagnitude > 16) transform.SetPositionAndRotation(destination, orientation);
             hasFrame = true; Presentation.ApplyReplica((HeroState)frame.state, frame.animation,frame.variant,frame.actionVersion,frame.impact,frame.charge);
