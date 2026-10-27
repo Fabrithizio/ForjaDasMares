@@ -1,3 +1,9 @@
+# 0.17.0 — maga e guerreiro: animações por arma e efeitos
+
+Sapphire Mage agora tem 25 clips originais no seu esqueleto, duas camadas de Animator, apoio de pés e ritmo ligado ao combate real. Oito golpes de espada/machado refinados; malha/locomoção do guerreiro preservadas. Efeitos de cajado/códice/espada/machado com energia de borda suave, pulso, faíscas e rastros; orçamento fixo de seis fitas e 64 partículas por personagem. Aura de Fúria usa material aditivo; regras de dano/progressão preservadas.
+
+28/28 testes focados aprovados, zero ignorados. Poses de cajado/códice distintas verificadas em Unity. Builds Windows reais e execuções isoladas registraram três ataques e carregado próprios das quatro armas; conferência visual na câmera do jogo. FMOD falhou ao iniciar a saída do PC de QA: som não validado. Sem novo APK, teste físico Android, benchmark ou nova sessão entre dispositivos. Fontes .blend/geradores preservados; a arte ainda recebe avaliação do usuário. Detalhes, arquivos e passos em ANIMACOES_E_EFEITOS_0_17_0.md.
+
 # 0.16.3 — revisão honesta das 12 melhorias
 
 Lista original revisada em REVISAO_12_MELHORIAS.md: mudanças principais implementadas, mas a lista não está 100% concluída. Animações da nova skin, sessões humanas de balanceamento/com irmão, arte individual de itens e testes físicos/desempenho móvel permanecem parciais. Reconexão direta abrupta reproduzida com dois processos de QA: host continua; cliente reiniciado não conecta. Sem correção especulativa nem teste Relay novo.

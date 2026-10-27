@@ -1,3 +1,7 @@
+# Atualização 0.17.0
+
+O conjunto inicial de 25 clips da nova personagem foi criado no Blender e integrado; efeitos próprios e refinamentos de espada/machado também foram entregues. A lista abaixo registra a recomendação anterior de aquisição, não um bloqueio atual. Para estado, testes e limites atuais: ANIMACOES_E_EFEITOS_0_17_0.md.
+
 # Personagem principal: escala e próximos recursos — 0.16.2
 
 ## Implementado

@@ -188,7 +188,7 @@ ModelImporter:
       takeName: BrasaRig|AxeBackhand
       internalID: -5189898750837022535
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -217,7 +217,7 @@ ModelImporter:
       takeName: BrasaRig|AxeCleave
       internalID: 8666460562132247552
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -246,7 +246,7 @@ ModelImporter:
       takeName: BrasaRig|AxeSpin
       internalID: 4334609156350782800
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -449,7 +449,7 @@ ModelImporter:
       takeName: BrasaRig|HeavyAxe
       internalID: -241535482077813755
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 48
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -507,7 +507,7 @@ ModelImporter:
       takeName: BrasaRig|HeavySword
       internalID: 2105657978080281408
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 48
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -681,7 +681,7 @@ ModelImporter:
       takeName: BrasaRig|SwordReturn
       internalID: -1077179812561230405
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -710,7 +710,7 @@ ModelImporter:
       takeName: BrasaRig|SwordSlash
       internalID: -2256963441652024340
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -739,7 +739,7 @@ ModelImporter:
       takeName: BrasaRig|SwordThrust
       internalID: -4351016412721956124
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 36
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

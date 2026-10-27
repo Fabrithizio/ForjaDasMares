@@ -61,7 +61,7 @@ namespace ForjaDasMares.Networking
         public void Configure(CoopActor owner)
         {
             actor=owner;if(ring!=null)return;var go=new GameObject("FuryAura");go.transform.SetParent(transform,false);ring=go.AddComponent<LineRenderer>();ring.useWorldSpace=false;ring.loop=true;ring.positionCount=24;ring.startWidth=ring.endWidth=.07f;
-            ring.sharedMaterial=actor.Presentation.Visible.GetComponentInChildren<Renderer>().sharedMaterial;var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",new Color(1,.25f,.025f));ring.SetPropertyBlock(block);
+            ring.sharedMaterial=Resources.Load<Material>("HeroEnergyRibbon");ring.startColor=ring.endColor=new Color(1,.35f,.045f,.75f);
             for(int i=0;i<24;i++){float a=i*Mathf.PI*2/24;ring.SetPosition(i,new Vector3(Mathf.Cos(a)*.65f,.1f,Mathf.Sin(a)*.65f));}ring.enabled=false;
         }
         void LateUpdate(){if(ring==null)return;ring.enabled=actor.Health.IsAlive&&actor.FuryRemaining>0;if(ring.enabled)ring.transform.localScale=Vector3.one*(1+.1f*Mathf.Sin(Time.time*14));}

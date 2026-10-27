@@ -27,23 +27,33 @@ namespace ForjaDasMares.Editor
             material.SetTexture("_BumpMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"Normal.png"));material.SetFloat("_BumpScale",1);material.EnableKeyword("_NORMALMAP");
             material.SetTexture("_MetallicGlossMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"MetallicSmoothness.png"));material.SetFloat("_Smoothness",1);material.SetFloat("_Metallic",1);material.EnableKeyword("_METALLICSPECGLOSSMAP");
             material.SetFloat("_Cull",0);EditorUtility.SetDirty(material);
-            var importer=(ModelImporter)AssetImporter.GetAtPath(Root+"SapphireMage.fbx");
+            bool animated=File.Exists(Root+"SapphireAnimated.fbx");
+            string modelPath=Root+(animated?"SapphireAnimated.fbx":"SapphireMage.fbx");
+            var importer=(ModelImporter)AssetImporter.GetAtPath(modelPath);
             importer.animationType=ModelImporterAnimationType.Generic;importer.avatarSetup=ModelImporterAvatarSetup.CreateFromThisModel;
             importer.importAnimation=true;importer.optimizeGameObjects=false;importer.preserveHierarchy=true;importer.isReadable=false;importer.importCameras=importer.importLights=false;importer.addCollider=false;
             importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.SaveAndReimport();
             var clips=importer.defaultClipAnimations;
-            if(clips.Length!=1)throw new InvalidOperationException("Expected the supplied rest-pose clip only.");
-            clips[0].name="MeshyRestPose";clips[0].loopTime=true;clips[0].lockRootRotation=clips[0].lockRootPositionXZ=clips[0].lockRootHeightY=true;importer.clipAnimations=clips;importer.SaveAndReimport();
-            var rest=AssetDatabase.LoadAllAssetsAtPath(Root+"SapphireMage.fbx").OfType<AnimationClip>().Single(c=>c.name=="MeshyRestPose");
-            string controllerPath=Root+"SapphireMagePreview.controller";
+            string[] names={"Idle","Walk","Run","Attack","Attack2","Attack3","Charged","Skill","Super","Dodge","Hit","Dead","Victory","StaffBolt","StaffReturn","StaffRelease","HeavyStaff","BookWord","BookPage","BookSeal","HeavyBook","OrbCast","OrbReturn","OrbBurst","HeavyOrb"};
+            foreach(var clip in clips)
+            {
+                clip.name=animated?names.First(n=>clip.name==n||clip.name.EndsWith("|"+n,StringComparison.Ordinal)||clip.name.EndsWith("_"+n,StringComparison.Ordinal)):"MeshyRestPose";
+                clip.loopTime=clip.name=="Idle"||clip.name=="Walk"||clip.name=="Run"||clip.name=="Victory"||!animated;
+                clip.lockRootRotation=clip.lockRootPositionXZ=clip.lockRootHeightY=true;
+            }
+            importer.clipAnimations=clips;importer.animationCompression=ModelImporterAnimationCompression.Off;importer.SaveAndReimport();
+            var motions=AssetDatabase.LoadAllAssetsAtPath(modelPath).OfType<AnimationClip>().Where(c=>!c.name.StartsWith("__")).ToArray();
+            var rest=motions.Single(c=>c.name==(animated?"Idle":"MeshyRestPose"));
+            string controllerPath=Root+(animated?"SapphireMage.controller":"SapphireMagePreview.controller");
             var controller=AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
             if(controller==null)controller=AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
             var machine=controller.layers[0].stateMachine;var idle=machine.states.Select(s=>s.state).FirstOrDefault(s=>s.name=="Idle")??machine.AddState("Idle");idle.motion=rest;machine.defaultState=idle;EditorUtility.SetDirty(controller);
             var root=new GameObject("SapphireMage_Model");
             try
             {
-                var model=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Root+"SapphireMage.fbx"));model.transform.SetParent(root.transform,false);
-                var animator=model.GetComponentInChildren<Animator>()??model.AddComponent<Animator>();animator.runtimeAnimatorController=controller;animator.applyRootMotion=false;animator.Rebind();animator.Update(0);
+                var model=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(modelPath));model.transform.SetParent(root.transform,false);
+                if(animated)ConfigureAnimation(controller,motions,names,model.transform);
+                var animator=model.GetComponentInChildren<Animator>()??model.AddComponent<Animator>();animator.runtimeAnimatorController=controller;animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;animator.Rebind();animator.Update(0);
                 var skin=model.GetComponentsInChildren<SkinnedMeshRenderer>();if(skin.Length!=1)throw new InvalidOperationException("Expected a single supplied skin.");
                 var head=Find(model.transform,"Head");var face=Find(model.transform,"headfront");
                 if(head!=null&&face!=null){var forward=face.position-head.position;forward.y=0;if(forward.sqrMagnitude>.00001f)model.transform.rotation=Quaternion.FromToRotation(forward.normalized,Vector3.forward)*model.transform.rotation;}
@@ -57,7 +67,12 @@ namespace ForjaDasMares.Editor
                 var weapon=new GameObject("PreviewDefaultStaff",typeof(MeshFilter),typeof(MeshRenderer));weapon.GetComponent<MeshFilter>().sharedMesh=starter.visualMesh;weapon.GetComponent<MeshRenderer>().sharedMaterials=starter.visualMaterials;
                 EquipmentVisualPlacement.Mount(weapon.transform,right,true,Vector3.zero,Quaternion.identity,starter);weapon.AddComponent<EquipmentMeshView>().Apply(starter);
                 if(Vector3.Dot(weapon.transform.up,Vector3.up)<.9f)throw new InvalidOperationException("Staff is not upright.");
-                view.Configure(animator,right,left,weapon,false);
+                view.Configure(animator,right,left,weapon,animated);
+                if(animated)
+                {
+                    root.AddComponent<BrasaFootPlant>().Configure(view,Find(model.transform,"LeftUpLeg"),Find(model.transform,"LeftLeg"),Find(model.transform,"LeftFoot"),Find(model.transform,"RightUpLeg"),Find(model.transform,"RightLeg"),Find(model.transform,"RightFoot"));
+                    var settings=new SerializedObject(view);settings.FindProperty("walkStride").floatValue=.77f;settings.FindProperty("runStride").floatValue=2.43f;settings.ApplyModifiedPropertiesWithoutUndo();
+                }
                 int checkedItems=0;
                 foreach(string guid in AssetDatabase.FindAssets("t:EquipmentDefinition",new[]{"Assets/ForjaDasMares/Data"}))
                 {
@@ -75,7 +90,7 @@ namespace ForjaDasMares.Editor
                 Debug.Log("SAPPHIRE_EQUIPMENT_FIT checked="+checkedItems+" bodyHeight=1.7 staffMax=1.45 bookMax=0.38");
                 root.AddComponent<PrismaCastingView>().Configure(view,AssetDatabase.LoadAssetAtPath<Material>("Assets/ForjaDasMares/Art/Arsenal/CombatTrail.mat"));
                 PrefabUtility.SaveAsPrefabAsset(root,PrefabPath);
-                Debug.Log("SAPPHIRE_PREFAB height="+skin[0].bounds.size.y+" triangles="+skin[0].sharedMesh.triangles.Length/3+" bones="+skin[0].bones.Length+" authoredAnimations=false");
+                Debug.Log("SAPPHIRE_PREFAB height="+skin[0].bounds.size.y+" triangles="+skin[0].sharedMesh.triangles.Length/3+" bones="+skin[0].bones.Length+" authoredAnimations="+animated+" clips="+motions.Length);
             }
             finally{UnityEngine.Object.DestroyImmediate(root);}
             var scene=EditorSceneManager.OpenScene(ScenePath);int replaced=0;
@@ -91,6 +106,30 @@ namespace ForjaDasMares.Editor
             EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();Debug.Log("SAPPHIRE_READY sceneTemplates="+replaced+" logicAndDataUnchanged=true");
         }
         static Transform Find(Transform root,string suffix)=>root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name==suffix||t.name.EndsWith(":"+suffix,StringComparison.Ordinal));
+        static void ConfigureAnimation(AnimatorController controller,AnimationClip[] clips,string[] names,Transform model)
+        {
+            foreach(string p in new[]{"Speed","ActionTime","GaitTime"})if(!controller.parameters.Any(x=>x.name==p))controller.AddParameter(p,AnimatorControllerParameterType.Float);
+            if(!controller.parameters.Any(x=>x.name=="State"))controller.AddParameter("State",AnimatorControllerParameterType.Int);
+            if(!controller.parameters.Any(x=>x.name=="Alive"))controller.AddParameter("Alive",AnimatorControllerParameterType.Bool);
+            var mask=AssetDatabase.LoadAssetAtPath<AvatarMask>(Root+"SapphireUpperBody.mask");
+            if(mask==null){mask=new AvatarMask();AssetDatabase.CreateAsset(mask,Root+"SapphireUpperBody.mask");}
+            var transforms=model.GetComponentsInChildren<Transform>(true);var spine=Find(model,"Spine");mask.transformCount=transforms.Length;
+            for(int i=0;i<transforms.Length;i++){mask.SetTransformPath(i,AnimationUtility.CalculateTransformPath(transforms[i],model));mask.SetTransformActive(i,transforms[i]==spine||transforms[i].IsChildOf(spine));}
+            EditorUtility.SetDirty(mask);
+            if(controller.layers.Length<2)controller.AddLayer("Upper Body");
+            var layers=controller.layers;layers[1].avatarMask=mask;layers[1].defaultWeight=0;controller.layers=layers;
+            for(int layer=0;layer<2;layer++)foreach(string name in names)
+            {
+                var motion=clips.Single(c=>c.name==name);if(AnimationUtility.GetCurveBindings(motion).Length==0)throw new InvalidOperationException("Empty clip "+name);
+                var machine=controller.layers[layer].stateMachine;
+                var state=machine.states.Select(x=>x.state).FirstOrDefault(x=>x.name==name)??machine.AddState(name);state.motion=motion;state.writeDefaultValues=true;
+                bool gait=name=="Walk"||name=="Run";
+                state.timeParameterActive=gait||name!="Idle"&&name!="Dead"&&name!="Victory";
+                state.timeParameter=gait?"GaitTime":"ActionTime";
+                if(name=="Idle")machine.defaultState=state;
+            }
+            EditorUtility.SetDirty(controller);
+        }
         static Transform Socket(Transform model,string bone,string name)
         {
             var hand=Find(model,bone);if(hand==null)throw new InvalidOperationException("Missing hand: "+bone);

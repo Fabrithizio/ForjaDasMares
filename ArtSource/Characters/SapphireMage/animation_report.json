@@ -1,0 +1,32 @@
+{
+  "clips": {
+    "Idle": 91,
+    "Walk": 31,
+    "Run": 25,
+    "Attack": 31,
+    "Attack2": 31,
+    "Attack3": 31,
+    "Charged": 43,
+    "Skill": 43,
+    "Super": 61,
+    "Dodge": 19,
+    "Hit": 16,
+    "Dead": 49,
+    "Victory": 91,
+    "StaffBolt": 31,
+    "StaffReturn": 31,
+    "StaffRelease": 31,
+    "HeavyStaff": 43,
+    "BookWord": 31,
+    "BookPage": 31,
+    "BookSeal": 31,
+    "HeavyBook": 43,
+    "OrbCast": 31,
+    "OrbReturn": 31,
+    "OrbBurst": 31,
+    "HeavyOrb": 43
+  },
+  "fps": 30,
+  "source": "Original keyframed poses on supplied Meshy skeleton; two-bone foot solves baked into clips.",
+  "root_motion": false
+}

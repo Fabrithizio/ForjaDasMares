@@ -10,7 +10,7 @@ namespace ForjaDasMares.Networking.Tests
     public sealed class ArsenalTests
     {
         CoopDirector session;ProgressionCatalog catalog;
-        [UnitySetUp]public IEnumerator Load(){SceneManager.LoadScene("CampaignCoop");yield return null;yield return null;session=UnityEngine.Object.FindFirstObjectByType<CoopDirector>();catalog=session.GetComponent<CoopProgression>().Catalog;var profile=session.GetComponent<CoopProfileChannel>().LocalProfile;}
+        [UnitySetUp]public IEnumerator Load(){SceneManager.LoadScene("CampaignCoop");yield return null;yield return null;session=UnityEngine.Object.FindFirstObjectByType<CoopDirector>();session.SelectHero(0);catalog=session.GetComponent<CoopProgression>().Catalog;var profile=session.GetComponent<CoopProfileChannel>().LocalProfile;}
         [UnityTearDown]public IEnumerator Close(){session.Close();yield return null;yield return null;}
         [Test]public void TwentyDamageAgainstTenPercentDefenseDealsEighteen()
         {

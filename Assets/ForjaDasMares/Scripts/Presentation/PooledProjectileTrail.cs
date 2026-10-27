@@ -11,11 +11,11 @@ namespace ForjaDasMares
             if(trail==null)
             {
                 trail=gameObject.AddComponent<TrailRenderer>();trail.sharedMaterial=material;
-                trail.time=.12f;trail.minVertexDistance=.09f;trail.numCapVertices=2;
+                trail.time=.20f;trail.minVertexDistance=.055f;trail.numCapVertices=3;
                 trail.shadowCastingMode=ShadowCastingMode.Off;trail.receiveShadows=false;
                 trail.autodestruct=false;
             }
-            trail.startWidth=Mathf.Clamp(radius*1.5f,.035f,.24f);trail.endWidth=0;
+            trail.startWidth=Mathf.Clamp(radius*1.9f,.035f,.28f);trail.endWidth=0;
             trail.startColor=new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
             trail.emitting=true;if(restart)trail.Clear();
         }

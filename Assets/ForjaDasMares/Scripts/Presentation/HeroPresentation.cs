@@ -21,6 +21,7 @@ namespace ForjaDasMares
         void Start(){var feedback=GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;
         public int ActionVersion=>ReplicaMode?replicaVersion:combat.ActionVersion;
+        public float ActionImpact=>ReplicaMode?replicaImpact:combat.ImpactTime;
         WeaponCategory DefaultWeaponCategory=>HasCastingView?WeaponCategory.Staff:WeaponCategory.Sword;
         public void SetWeapon(EquipmentDefinition value){EquippedWeapon=value;if(visibleView!=null)visibleView.SetWeaponCategory(value!=null?value.category:DefaultWeaponCategory);}
         public HeroState State { get; private set; }
@@ -33,6 +34,7 @@ namespace ForjaDasMares
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }
+        void EnsureEnergy(){var energy=GetComponent<HeroWeaponEffects>();if(energy==null){energy=gameObject.AddComponent<HeroWeaponEffects>();energy.Configure(this,GetComponent<HeroRoster>(),combat);}}
         void OnDisable() { if (health != null) health.Damaged -= Hit; }
         void Hit() { hitTime = 0.2f; victoryTime = 0; }
         public void Show(int slot)
@@ -40,6 +42,7 @@ namespace ForjaDasMares
             var feedback=GetComponent<ActorImpactFeedback>();if(feedback!=null){feedback.ResetVisual();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);}
             for (int i = 0; i < models.Length; i++) models[i].gameObject.SetActive(i == slot);
             visible = models[Mathf.Clamp(slot, 0, models.Length - 1)];HasCastingView=visible.GetComponentInChildren<PrismaCastingView>(true)!=null; visibleView = visible.GetComponentInChildren<HeroModelView>(true); ResetPose();hasPosition=false;
+            EnsureEnergy();
             if(visibleView != null)
             {
                 foreach(var view in visible.GetComponentsInChildren<HeroModelView>(true))if(view!=visibleView)view.gameObject.SetActive(false);

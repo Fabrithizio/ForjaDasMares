@@ -38,6 +38,25 @@ namespace ForjaDasMares.Networking.Tests
             foreach(string name in names)Assert.IsTrue(view.Animator.runtimeAnimatorController.animationClips.Any(c=>c.name==name&&c.length>.1f),name);
             Assert.AreEqual(2,view.Animator.layerCount);Assert.NotNull(view.GetComponent<BrasaFootPlant>());
         }
+        [Test]public void AuthoredStaffAndBookHaveDistinctHandPosesAndBoundedEffects()
+        {
+            Mage.Presentation.enabled=false;var view=Mage.Presentation.Visible.GetComponentInChildren<HeroModelView>();Assert.IsTrue(view.AuthoredAnimationsReady);
+            view.SetWeaponCategory(WeaponCategory.Staff);view.Animate(HeroState.Attack,.30f,0,true,0,91,.3f);view.Animator.Update(.3f);
+            Vector3 staff=view.SecondarySocket.position;
+            view.SetWeaponCategory(WeaponCategory.Grimoire);view.Animate(HeroState.Attack,.30f,0,true,0,92,.3f);view.Animator.Update(.3f);
+            Assert.Greater(Vector3.Distance(staff,view.SecondarySocket.position),.025f,"Book must use a different free-hand gesture.");
+            var fx=Mage.GetComponent<HeroWeaponEffects>();Assert.NotNull(fx);Assert.AreEqual(6,fx.RibbonCapacity);Assert.LessOrEqual(fx.LiveParticles,64);
+            foreach(var line in Mage.GetComponentsInChildren<LineRenderer>(true).Where(x=>x.name.StartsWith("HeroEnergy_")))Assert.IsNull(line.GetComponent<Collider>());
+        }
+        [UnityTest]public IEnumerator EnergyReleaseUsesTimelineAndCleansWithoutChangingHealth()
+        {
+            Mage.Presentation.enabled=false;Mage.Presentation.ReplicaMode=true;int hp=Mage.Health.Current;
+            Mage.Presentation.ApplyReplica(HeroState.Attack,.8f,0,999,.3f);yield return null;yield return null;
+            var fx=Mage.GetComponent<HeroWeaponEffects>();Assert.Greater(fx.LiveParticles,0);
+            var lines=Mage.GetComponentsInChildren<LineRenderer>(true).Where(x=>x.name.StartsWith("HeroEnergy_")).ToArray();
+            Assert.IsTrue(lines.Any(x=>x.enabled));Assert.AreEqual(hp,Mage.Health.Current);
+            fx.enabled=false;Assert.AreEqual(0,fx.LiveParticles);Assert.IsTrue(lines.All(x=>!x.enabled));
+        }
         [Test]public void ThreeWeaponStylesSelectCastingAndHeavyClips()
         {
             Mage.Presentation.enabled=false;var view=Mage.Presentation.Visible.GetComponentInChildren<HeroModelView>();if(!view.AuthoredAnimationsReady)Assert.Ignore("Animações da nova personagem adiadas pelo usuário.");int version=0;

@@ -59,7 +59,7 @@ namespace ForjaDasMares.Networking
                 else if(session.LocalSlot>=0&&arsenalBudget>0)
                 {
                     var actor=session.Actor(session.LocalSlot);var view=actor.GetComponent<HeroAttackArea>();var p=actor.Presentation;
-                    if(p.State==HeroState.Attack&&p.ActionProgress>.4f&&p.ActionVersion!=arsenalVersion&&view!=null&&(view.Visible||p.EquippedWeapon!=null&&p.EquippedWeapon.attacks[0].shape==AttackShape.Projectile))
+                    if(p.State==HeroState.Attack&&p.ActionProgress>.65f&&p.ActionVersion!=arsenalVersion&&view!=null&&(view.Visible||p.EquippedWeapon!=null&&p.EquippedWeapon.attacks[0].shape==AttackShape.Projectile))
                     {
                         arsenalVersion=p.ActionVersion;arsenalBudget--;string weapon=p.EquippedWeapon!=null?p.EquippedWeapon.itemId:"default";string file="arsenal-"+weapon+"-"+arsenalVersion+"-"+p.ActionVariant;ScreenCapture.CaptureScreenshot(Path.Combine(directory,file+".png"));
                         var model=p.Visible.GetComponentInChildren<HeroModelView>();var clips=model!=null?model.Animator.GetCurrentAnimatorClipInfo(0):new AnimatorClipInfo[0];File.WriteAllText(Path.Combine(directory,file+".json"),JsonUtility.ToJson(new ArsenalEvidence{weapon=weapon,variant=p.ActionVariant,version=p.ActionVersion,time=p.ActionProgress,area=view.Visible,clip=clips.Length>0?clips[0].clip.name:"geometric"},true));
@@ -76,7 +76,14 @@ namespace ForjaDasMares.Networking
                 if(command.StartsWith("qa-ping:")&&session.LocalSlot>=0)session.GetComponent<CampaignAdventureChannel>().Request(AdventureAction.Ping,0,int.Parse(command.Substring(8)));
                 if(command=="arsenal-hold"&&session.Phase==CoopPhase.Playing){arsenalInput=session.LocalInput;arsenalInput.SetUiAttackHeld(true);arsenalUntil=Time.unscaledTime+5;arsenalVersion=-1;arsenalBudget=6;}
                 if(command=="arsenal-release"){arsenalInput?.SetUiAttackHeld(false);arsenalUntil=0;}
-                if(command.StartsWith("arsenal-equip:")&&session.LocalSlot>=0){string definition=command.Substring(14);var channel=session.GetComponent<CoopProfileChannel>();var p=channel.LocalProfile;var item=p.inventory.Find(x=>x.definitionId==definition);if(item!=null)channel.Request(CoopInventoryAction.Equip,item.instanceId,EquipmentSlot.MainHand);}
+                if(command.StartsWith("arsenal-equip:")&&session.LocalSlot>=0)
+                {
+                    string definition=command.Substring(14);var channel=session.GetComponent<CoopProfileChannel>();var p=channel.LocalProfile;var item=p.inventory.Find(x=>x.definitionId==definition);
+                    // Asset preview grants are allowed only in explicitly isolated QA profiles.
+                    if(item==null&&session.IsHost&&Arg(Environment.GetCommandLineArgs(),"-netSavePath")!=null&&channel.Catalog.Find(definition)!=null)
+                    {item=LootGenerator.Create(channel.Catalog,definition,ItemRarity.Common,new System.Random(91));p.inventory.Add(item);}
+                    if(item!=null)channel.Request(CoopInventoryAction.Equip,item.instanceId,EquipmentSlot.MainHand);
+                }
                 if(command=="cast-special")session.Request(HeroButtons.Special);
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
                 if(command=="profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.OpenInventory();
