@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass, Coin }
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class HudIcon : MaskableGraphic
     {
@@ -29,6 +29,8 @@ namespace ForjaDasMares
             vh.Clear();
             switch (symbol)
             {
+                case HudSymbol.Coin:
+                    Ring(vh,12);Ring(vh,9);Line(vh,new Vector2(0,-6),new Vector2(0,7),2);Line(vh,new Vector2(-4,4),new Vector2(0,0),2);Line(vh,new Vector2(4,4),new Vector2(0,0),2);break;
                 case HudSymbol.Heart:
                     Line(vh,new Vector2(0,-12),new Vector2(-11,0));Line(vh,new Vector2(-11,0),new Vector2(-11,7));Line(vh,new Vector2(-11,7),new Vector2(-6,11));Line(vh,new Vector2(-6,11),new Vector2(0,6));Line(vh,new Vector2(0,6),new Vector2(6,11));Line(vh,new Vector2(6,11),new Vector2(11,7));Line(vh,new Vector2(11,7),new Vector2(11,0));Line(vh,new Vector2(11,0),new Vector2(0,-12));break;
                 case HudSymbol.Target:

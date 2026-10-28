@@ -34,10 +34,11 @@ namespace ForjaDasMares.Networking.Tests
             string before=JsonUtility.ToJson(channel.LocalProfile);
             hud.NavigateProfile(0);Assert.IsTrue(Root.Find("CharacterPage").gameObject.activeSelf);Assert.IsFalse(Root.Find("InventoryColumn").gameObject.activeSelf);
             Assert.AreEqual(5,Root.Find("CharacterPage").GetComponentsInChildren<Button>(true).Count(b=>b.name.StartsWith("InspectSlot_")));
+            Assert.IsTrue(Root.Find("PersistentResources").gameObject.activeInHierarchy);Assert.AreEqual(4,Root.Find("ProfileBottomNavigation").GetComponentsInChildren<Button>().Length);
             hud.NavigateProfile(2);Assert.IsTrue(Root.Find("StatusPage").gameObject.activeSelf);Assert.IsFalse(Root.Find("CharacterPage").gameObject.activeSelf);
             Button("StatusTab_1").onClick.Invoke();StringAssert.Contains("Defesa",string.Join(" ",Root.Find("StatusPage").GetComponentsInChildren<Text>().Select(t=>t.text)));
             hud.NavigateProfile(4);Assert.IsTrue(Root.Find("ResourcesPage").gameObject.activeSelf);
-            hud.NavigateProfile(1);Assert.IsTrue(Root.Find("InventoryColumn").gameObject.activeSelf);Assert.IsFalse(Root.Find("ResourcesPage").gameObject.activeSelf);
+            hud.NavigateProfile(1);Assert.IsTrue(Root.Find("PersistentResources").gameObject.activeInHierarchy);StringAssert.Contains(channel.LocalProfile.coins.ToString("N0"),Root.Find("PersistentResources/GoldBalance").GetComponent<Text>().text);Assert.IsTrue(Root.Find("InventoryColumn").gameObject.activeSelf);Assert.IsFalse(Root.Find("ResourcesPage").gameObject.activeSelf);
             hud.NavigateProfile(3);var talents=Root.GetComponent<CampaignCharacterSheet>();Assert.IsTrue(talents.IsOpen);talents.Hide();hud.SendMessage("LateUpdate");Assert.AreEqual(0,hud.ProfileArea,"Closing talents returns to the character page");
             Assert.AreEqual(before,JsonUtility.ToJson(channel.LocalProfile),"Navigation must not mutate inventory, equipment or coins");
         }

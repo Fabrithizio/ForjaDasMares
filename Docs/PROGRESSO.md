@@ -1,3 +1,9 @@
+# 0.20.1 — referência visual corrigida e ouro sempre visível no perfil
+
+Barra fixa de ouro real no topo, inclusive na mochila e nas inspeções. Recursos retirado da navegação inferior. Avatar sobre o cenário com transparência real da prévia; slots compactos nos dois lados; status resumidos e detalhados com ícones e cores. Arte existente mais visível. Preservados os cinco slots e as moedas reais já existentes.
+
+14/14 testes de inventário passaram em Direct3D 11, incluindo barra persistente, quatro destinos inferiores, valor do ouro e navegação sem mutação. Build Windows Succeeded/errors=0. Telas reais Personagem e Mochila conferidas em perfil QA isolado; sem referências/exceções no log do player. Um teste inicial com Editor D3D12 encerrou por erro de dispositivo gráfico; logs preservados, repetição D3D11 aprovada. Player local já utiliza D3D11. Não há validação móvel nem APK novo. Detalhes em PERFIL_REFERENCIA_0_20_1.md.
+
 # 0.20.0 — áreas independentes do perfil no PC
 
 Personagem, Mochila, Status, Talentos e Recursos separados com navegação inferior. Grade ampliada; modelo e slots reais em página própria; ficha detalhada com valores e explicações em três categorias. Carteira usa ouro/armazenamento do perfil ativo, sem moedas ou slots fictícios. Comparação, equipagem e entregas preservadas. 14/14 testes de clareza aprovados, incluindo retorno de Talentos e ausência de mutação ao navegar. Build Windows 0.20.0 errors=0; telas reais conferidas no PC em perfil isolado. Detalhes, arquivos, testes manuais e limitações em ORGANIZACAO_PERFIL_0_20_0.md. Sem APK; reorganização equivalente da navegação de toque ainda pendente.

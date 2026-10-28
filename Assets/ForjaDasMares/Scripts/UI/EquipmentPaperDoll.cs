@@ -9,7 +9,7 @@ namespace ForjaDasMares
         RawImage image;GameObject world,model;Camera preview;RenderTexture texture;string signature;bool portrait;int dirty;static int sequence;
         public void Configure(RawImage target,bool headOnly=false)
         {
-            portrait=headOnly;image=target;if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)return;texture=new RenderTexture(portrait?192:384,portrait?192:512,16,RenderTextureFormat.ARGB32);texture.filterMode=FilterMode.Bilinear;texture.Create();image.texture=texture;
+            portrait=headOnly;image=target;if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)return;texture=new RenderTexture(portrait?192:384,portrait?192:512,16,RenderTextureFormat.ARGB32);texture.filterMode=FilterMode.Bilinear;texture.antiAliasing=portrait?1:4;texture.Create();image.texture=texture;
             world=new GameObject("EquipmentPreviewWorld");world.transform.position=new Vector3(-20000+(++sequence)*20,-20000,-20000);
             var cameraObject=new GameObject("PreviewCamera");cameraObject.transform.SetParent(world.transform,false);preview=cameraObject.AddComponent<Camera>();
             preview.targetTexture=texture;preview.cullingMask=1<<31;preview.clearFlags=CameraClearFlags.SolidColor;preview.backgroundColor=new Color(.07f,.09f,.075f,1);preview.orthographic=true;preview.orthographicSize=portrait ? .45f : 1.15f;preview.nearClipPlane=.1f;preview.farClipPlane=10;preview.allowHDR=false;preview.allowMSAA=true;
@@ -18,7 +18,12 @@ namespace ForjaDasMares
             var lamp=new GameObject("PreviewLight");lamp.transform.SetParent(world.transform,false);lamp.transform.localPosition=new Vector3(-1,2,3);var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.range=8;light.intensity=12;light.cullingMask=1<<31;light.shadows=LightShadows.None;
             if(Camera.main!=null)Camera.main.cullingMask&=~(1<<31);
         }
-        public void SetBackdrop(Color color){if(preview!=null)preview.backgroundColor=color;}
+        public void SetBackdrop(Color color)
+        {
+            if(preview==null)return;preview.backgroundColor=color;
+            if(color.a<1){var data=preview.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();data.renderPostProcessing=false;data.antialiasing=UnityEngine.Rendering.Universal.AntialiasingMode.None;
+                }
+        }
         public void SetVisible(bool visible){if(image!=null)image.gameObject.SetActive(visible);if(world!=null)world.SetActive(visible&&(!portrait||dirty>0));if(preview!=null)preview.enabled=visible&&(!portrait||dirty>0);}
         public void Refresh(HeroPresentation actor,PlayerProfile profile,string hero)
         {

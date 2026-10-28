@@ -7,12 +7,13 @@ namespace ForjaDasMares.Networking
     {
         readonly List<GameObject> bagNodes=new List<GameObject>();
         RectTransform areaNavigation;GameObject characterArea,statusArea,resourceArea;
-        readonly Button[] areaButtons=new Button[5];readonly Image[] areaEquipmentIcons=new Image[5];
+        readonly Button[] areaButtons=new Button[4];readonly Image[] areaEquipmentIcons=new Image[5];
         readonly Text[] areaEquipmentNames=new Text[5];readonly HudIcon[] areaEmptySlots=new HudIcon[5];
         Button changeProfileHero,resourceScopeButton;Text characterXp;RectTransform characterXpFill;
         Text areaHeading,characterIdentity,characterRole,characterSummary,resourceGold,resourceSummary,statusDescription;
         readonly Text[] statNames=new Text[16],statValues=new Text[16],statExplanations=new Text[16];
         readonly GameObject[] statRows=new GameObject[16];readonly Button[] statTabs=new Button[3];
+        RectTransform resourceRibbon;Text ribbonGold;readonly Text[] characterStatValues=new Text[6];readonly HudIcon[] statSymbols=new HudIcon[16];
         int activeArea=1,statCategory;RawImage areaPortrait;
         public int ProfileArea=>activeArea;
         void LateUpdate(){if(areaNavigation!=null&&IsOpen&&!results&&activeArea==3&&!sheet.IsOpen)NavigateProfile(0);}
@@ -21,10 +22,10 @@ namespace ForjaDasMares.Networking
         {
             foreach(Transform child in overlay.transform)bagNodes.Add(child.gameObject);
             paperDoll.SetBackdrop(new Color(.035f,.05f,.045f,0));
-            areaHeading=InventoryText(overlay.transform,"AreaHeading",325,22,740,43,"MOCHILA · ITENS E EQUIPAMENTOS",23);areaHeading.color=RusticHudTheme.Gold;
+            areaHeading=InventoryText(overlay.transform,"AreaHeading",280,22,430,43,"MOCHILA · ITENS E EQUIPAMENTOS",20);areaHeading.color=RusticHudTheme.Gold;
             overlay.transform.Find("InventoryNavigation").gameObject.SetActive(false);
             characterArea=InventoryPanel(overlay.transform,"CharacterPage",18,82,1242,566,new Color(.02f,.05f,.045f,.95f)).gameObject;
-            var art=MenuArtwork.Fill(characterArea.transform,"CharacterBackdrop","MenuArt/RoutesBackdrop",new Color(.35f,.45f,.4f,1));art.transform.SetAsFirstSibling();
+            var art=MenuArtwork.Fill(characterArea.transform,"CharacterBackdrop","MenuArt/RoutesBackdrop",new Color(.85f,.9f,.95f,1));art.transform.SetAsFirstSibling();
             var identity=InventoryPanel(characterArea.transform,"Identity",20,20,335,526,new Color(.025f,.05f,.045f,.97f));
             characterIdentity=InventoryText(identity,"Name",20,18,295,90,"",26);characterIdentity.color=RusticHudTheme.Gold;
             var xpTrack=RusticHudTheme.Rect(identity,"ExperienceTrack",InventoryTop,new Vector2(20,-105),new Vector2(295,7));xpTrack.gameObject.AddComponent<Image>().color=new Color(.1f,.17f,.15f,1);
@@ -75,10 +76,45 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Button(resourceArea.transform,"OpenDeliveries",InventoryTop,new Vector2(32,-450),new Vector2(550,52),"ABRIR ENTREGAS",()=>{NavigateProfile(1);SelectSource(2);});
             RusticHudTheme.Button(resourceArea.transform,"OpenBag",InventoryTop,new Vector2(610,-450),new Vector2(550,52),"ORGANIZAR MOCHILA",()=>NavigateProfile(1));
             areaNavigation=InventoryPanel(overlay.transform,"ProfileBottomNavigation",18,646,1242,48,new Color(.025f,.055f,.045f,1));
-            for(int i=0;i<5;i++){int pick=i;areaButtons[i]=RusticHudTheme.Button(areaNavigation,"ProfileArea_"+i,InventoryTop,new Vector2(8+i*246,-5),new Vector2(238,38),AreaLabels[i],()=>NavigateProfile(pick));}
+            for(int i=0;i<4;i++){int pick=i;areaButtons[i]=RusticHudTheme.Button(areaNavigation,"ProfileArea_"+i,InventoryTop,new Vector2(8+i*307,-5),new Vector2(299,38),AreaLabels[i],()=>NavigateProfile(pick));}
             HudSymbol[] symbols={HudSymbol.Hero,HudSymbol.Bag,HudSymbol.Shield,HudSymbol.Rune,HudSymbol.Artifact};
-            for(int i=0;i<5;i++){RusticHudTheme.Icon(areaButtons[i].transform,symbols[i],InventoryTop,new Vector2(14,-8),22);var label=areaButtons[i].GetComponentInChildren<Text>();label.rectTransform.anchoredPosition=new Vector2(16,0);label.rectTransform.sizeDelta=new Vector2(190,36);label.fontSize=15;}
+            for(int i=0;i<4;i++){RusticHudTheme.Icon(areaButtons[i].transform,symbols[i],InventoryTop,new Vector2(14,-8),22);var label=areaButtons[i].GetComponentInChildren<Text>();label.rectTransform.anchoredPosition=new Vector2(16,0);label.rectTransform.sizeDelta=new Vector2(190,36);label.fontSize=15;}
+            BuildReferenceLayout();
             characterArea.SetActive(false);statusArea.SetActive(false);resourceArea.SetActive(false);
+        }
+        static HudSymbol StatSymbol(string name)
+        {
+            string text=name.ToLowerInvariant();return text.Contains("vida")||text.Contains("regenera")?HudSymbol.Heart:text.Contains("defesa")||text.Contains("redução de dano")||text.Contains("bloqueio")?HudSymbol.Shield:text.Contains("crític")?HudSymbol.Target:text.Contains("recarga")?HudSymbol.Hourglass:text.Contains("movimento")||text.Contains("esquiva")||text.Contains("cadência")||text.Contains("velocidade")?HudSymbol.Dodge:text.Contains("elemental")?HudSymbol.Rune:HudSymbol.Sword;
+        }
+        static Color StatColor(HudSymbol icon)=>icon==HudSymbol.Heart?new Color(1,.35f,.35f):icon==HudSymbol.Shield?new Color(.4f,.7f,1):icon==HudSymbol.Target?new Color(.8f,.5f,1):icon==HudSymbol.Dodge?new Color(.35f,.9f,.85f):RusticHudTheme.Gold;
+        void BuildReferenceLayout()
+        {
+            resourceRibbon=InventoryPanel(overlay.transform,"PersistentResources",735,23,330,42,new Color(.025f,.05f,.045f,.98f));
+            var coin=InventoryPanel(resourceRibbon,"GoldCoin",12,8,26,26,new Color(.65f,.4f,.08f,1));coin.GetComponent<RoundedHudGraphic>().radius=13;coin.GetComponent<RoundedHudGraphic>().borderColor=RusticHudTheme.Gold;
+            RusticHudTheme.Icon(coin,HudSymbol.Coin,Vector2.one*.5f,Vector2.zero,23);
+            ribbonGold=InventoryText(resourceRibbon,"GoldBalance",50,0,265,42,"",20);ribbonGold.color=RusticHudTheme.Gold;
+            var identity=(RectTransform)characterArea.transform.Find("Identity");PlaceInventory(identity,800,20,420,526);
+            PlaceInventory(characterIdentity.rectTransform,22,18,376,80);characterIdentity.fontSize=25;
+            var xp=(RectTransform)identity.Find("ExperienceTrack");PlaceInventory(xp,22,105,376,7);PlaceInventory(characterXp.rectTransform,22,117,376,22);
+            identity.Find("RoleScroll").gameObject.SetActive(false);characterSummary.gameObject.SetActive(false);
+            string[] labels={"Vida máxima","Dano por acerto","Defesa","Chance crítica","Cadência","Movimento"};
+            HudSymbol[] symbols={HudSymbol.Heart,HudSymbol.Sword,HudSymbol.Shield,HudSymbol.Target,HudSymbol.Hourglass,HudSymbol.Dodge};
+            for(int i=0;i<6;i++)
+            {
+                var row=InventoryPanel(identity,"SummaryStat_"+i,16,155+i*40,388,36,new Color(.025f,.055f,.05f,.8f));var icon=RusticHudTheme.Icon(row,symbols[i],InventoryTop,new Vector2(9,-7),22);icon.color=StatColor(symbols[i]);
+                InventoryText(row,"Label",44,0,195,36,labels[i],16);characterStatValues[i]=InventoryText(row,"Value",242,0,135,36,"",17);characterStatValues[i].alignment=TextAnchor.MiddleRight;
+            }
+            PlaceInventory(changeProfileHero,22,414,376,38,14);PlaceInventory(identity.Find("OpenFullStats").GetComponent<Button>(),22,465,376,42,15);
+            var stage=(RectTransform)characterArea.transform.Find("PortraitStage");PlaceInventory(stage,16,20,766,526);var surface=stage.GetComponent<RoundedHudGraphic>();surface.color=Color.clear;surface.border=0;surface.SetVerticesDirty();
+            PlaceInventory(areaPortrait.rectTransform,172,0,420,520);
+            Vector2[] positions={new Vector2(650,40),new Vector2(650,203),new Vector2(40,40),new Vector2(40,203),new Vector2(650,366)};
+            for(int i=0;i<5;i++)
+            {
+                var slot=characterArea.transform.Find("InspectSlot_"+i).GetComponent<Button>();PlaceInventory(slot,positions[i].x,positions[i].y,110,128,11);
+                PlaceInventory(areaEquipmentIcons[i].rectTransform,18,8,74,74);PlaceInventory(areaEmptySlots[i].rectTransform,29,21,52,52);PlaceInventory(areaEquipmentNames[i].rectTransform,5,88,100,34);areaEquipmentNames[i].fontSize=11;areaEquipmentNames[i].alignment=TextAnchor.MiddleCenter;
+            }
+            for(int i=0;i<16;i++){statSymbols[i]=RusticHudTheme.Icon(statRows[i].transform,HudSymbol.Sword,InventoryTop,new Vector2(14,-16),28);PlaceInventory(statNames[i].rectTransform,58,8,260,44);}
+            var inspection=(RectTransform)itemPopup.transform;inspection.localScale=Vector3.one*.88f;inspection.anchoredPosition=new Vector2(0,-20);
         }
         public void NavigateProfile(int area)
         {
@@ -103,7 +139,7 @@ namespace ForjaDasMares.Networking
             heroChoice.gameObject.SetActive(false);foreach(var slot in equipmentSlots)slot.gameObject.SetActive(false);sheet.SetSummaryVisible(false);
             areaHeading.text=AreaLabels[activeArea]+(activeArea==1?" · ITENS E EQUIPAMENTOS":activeArea==2?" · FICHA DETALHADA":"");
             characterArea.SetActive(activeArea==0);statusArea.SetActive(activeArea==2);resourceArea.SetActive(activeArea==4);
-            for(int i=0;i<5;i++){var frame=areaButtons[i].GetComponent<RoundedHudGraphic>();frame.borderColor=i==activeArea?RusticHudTheme.Gold:RusticHudTheme.Copper;frame.border=i==activeArea?3:1;frame.SetVerticesDirty();}
+            for(int i=0;i<4;i++){var frame=areaButtons[i].GetComponent<RoundedHudGraphic>();frame.borderColor=i==activeArea?RusticHudTheme.Gold:RusticHudTheme.Copper;frame.border=i==activeArea?3:1;frame.SetVerticesDirty();}
             if(bag)
             {
                 PlaceInventory(desktopDetails,804,82,456,560);
@@ -117,7 +153,7 @@ namespace ForjaDasMares.Networking
                 PlaceInventory(previous,30,589,120,32,12);PlaceInventory(next,654,589,120,32,12);PlaceInventory(pageLabel.rectTransform,250,589,320,32);
                 PlaceInventory(sourceHint.rectTransform,180,622,550,20);sourceHint.fontSize=11;PlaceInventory(claimAll,180,622,550,20,11);notice.gameObject.SetActive(false);
             }
-            var profile=channel.LocalProfile;if(profile==null)return;var hero=ActiveActor.Roster.Current;var catalog=channel.Catalog;var s=ProgressionStats.Calculate(hero,profile,catalog);
+            var profile=channel.LocalProfile;if(profile==null)return;resourceRibbon.gameObject.SetActive(true);ribbonGold.text=profile.coins.ToString("N0")+"  OURO";var hero=ActiveActor.Roster.Current;var catalog=channel.Catalog;var s=ProgressionStats.Calculate(hero,profile,catalog);
             if(activeArea==0)
             {
                 changeProfileHero.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;
@@ -126,7 +162,13 @@ namespace ForjaDasMares.Networking
                 areaPortrait.texture=characterPreview.texture;characterIdentity.text=hero.displayName+"\nNÍVEL "+s.level;
                 characterRole.text=hero.role+"\n\nPONTOS FORTES\n"+hero.strengths+"\n\nLIMITAÇÕES\n"+hero.weaknesses;characterRole.fontSize=15;characterRole.rectTransform.sizeDelta=new Vector2(295,Mathf.Max(160,characterRole.preferredHeight+8));
                 characterSummary.text="Vida máxima   "+s.maximumHealth+"\nDano por acerto   "+s.damage+"\nDefesa   "+s.defensePoints.ToString("0.#")+"%\nMovimento   "+s.speed.ToString("0.#")+" m/s\nPontos de talento   "+HeroTalents.Available(profile,hero.heroId,catalog);
-                var set=profile.Loadout(hero.heroId);for(int i=0;i<5;i++){var item=set!=null?profile.Item(set.items[i]):null;var def=item!=null?catalog.Find(item.definitionId):null;areaEquipmentIcons[i].sprite=def?.icon;areaEquipmentIcons[i].enabled=def?.icon!=null;areaEmptySlots[i].gameObject.SetActive(def?.icon==null);areaEquipmentNames[i].text=RusticHudTheme.SlotName((EquipmentSlot)i)+"\n"+(def!=null?def.displayName:"Slot vazio · ver itens compatíveis");}
+                var set=profile.Loadout(hero.heroId);for(int i=0;i<5;i++){var item=set!=null?profile.Item(set.items[i]):null;var def=item!=null?catalog.Find(item.definitionId):null;areaEquipmentIcons[i].sprite=def?.icon;areaEquipmentIcons[i].enabled=def?.icon!=null;areaEmptySlots[i].gameObject.SetActive(def?.icon==null);areaEquipmentNames[i].text=RusticHudTheme.SlotName((EquipmentSlot)i)+(def==null?"\nVazio":"");
+                var frame=areaEquipmentNames[i].transform.parent.GetComponent<RoundedHudGraphic>();frame.borderColor=item!=null?catalog.Rarity(item.rarity).color:RusticHudTheme.Copper;frame.SetVerticesDirty();}
+            }
+            if(activeArea==0)
+            {
+                string[] values={s.maximumHealth.ToString(),s.damage.ToString(),s.defensePoints.ToString("0.#")+" ("+(s.defense*100).ToString("0.#")+"%)",(s.criticalChance*100).ToString("0.#")+"%",s.attacksPerSecond.ToString("0.##")+" /s",s.speed.ToString("0.#")+" m/s"};
+                for(int i=0;i<6;i++)characterStatValues[i].text=values[i];
             }
             if(activeArea==4){resourceScopeButton.interactable=channel.HomeMode&&channel.Hub.HasRemote;resourceScopeButton.GetComponentInChildren<Text>().text=resourceScopeButton.interactable?"TROCAR PERFIL · APARELHO / ÚLTIMA SALA":"PERFIL DESTE APARELHO";resourceGold.text=profile.coins.ToString("N0")+" ouro";resourceSummary.text="MOCHILA   "+InventoryRules.BagCount(profile)+" / "+catalog.inventoryCapacity+"\n\nENTREGAS   "+profile.deliveries.Count+" itens\n\nSAQUE DA EXPEDIÇÃO   "+(profile.expedition?.items.Count??0)+" itens";}
             if(activeArea!=2)return;
@@ -161,7 +203,7 @@ namespace ForjaDasMares.Networking
                 data.Add(new[]{"Duração da esquiva",hero.dodge.duration.ToString("0.##")+" s","Tempo do deslocamento de esquiva."});
                 data.Add(new[]{"Recarga base da esquiva",hero.dodge.cooldown.ToString("0.##")+" s","Valor base da classe, antes de ajustes temporários."});
             }
-            for(int i=0;i<16;i++){statRows[i].SetActive(i<data.Count);if(i<data.Count){statNames[i].text=data[i][0];statValues[i].text=data[i][1];statExplanations[i].text=data[i][2];}}
+            for(int i=0;i<16;i++){statRows[i].SetActive(i<data.Count);if(i<data.Count){statNames[i].text=data[i][0];statSymbols[i].symbol=StatSymbol(data[i][0]);statSymbols[i].color=StatColor(statSymbols[i].symbol);statSymbols[i].SetVerticesDirty();statValues[i].text=data[i][1];statExplanations[i].text=data[i][2];}}
             var rect=(RectTransform)statRows[0].transform.parent;rect.sizeDelta=new Vector2(1180,Mathf.Max(410,data.Count*70));
         }
     }
