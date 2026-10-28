@@ -37,16 +37,16 @@ namespace ForjaDasMares.Networking
             if(phaseKnown&&phase!=previousPhase)
             {
                 var clip=phase==CoopPhase.Victory?library.victory:phase==CoopPhase.Defeat?library.defeat:phase==CoopPhase.Playing&&(previousPhase==CoopPhase.Lobby||previousPhase==CoopPhase.Loading||previousPhase==CoopPhase.Connecting)?library.start:null;
-                if(clip!=null){accent.volume=.40f*Volume(MusicKey);accent.PlayOneShot(clip);}
+                if(clip!=null){accent.volume=.22f*Volume(MusicKey);accent.Stop();accent.clip=clip;accent.Play();}
             }
             phaseKnown=true;previousPhase=phase;
         }
         void Update()
         {
             if(library==null||music==null)return;poll-=Time.unscaledDeltaTime;if(poll<=0){poll=.2f;RefreshNow();}
-            music.Tick(Time.unscaledDeltaTime/library.crossfade,musicGain*Volume(MusicKey));
+            music.Tick(Time.unscaledDeltaTime/library.crossfade,accent.isPlaying?0:musicGain*Volume(MusicKey));
             ambience.Tick(Time.unscaledDeltaTime/library.crossfade,ambienceGain*Volume(AmbienceKey));
-            accent.volume=.40f*Volume(MusicKey);
+            accent.volume=.22f*Volume(MusicKey);
         }
         void OnDisable(){music?.Stop();ambience?.Stop();if(accent!=null)accent.Stop();poll=0;}
         static AudioSource Voice(Transform parent,string name,int priority)
@@ -55,21 +55,28 @@ namespace ForjaDasMares.Networking
         }
         sealed class LoopBus
         {
-            readonly AudioSource[] voices;readonly float[] level={0,0};int current;
-            public AudioClip Clip=>voices[current].clip;
+            readonly AudioSource[] voices;float level;int current;AudioClip requested;
+            public AudioClip Clip=>requested;
             public bool Playing=>voices[current].isPlaying;
             public int SamplePosition=>voices[current].timeSamples;
             public LoopBus(Transform root,string name,int priority){voices=new[]{Voice(root,name+"A",priority),Voice(root,name+"B",priority)};foreach(var v in voices)v.loop=true;}
-            public void Switch(AudioClip clip)
-            {
-                if(Clip==clip){if(clip!=null&&!voices[current].isPlaying)voices[current].Play();return;}
-                current=1-current;var next=voices[current];next.Stop();next.clip=clip;level[current]=0;next.volume=0;if(clip!=null)next.Play();
-            }
+            public void Switch(AudioClip clip){requested=clip;}
             public void Tick(float step,float gain)
             {
-                for(int i=0;i<2;i++){level[i]=Mathf.MoveTowards(level[i],i==current?1:0,step);voices[i].volume=Mathf.Sqrt(level[i])*gain;if(i!=current&&level[i]==0&&voices[i].isPlaying)voices[i].Stop();}
+                var voice=voices[current];
+                if(voice.clip!=requested)
+                {
+                    level=Mathf.MoveTowards(level,0,step*2);voice.volume=level*gain;
+                    if(level>0)return;
+                    voice.Stop();voice.clip=null;current=1-current;voice=voices[current];
+                    voice.Stop();voice.clip=requested;voice.volume=0;
+                }
+                if(requested==null)return;
+                if(!voice.isPlaying)voice.Play();
+                level=Mathf.MoveTowards(level,1,step*2);voice.volume=level*gain;
             }
-            public void Stop(){foreach(var v in voices)v.Stop();level[0]=level[1]=0;}
+            public void Stop(){foreach(var v in voices){v.Stop();v.clip=null;v.volume=0;}level=0;}
+
         }
     }
 }

@@ -40,6 +40,8 @@ namespace ForjaDasMares.Networking.Tests
             session.SelectCampaignLevel(0);Assert.IsTrue(session.HostDirect("AUDIOQA",7892,false));yield return null;session.StartGame();float deadline=Time.realtimeSinceStartup+15;
             while(session.Phase==CoopPhase.Loading&&Time.realtimeSinceStartup<deadline)yield return null;
             Assert.AreEqual(CoopPhase.Playing,session.Phase);audio.RefreshNow();Assert.AreEqual(library.biomes[0].music,audio.CurrentMusic);Assert.AreEqual(library.biomes[0].ambience,audio.CurrentAmbience);
+            float end=Time.realtimeSinceStartup+3;
+            while(Time.realtimeSinceStartup<end){Assert.LessOrEqual(audio.GetComponentsInChildren<AudioSource>().Count(s=>s.name.StartsWith("Music")&&s.isPlaying),1,"Music loops must never overlap");yield return null;}
             session.Close();audio.RefreshNow();Assert.AreEqual(library.menu.music,audio.CurrentMusic);
         }
         [UnityTest]public IEnumerator MusicMuteDoesNotMuteAmbienceAndDisableStopsVoices()

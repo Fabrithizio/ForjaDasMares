@@ -36,6 +36,7 @@ namespace ForjaDasMares
         { var icon=Rect(parent,"Icon_"+symbol,anchor,position,Vector2.one*size).gameObject.AddComponent<HudIcon>();icon.symbol=symbol;icon.color=Gold;icon.raycastTarget=false;return icon; }
         public static void Skin(Button button)
         {
+            if(button.GetComponent<MenuAudioFeedback>()==null)button.gameObject.AddComponent<MenuAudioFeedback>();
             var image=button.GetComponent<Image>();if(image!=null)image.enabled=false;
             var graphic=button.GetComponent<RoundedHudGraphic>()??Panel((RectTransform)button.transform,Surface);
             graphic.raycastTarget=true;button.targetGraphic=graphic;

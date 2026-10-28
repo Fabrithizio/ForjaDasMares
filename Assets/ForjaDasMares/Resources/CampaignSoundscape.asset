@@ -16,24 +16,24 @@ MonoBehaviour:
     displayName: Menu
     music: {fileID: 8300000, guid: c54ab9923702f144aa8c834686d39d0e, type: 3}
     ambience: {fileID: 8300000, guid: 0a0cc6e512ba01b4e921400f896fae78, type: 3}
-    musicGain: 0.48
-    ambienceGain: 0.3
+    musicGain: 0.26
+    ambienceGain: 0.16
   biomes:
   - displayName: Catacumbas
     music: {fileID: 8300000, guid: a3234a6ff80428348a808266d48183d1, type: 3}
     ambience: {fileID: 8300000, guid: 9acd818095182f94ebe297297ea14c60, type: 3}
-    musicGain: 0.48
-    ambienceGain: 0.3
+    musicGain: 0.26
+    ambienceGain: 0.16
   - displayName: "Floresta subterr\xE2nea"
     music: {fileID: 8300000, guid: 5d5daab081695434293bda13618746ab, type: 3}
     ambience: {fileID: 8300000, guid: c4fd37d8898d8804ebe51b6543c8c171, type: 3}
-    musicGain: 0.48
-    ambienceGain: 0.3
+    musicGain: 0.26
+    ambienceGain: 0.16
   - displayName: "Fortaleza vulc\xE2nica"
     music: {fileID: 8300000, guid: 40ed663d2fa4f984cbe23256d82672f3, type: 3}
     ambience: {fileID: 8300000, guid: 12176e1a498f4f649a80b26b446a55bf, type: 3}
-    musicGain: 0.48
-    ambienceGain: 0.3
+    musicGain: 0.26
+    ambienceGain: 0.16
   bossMusic: {fileID: 8300000, guid: fd61957a4dcaf2b46951b7df4053cdff, type: 3}
   start: {fileID: 8300000, guid: 40bdcfe6386bb0a49a032ffb5882ebc9, type: 3}
   victory: {fileID: 8300000, guid: b5d893ba6ed99a4498891d48b5c7e241, type: 3}

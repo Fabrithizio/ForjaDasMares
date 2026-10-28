@@ -1,3 +1,13 @@
+# 0.19.1 — correção de sobreposição e volume
+
+Troca de trilhas agora sequencial: a antiga chega a zero e para antes de a próxima tocar, inclusive retorno ao menu/chefe. Vinhetas substituem a anterior e silenciam a trilha durante sua execução. Ganhos de música reduzidos de 0,48 para 0,26; ambiente de 0,30 para 0,16; vinhetas de 0,40 para 0,22. Preferências de volume do usuário preservadas.
+
+Botões estilizados por RusticHudTheme recebem som curto de mouse/seleção e clique (também submit por teclado/gamepad); uma única voz local, limite de frequência de hover, volume segue Efeitos e Geral. Sons sintetizados próprios, sem downloads. Componentes pequenos e clips destruídos ao sair da cena. Não há som de hover em controles que não passam pelo tema compartilhado.
+
+Build Windows 0.19.1 concluída, errors=0. 5/5 SoundscapeTests aprovados, incluindo verificação a cada quadro de que no máximo uma fonte musical toca durante a transição de menu para masmorra. Conferência auditiva final pelo usuário permanece necessária; sem teste móvel/APK.
+Arquivos alterados: CampaignSoundscape.cs, SoundscapeLibrary.cs, Resources/CampaignSoundscape.asset, RusticHudTheme.cs, SoundscapeTests.cs, Editor/CampaignInstaller.cs e ProjectSettings.asset (versão). Novo: Scripts/UI/MenuAudioFeedback.cs e meta.
+Teste: abrir Configurações, passar o mouse e clicar; iniciar fase, chegar ao chefe e voltar ao menu. A antiga trilha deve desaparecer antes da nova; Música, Ambiente e Efeitos continuam independentes.
+
 # 0.19.0 — música e ambiente da campanha
 
 Cinco trilhas, quatro ambientes e três vinhetas originais sintetizados; menu, três biomas e chefes com transições suaves e volumes independentes em Configurações. Biblioteca e importação configuradas. 26/26 testes aprovados, build Windows errors=0; reprodução e avanço do áudio confirmados em execução real do PC. Sem novo APK ou validação física Android. Detalhes e arquivos em SOM_AMBIENTE_0_19_0.md.

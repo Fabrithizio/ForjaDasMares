@@ -6,7 +6,7 @@ namespace ForjaDasMares.Networking
     {
         public string displayName;
         public AudioClip music,ambience;
-        [Range(0,1)]public float musicGain=.48f,ambienceGain=.30f;
+        [Range(0,1)]public float musicGain=.26f,ambienceGain=.16f;
     }
     [CreateAssetMenu(menuName="Forja/Soundscape Library")]
     public sealed class SoundscapeLibrary:ScriptableObject
