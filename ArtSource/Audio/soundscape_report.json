@@ -1,0 +1,103 @@
+{
+  "sampleRate": 32000,
+  "seed": 20261027,
+  "credits": "Original procedural composition and synthesis for Forja das Mares; no external samples.",
+  "assets": {
+    "Menu_Mares": {
+      "seconds": 48.0,
+      "peak": 0.4400704503059387,
+      "rms": 0.10409799218177795,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Catacumbas_Ecos": {
+      "seconds": 45.714,
+      "peak": 0.4155862033367157,
+      "rms": 0.10411112010478973,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Floresta_Raizes": {
+      "seconds": 41.739,
+      "peak": 0.44644325971603394,
+      "rms": 0.10407913476228714,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Fortaleza_Brasas": {
+      "seconds": 38.4,
+      "peak": 0.42505744099617004,
+      "rms": 0.10405533015727997,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Chefe_Ferro": {
+      "seconds": 34.286,
+      "peak": 0.4257407486438751,
+      "rms": 0.10407839715480804,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Amb_Porto": {
+      "seconds": 40.0,
+      "peak": 0.3116662800312042,
+      "rms": 0.06476279348134995,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Amb_Catacumbas": {
+      "seconds": 40.0,
+      "peak": 0.2807994484901428,
+      "rms": 0.06476737558841705,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Amb_Floresta": {
+      "seconds": 40.0,
+      "peak": 0.30655473470687866,
+      "rms": 0.06476835906505585,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Amb_Fortaleza": {
+      "seconds": 40.0,
+      "peak": 0.31814828515052795,
+      "rms": 0.06476186960935593,
+      "seam": 0.0,
+      "stereo": true,
+      "loop": true
+    },
+    "Vitoria": {
+      "seconds": 3.0,
+      "peak": 0.5356761813163757,
+      "rms": 0.10790249705314636,
+      "seam": 0.0002500247792340815,
+      "stereo": true,
+      "loop": false
+    },
+    "Derrota": {
+      "seconds": 3.0,
+      "peak": 0.545452356338501,
+      "rms": 0.10782261937856674,
+      "seam": 0.0002795529435388744,
+      "stereo": true,
+      "loop": false
+    },
+    "Partida": {
+      "seconds": 3.0,
+      "peak": 0.5688482522964478,
+      "rms": 0.10746003687381744,
+      "seam": 0.00018878378614317626,
+      "stereo": true,
+      "loop": false
+    }
+  }
+}

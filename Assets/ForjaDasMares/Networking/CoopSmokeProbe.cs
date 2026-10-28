@@ -133,6 +133,7 @@ namespace ForjaDasMares.Networking
             }
             var report = new ProbeReport { phase = session.Phase.ToString(), tick = session.LastTick, localSlot = session.LocalSlot, connected = session.ConnectedCount, snapshotBytes = session.LastSnapshotBytes, enemies = session.IsHost ? session.Dungeon.Encounter.Enemies.ActiveCount : session.AppliedEnemyCount, effects = session.AppliedEffectCount, time = elapsed };
             var cloudState = session.GetComponent<CoopCloud>(); report.code = session.Pin; report.cloudMessage = cloudState.Message; report.cloudBusy = cloudState.Busy;
+            var soundscape=session.GetComponent<CampaignSoundscape>();if(soundscape!=null){report.soundscape=soundscape.Context;report.musicPlaying=soundscape.MusicPlaying;report.ambiencePlaying=soundscape.AmbiencePlaying;report.musicSample=soundscape.MusicSamplePosition;report.audioRate=AudioSettings.outputSampleRate;}
             report.publicRoom=cloudState.PublicRoom;report.solo=session.Campaign!=null&&session.Campaign.Solo;report.completion=session.Campaign!=null?session.Campaign.Completion:0;
             var adventure=session.Campaign?.Adventure;if(adventure!=null){report.seals=adventure.SealCount;report.sealGoal=adventure.SealGoal;report.explorationReward=adventure.Rewarded;report.propHealth=new int[adventure.Props.Count];for(int p=0;p<report.propHealth.Length;p++)report.propHealth[p]=adventure.Props[p].Health.Current;}
             report.profileReady=session.GetComponent<CoopProfileChannel>().LocalProfile!=null;
@@ -151,7 +152,7 @@ namespace ForjaDasMares.Networking
         void OnDisable(){arsenalInput?.SetUiAttackHeld(false);}
         [Serializable]sealed class ArsenalEvidence {public string weapon,clip;public int variant,version;public float time;public bool area;}
         [Serializable] sealed class ProbeReport
-        {public string[] heroes=new string[4],clips=new string[4];public int[] variants=new int[4],glyphs=new int[4]; public int[] recoveries=new int[4],boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
+        {public string soundscape;public bool musicPlaying,ambiencePlaying;public int musicSample,audioRate;public string[] heroes=new string[4],clips=new string[4];public int[] variants=new int[4],glyphs=new int[4]; public int[] recoveries=new int[4],boons=new int[4],featureStages,pingKinds;public string phase, signature, code, cloudMessage; public int seals,sealGoal;public int[] propHealth;public bool explorationReward,profileReady; public bool cloudBusy,publicRoom,solo; public uint tick; public int localSlot, connected, enemies, effects, snapshotBytes, sampleHp; public float time,completion; public Vector3[] positions = new Vector3[4]; public int[] hp = new int[4],maximum=new int[4], xp = new int[4], items = new int[4]; }
 #endif
     }
 }

@@ -57,6 +57,8 @@ namespace ForjaDasMares.Networking
             Button(options.transform,"Vibration",700,350,330,"VIBRAÇÃO: "+(PlayerPrefs.GetInt("CampaignVibration",0)==1?"SIM":"NÃO"),()=>ToggleOption("CampaignVibration","Vibration","VIBRAÇÃO"));
             Button(options.transform,"Effects",30,560,500,"EFEITOS: "+Mathf.RoundToInt(PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f)*100)+"%",()=>{float v=PlayerPrefs.GetFloat("CampaignEffectsVolume",.8f);v=v<.01f?1:Mathf.Max(0,v-.2f);PlayerPrefs.SetFloat("CampaignEffectsVolume",v);PlayerPrefs.Save();options.transform.Find("Effects").GetComponentInChildren<Text>().text="EFEITOS: "+Mathf.RoundToInt(v*100)+"%";});
             Button(options.transform,"GraphicsQuality",560,560,470,"GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected),()=>{GetComponent<PresentationQuality>()?.Cycle();options.transform.Find("GraphicsQuality").GetComponentInChildren<Text>().text="GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected);});
+            SoundVolumeButton(options.transform,"MusicVolume",30,612,500,"MÚSICA",CampaignSoundscape.MusicKey);
+            SoundVolumeButton(options.transform,"AmbienceVolume",560,612,470,"AMBIENTE",CampaignSoundscape.AmbienceKey);
             Label(options.transform,"PC: WASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: SUPER\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,410,1040,100,16);
             warning=Label(confirm.transform,"",60,215,1000,180,25);
             Button(confirm.transform,"CancelLeave",60,445,450,"CONTINUAR NA SALA",()=>Show(room));
@@ -119,8 +121,18 @@ namespace ForjaDasMares.Networking
         }
         void ToggleOption(string key,string button,string label){int v=1-PlayerPrefs.GetInt(key,0);PlayerPrefs.SetInt(key,v);PlayerPrefs.Save();options.transform.Find(button).GetComponentInChildren<Text>().text=label+": "+(v==1?"SIM":"NÃO");}
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat("CampaignMasterVolume",AudioListener.volume);PlayerPrefs.Save();volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
+        void RefreshAudioLabels()
+        {
+            var music=options.transform.Find("MusicVolume");var ambient=options.transform.Find("AmbienceVolume");
+            if(music!=null)music.GetComponentInChildren<Text>().text="MÚSICA: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.MusicKey)*100)+"% · AJUSTAR";
+            if(ambient!=null)ambient.GetComponentInChildren<Text>().text="AMBIENTE: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey)*100)+"% · AJUSTAR";
+        }
+        static void SoundVolumeButton(Transform page,string name,float x,float y,float width,string label,string key)
+        {
+            Button button=null;button=Button(page,name,x,y,width,label+": "+Mathf.RoundToInt(CampaignSoundscape.Volume(key)*100)+"% · AJUSTAR",()=>{float value=CampaignSoundscape.CycleVolume(key);button.GetComponentInChildren<Text>().text=label+": "+Mathf.RoundToInt(value*100)+"% · AJUSTAR";},32);
+        }
         void Opacity(float step){controls.alpha=Mathf.Clamp(controls.alpha+step,.35f,1);PlayerPrefs.SetFloat("CampaignControlOpacity",controls.alpha);PlayerPrefs.Save();opacity.text=Mathf.RoundToInt(controls.alpha*100)+"%";}
-        void Show(GameObject page){room.SetActive(page==room);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);expedition.SetActive(page==expedition);feedback.text="";}
+        void Show(GameObject page){room.SetActive(page==room);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);expedition.SetActive(page==expedition);feedback.text="";if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
         static GameObject Page(Transform parent,string name){var r=RusticHudTheme.Rect(parent,name,Vector2.zero,Vector2.zero,Vector2.zero);r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;return r.gameObject;}
         static Text Label(Transform p,string text,float x,float y,float w,float h,int size)=>RusticHudTheme.Label(p,"Text",new Vector2(0,1),new Vector2(x,-y),new Vector2(w,h),text,size);
         static Button Button(Transform p,string name,float x,float y,float w,string text,UnityEngine.Events.UnityAction action,float height=50)=>RusticHudTheme.Button(p,name,new Vector2(0,1),new Vector2(x,-y),new Vector2(w,height),text,action);

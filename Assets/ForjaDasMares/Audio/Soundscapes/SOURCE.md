@@ -1,0 +1,2 @@
+# Origem do áudio
+Composições, síntese e ambientes originais gerados para Forja das Marés por ArtSource/Audio/create_soundscapes.py (Python + NumPy). Nenhum sample externo, voz ou gravação comercial incorporado. Instrumentos sintetizados, não gravados. Cinco músicas, quatro ambientes e três vinhetas. Métricas e durações em ArtSource/Audio/soundscape_report.json; integração e limites em Docs/SOM_AMBIENTE_0_19_0.md.

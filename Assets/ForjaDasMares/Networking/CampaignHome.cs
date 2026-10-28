@@ -44,15 +44,27 @@ namespace ForjaDasMares.Networking
             volume=Label(options,"",600,235,400,60,24);Volume(0);
             var graphics=Button(options,"GraphicsQuality",50,310,510,"GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected),()=>{var quality=director.GetComponent<PresentationQuality>();if(quality==null)quality=UnityEngine.Object.FindFirstObjectByType<PresentationQuality>();quality?.Cycle();options.transform.Find("GraphicsQuality").GetComponentInChildren<Text>().text="GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected);});
             Label(options,"Nítido: bordas mais suaves. Econômico: resolução menor para aparelhos lentos.",50,380,1150,45,18);
-            Label(options,"PC: WASD/setas · mouse segurado para atacar · E habilidade · Espaço esquiva · F interagir\nCelular: joystick à esquerda; ataque, esquiva, habilidade e interação à direita.\nO host mantém os saves da campanha. Não há migração de host.",50,440,1150,150,20);
+            SoundVolumeButton(options,"MusicVolume",50,430,510,"MÚSICA",CampaignSoundscape.MusicKey);
+            SoundVolumeButton(options,"AmbienceVolume",590,430,510,"AMBIENTE",CampaignSoundscape.AmbienceKey);
+            Label(options,"PC: WASD/setas · mouse segurado para atacar · E habilidade · Espaço esquiva · F interagir\nCelular: joystick à esquerda; ataque, esquiva, habilidade e interação à direita.\nO host mantém os saves da campanha. Não há migração de host.",50,500,1150,105,18);
             Button(options,"Back",50,620,500,"VOLTAR AO INÍCIO",()=>Show(main));
             Label(confirm,"ENCERRAR O JOGO?",150,220,1000,100,36);
             Button(confirm,"Cancel",150,400,430,"CONTINUAR AQUI",()=>Show(main));Button(confirm,"Confirm",690,400,430,"ENCERRAR",Application.Quit);
             Show(main);
         }
         Text volume;
+        void RefreshAudioLabels()
+        {
+            var music=options.transform.Find("MusicVolume");var ambient=options.transform.Find("AmbienceVolume");
+            if(music!=null)music.GetComponentInChildren<Text>().text="MÚSICA: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.MusicKey)*100)+"% · AJUSTAR";
+            if(ambient!=null)ambient.GetComponentInChildren<Text>().text="AMBIENTE: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey)*100)+"% · AJUSTAR";
+        }
+        static void SoundVolumeButton(GameObject page,string name,float x,float y,float width,string label,string key)
+        {
+            Button button=null;button=Button(page,name,x,y,width,label+": "+Mathf.RoundToInt(CampaignSoundscape.Volume(key)*100)+"% · AJUSTAR",()=>{float value=CampaignSoundscape.CycleVolume(key);button.GetComponentInChildren<Text>().text=label+": "+Mathf.RoundToInt(value*100)+"% · AJUSTAR";});
+        }
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat(VolumeKey,AudioListener.volume);PlayerPrefs.Save();if(volume!=null)volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
-        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);}
+        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
         void Save()
         {
             string name=alias.text.Trim(),invite=code.text.Trim().ToUpperInvariant();

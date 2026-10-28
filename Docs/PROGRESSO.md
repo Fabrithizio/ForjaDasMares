@@ -1,3 +1,7 @@
+# 0.19.0 — música e ambiente da campanha
+
+Cinco trilhas, quatro ambientes e três vinhetas originais sintetizados; menu, três biomas e chefes com transições suaves e volumes independentes em Configurações. Biblioteca e importação configuradas. 26/26 testes aprovados, build Windows errors=0; reprodução e avanço do áudio confirmados em execução real do PC. Sem novo APK ou validação física Android. Detalhes e arquivos em SOM_AMBIENTE_0_19_0.md.
+
 # 0.18.0 — novo guerreiro e efeitos sem desenhos de teste
 
 Emberheart Hero fornecido pelo usuário integrado ao Guerreiro/Brasa: uma skin, 12.618 triângulos/72 ossos, altura 1,80 m e espada/machado até 1,10 m; maga 1,70 m preservada. Encaixe na palma calibrado, corpo antigo mantido nos assets/cenas de referência. 25 clips no novo esqueleto, incluindo corrida real fornecida, sem root motion. Gestos da maga ampliados.
