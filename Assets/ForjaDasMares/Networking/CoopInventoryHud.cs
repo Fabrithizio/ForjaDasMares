@@ -76,7 +76,7 @@ namespace ForjaDasMares.Networking
         }
         void BuildPaperDoll()
         {
-            touchLayout=Application.isMobilePlatform||Screen.width<1000;
+            touchLayout=Application.isMobilePlatform;
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
             overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,new Color(.035f,.06f,.05f,.72f),22);
             var backdrop=MenuArtwork.Fill(panel,"InventoryBackdrop","MenuArt/RoutesBackdrop",new Color(.65f,.7f,.68f,1));backdrop.transform.SetAsFirstSibling();
@@ -173,7 +173,8 @@ namespace ForjaDasMares.Networking
             Refresh();OpenItem();
         }
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
-        public void OpenInventory()=>Show(false);
+        public void OpenInventory(){activeArea=1;Show(false);}
+        public void OpenCharacter(){Show(false);NavigateProfile(0);}
         public void CloseInventory(){if(IsOpen)Close();}
         void Show(bool result)
         {
@@ -302,6 +303,7 @@ namespace ForjaDasMares.Networking
             }
             if(desktopInventory!=null)RefreshDesktopInventory(profile,value);
             if(touchIdentity!=null)RefreshTouchInventory(profile);
+            if(desktopInventory!=null)RefreshProfileAreas();
             RefreshEquipmentNotice();
             notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }

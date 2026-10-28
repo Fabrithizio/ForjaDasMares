@@ -1,3 +1,7 @@
+# 0.20.0 — áreas independentes do perfil no PC
+
+Personagem, Mochila, Status, Talentos e Recursos separados com navegação inferior. Grade ampliada; modelo e slots reais em página própria; ficha detalhada com valores e explicações em três categorias. Carteira usa ouro/armazenamento do perfil ativo, sem moedas ou slots fictícios. Comparação, equipagem e entregas preservadas. 14/14 testes de clareza aprovados, incluindo retorno de Talentos e ausência de mutação ao navegar. Build Windows 0.20.0 errors=0; telas reais conferidas no PC em perfil isolado. Detalhes, arquivos, testes manuais e limitações em ORGANIZACAO_PERFIL_0_20_0.md. Sem APK; reorganização equivalente da navegação de toque ainda pendente.
+
 # 0.19.1 — correção de sobreposição e volume
 
 Troca de trilhas agora sequencial: a antiga chega a zero e para antes de a próxima tocar, inclusive retorno ao menu/chefe. Vinhetas substituem a anterior e silenciam a trilha durante sua execução. Ganhos de música reduzidos de 0,48 para 0,26; ambiente de 0,30 para 0,16; vinhetas de 0,40 para 0,22. Preferências de volume do usuário preservadas.

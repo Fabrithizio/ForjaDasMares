@@ -87,6 +87,9 @@ namespace ForjaDasMares.Networking
                 if(command=="cast-special")session.Request(HeroButtons.Special);
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(directory,"screen.png"));
                 if(command=="profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.OpenInventory();
+                if(command=="profile-character")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.NavigateProfile(0);
+                if(command=="profile-status")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.NavigateProfile(2);
+                if(command=="profile-resources")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.NavigateProfile(4);
                 if(command=="close-profile")UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>()?.CloseInventory();
                 if(command=="manual")session.ProbeInput=false;
                 if(command=="quiet"){session.ProbeInput=true;session.ProbeMove=Vector2.zero;spawned=true;}

@@ -103,6 +103,7 @@ namespace ForjaDasMares.Networking
             var bar=track.gameObject.AddComponent<Scrollbar>();bar.handleRect=handle;bar.targetGraphic=handleImage;bar.direction=Scrollbar.Direction.BottomToTop;scroll.verticalScrollbar=bar;
             desktopStatus=InventoryText(desktopDetails,"ActionStatus",18,466,420,43,"",12);
             desktopAdvanced=RusticHudTheme.Button(desktopDetails,"FullComparison",InventoryTop,new Vector2(18,-548),new Vector2(420,30),"DETALHES E COMPARAÇÃO COMPLETA",()=>{if(selected==null)return;advancedDetails=false;itemPopup.SetActive(true);itemPopup.transform.SetAsLastSibling();Refresh();ResetInspectionScroll();});desktopAdvanced.GetComponentInChildren<Text>().fontSize=12;
+            BuildProfileAreas();
         }
         void RefreshDesktopInventory(PlayerProfile profile,ItemInstance item)
         {

@@ -18,6 +18,7 @@ namespace ForjaDasMares
             var lamp=new GameObject("PreviewLight");lamp.transform.SetParent(world.transform,false);lamp.transform.localPosition=new Vector3(-1,2,3);var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.range=8;light.intensity=12;light.cullingMask=1<<31;light.shadows=LightShadows.None;
             if(Camera.main!=null)Camera.main.cullingMask&=~(1<<31);
         }
+        public void SetBackdrop(Color color){if(preview!=null)preview.backgroundColor=color;}
         public void SetVisible(bool visible){if(image!=null)image.gameObject.SetActive(visible);if(world!=null)world.SetActive(visible&&(!portrait||dirty>0));if(preview!=null)preview.enabled=visible&&(!portrait||dirty>0);}
         public void Refresh(HeroPresentation actor,PlayerProfile profile,string hero)
         {

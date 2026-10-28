@@ -29,6 +29,18 @@ namespace ForjaDasMares.Networking.Tests
             hud.OpenInventory();yield return null;
         }
         [UnityTearDown]public IEnumerator Close(){if(hud!=null)hud.CloseInventory();if(session!=null)session.Close();yield return null;yield return null;}
+        [Test]public void ProfileAreasSeparateBagStatusResourcesAndPreserveEquipment()
+        {
+            string before=JsonUtility.ToJson(channel.LocalProfile);
+            hud.NavigateProfile(0);Assert.IsTrue(Root.Find("CharacterPage").gameObject.activeSelf);Assert.IsFalse(Root.Find("InventoryColumn").gameObject.activeSelf);
+            Assert.AreEqual(5,Root.Find("CharacterPage").GetComponentsInChildren<Button>(true).Count(b=>b.name.StartsWith("InspectSlot_")));
+            hud.NavigateProfile(2);Assert.IsTrue(Root.Find("StatusPage").gameObject.activeSelf);Assert.IsFalse(Root.Find("CharacterPage").gameObject.activeSelf);
+            Button("StatusTab_1").onClick.Invoke();StringAssert.Contains("Defesa",string.Join(" ",Root.Find("StatusPage").GetComponentsInChildren<Text>().Select(t=>t.text)));
+            hud.NavigateProfile(4);Assert.IsTrue(Root.Find("ResourcesPage").gameObject.activeSelf);
+            hud.NavigateProfile(1);Assert.IsTrue(Root.Find("InventoryColumn").gameObject.activeSelf);Assert.IsFalse(Root.Find("ResourcesPage").gameObject.activeSelf);
+            hud.NavigateProfile(3);var talents=Root.GetComponent<CampaignCharacterSheet>();Assert.IsTrue(talents.IsOpen);talents.Hide();hud.SendMessage("LateUpdate");Assert.AreEqual(0,hud.ProfileArea,"Closing talents returns to the character page");
+            Assert.AreEqual(before,JsonUtility.ToJson(channel.LocalProfile),"Navigation must not mutate inventory, equipment or coins");
+        }
         [UnityTest]public IEnumerator PerformanceSamplesOnlyGameplayAndResetsForInventory()
         {
             var diagnostic=UnityEngine.Object.FindFirstObjectByType<CampaignPerformanceHud>();Assert.NotNull(diagnostic);
@@ -102,7 +114,7 @@ namespace ForjaDasMares.Networking.Tests
             StringAssert.Contains("receba",Own.text);Button("EQUIPAR").onClick.Invoke();yield return null;yield return null;
             Assert.IsFalse(channel.LocalProfile.deliveries.Any(x=>x.instanceId==delivery.instanceId));
             Assert.IsNotNull(channel.LocalProfile.Item(delivery.instanceId));Assert.IsFalse(InventoryRules.Equipped(channel.LocalProfile,delivery.instanceId));
-            Assert.IsFalse(Button("BagSource").interactable);Assert.IsTrue(Root.Find("ItemComparison").gameObject.activeSelf);
+            Assert.IsFalse(Button("BagSource").interactable);Assert.IsTrue(Root.Find("ItemComparison").gameObject.activeSelf||Root.Find("SelectedItemColumn")?.gameObject.activeSelf==true);
             StringAssert.Contains(staff.displayName,Own.text);
         }
         [Test]public void EmptyCategoryExplainsTheFilterAndCanShowAllItems()

@@ -104,6 +104,8 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<6;i++){var r=(RectTransform)overview[i].transform;r.anchoredPosition=new Vector2(30+i%3*164,-435-i/3*55);r.sizeDelta=new Vector2(156,50);stats[i].rectTransform.sizeDelta=new Vector2(142,44);}
             var talent=(RectTransform)overview[6].transform;talent.anchoredPosition=new Vector2(30,-548);talent.sizeDelta=new Vector2(488,32);overview[6].GetComponentInChildren<Text>().rectTransform.sizeDelta=new Vector2(468,32);overview[6].GetComponentInChildren<Text>().fontSize=15;
         }
+        public void SetSummaryVisible(bool visible){foreach(var go in overview)if(go!=null)go.SetActive(visible);}
+        public void OpenTalents()=>Open();
         void Open(){popup.SetActive(true);popup.transform.SetAsLastSibling();confirm=false;pending=false;operationNotice=null;Refresh();}
         public void SetOverviewVisible(bool visible){foreach(var go in overview)if(go!=null)go.SetActive(visible);if(!visible)Hide();}
         public bool IsOpen=>popup!=null&&popup.activeSelf;

@@ -84,7 +84,7 @@ namespace ForjaDasMares.Networking
             roomCode=Label(codePanel,"",12,-6,196,40,15);
             menuButton=RusticHudTheme.Button(root,"SessionMenuButton",new Vector2(1,1),new Vector2(-20,-80),new Vector2(150,40),Application.isMobilePlatform?"MENU":"MENU · ESC",()=>sessionMenu.Open());
             var homeRect=RusticHudTheme.Rect(root,"InitialScreen",Vector2.zero,Vector2.zero,Vector2.zero);homeRect.anchorMax=Vector2.one;homeRect.offsetMin=homeRect.offsetMax=Vector2.zero;home=homeRect.gameObject;
-            home.AddComponent<CampaignHome>().Build(homeRect,director,()=>AtHome=false,()=>GetComponent<CoopInventoryHud>().OpenInventory());
+            home.AddComponent<CampaignHome>().Build(homeRect,director,()=>AtHome=false,()=>GetComponent<CoopInventoryHud>().OpenCharacter());
             sessionMenu=gameObject.AddComponent<CampaignSessionMenu>();sessionMenu.Build(root,director,controlsGroup);
             heroPicker=gameObject.AddComponent<CampaignHeroPicker>();heroPicker.Build(root,director);
             homeNotice=RusticHudTheme.Label(homeRect,"ConnectionNotice",new Vector2(1,1),new Vector2(-35,-35),new Vector2(600,110),"",18);
