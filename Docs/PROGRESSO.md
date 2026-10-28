@@ -1,3 +1,7 @@
+# 0.21.0 — região piloto em validação
+
+Nova Costa das Ruínas local, sem substituir os desafios: quatro setores Terrain, sete cenários fornecidos com três LODs e texturas 1K, refúgio, três acampamentos com respawn, missão temporária, minimapa e portal de retorno à campanha. Movimento/câmera/heróis/combate/IA reutilizados. Cinco testes regionais aprovados; compilação inicial do Terrain e conferência no player ainda em andamento nesta entrada. Não há região pública de 20 jogadores, integração de economia regional ou APK. Detalhes em COSTA_DAS_RUINAS_0_21_0.md.
+
 # 0.20.1 — referência visual corrigida e ouro sempre visível no perfil
 
 Barra fixa de ouro real no topo, inclusive na mochila e nas inspeções. Recursos retirado da navegação inferior. Avatar sobre o cenário com transparência real da prévia; slots compactos nos dois lados; status resumidos e detalhados com ícones e cores. Arte existente mais visível. Preservados os cinco slots e as moedas reais já existentes.

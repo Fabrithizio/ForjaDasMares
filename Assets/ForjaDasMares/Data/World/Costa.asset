@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0485f080ca94a2a90cfe2e440796c47, type: 3}
+  m_Name: Costa
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionDefinition
+  regionId: costa-ruinas
+  displayName: "Costa das Ru\xEDnas"
+  refuge: {x: 0, y: 0.1, z: -50}
+  portal: {x: 0, y: 0.1, z: 70}
+  route:
+  - {x: 0, y: 0, z: -50}
+  - {x: -37, y: 0, z: -12}
+  - {x: -15, y: 0, z: 12}
+  - {x: 36, y: 0, z: 30}
+  - {x: 25, y: 0, z: 53}
+  - {x: -24, y: 0, z: 54}
+  - {x: 0, y: 0, z: 70}
+  camps:
+  - label: Vigia do Cais
+    center: {x: -37, y: 0, z: -12}
+    spawns:
+    - {x: -40, y: 0.06, z: -9}
+    - {x: -34, y: 0.06, z: -9}
+    - {x: -37, y: 0.06, z: -15}
+    - {x: -33, y: 0.06, z: -14}
+    enemies:
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    respawnSeconds: 45
+  - label: "P\xE1tio dos Esquecidos"
+    center: {x: 36, y: 0, z: 30}
+    spawns:
+    - {x: 33, y: 0.06, z: 33}
+    - {x: 39, y: 0.06, z: 33}
+    - {x: 36, y: 0.06, z: 27}
+    - {x: 40, y: 0.06, z: 28}
+    enemies:
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+    respawnSeconds: 45
+  - label: "Santu\xE1rio Partido"
+    center: {x: -24, y: 0, z: 54}
+    spawns:
+    - {x: -27, y: 0.06, z: 57}
+    - {x: -21, y: 0.06, z: 57}
+    - {x: -24, y: 0.06, z: 51}
+    - {x: -20, y: 0.06, z: 52}
+    enemies:
+    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    respawnSeconds: 45
+  bounds:
+    m_Center: {x: 0, y: 0, z: 8}
+    m_Extent: {x: 80, y: 20, z: 80}
+  activeEnemyLimit: 12

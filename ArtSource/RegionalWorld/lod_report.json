@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Ancient_Flame_Bastion",
+    "triangles": [
+      11978,
+      5989,
+      2634
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Emberstone_Citadel_Bridge",
+    "triangles": [
+      10950,
+      5475,
+      2409
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Emberwatch_Gate",
+    "triangles": [
+      11634,
+      5817,
+      2559
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Molten_Spire_Citadel",
+    "triangles": [
+      12681,
+      6339,
+      2789
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Mossbound_Relic",
+    "triangles": [
+      11351,
+      5675,
+      2496
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Mossbound_Ruin_Gate",
+    "triangles": [
+      11153,
+      5576,
+      2453
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Sunfall_Ruin",
+    "triangles": [
+      12290,
+      6144,
+      2702
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  }
+]

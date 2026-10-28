@@ -1,6 +1,17 @@
 {
   "name": "ForjaDasMares.Networking.Editor",
-  "references": ["ForjaDasMares.Runtime", "ForjaDasMares.Networking", "ForjaDasMares.Editor", "Unity.Netcode.Runtime", "Unity.Networking.Transport", "Unity.ugui"],
-  "includePlatforms": ["Editor"],
+  "references": [
+    "ForjaDasMares.Runtime",
+    "ForjaDasMares.Networking",
+    "ForjaDasMares.Editor",
+    "Unity.Netcode.Runtime",
+    "Unity.Networking.Transport",
+    "Unity.ugui",
+    "Unity.AI.Navigation",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "autoReferenced": true
 }
