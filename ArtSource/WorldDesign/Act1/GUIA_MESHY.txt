@@ -1,0 +1,32 @@
+COSTA DAS RUÍNAS — KIT DE HISTÓRIA E AMBIENTE 02
+
+PROPOSTA VISUAL, NÃO IMPLEMENTADA. O mapa completo é só planejamento. NÃO envie a imagem 00 para gerar um mundo no Meshy.
+
+PRIMEIRO LOTE RECOMENDADO PARA MESHY
+01 Rocha costeira — delimitar caminhos e penhascos; gerar uma só e reutilizar.
+03 Marco da maré — ponto de orientação e futuro mecanismo/objetivo.
+05 Lápide — compor o Jardim dos Nomes.
+06 Braseiro sem fogo — iluminar refúgio/catacumbas; fogo será efeito na Unity.
+07 Minério — depósito na pedreira; coleta ainda não existe nesta proposta.
+08 Sino sem suporte — marco do refúgio; suporte e animação serão separados.
+
+SEGUNDO LOTE, SE OS PRIMEIROS RESULTADOS ESTIVEREM BONS
+02 Toco com raízes — bordas de caminho e transição ao Breu.
+10 Estátua — pontos de história no jardim/catacumbas; decoração rígida, NÃO aplicar rig humano.
+
+NÃO GASTE CRÉDITOS NESTAS DUAS POR ENQUANTO
+04 Muro: referência para modelar módulo com espessura e encaixes corretos no Blender. Uma única frente não determina sua espessura real.
+09 Tenda: referência frontal de aparência. A profundidade está pouco definida; prefiro modelar diretamente a estrutura simples ou preparar vistas coerentes antes de gastar em Image to 3D. Não tratar a imagem como geometria garantida.
+
+COMO GERAR
+Uma imagem por geração, sem Pose, rig ou animação: são cenários estáticos. Preserve os originais e baixe GLB ou FBX com todas as texturas. Não envie várias peças diferentes juntas. Se necessário, use Remove Background para remover halos. Frente limpa ajuda, mas não garante reconstrução exata de costas ou espessura. Se o resultado sair ruim, envie o print/modelo antes de repetir gerações.
+
+DESEMPENHO — ALVOS INICIAIS, NÃO LIMITES GARANTIDOS DO MESHY
+Rocha 500–1500 triângulos, toco 800–2500, marco/lápide 500–1500, braseiro/sino 1000–2500, minério 800–2000, estátua 2500–5000. A contagem real depende da silhueta e do resultado. Se a ferramenta não permitir esses números, baixe uma boa base e faremos redução/LODs no Blender. Não aumente cada objeto para 15000 só por textura. Guardar textura original 2K é útil; versões 512/1K podem ser suficientes no jogo após comparação.
+
+NÃO GERAR REPETIÇÕES IDÊNTICAS: o jogo reutiliza um modelo com posições/rotações/escalas. Reutilizar materiais e texturas, usar colisores simples. Não colocar reflexões, fogo ou partículas dentro da malha. Luz emissiva não substitui iluminação configurada.
+
+O QUE NÃO PRECISA VIR DO MESHY
+Pisos planos, base do terreno, encaixes de parede, suportes, tábuas simples, água, fogo, vento e sons. Podem ser construídos na Unity/Blender. Arcos, urnas e ruínas fornecidos continuam reaproveitáveis.
+
+As imagens foram geradas pela ferramenta image_gen integrada. PROMPTS.txt contém os prompts. A história e o papel de cada lugar estão em HISTORIA_E_MAPA_ATO_1.md.

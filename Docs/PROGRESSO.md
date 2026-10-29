@@ -1,3 +1,6 @@
+## Planejamento em 29/10/2026 — história e região aberta (não implementado)
+
+Proposta de três arcos conectando Memória, Seiva e Brasa; Costa das Ruínas com refúgio central, cais, pedreira, jardim funerário, catacumbas privadas e passagem ao Breu. Roteiro do primeiro ato com investigação em ordem livre e objetivos variados, aguardando aprovação. Um mapa conceitual e dez PNGs de objetos em ArtSource/WorldDesign/Act1, com prompts e prioridades Meshy; muro/tenda reservados preferencialmente à modelagem direta para poupar créditos e controlar profundidade/encaixes. Tudo também no pacote Costa-Historia-Kit-02.zip em Jogos/Referencias Meshy. História completa: HISTORIA_E_MAPA_ATO_1.md. Nenhuma mudança de código/cena/build; versão jogável continua 0.23.0. As imagens não são modelos ou sistemas prontos.
 # 0.23.0 — criatura rigada e prévia local das catacumbas
 
 GLB fornecido auditado: criatura quadrúpede com 18 ossos, sem animações. Seis clipes reais autorais criados no Blender e integrados por Animator: parado, andar, correr, atacar, golpe recebido e morte; dano e movimento permanecem nos componentes existentes. LODs 6435/3217/1608 triângulos, texturas 1K, pool de 12 e limite de 10 ativos.
