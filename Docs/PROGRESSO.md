@@ -1,3 +1,6 @@
+## Auditoria do mago inimigo — 29/10/2026 (não integrado)
+
+FBX Crystal Arcane Sentinel inspecionado no Blender: 6.931 vértices, 13.462 triângulos, texturas e nenhuma Armature/peso/animação. Bom candidato a rig humanoide próprio; ombreiras, mãos, mangas e manto precisam de revisão de pesos e teste de deformação. Renders reais de frente/lateral e relatório em ArtSource/Characters/ArcaneSentinelAudit. Originais preservados; não foi criado rig nem animação, nem alterado o jogo ou gerada build nesta auditoria. Não é necessário gastar outra geração antes de tentar o rig.
 ## Planejamento em 29/10/2026 — história e região aberta (não implementado)
 
 Proposta de três arcos conectando Memória, Seiva e Brasa; Costa das Ruínas com refúgio central, cais, pedreira, jardim funerário, catacumbas privadas e passagem ao Breu. Roteiro do primeiro ato com investigação em ordem livre e objetivos variados, aguardando aprovação. Um mapa conceitual e dez PNGs de objetos em ArtSource/WorldDesign/Act1, com prompts e prioridades Meshy; muro/tenda reservados preferencialmente à modelagem direta para poupar créditos e controlar profundidade/encaixes. Tudo também no pacote Costa-Historia-Kit-02.zip em Jogos/Referencias Meshy. História completa: HISTORIA_E_MAPA_ATO_1.md. Nenhuma mudança de código/cena/build; versão jogável continua 0.23.0. As imagens não são modelos ou sistemas prontos.

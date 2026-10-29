@@ -1,0 +1,44 @@
+{
+  "source": "C:\\Users\\Fabricio_S\\Desktop\\imagens refenteica\\assets gerado por ia\\asstes\\MagoMagicoInimigo\\Meshy_AI_Crystal_Arcane_Sentinel_20261029_texture_fbx",
+  "animations": [],
+  "rigs": [],
+  "meshes": [
+    {
+      "name": "Mesh_0",
+      "vertices": 6931,
+      "triangles": 13462,
+      "dimensions": [
+        0.5200200080871582,
+        0.3081049919128418,
+        0.9521479606628418
+      ],
+      "vertexGroups": [],
+      "weightedVertices": 0,
+      "modifiers": [],
+      "boundaryEdges": 296,
+      "nonManifoldEdges": 0,
+      "connectedComponents": [
+        1460,
+        891,
+        409,
+        353,
+        348,
+        273,
+        273,
+        260,
+        259,
+        248,
+        220,
+        199,
+        182,
+        146,
+        135,
+        134,
+        123,
+        117,
+        106,
+        93
+      ]
+    }
+  ]
+}
