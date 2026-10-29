@@ -21,6 +21,14 @@ namespace ForjaDasMares
         [SerializeField, Min(0.5f)] float referenceAspect = 1.777778f;
         Vector3 smoothedFocus, smoothVelocity;float impulse,impulseTime;
         public void Impact(float strength){if(PlayerPrefs.GetInt("CampaignCameraShake",0)==1){impulse=Mathf.Max(impulse,Mathf.Clamp(strength,0,.06f));impulseTime=.12f;}}
+        [Header("Action RPG framing")]
+        [SerializeField] Vector3 rpgOffset=new Vector3(0,11.5f,-8.5f);
+        [SerializeField,Range(30,60)]float rpgFieldOfView=42;
+        [SerializeField,Range(.5f,1)]float minimumZoom=.75f;
+        [SerializeField,Range(1,2)]float maximumZoom=1.35f;
+        float zoom=1,desiredZoom=1;UnityEngine.InputSystem.InputAction wheel;
+        public void UseRpgFraming(){offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}
+        public void SetZoom(float value){desiredZoom=Mathf.Clamp(value,minimumZoom,maximumZoom);}
         Camera cameraComponent;
         bool boundFocus;
         float armDistance, armVelocity;
@@ -33,6 +41,7 @@ namespace ForjaDasMares
         void Awake()
         {
             cameraComponent = GetComponent<Camera>();
+            wheel=new UnityEngine.InputSystem.InputAction("CameraZoom",UnityEngine.InputSystem.InputActionType.Value,"<Mouse>/scroll/y");wheel.Enable();
             if (target == null) { Debug.LogError("ArenaCamera requires a target.", this); enabled = false; }
         }
         void Start() => Snap();
@@ -47,6 +56,8 @@ namespace ForjaDasMares
         }
         void LateUpdate()
         {
+            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f)SetZoom(desiredZoom-Mathf.Clamp(amount/120,-3,3)*.08f);}
+            zoom=Mathf.Lerp(zoom,desiredZoom,1-Mathf.Exp(-8*Time.unscaledDeltaTime));
             smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
             // This is a virtual tracking point, not the camera lens. Crossing a crate
             // must not reset the spring and repeatedly snap the view to the player.
@@ -58,7 +69,7 @@ namespace ForjaDasMares
             float aspect = Mathf.Max(0.1f, cameraComponent.aspect);
             float tangent = Mathf.Tan(verticalFieldOfView * Mathf.Deg2Rad * 0.5f);
             cameraComponent.fieldOfView = Mathf.Clamp(2f * Mathf.Atan(tangent * Mathf.Max(1f, referenceAspect / aspect)) * Mathf.Rad2Deg, 30f, 95f);
-            float armLength = Mathf.Max(0.1f, offset.magnitude);
+            float armLength = Mathf.Max(0.1f, offset.magnitude*zoom);
             // A sight-line obstruction must not change the pitch or zoom. Only an
             // actual overlap at the lens may retract the arm for camera safety.
             Vector3 direction = offset.sqrMagnitude > 0.001f ? offset.normalized : Vector3.up;
@@ -73,7 +84,7 @@ namespace ForjaDasMares
             occlusion.Update(transform.position, target.position, blockers, visibilityRadius, obstructionReleaseDelay, Time.unscaledTime, obstructionOpacity);
         }
         void OnDisable() => occlusion.Restore();
-        void OnDestroy() => occlusion.Restore();
+        void OnDestroy(){occlusion.Restore();wheel?.Dispose();}
         float ClearDistance(Vector3 direction, float armLength)
         {
             if (Physics.SphereCast(smoothedFocus, collisionRadius, direction, out RaycastHit hit, armLength, blockers, QueryTriggerInteraction.Ignore))

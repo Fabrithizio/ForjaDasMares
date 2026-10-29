@@ -1,0 +1,28 @@
+# Movimento, mira e combate ARPG — 0.22.0
+
+## Pesquisa e escolha de comportamento
+Referência identificada como Drakensang Online, não o RPG tático Drakensang de 2008. O guia oficial Combat (publicado em 2015, editado em 2017) descreve segurar o mouse sobre o inimigo para atacar continuamente, troca de alvos e Shift para manter o personagem parado. O FAQ oficial de opções (2020) separa configurações de teclado, mouse e combate. São documentação histórica; não foi executado o cliente atual de DSO nem obtido seu código-fonte. A implementação é própria, sem copiar arquivos, arte, código proprietário ou prometer parâmetros internos iguais.
+Fontes: https://board-en.drakensang.com/threads/combat.60412/ ; https://board-en.drakensang.com/threads/opcje-i-ustawienia-w-grze.79625/ .
+
+Decisões: dois modos selecionáveis por F8, botão na região ou Configurações no início/menu da sala. Mouse RPG é o padrão de PC quando não existe preferência salva. Clique no chão define caminho; segurar atualiza o destino. Segurar sobre inimigo aproxima até o alcance e ataca continuamente; passar para outro inimigo troca o alvo. Um clique novo no chão cancela a seleção anterior. Shift permite disparar parado para o cursor. WASD/setas continuam disponíveis como sobreposição manual; o modo WASD + Mira remove movimento pelo clique e mantém tiro livre. Teclado tem prioridade sobre um percurso por clique. Toque/gamepad continuam pelo adaptador comum, sem navegação de mouse. Não há animações/modelos novos nesta entrega.
+
+## Causa comprovada do bug de mira
+A campanha usava ValidatedHeroCommands/IWorldAimCommands; a região local usava ArenaInput sem IWorldAimCommands. HeroCombat travava a orientação por toda a duração do ataque de projétil, incluindo recuperação. PlayerAim não atualizava enquanto travado; ataques encadeados podiam perpetuar a direção antiga.
+Correção: ArenaInput oferece intenção de mira mundial calculada do cursor, terreno/alvo e posição atual do jogador. O tiro usa a mira atual durante a preparação, fixa a trajetória no disparo e os ataques seguintes recebem a nova intenção. Trava de orientação reduzida à preparação. Projéteis já disparados não fazem curvas para acompanhar o mouse. PlayerAim e a intenção enviada pelo cliente usam a mesma base; movimento é independente da direção de tiro.
+
+## Arquitetura e segurança
+DesktopRpgControls é um adaptador: não teleporta ou movimenta Transform para navegar. Usa NavMeshPath reutilizável, destinos completos válidos e vetores normalizados consumidos por PlayerMotor. O mesmo Move/Aim continua passando pela validação do host na campanha, sem alterar protocolo, tamanho de pacote ou conceder dano/recompensas ao cliente. Alvos vêm das camadas válidas de HeroCombat e Health, incluindo alvos de treino/destrutíveis compatíveis; paredes continuam bloqueando visibilidade/projéteis. UI, bloqueio de comandos, morte, perda de foco e troca de modo cancelam intenções de movimento pendentes.
+Câmera RPG fixa em direção/pitch, aplicada à campanha e região, com parâmetros expostos e zoom limitado/suave na roda; preserva a ocultação parcial de obstáculos existente. Enquadramento próprio aproximado, não uma reprodução medida dos parâmetros de DSO. Cenas antigas de referência mantêm seu enquadramento base.
+
+## Validação
+38/38 testes PlayMode passaram, zero ignorados: dez ArpgControlsTests, sete RegionalWorldTests e 21 CampaignTests. Entradas reais do Input System simuladas para mouse e teclado, cobrindo direção de ataques contínuos, trajetória já comprometida, clique no chão sem disparar, aproximação/troca de alvo segurando, obstáculo com NavMesh carving, Shift, UI, diagonal normalizada, morte/respawn, destino inválido e zoom sem alteração de pitch.
+O fixture de entrada salva/restaura configurações de foco; o runner batch inicialmente desativava os dispositivos de teste por falta de foco. IgnoreFocus é usado somente no fixture, sem alterar o comportamento do jogo. A primeira execução também detectou construção de NavMeshPath no inicializador do componente, movida para Awake. Erros iniciais foram corrigidos, não ignorados nos testes.
+Build e player: Logs/arpg-windows.log e Logs/ArpgQA. Conferência visual da câmera/HUD na versão Windows; avaliação humana de sensação/ritmo ainda necessária. Não houve novo teste físico de Android/gamepad ou sessão PC–Android; não foi gerado APK. Os testes de campanha não substituem uma sessão humana de dois clientes para validar o novo controle sob latência. Não há promessa de ausência universal de bugs ou de equivalência integral ao jogo de referência.
+
+## Como testar
+Abrir a versão estável Windows. Entrar no protótipo de mundo ou na campanha. Mouse RPG: clicar no chão; clicar/segurar num inimigo; mover o cursor para outro inimigo; segurar Shift e atacar para os dois lados. F8 alterna para WASD + Mira: segurar ataque enquanto muda o cursor de lado e caminha lateralmente. Soltar o botão deve encerrar ataques contínuos, sem virar projéteis existentes. Testar clique em botões, morte/reaparecimento, caminho com obstáculo e zoom pela roda. Botão direito/E usa a habilidade existente; cooldowns e regras da classe permanecem.
+
+## Arquivos
+Novos: Scripts/Input/DesktopRpgControls.cs e Networking/Tests/ArpgControlsTests.cs (e metas).
+Alterados: Scripts/Input/ArenaInput.cs, Scripts/Gameplay/PlayerAim.cs, HeroCombat.cs, Scripts/Presentation/ArenaCamera.cs, Networking/CoopDirector.cs, CampaignHome.cs, CampaignSessionMenu.cs, World/RegionalWorld.cs, RegionalWorldHud.cs, Editor/CampaignInstaller.cs, ProjectSettings/ProjectSettings.asset e Docs/PROGRESSO.md.
+Sem pacotes novos, mudanças de itens, economia, animações ou sistema de regiões públicas. A limitação de quatro jogadores e o estágio local da região continuam os mesmos.

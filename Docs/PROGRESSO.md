@@ -1,3 +1,8 @@
+# 0.22.0 — movimento e combate com dois modos de PC
+
+Mouse RPG: clique no chão para caminhar por caminho válido, segure num inimigo para aproximar/atacar, troque alvo com o cursor e use Shift para atacar parado. F8 alterna com WASD + Mira; opção também em Configurações. Mira agora chega ao combate local e à entrada validada da campanha: próximos disparos acompanham o cursor, enquanto projéteis já lançados mantêm sua trajetória. Preparação e recuperação não mantêm a mira presa entre ataques. Câmera diagonal estável com zoom suave limitado pela roda.
+
+38/38 testes PlayMode aprovados, zero ignorados; build Windows Succeeded/errors=0. Player Windows abriu na região, câmera/HUD conferidos por captura e sem exceções no log dessa execução. Testes de mouse/teclado são automatizados, não avaliação humana de sensação; novo controle ainda precisa de teste humano sob latência e em Android/gamepad físico. Sem APK. Sem alterações de economia, conteúdo ou servidores. Detalhes, arquivos, pesquisa oficial histórica e como testar em CONTROLES_ARPG_0_22_0.md.
 # 0.21.0 — Costa das Ruínas: primeira região local jogável
 
 Cena nova de 160x160m com quatro setores Terrain, trilhas, ruínas fornecidas, refúgio, três acampamentos com respawn, missão temporária e portal para os desafios preservados. Sete cenários preparados com três LODs/texturas 1K; costa usa as famílias de ruínas/musgo. Modelos 3D Wilderness existentes, heróis, movimento, câmera e combate reutilizados. Minimap com caminhos, vida, interação, morte/reaparecimento e retorno ao menu.

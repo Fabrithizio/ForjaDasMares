@@ -45,6 +45,7 @@ namespace ForjaDasMares
         AttackDefinition[] equipmentAttacks;
         float criticalMultiplier=1.5f;
         public int GeometryMask=>geometry.value;
+        public int TargetMask=>targets.value;
         float damageMultiplier = 1, attackSpeed = 1, cooldownMultiplier = 1, criticalChance, elementalDamage, strikeScale = 1;
         bool twinStrike, secondResolved;
         AttackDefinition legendaryEcho;
@@ -138,7 +139,7 @@ namespace ForjaDasMares
             transform.rotation = Quaternion.LookRotation(facing);
             strikeScale = (GetComponent<CombatBuildEffects>()?.ConsumeCounter()??1)*ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
             secondResolved = echoResolved = false; // A cast keeps its pose aligned with the committed shot while movement stays free.
-            motor.LockFacing(currentAttack.shape == AttackShape.Projectile ? length : currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
+            motor.LockFacing(currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
         }
         public void Simulate(float deltaTime)
         {

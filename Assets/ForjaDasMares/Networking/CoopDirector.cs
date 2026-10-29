@@ -93,6 +93,7 @@ namespace ForjaDasMares.Networking
         void Start()
         {
             UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(gameObject, dungeon.gameObject.scene);
+            if(Campaign!=null)follow.UseRpgFraming();
             party = gameObject.AddComponent<CombatParty>(); dungeon.Encounter.Enemies.Party = party; dungeon.Party = party;
             for (int i = 0; i < actors.Length; i++)
             {
@@ -310,9 +311,8 @@ namespace ForjaDasMares.Networking
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (ProbeInput) return Vector2.ClampMagnitude(ProbeAim, 1);
 #endif
-            var actor = actors[localSlot]; Vector3 forward = actor.Motor.WorldDirection(input.Move);
-            if (input.HasPointer)
-            { Ray ray = follow.GetComponent<Camera>().ScreenPointToRay(input.PointerPosition); if (new Plane(Vector3.up, actor.transform.position+Vector3.up).Raycast(ray, out float distance)) forward = ray.GetPoint(distance) - actor.transform.position; }
+            var actor = actors[localSlot];input.ConfigureDesktop(actor.Motor,follow.GetComponent<Camera>(),actor.Combat); Vector3 forward = input.AimDirection;
+            
             forward.y = 0; if (forward.sqrMagnitude < .01f) forward = actor.transform.forward;
             if(Application.isMobilePlatform&&!input.HasPointer)
             {

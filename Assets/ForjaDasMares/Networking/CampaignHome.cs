@@ -47,7 +47,8 @@ namespace ForjaDasMares.Networking
             Label(options,"Nítido: bordas mais suaves. Econômico: resolução menor para aparelhos lentos.",50,380,1150,45,18);
             SoundVolumeButton(options,"MusicVolume",50,430,510,"MÚSICA",CampaignSoundscape.MusicKey);
             SoundVolumeButton(options,"AmbienceVolume",590,430,510,"AMBIENTE",CampaignSoundscape.AmbienceKey);
-            Label(options,"PC: WASD/setas · mouse segurado para atacar · E habilidade · Espaço esquiva · F interagir\nCelular: joystick à esquerda; ataque, esquiva, habilidade e interação à direita.\nO host mantém os saves da campanha. Não há migração de host.",50,500,1150,105,18);
+            Button(options,"MovementMode",590,310,510,"CONTROLES: "+DesktopRpgControls.ModeName,()=>{DesktopRpgControls.ToggleMode();options.transform.Find("MovementMode").GetComponentInChildren<Text>().text="CONTROLES: "+DesktopRpgControls.ModeName;});
+            Label(options,"Mouse RPG: chão para andar; segure no inimigo para atacar; Shift mantém parado.\nWASD: teclas para mover e mouse para mirar/atacar. F8 alterna os modos.\nBotão direito/E: habilidade · espaço: esquiva · roda: zoom · Q: super.\nCelular mantém joystick e botões.",50,500,1150,105,18);
             Button(options,"Back",50,620,500,"VOLTAR AO INÍCIO",()=>Show(main));
             Label(confirm,"ENCERRAR O JOGO?",150,220,1000,100,36);
             Button(confirm,"Cancel",150,400,430,"CONTINUAR AQUI",()=>Show(main));Button(confirm,"Confirm",690,400,430,"ENCERRAR",Application.Quit);
@@ -57,6 +58,7 @@ namespace ForjaDasMares.Networking
         void RefreshAudioLabels()
         {
             var music=options.transform.Find("MusicVolume");var ambient=options.transform.Find("AmbienceVolume");
+            var mode=options.transform.Find("MovementMode");if(mode!=null)mode.GetComponentInChildren<Text>().text="CONTROLES: "+DesktopRpgControls.ModeName;
             if(music!=null)music.GetComponentInChildren<Text>().text="MÚSICA: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.MusicKey)*100)+"% · AJUSTAR";
             if(ambient!=null)ambient.GetComponentInChildren<Text>().text="AMBIENTE: "+Mathf.RoundToInt(CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey)*100)+"% · AJUSTAR";
         }

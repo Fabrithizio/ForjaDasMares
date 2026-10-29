@@ -12,6 +12,7 @@ namespace ForjaDasMares
         public void Configure(PlayerMotor playerMotor, Camera camera) { motor = playerMotor; viewCamera = camera; }
         void Awake()
         {
+            if(motor!=null&&viewCamera!=null){var input=GetComponent<ArenaInput>();if(input!=null)input.ConfigureDesktop(motor,viewCamera,GetComponent<HeroCombat>());}
             if (motor == null || viewCamera == null) { Debug.LogError("PlayerAim requires motor and camera.", this); enabled = false; }
         }
         void Update()
@@ -20,7 +21,8 @@ namespace ForjaDasMares
             IPlayerCommands commands = motor.Commands;
             if (commands == null) return;
             Vector3 direction = motor.WorldDirection(commands.Move);
-            if (commands.HasPointer)
+            if(commands is IWorldAimCommands worldAim) direction=worldAim.AimDirection;
+            else if (commands.HasPointer)
             {
                 Ray ray = viewCamera.ScreenPointToRay(commands.PointerPosition);
                 Plane plane = new Plane(Vector3.up, new Vector3(0f, groundHeight, 0f));
