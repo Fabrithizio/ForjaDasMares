@@ -1,3 +1,10 @@
+# 0.23.0 — criatura rigada e prévia local das catacumbas
+
+GLB fornecido auditado: criatura quadrúpede com 18 ossos, sem animações. Seis clipes reais autorais criados no Blender e integrados por Animator: parado, andar, correr, atacar, golpe recebido e morte; dano e movimento permanecem nos componentes existentes. LODs 6435/3217/1608 triângulos, texturas 1K, pool de 12 e limite de 10 ativos.
+
+Cena separada CatacumbasDasMares com entrada no menu, galeria funerária, cripta com água estática, passagens laterais/ponte, santuário, três patrulhas, refúgio e portal. Usa arco e urna novos; paredes, sarcófagos e luminárias complementares ainda geométricos provisórios. Costa, desafios, controles e saves normais preservados. Colisores simples; alvenaria agrupada em setores e transparência da câmera preservada.
+
+42/42 testes PlayMode aprovados, zero ignorados; build Windows 0.23.0 Succeeded/errors=0. Conferência visual da build e dano inimigo no player sem exceções no log observado. Amostra breve MX130 média 8,88 ms/quadro, pico 99,54 ms, com refúgio/combate/morte/teletransportes misturados: não é certificação de desempenho, e picos requerem investigação. Sem APK, teste físico móvel ou novo teste online. Cena é prévia local sem progresso permanente regional, chefe novo ou regiões públicas de 20. Animações ainda dependem de aprovação visual humana. Documento completo, arquivos, limites e reprodução: CATACUMBAS_0_23_0.md. Mira refinada e zoom mais forte solicitados antes continuam pendentes.
 # 0.22.0 — movimento e combate com dois modos de PC
 
 Mouse RPG: clique no chão para caminhar por caminho válido, segure num inimigo para aproximar/atacar, troque alvo com o cursor e use Shift para atacar parado. F8 alterna com WASD + Mira; opção também em Configurações. Mira agora chega ao combate local e à entrada validada da campanha: próximos disparos acompanham o cursor, enquanto projéteis já lançados mantêm sua trajetória. Preparação e recuperação não mantêm a mira presa entre ataques. Câmera diagonal estável com zoom suave limitado pela roda.

@@ -2,7 +2,8 @@ import bpy,json,sys,math
 from pathlib import Path
 from mathutils import Vector
 root=Path(__file__).resolve().parent
-jobs=json.loads((root/'jobs.json').read_text());report=[]
+args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+jobs=json.loads((Path(args[0]) if args else root/'jobs.json').read_text());report=[]
 for job in jobs:
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
  bpy.ops.import_scene.fbx(filepath=job['source'])
@@ -28,5 +29,5 @@ for job in jobs:
  for o in objs:o.select_set(True)
  bpy.ops.export_scene.fbx(filepath=job['output'],use_selection=True,object_types={'MESH'},add_leaf_bones=False,bake_anim=False,use_mesh_modifiers=True,path_mode='STRIP',embed_textures=False,axis_forward='-Z',axis_up='Y')
  report.append({'name':job['name'],'triangles':counts,'footprint':8,'sourceUntouched':True})
-(root/'lod_report.json').write_text(json.dumps(report,indent=2))
+(root/('catacomb_lod_report.json' if args else 'lod_report.json')).write_text(json.dumps(report,indent=2))
 print('REGION_ASSETS_READY',len(report))

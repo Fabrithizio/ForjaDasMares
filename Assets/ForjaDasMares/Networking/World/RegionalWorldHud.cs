@@ -25,7 +25,7 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Button(root,"ReturnToMenu",new Vector2(1,1),new Vector2(-20,-20),new Vector2(210,42),"VOLTAR AO MENU",world.ReturnToCampaign);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;
             Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"F8: modo de controle · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir · R: refúgio",13);
-            Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),"COSTA DAS RUÍNAS · PROTÓTIPO LOCAL",12).color=RusticHudTheme.Muted;
+            Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).color=RusticHudTheme.Muted;
             death=RusticHudTheme.Rect(root,"Death",Vector2.one*.5f,Vector2.zero,new Vector2(450,180)).gameObject;RusticHudTheme.Panel((RectTransform)death.transform,RusticHudTheme.Ink,20);
             Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. Retorne ao refúgio.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
             interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
@@ -38,7 +38,7 @@ namespace ForjaDasMares.Networking
             movementMode.GetComponentInChildren<Text>().text=DesktopRpgControls.ModeName+" · F8 PARA TROCAR";
             controlHint.text=DesktopRpgControls.MouseMode?"Chão: andar · segure no inimigo: atacar\nShift: atacar parado · WASD também pode mover":"WASD/setas: mover · segure o mouse: atacar\nMova o cursor para direcionar os próximos golpes";
             var hero=world.Hero;life.text=hero.Current.displayName+"\nVIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;
-            objective.text="ECOS NA COSTA\nInvestigue os acampamentos: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
+            objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
         }
         void OnDestroy(){if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}

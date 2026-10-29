@@ -1,0 +1,20 @@
+{
+  "sourceTriangles": 12870,
+  "lodTriangles": [
+    6435,
+    3217,
+    1608
+  ],
+  "bones": 18,
+  "clips": {
+    "Idle": 61,
+    "Walk": 31,
+    "Run": 25,
+    "Attack": 31,
+    "Hit": 13,
+    "Dead": 31
+  },
+  "fps": 30,
+  "rootMotion": false,
+  "source": "Supplied four-legged creature; original keyed clips, not motion capture."
+}

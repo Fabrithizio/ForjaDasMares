@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ForjaDasMares/Scenes/CostaDasRuinas.unity
     guid: 81eba657148e0924e9c0b0a404f2c7be
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/CatacumbasDasMares.unity
+    guid: 102b5684478672648881d45d154b3571
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

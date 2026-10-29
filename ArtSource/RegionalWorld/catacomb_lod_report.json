@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Ancient_Tidegate",
+    "triangles": [
+      3191,
+      1594,
+      702
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  },
+  {
+    "name": "Ancient_Wave_Urn",
+    "triangles": [
+      2314,
+      1156,
+      508
+    ],
+    "footprint": 8,
+    "sourceUntouched": true
+  }
+]

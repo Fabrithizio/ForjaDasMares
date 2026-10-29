@@ -1,0 +1,387 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1714325298896536964
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3996314754611284558}
+  - component: {fileID: 5495920764304678776}
+  - component: {fileID: 2262691170010912889}
+  m_Layer: 0
+  m_Name: CrawlerVisual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3996314754611284558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714325298896536964}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4244707273101313277}
+  m_Father: {fileID: 2280180075645617}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &5495920764304678776
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714325298896536964}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -0.010973752, y: 0.521744, z: -0.00046432018}
+  m_Size: 1.1406415
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.18
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4277416650612009388}
+  - screenRelativeHeight: 0.08
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2011769925291642717}
+  - screenRelativeHeight: 0.015
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4281757182430592960}
+  m_Enabled: 1
+--- !u!114 &2262691170010912889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714325298896536964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acad590c3ca741c418156efc8597ab4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.RiggedEnemyAnimation
+  animator: {fileID: 7784496222504836743}
+--- !u!1 &7523020780296534823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2280180075645617}
+  - component: {fileID: 1892878696473273993}
+  - component: {fileID: 159606625080008916}
+  - component: {fileID: 256716123617817313}
+  - component: {fileID: 8510824776588066781}
+  - component: {fileID: 4738791501148307168}
+  - component: {fileID: 5200337532721012897}
+  - component: {fileID: 2911430193366344455}
+  - component: {fileID: 5562182656450003975}
+  - component: {fileID: 1597901768955301992}
+  m_Layer: 13
+  m_Name: TideCrawler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2280180075645617
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3996314754611284558}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &1892878696473273993
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Height: 1.3
+  m_Radius: 0.32
+  m_SlopeLimit: 45
+  m_StepOffset: 0.25
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.65, z: 0}
+--- !u!195 &159606625080008916
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 0
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &256716123617817313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
+  maximum: 36
+  faction: 2
+  dodgeSource: {fileID: 0}
+  defenseSource: {fileID: 1597901768955301992}
+--- !u!114 &8510824776588066781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df3a3f92f89113545944494508d35d57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyMotor
+  health: {fileID: 256716123617817313}
+--- !u!114 &4738791501148307168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84c43441e34322541a0b1b55f47cb437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyCombat
+--- !u!114 &5200337532721012897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb2e354652edbc24ba88fe4a6728f413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyBrain
+  state: 0
+--- !u!114 &2911430193366344455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768f12ad319163c4a86fa0bc781a5bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyActor
+  health: {fileID: 256716123617817313}
+  brain: {fileID: 5200337532721012897}
+  combat: {fileID: 4738791501148307168}
+  motor: {fileID: 8510824776588066781}
+  presentation: {fileID: 5562182656450003975}
+  guard: {fileID: 1597901768955301992}
+--- !u!114 &5562182656450003975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20c905f0d2186e245a101e715ce02e40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyPresentation
+  actor: {fileID: 2911430193366344455}
+  model: {fileID: 3996314754611284558}
+  surfaces: []
+  shield: {fileID: 0}
+--- !u!114 &1597901768955301992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523020780296534823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4586abffacc9d2b458422ae3494f8d41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.DirectionalGuard
+  brain: {fileID: 5200337532721012897}
+--- !u!1001 &4423242627408061206
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3996314754611284558}
+    m_Modifications:
+    - target: {fileID: -8773315006581962054, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_Quality
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8773315006581962054, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7592e2684f2aff5419facb6001e9fd05, type: 2}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.35223573
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.35223573
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.35223573
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.28851977
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -6446412839051105205, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_Quality
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -6446412839051105205, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7592e2684f2aff5419facb6001e9fd05, type: 2}
+    - target: {fileID: 434976434554232022, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_Quality
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 434976434554232022, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7592e2684f2aff5419facb6001e9fd05, type: 2}
+    - target: {fileID: 919132149155446097, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_Name
+      value: CrawlerAnimated
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 1770d770d69a56f46958e1a94bbee4fb, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+--- !u!137 &2011769925291642717 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6446412839051105205, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+  m_PrefabInstance: {fileID: 4423242627408061206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4244707273101313277 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+  m_PrefabInstance: {fileID: 4423242627408061206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4277416650612009388 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8773315006581962054, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+  m_PrefabInstance: {fileID: 4423242627408061206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4281757182430592960 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 434976434554232022, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+  m_PrefabInstance: {fileID: 4423242627408061206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7784496222504836743 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 687130cc3b4a08f4d95e5ced81df66fc, type: 3}
+  m_PrefabInstance: {fileID: 4423242627408061206}
+  m_PrefabAsset: {fileID: 0}

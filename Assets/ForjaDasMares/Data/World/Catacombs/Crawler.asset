@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: Crawler
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0.9
+  enemyId: servo-mare
+  displayName: "Servo das Mar\xE9s"
+  kind: 0
+  prefab: {fileID: 7523020780296534823, guid: 6d9e59887a0e73645bdc6779277b2f9b, type: 3}
+  maximumHealth: 32
+  poolCapacity: 12
+  armor: 0
+  speed: 3.3
+  acceleration: 24
+  height: 1.05
+  radius: 0.55
+  agentTypeId: 0
+  detectionRange: 24
+  forgetRange: 36
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: a6cd03f79555d2c42bf8c3c6f4f0fb8a, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0
+  staggerDuration: 0.12
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 0}
+  rewardTheme: -1
+  miniboss: 0
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
+  color: {r: 1, g: 1, b: 1, a: 1}
