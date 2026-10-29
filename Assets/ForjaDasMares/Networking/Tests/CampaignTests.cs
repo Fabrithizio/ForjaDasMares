@@ -98,8 +98,8 @@ namespace ForjaDasMares.Networking.Tests
             Assert.IsTrue(session.HostDirect("CMPBAG",7795,false));yield return null;
             var hud=UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>();
             foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name=="INVENTÁRIO"){button.onClick.Invoke();break;}
-            yield return null;int slots=0;
-            foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>())if(button.name.StartsWith("EquipmentSlot_"))slots++;
+            hud.OpenCharacter();yield return null;int slots=0;
+            foreach(var button in hud.GetComponentsInChildren<UnityEngine.UI.Button>())if(button.name.StartsWith("InspectSlot_"))slots++;
             Assert.AreEqual(5,slots);Assert.AreEqual(4,session.GetComponent<CoopProgression>().Profile(0).Profile.inventory.Count);
             Assert.NotNull(hud.GetComponentInChildren<UnityEngine.UI.RawImage>());
         }

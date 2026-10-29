@@ -67,7 +67,7 @@ namespace ForjaDasMares.Networking
         { var button = Button(touch.transform, name, Vector2.zero, 135, () => session.Request(action)); var rect = (RectTransform)button.transform; rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1, 0); rect.anchoredPosition = offset; rect.sizeDelta = new Vector2(135, 65); }
         void Update()
         {
-            if (root == null) return;
+            if (root == null || session == null || session.Manager == null) return;
             Rect safe = Screen.safeArea; root.anchorMin = new Vector2(safe.xMin / Screen.width, safe.yMin / Screen.height); root.anchorMax = new Vector2(safe.xMax / Screen.width, safe.yMax / Screen.height); root.offsetMin = root.offsetMax = Vector2.zero;
             if(session.Campaign!=null)return;
             refresh -= Time.unscaledDeltaTime; if (refresh > 0) return; refresh = .15f;

@@ -1,6 +1,8 @@
-# 0.21.0 — região piloto em validação
+# 0.21.0 — Costa das Ruínas: primeira região local jogável
 
-Nova Costa das Ruínas local, sem substituir os desafios: quatro setores Terrain, sete cenários fornecidos com três LODs e texturas 1K, refúgio, três acampamentos com respawn, missão temporária, minimapa e portal de retorno à campanha. Movimento/câmera/heróis/combate/IA reutilizados. Cinco testes regionais aprovados; compilação inicial do Terrain e conferência no player ainda em andamento nesta entrada. Não há região pública de 20 jogadores, integração de economia regional ou APK. Detalhes em COSTA_DAS_RUINAS_0_21_0.md.
+Cena nova de 160x160m com quatro setores Terrain, trilhas, ruínas fornecidas, refúgio, três acampamentos com respawn, missão temporária e portal para os desafios preservados. Sete cenários preparados com três LODs/texturas 1K; costa usa as famílias de ruínas/musgo. Modelos 3D Wilderness existentes, heróis, movimento, câmera e combate reutilizados. Minimap com caminhos, vida, interação, morte/reaparecimento e retorno ao menu.
+
+28/28 testes aprovados, zero ignorados; build Windows Succeeded/errors=0. Player real conferido com 3/3 acampamentos, portal liberado e morte/respawn, usando comandos de QA para verificar conclusão. Ataque real e ida/retorno de host com destruição segura do NetworkManager cobertos por testes. A versão não implementa região pública de 20, servidor dedicado, transferência de itens/progresso regional ou NPCs de história; não altera o save normal. Sem APK, teste móvel ou promessa de FPS/carga. Arquivos e passos em COSTA_DAS_RUINAS_0_21_0.md.
 
 # 0.20.1 — referência visual corrigida e ouro sempre visível no perfil
 

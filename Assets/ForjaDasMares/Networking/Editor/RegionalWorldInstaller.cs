@@ -27,8 +27,9 @@ namespace ForjaDasMares.Networking.Editor
             foreach(var c in hero.GetComponents<MonoBehaviour>())if(c is CoopActor||c is HeroEquipment||c is MeleeAttack)c.enabled=false;
             var motor=hero.GetComponent<PlayerMotor>();var input=hero.GetComponent<ArenaInput>();motor.Configure(input,camera.transform);motor.enabled=true;input.enabled=true;
             hero.enabled=true;hero.GetComponent<HeroCombat>().enabled=true;hero.GetComponent<PlayerAim>().Configure(motor,camera.GetComponent<Camera>());hero.GetComponent<PlayerAim>().enabled=true;hero.GetComponent<HeroPresentation>().ReplicaMode=false;
+            var cameraSettings=new SerializedObject(camera);cameraSettings.FindProperty("offset").vector3Value=new Vector3(7,10,-7);cameraSettings.ApplyModifiedPropertiesWithoutUndo();
             hero.transform.position=new Vector3(0,.1f,-50);camera.Configure(hero.transform,1<<9);camera.GetComponent<Camera>().farClipPlane=280;
-            var enemyData=AssetDatabase.FindAssets("t:EnemyDefinition",new[]{"Assets/ForjaDasMares/Data/Enemies"}).Select(id=>AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(id))).Where(x=>x.kind==EnemyKind.Raider||x.kind==EnemyKind.Archer||x.kind==EnemyKind.Guardian).ToArray();
+            var enemyData=AssetDatabase.FindAssets("t:EnemyDefinition",new[]{"Assets/ForjaDasMares/Data/Campaign/Wilderness"}).Select(id=>AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(id))).Where(x=>x.kind==EnemyKind.Raider||x.kind==EnemyKind.Archer||x.kind==EnemyKind.Guardian).ToArray();
             pool.Configure(enemyData,hero,effects,warnings,1<<9,(1<<9)|(1<<11)|(1<<13),1<<11);
             RegionDefinition region=AssetDatabase.LoadAssetAtPath<RegionDefinition>(Data+"Costa.asset");if(region==null){region=ScriptableObject.CreateInstance<RegionDefinition>();AssetDatabase.CreateAsset(region,Data+"Costa.asset");}
             region.route=Route;region.camps=new RegionCampDefinition[3];Vector3[] centers={Route[1],Route[3],Route[5]};
@@ -45,13 +46,22 @@ namespace ForjaDasMares.Networking.Editor
             for(int i=0;i<35;i++)
             {
                 var p=new Vector3(rng.Next(-70,71),0,rng.Next(-62,79));if(PathDistance(p)<13||centers.Any(c=>Vector3.Distance(c,p)<16)||Vector3.Distance(region.refuge,p)<17)continue;
-                Place(props[i%props.Length],environment.transform,p,Quaternion.Euler(0,rng.Next(360),0),.65f+(float)rng.NextDouble()*.55f,true);
+                Place(props[4+i%3],environment.transform,p,Quaternion.Euler(0,rng.Next(360),0),.65f+(float)rng.NextDouble()*.55f,true);
+            }
+            for(int segment=1;segment<Route.Length;segment++)
+            {
+                Vector3 direction=(Route[segment]-Route[segment-1]).normalized,side=Vector3.Cross(Vector3.up,direction);int steps=Mathf.Max(1,Mathf.FloorToInt(Vector3.Distance(Route[segment],Route[segment-1])/9));
+                for(int i=0;i<steps;i++)for(int sign=-1;sign<=1;sign+=2)
+                {
+                    Vector3 p=Vector3.Lerp(Route[segment-1],Route[segment],(i+.5f)/steps)+side*(sign*(7+(i%3)));
+                    if(centers.Any(c=>Vector3.Distance(c,p)<8))continue;Place(props[i%5==0?6:4],environment.transform,p,Quaternion.Euler(0,segment*37+i*61,0),i%5==0?.35f:.28f+.06f*(i%3),true);
+                }
             }
             Place(props[4],environment.transform,new Vector3(-10,0,-49),Quaternion.Euler(0,45,0),.8f,true);
             Place(props[5],environment.transform,new Vector3(0,0,73),Quaternion.identity,1.4f,false);
             for(int i=0;i<3;i++)
             {
-                Place(props[i==0?6:i==1?4:0],environment.transform,centers[i]+new Vector3(-9,0,8),Quaternion.Euler(0,90*i,0),1,true);
+                Place(props[i==1?4:6],environment.transform,centers[i]+new Vector3(-9,0,8),Quaternion.Euler(0,90*i,0),1,true);
                 Sign(environment.transform,region.camps[i].label,centers[i]+new Vector3(8,0,2),wood);
             }
             Sign(environment.transform,"REFÚGIO · F PARA DESCANSAR",region.refuge+Vector3.right*4,wood);Sign(environment.transform,"PORTAL DOS DESAFIOS",new Vector3(4,0,68),wood);
@@ -105,7 +115,8 @@ namespace ForjaDasMares.Networking.Editor
         static GameObject Box(Transform parent,string name,Vector3 pos,Vector3 size,Material mat,bool collision,int layer=9)
         {var go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.name=name;go.transform.SetParent(parent,false);go.transform.position=pos;go.transform.localScale=size;go.layer=layer;go.GetComponent<Renderer>().sharedMaterial=mat;if(!collision)UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
         static void Place(GameObject prefab,Transform parent,Vector3 point,Quaternion rotation,float scale,bool block)
-        {var go=(GameObject)PrefabUtility.InstantiatePrefab(prefab);go.transform.SetParent(parent,false);go.transform.SetPositionAndRotation(point,rotation);go.transform.localScale=Vector3.one*scale;if(block){var collider=go.AddComponent<BoxCollider>();collider.center=new Vector3(0,1.5f,0);collider.size=new Vector3(4,3,3);go.layer=9;}}
+        {foreach(var terrain in Terrain.activeTerrains){var start=terrain.transform.position;if(point.x>=start.x&&point.x<=start.x+terrain.terrainData.size.x&&point.z>=start.z&&point.z<=start.z+terrain.terrainData.size.z){point.y=terrain.SampleHeight(point)+start.y;break;}}
+            var go=(GameObject)PrefabUtility.InstantiatePrefab(prefab);go.transform.SetParent(parent,false);go.transform.SetPositionAndRotation(point,rotation);go.transform.localScale=Vector3.one*scale;if(block){var collider=go.AddComponent<BoxCollider>();collider.center=new Vector3(0,1.5f,0);collider.size=new Vector3(4,3,3);go.layer=9;}}
         static void Sign(Transform parent,string text,Vector3 point,Material wood)
         {Box(parent,"SignPost",point+Vector3.up*.9f,new Vector3(.15f,1.8f,.15f),wood,true);Box(parent,"SignBoard",point+Vector3.up*1.65f,new Vector3(2,.7f,.12f),wood,false);var label=new GameObject("SignText").AddComponent<TextMesh>();label.transform.SetParent(parent,false);label.transform.position=point+new Vector3(0,2.2f,0);label.transform.rotation=Quaternion.Euler(40,0,0);label.text=text;label.fontSize=44;label.characterSize=.08f;label.anchor=TextAnchor.MiddleCenter;label.color=new Color(.9f,.83f,.63f);}
     }

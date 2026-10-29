@@ -33,9 +33,9 @@ MonoBehaviour:
     - {x: -37, y: 0.06, z: -15}
     - {x: -33, y: 0.06, z: -14}
     enemies:
-    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
-    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
-    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+    - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+    - {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
     respawnSeconds: 45
   - label: "P\xE1tio dos Esquecidos"
     center: {x: 36, y: 0, z: 30}
@@ -45,9 +45,9 @@ MonoBehaviour:
     - {x: 36, y: 0.06, z: 27}
     - {x: 40, y: 0.06, z: 28}
     enemies:
-    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
-    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
-    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+    - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+    - {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+    - {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
     respawnSeconds: 45
   - label: "Santu\xE1rio Partido"
     center: {x: -24, y: 0, z: 54}
@@ -57,10 +57,10 @@ MonoBehaviour:
     - {x: -24, y: 0.06, z: 51}
     - {x: -20, y: 0.06, z: 52}
     enemies:
-    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
-    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
-    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
-    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 8f095d1b8ca744941b05020a928ac153, type: 2}
+    - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
+    - {fileID: 11400000, guid: d35a08b7b7602534caf69939416ff49c, type: 2}
+    - {fileID: 11400000, guid: 66852b9b00c84b24baf410104c292166, type: 2}
     respawnSeconds: 45
   bounds:
     m_Center: {x: 0, y: 0, z: 8}

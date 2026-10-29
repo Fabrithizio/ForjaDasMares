@@ -20,6 +20,5 @@ for archive in source.glob('*.zip'):
  Image.merge('RGBA',(metal,Image.new('L',(1024,1024)),Image.new('L',(1024,1024)),ImageOps.invert(rough))).save(target/'MetalSmooth.png')
  jobs.append({'name':name,'source':str((folder/'source.fbx').resolve()),'output':str((target/'Model.fbx').resolve())})
 (Path(__file__).parent/'jobs.json').write_text(json.dumps(jobs,indent=2))
-rng=np.random.default_rng(4711)
-for name,color in [('Grass',(62,88,63)),('Soil',(119,104,78)),('Rock',(87,95,92))]:
- values=np.clip(np.array(color)[None,None,:]+rng.normal(0,5,(256,256,1)),0,255).astype('uint8');Image.fromarray(values).save(dest/(name+'.png'))
+import runpy
+runpy.run_path(str(Path(__file__).parent/'create_ground.py'))
