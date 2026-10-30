@@ -1,0 +1,52 @@
+{
+  "tests": {
+    "id": "2",
+    "testcasecount": "54",
+    "result": "Passed",
+    "total": "54",
+    "passed": "54",
+    "failed": "0",
+    "inconclusive": "0",
+    "skipped": "0",
+    "asserts": "0",
+    "engine-version": "3.5.0.0",
+    "clr-version": "4.0.30319.42000",
+    "start-time": "2026-10-30 13:29:47Z",
+    "end-time": "2026-10-30 13:30:50Z",
+    "duration": "63,1781739"
+  },
+  "android": {
+    "version": "0.24.1",
+    "code": 48,
+    "device": "moto g15",
+    "installedWith": "adb install -r",
+    "signatureV2": true,
+    "size": 133534171,
+    "sha256": "1818060bb82b9872cad507a1bca5c790f51a77f8864ba2c93b17533df641ebbc"
+  },
+  "before": {
+    "samples": 124,
+    "meanFrameMs": 60.63508933064516,
+    "medianFrameMs": 65.7873465
+  },
+  "after": {
+    "samples": 124,
+    "medianFrameMs": 32.9855,
+    "meanFrameMs": 40.73204714516129,
+    "approxFPS": 24.550693375076133,
+    "scope": "Brief physical refuge sample, not full combat profiling."
+  },
+  "physicalChecks": [
+    "menu",
+    "regional scene",
+    "joystick movement",
+    "held attack projectile",
+    "Nara interaction"
+  ],
+  "notTested": [
+    "real multiplayer this revision",
+    "sustained combat FPS",
+    "four players",
+    "multi-touch combat damage"
+  ]
+}

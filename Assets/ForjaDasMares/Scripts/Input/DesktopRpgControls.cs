@@ -11,8 +11,10 @@ namespace ForjaDasMares
         public static string ModeName=>MouseMode?"MOUSE RPG":"WASD + MIRA";
         public static void ToggleMode(){PlayerPrefs.SetInt(ModeKey,MouseMode?0:1);PlayerPrefs.Save();}
         ArenaInput input;PlayerMotor motor;HeroCombat combat;Camera camera;Health health;
+        EnemyPool autoAimEnemies;Health autoAimTarget;float autoAimClock;readonly AimTargetSelector autoAim=new AimTargetSelector();
+        public void ConfigureAutoAim(EnemyPool enemies){autoAimEnemies=enemies;autoAimTarget=null;autoAim.Reset();}
         InputAction stationary,toggle;NavMeshPath path;readonly Vector3[] corners=new Vector3[64];
-        Health target;Vector3 destination,lastPlanned;int count,corner;float replan;bool navigating,pressed,previousMode;
+        Health target;Vector3 destination,lastPlanned;int count,corner;float replan;bool navigating,pressed,previousMode,attackGesture,attackRecovery;
         public bool EffectiveMouseMode=>!Application.isMobilePlatform&&MouseMode&&input!=null&&input.HasPointer;
         public bool StandStill=>stationary!=null&&stationary.enabled&&stationary.IsPressed();
         public bool CanAttack{get;private set;}=true;
@@ -31,13 +33,14 @@ namespace ForjaDasMares
         void OnDisable(){stationary?.Disable();toggle?.Disable();Cancel();}
         void OnDestroy(){stationary?.Dispose();if(toggle!=null){toggle.performed-=Toggle;toggle.Dispose();}}
         public void PressMouse(){pressed=true;}
-        public void Cancel(){Notice="";navigating=false;target=null;count=corner=0;Movement=Vector2.zero;pressed=false;}
+        public void Cancel(){Notice="";navigating=false;target=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=false;}
         public Vector3 AimDirection
         {
             get
             {
                 if(motor==null)return Vector3.forward;
-                if(EffectiveMouseMode&&target!=null&&target.IsAlive&&!StandStill)return Flat(target.transform.position-motor.transform.position);
+                if(Application.isMobilePlatform&&autoAimTarget!=null&&autoAimTarget.IsAlive)return Flat(autoAimTarget.transform.position-motor.transform.position);
+                if(!Application.isMobilePlatform&&input!=null&&input.HasPointer&&target!=null&&target.IsAlive&&!StandStill)return Flat(target.transform.position-motor.transform.position);
                 if(input!=null&&input.HasPointer&&TryPointer(out var point,out _))return Flat(point-motor.transform.position);
                 Vector3 movement=motor.WorldDirection(input!=null?input.RawMove:Vector2.zero);return movement.sqrMagnitude>.001f?movement.normalized:motor.transform.forward;
             }
@@ -53,31 +56,43 @@ namespace ForjaDasMares
         }
         void Update()
         {
-            CanAttack=true;Movement=input!=null?input.RawMove:Vector2.zero;
+            CanAttack=false;Movement=input!=null?input.RawMove:Vector2.zero;
             if(input==null||motor==null||!input.isActiveAndEnabled||input.CombatBlocked){Cancel();return;}
             if(previousMode!=MouseMode){previousMode=MouseMode;bool click=pressed;Cancel();pressed=click;}
             if(health!=null&&!health.IsAlive){Cancel();CanAttack=false;return;}
-            bool ui=input.PointerIsBlocked;
-            if(!EffectiveMouseMode){if(StandStill)Movement=Vector2.zero;pressed=false;navigating=false;target=null;return;}
-            CanAttack=false;
-            if(ui){if(pressed)Cancel();pressed=false;Movement=input.RawMove;return;}
-            bool pointer=TryPointer(out var point,out var hovered);
-            if(StandStill){Cancel();Movement=Vector2.zero;CanAttack=true;return;}
-            if(input.RawMove.sqrMagnitude>.001f){navigating=false;target=null;pressed=false;CanAttack=true;return;}
-            if(pressed&&pointer){target=hovered;if(target==null){destination=point;navigating=true;replan=0;}}
-            pressed=false;
-            if(input.MouseAttackHeld&&hovered!=null){target=hovered;navigating=false;}
-            else if(input.MouseAttackHeld&&target==null&&pointer){destination=point;navigating=true;}
-            if(target!=null&&!target.IsAlive){target=null;navigating=false;}
-            if(target!=null)
+            if(Application.isMobilePlatform||!input.HasPointer)
             {
-                if(!input.MouseAttackHeld){target=null;navigating=false;Movement=Vector2.zero;return;}
-                Vector3 delta=target.transform.position-motor.transform.position;delta.y=0;
-                float range=Mathf.Max(.7f,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range*.85f:2);
-                bool visible=!Physics.Linecast(motor.transform.position+Vector3.up,target.transform.position+Vector3.up,1<<9,QueryTriggerInteraction.Ignore);
-                if(delta.sqrMagnitude<=range*range&&visible){Movement=Vector2.zero;CanAttack=true;navigating=false;return;}
-                destination=target.transform.position;navigating=true;
+                if(Application.isMobilePlatform&&autoAimEnemies!=null)
+                {
+                    autoAimClock-=Time.unscaledDeltaTime;if(autoAimClock<=0){autoAimClock=.12f;autoAim.BeginScan(motor.transform.position,Mathf.Min(12,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range:3),combat!=null?combat.GeometryMask:1<<9);foreach(var enemy in autoAimEnemies.Actors)if(enemy.IsAlive)autoAim.Consider(enemy.Health);autoAimTarget=autoAim.EndScan();}
+                }
+                CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;
             }
+            bool ui=input.PointerIsBlocked;
+            if(ui){Cancel();Movement=input.RawMove;return;}
+            bool pointer=TryPointer(out var point,out var hovered);
+            if(StandStill){navigating=false;target=null;pressed=false;Movement=Vector2.zero;motor.StopWalking();CanAttack=true;attackGesture=input.MouseAttackHeld;attackRecovery|=input.MouseAttackHeld;Notice="";return;}
+            bool attackPress=pressed&&hovered!=null;
+            if((input.MouseAttackHeld||attackPress)&&hovered!=null){target=hovered;attackGesture=true;attackRecovery=true;}
+            if(attackGesture&&(input.MouseAttackHeld||attackPress))
+            {
+                navigating=false;pressed=false;Movement=Vector2.zero;motor.StopWalking();target=hovered;
+                if(target==null){Notice="Aponte para um alvo ou segure Shift para atirar livremente.";return;}
+                Vector3 delta=target.transform.position-motor.transform.position;delta.y=0;
+                float range=Mathf.Max(.7f,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range*.95f:2);
+                bool visible=!Physics.Linecast(motor.transform.position+Vector3.up,target.transform.position+Vector3.up,out var hit,combat!=null?combat.GeometryMask:1<<9,QueryTriggerInteraction.Ignore)||hit.collider.GetComponentInParent<Health>()==target;
+                CanAttack=delta.sqrMagnitude<=range*range&&visible;
+                Notice=CanAttack?"":!visible?"Alvo bloqueado por um obstáculo.":"Fora de alcance. Solte o ataque e aproxime-se.";
+                return;
+            }
+            if(attackGesture){attackGesture=false;target=null;navigating=false;}
+            if(attackRecovery&&combat!=null&&combat.IsAttacking){Movement=Vector2.zero;motor.StopWalking();pressed=false;return;}
+            attackRecovery=false;target=null;Notice="";
+            if(!EffectiveMouseMode){pressed=false;navigating=false;return;}
+            if(input.RawMove.sqrMagnitude>.001f){navigating=false;pressed=false;return;}
+            if(pressed&&pointer&&hovered==null){destination=point;navigating=true;replan=0;}
+            pressed=false;
+            if(input.MouseAttackHeld&&pointer&&hovered==null){destination=point;navigating=true;}
             if(!navigating){Movement=Vector2.zero;return;}
             replan-=Time.unscaledDeltaTime;
             if(replan<=0&&(count==0||(lastPlanned-destination).sqrMagnitude>.2f))Plan(destination);

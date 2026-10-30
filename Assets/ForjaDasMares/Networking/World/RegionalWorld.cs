@@ -24,6 +24,7 @@ namespace ForjaDasMares.Networking
         void Start()
         {
             if(Journey==null)Journey=GetComponent<RegionalJourney>();
+            hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
             var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
             follow.UseRpgFraming();hero.Select(2);hero.enabled=false;hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);hero.Changed+=HeroChanged;
             hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.SetFocusBounds(definition.bounds,true);follow.Snap();

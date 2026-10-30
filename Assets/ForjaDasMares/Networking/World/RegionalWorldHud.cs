@@ -47,19 +47,24 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Button(root,"RegionalDodge",new Vector2(1,0),new Vector2(-170,90),new Vector2(130,70),"ESQUIVA",input.RequestDodge);
             RusticHudTheme.Button(root,"RegionalSpecial",new Vector2(1,0),new Vector2(-20,175),new Vector2(130,70),"HABILIDADE",input.RequestSpecial);
             RusticHudTheme.Button(root,"RegionalInteract",new Vector2(1,0),new Vector2(-170,175),new Vector2(130,70),"INTERAGIR",world.Interact);
+            RusticHudTheme.Button(root,"RegionalSuper",new Vector2(1,0),new Vector2(-320,90),new Vector2(130,70),"SUPER",input.RequestSuper);
             movementMode.gameObject.SetActive(false);
-            if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.sizeDelta=new Vector2(650,100);panel.anchoredPosition=new Vector2(0,270);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(618,84);}
+            controlHint.gameObject.SetActive(false);
+            foreach(string name in new[]{"Controls","Scope","MapLegend"}){var label=root.Find(name);if(label!=null)label.gameObject.SetActive(false);}
+            var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
+            if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.anchorMin=panel.anchorMax=panel.pivot=Top;panel.sizeDelta=new Vector2(450,124);panel.anchoredPosition=new Vector2(22,-100);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(418,108);}
         }
         void OnInteract(InputAction.CallbackContext _)=>world.Interact();
         void Update()
         {
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             movementMode.GetComponentInChildren<Text>().text=DesktopRpgControls.ModeName+" · F8 PARA TROCAR";
-            controlHint.text=DesktopRpgControls.MouseMode?"Chão: andar · segure no inimigo: atacar\nShift: atacar parado · WASD também pode mover":"WASD/setas: mover · segure o mouse: atacar\nMova o cursor para direcionar os próximos golpes";
+            controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":DesktopRpgControls.MouseMode?"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo":"WASD/setas: mover · clique no alvo: atacar parado\nShift + ataque: disparar parado sem alvo";
             var hero=world.Hero;life.text=hero.Current.displayName+"\nVIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;
             objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice;}
+            if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
         }
         void OnDestroy(){if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }

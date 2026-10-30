@@ -20,11 +20,17 @@ namespace ForjaDasMares
         public void Cycle(){PlayerPrefs.SetInt(Preference,(Selected+1)%3);PlayerPrefs.Save();Apply();}
         public void Apply()
         {
-            if(mobile)Application.targetFrameRate=Selected==0?30:60;
-            if(copy!=null){copy.shadowDistance=Mathf.Min(original.shadowDistance,Selected==0?24:Selected==1?40:60);copy.renderScale=Selected==0?.8f:1;copy.msaaSampleCount=mobile?(Selected==2?4:2):1;}
+            if(mobile)Application.targetFrameRate=Selected==2?60:30;
+            if(copy!=null)
+            {
+                copy.shadowDistance=Mathf.Min(original.shadowDistance,mobile?(Selected==0?12:Selected==1?22:32):(Selected==0?24:Selected==1?40:60));
+                copy.renderScale=mobile?(Selected==0?.55f:Selected==1?.7f:.9f):(Selected==0?.8f:1);
+                copy.msaaSampleCount=mobile?(Selected==0?1:Selected==2?4:2):1;
+                if(mobile)copy.supportsHDR=false;
+            }
             if(sceneCamera==null)return;
             sceneCamera.allowMSAA=mobile;
-            var data=sceneCamera.GetUniversalAdditionalCameraData();data.renderPostProcessing=true;
+            var data=sceneCamera.GetUniversalAdditionalCameraData();data.renderPostProcessing=!mobile||Selected!=0;
             // PC uses Deferred: use SMAA, not an ignored MSAA checkbox. Mobile is Forward.
             data.antialiasing=mobile?AntialiasingMode.None:Selected==0?AntialiasingMode.FastApproximateAntialiasing:AntialiasingMode.SubpixelMorphologicalAntiAliasing;
             data.antialiasingQuality=Selected==2?AntialiasingQuality.High:AntialiasingQuality.Medium;

@@ -20,7 +20,7 @@ namespace ForjaDasMares
         public DesktopRpgControls Desktop=>desktop;
         public bool MouseAttackHeld=>deviceAttackHeld;
         public bool PointerIsBlocked=>HasPointer&&PointerBlocked!=null&&PointerBlocked(PointerPosition);
-        bool PointerAttackAllowed=>!PointerIsBlocked&&(desktop==null||!desktop.EffectiveMouseMode||desktop.CanAttack);
+        bool PointerAttackAllowed=>!PointerIsBlocked&&(desktop==null||desktop.CanAttack);
         public bool AttackHeld => !blocked && (uiAttackHeld || deviceAttackHeld&&PointerAttackAllowed);
         public Vector3 AimDirection=>desktop!=null?desktop.AimDirection:transform.forward;
         public void ConfigureDesktop(PlayerMotor player,Camera view,HeroCombat attacks)

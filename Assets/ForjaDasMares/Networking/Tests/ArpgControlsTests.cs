@@ -25,6 +25,7 @@ namespace ForjaDasMares.Networking.Tests
         {if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(hadMode)PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,priorMode);else PlayerPrefs.DeleteKey(DesktopRpgControls.ModeKey);InputSystem.settings.backgroundBehavior=oldBackground;InputSystem.settings.editorInputBehaviorInPlayMode=oldEditorInput;yield return null;}
         [UnityTest]public IEnumerator HeldFireChangesDirectionAndReleasedShotDoesNotCurve()
         {
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.LeftShift));InputSystem.Update();yield return null;
             var hero=world.Hero;var pool=hero.GetComponent<HeroCombat>().Pool;Point(hero.transform.position+Vector3.forward*6,true);
             CombatProjectile first=null;float end=Time.time+2;
             while(first==null&&Time.time<end){first=pool.Projectiles.FirstOrDefault(p=>p.OwnedBy(hero.Health));yield return null;}
@@ -44,16 +45,23 @@ namespace ForjaDasMares.Networking.Tests
             Assert.Greater(Vector3.Distance(start,world.Hero.transform.position),2);Assert.Less(Vector3.Distance(goal,world.Hero.transform.position),1.2f);
             Assert.AreEqual(version,world.Hero.GetComponent<HeroCombat>().ActionVersion);
         }
-        [UnityTest]public IEnumerator MouseEnemyClickApproachesAndRetargetsWhileHeld()
+        Health Target(Vector3 point,CombatFaction faction=CombatFaction.Enemy)
+        {var go=GameObject.CreatePrimitive(PrimitiveType.Capsule);go.name="ControlTestTarget";go.layer=13;go.transform.position=point;var health=go.AddComponent<Health>();health.Configure(2000,faction);Physics.SyncTransforms();return health;}
+        [UnityTest]public IEnumerator MouseEnemyClickStaysStillAndRetargetsWhileHeld()
         {
-            PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;yield return new WaitForSeconds(1.2f);
-            var camp=world.Definition.camps[0];var enemies=world.Enemies.Actors.Where(e=>e.IsAlive&&(e.transform.position-camp.center).sqrMagnitude<18*18).OrderBy(e=>e.transform.position.x).ToArray();Assert.GreaterOrEqual(enemies.Length,3);
-            foreach(var enemy in enemies){enemy.Brain.enabled=false;enemy.Motor.Stop();}
-            var motor=world.Hero.GetComponent<PlayerMotor>();motor.Teleport(camp.center+new Vector3(0,.06f,-5),Quaternion.identity);Camera.main.GetComponent<ArenaCamera>().Snap();Vector3 start=world.Hero.transform.position;
-            Point(enemies[0].transform.position+Vector3.up*.8f,true);yield return new WaitForSeconds(.35f);Assert.Greater(Vector3.Distance(start,world.Hero.transform.position),.15f,"Out-of-range target should be approached");
-            var second=enemies[1];int hp=second.Health.Current;Point(second.transform.position+Vector3.up*.8f,true);yield return new WaitForSeconds(.85f);
-            Assert.Less(second.Health.Current,hp,"The same held press should attack the newly hovered enemy");
+            PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;yield return null;
+            var start=world.Hero.transform.position;var first=Target(start+Vector3.forward*3);var second=Target(start+Vector3.left*3);
+            try{Point(first.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(.6f);Assert.Less(first.Current,2000);int hp=second.Current;Point(second.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(1);Assert.Less(second.Current,hp);Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.05f,"Attacks must not approach the target");}
+            finally{Object.Destroy(first.gameObject);Object.Destroy(second.gameObject);}
         }
+        [UnityTest]public IEnumerator OutOfRangeTargetNeverStartsAutomaticChase()
+        {PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;var start=world.Hero.transform.position;var target=Target(start+Vector3.forward*8);try{int version=world.Hero.GetComponent<HeroCombat>().ActionVersion;Point(target.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(.8f);Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.05f);Assert.AreEqual(version,world.Hero.GetComponent<HeroCombat>().ActionVersion);Assert.IsFalse(controls.CanAttack);}finally{Object.Destroy(target.gameObject);}}
+        [UnityTest]public IEnumerator MovingCursorOffEnemyWhileHeldDoesNotWalkTowardGround()
+        {PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;var start=world.Hero.transform.position;var target=Target(start+Vector3.forward*3);try{Point(target.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(.4f);Point(start+Vector3.right*5,true);yield return new WaitForSeconds(.8f);Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.05f);Assert.IsFalse(controls.CanAttack);}finally{Object.Destroy(target.gameObject);}}
+        [UnityTest]public IEnumerator WasdDoesNotEnableGroundShootingWithoutShift()
+        {PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,0);InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));InputSystem.Update();int version=world.Hero.GetComponent<HeroCombat>().ActionVersion;Point(world.Hero.transform.position+Vector3.forward*6,true);yield return new WaitForSeconds(.6f);Assert.AreEqual(version,world.Hero.GetComponent<HeroCombat>().ActionVersion);}
+        [UnityTest]public IEnumerator DamageableObjectsCanBeTargetedWithoutMoving()
+        {PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;var start=world.Hero.transform.position;var target=Target(start+Vector3.forward*3,CombatFaction.Training);try{Point(target.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(1);Assert.Less(target.Current,2000);Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.05f);}finally{Object.Destroy(target.gameObject);}}
         [UnityTest]public IEnumerator ClickNavigationGoesAroundCarvedObstacle()
         {
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>false;var start=world.Hero.transform.position;

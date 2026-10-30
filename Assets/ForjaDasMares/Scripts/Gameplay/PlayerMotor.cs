@@ -40,6 +40,8 @@ namespace ForjaDasMares
         public bool IsInvulnerable => IsDodging && dodgeDuration - dodgeRemaining >= invulnerableStart && dodgeDuration - dodgeRemaining < invulnerableEnd;
         public bool FacingLocked => facingLock > 0f || IsCharging;
         public Vector3 PlanarVelocity => velocity;
+        // Cancel voluntary walking without cancelling dodge, charge or received knockback.
+        public void StopWalking()=>velocity=Vector3.zero;
         public float DodgeCooldownRemaining => cooldownRemaining;
         public void ApplyHero(HeroDefinition profile, Health owner)
         {

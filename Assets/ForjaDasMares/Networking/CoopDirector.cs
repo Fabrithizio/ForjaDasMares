@@ -351,6 +351,7 @@ namespace ForjaDasMares.Networking
         void Accept(int slot, uint serial, Vector2 move, Vector2 aim, HeroButtons buttons)
         {
             var actor = actors[slot]; if (!seats[slot].connected || !seats[slot].loaded || !actor.Health.IsAlive || !actor.Commands.Accept(serial, move, aim, buttons)) return;
+            if((buttons&HeroButtons.Attack)!=0&&move.sqrMagnitude<.0001f)actor.Motor.StopWalking();
             if (!actor.Motor.FacingLocked && aim.sqrMagnitude > .01f) actor.transform.rotation = Quaternion.LookRotation(new Vector3(aim.x, 0, aim.y));
         }
         void AdvanceRoomAndInteract()

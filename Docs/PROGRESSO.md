@@ -702,3 +702,10 @@ Missão funcional de conversa → duas pistas de três em qualquer ordem → ret
 Rodada final PlayMode48/48, zero ignorados/falhas; inclui seis testes do Ato1 e42 regressões existentes. Native player intermediário conferiu fluxo e reabertura no perfil QA isolado; ajustes finais de vegetação/HUD têm rodada final aprovada. Ver ATO_1_0_24_0.md para arquivos, builds, evidências e limitações. Ato1 completo, chefe, missões restantes, região pública20, dispositivos reais e balanceamento prolongado seguem pendentes.
 
 Fechamento Windows0.24.0: instalador final exit0,48/48 testes finais, build final Succeeded/errors0/exit0. APK não gerado. Conferência nativa final e backup registrados no relatório do Ato1.
+
+
+## 0.24.1 — ataque estacionário e Android (30/10/2026)
+
+Mouse no PC só inicia ataque básico no mundo sobre alvo válido ou com Shift; remove perseguição automática e disparo livre por WASD. Gesto de ataque não vira caminhada ao sair do alvo. StopWalking não remove esquiva/impulso. Mira móvel regional reutiliza seletor existente, botões de toque incluem SUPER e diálogo não cobre personagem. Perfis móveis ajustados por medida física; configurações PC preservadas.
+
+54/54 testes finais; builds reais Windows/Android Succeeded/errors0. APK0.24.1/code48/v2 instalado-r no moto g15 sobre0.15.9/code40, um único pacote. Toque físico conferiu movimento, projétil segurado, aceitação da missão e layout. Amostras curtas no refúgio melhoraram de~16,5 para~24,6FPS, ainda sem30FPS sustentados garantidos. Não testado PC–Android online nesta revisão nem combate móvel prolongado. Ver CONTROLES_0_24_1.md para arquivos, evidências e limites.

@@ -1,3 +1,11 @@
+# Atualização 0.24.1 — ataque parado e Android atual
+
+PC: clique/segure em inimigo ou objeto quebrável para atacar sem persegui-lo; fora de alcance não aproxima. Shift + ataque dispara livremente parado. Clique no chão anda; WASD sozinho não libera tiro no chão. Regras aplicadas nos dois modos F8.
+
+Windows e APK atuais em Builds/Atual. Android0.24.1/code48 instalado no moto g15, mesmo aplicativo/dados. Controles de toque e diálogo conferidos; perfis móveis reduzidos para melhorar desempenho (~16,5→24,6FPS em amostra curta do refúgio, sem promessa de30FPS sustentados). 54/54 testes finais, builds sem erros. [Detalhes e limitações](Docs/CONTROLES_0_24_1.md).
+
+---
+
 # Atualização 0.24.0 — primeiro trecho aberto do Ato 1
 
 No Windows, escolha **COSTA DAS RUÍNAS · HISTÓRIA DO ATO 1** no menu. Região local de 320 × 320 m, refúgio central, caminhos alternativos, cais/pedreira/jardim, árvore com caveiras, dois NPCs geométricos e missão com diário persistente. F: conversar/investigar; duas pistas em qualquer ordem e retorno a Daro liberam a prévia das catacumbas. As cenas anteriores continuam disponíveis.
