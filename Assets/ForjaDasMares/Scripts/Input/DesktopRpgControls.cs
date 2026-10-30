@@ -78,6 +78,7 @@ namespace ForjaDasMares
             if(groundPress){queuedCast=combat!=null&&!combat.MovementWindowOpen;queuedAim=target!=null?Flat(target.transform.position-motor.transform.position):motor.transform.forward;interactionGesture=clicked!=null;interaction=clicked;destination=clicked!=null?clicked.Approach:point;navigating=true;replan=0;count=corner=0;attackGesture=attackRecovery=false;target=null;combat?.CancelCharge();pressed=false;}
             if(interactionGesture&&!input.MouseAttackHeld)interactionGesture=false;
             if(interactionGesture&&interaction==null){Movement=Vector2.zero;motor.StopWalking();pressed=false;return;}
+            if(interaction!=null){destination=interaction.Approach;if(!navigating&&(lastPlanned-destination).sqrMagnitude>.2f){navigating=true;replan=0;count=corner=0;}}
             if(interaction!=null&&interaction.InRange(motor.transform)){var use=interaction;interaction=null;navigating=false;Movement=Vector2.zero;motor.StopWalking();use.TryUse(motor.transform);return;}
             if((abilityLock||navigating)&&combat!=null&&!combat.MovementWindowOpen){Movement=Vector2.zero;motor.StopWalking();return;}
             abilityLock=false;

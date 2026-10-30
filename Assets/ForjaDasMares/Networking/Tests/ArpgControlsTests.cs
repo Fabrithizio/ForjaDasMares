@@ -84,6 +84,19 @@ namespace ForjaDasMares.Networking.Tests
             try{Point(npc.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(1.5f);Assert.AreEqual(1,calls);Assert.IsTrue(use.InRange(world.Hero.transform));Assert.Greater(Vector3.Distance(npc.transform.position,world.Hero.transform.position),.6f);}
             finally{Object.Destroy(npc);}
         }
+        [UnityTest]public IEnumerator ClickedResidentMovingAwayIsStillReachedOnce()
+        {
+            input.PointerBlocked=_=>false;var start=world.Hero.transform.position;
+            var npc=GameObject.CreatePrimitive(PrimitiveType.Capsule);npc.layer=0;npc.transform.position=start+Vector3.forward*6;
+            var use=npc.AddComponent<WorldClickTarget>();int calls=0;use.Used.AddListener(()=>calls++);Physics.SyncTransforms();
+            try
+            {
+                Point(npc.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(.12f);
+                Point(npc.transform.position,false);npc.transform.position+=Vector3.right*4;Physics.SyncTransforms();
+                yield return new WaitForSeconds(2.8f);Assert.AreEqual(1,calls);Assert.IsTrue(use.InRange(world.Hero.transform));
+            }
+            finally{Object.Destroy(npc);}
+        }
         [UnityTest]public IEnumerator ShiftAllowsStationaryGroundAttackInMouseMode()
         {
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.LeftShift));InputSystem.Update();yield return null;

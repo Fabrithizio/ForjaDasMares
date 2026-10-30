@@ -1,3 +1,7 @@
+## 0.25.1 — interações consistentes na cidade
+
+Indicador e F usam o mesmo morador próximo; clique acompanha a posição dos moradores móveis. 25/25 testes de cidade e controles passaram. APK 0.25.0 enviado para Mensagens para mim no WhatsApp; instalação pelo usuário não confirmada. [Detalhes](Docs/INTERACOES_0_25_1.md).
+
 ## 0.25.0 — cidade segura e controles de mouse (30/10/2026)
 
 Refúgio do Último Sino separado da costa, oito NPCs provisórios, fonte funcional, treino, saída para a costa e ponto de chegada circular. PC sem WASD/F8; ataque parado sem perseguir e clique durante recuperação preservado. HUD com retrato/vida/super reais e ações circulares. 59 testes passaram; após corrigir colisão invisível do cilindro, 22 testes de cidade/controles repetidos com sucesso. Windows compilado sem erros. APK 0.25.0/code49 gerado a pedido posterior; instalação ainda não confirmada por queda do USB. Sem teste físico desta versão. [Relatório e limitações](Docs/CIDADE_E_CONTROLES_0_25_0.md).

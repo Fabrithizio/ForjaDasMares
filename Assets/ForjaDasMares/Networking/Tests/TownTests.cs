@@ -13,6 +13,17 @@ namespace ForjaDasMares.Networking.Tests
         [UnitySetUp]public IEnumerator Load(){yield return SceneManager.LoadSceneAsync("RefugioUltimoSino");yield return null;yield return null;world=Object.FindFirstObjectByType<RegionalWorld>();hub=world.GetComponent<TownHub>();Assert.NotNull(hub);}
         [UnityTest]public IEnumerator TownIsSafeAndResidentsActuallyMove()
         {var residents=Object.FindObjectsByType<TownResident>(FindObjectsSortMode.None);Assert.AreEqual(8,residents.Length);var positions=residents.Select(r=>r.transform.position).ToArray();yield return new WaitForSeconds(2);Assert.AreEqual(0,world.Enemies.ActiveCount);Assert.AreEqual(world.Hero.Health.Maximum,world.Hero.Health.Current);Assert.IsTrue(residents.Where((r,i)=>Vector3.Distance(r.transform.position,positions[i])>.4f).Any());}
+        [UnityTest]public IEnumerator HintAndInteractionUseSameNearestAvailableTarget()
+        {
+            var candidates=Object.FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None);
+            var resident=candidates.First(t=>t.name.StartsWith("Nara"));
+            world.Hero.GetComponent<DesktopRpgControls>().Cancel();
+            world.Hero.GetComponent<PlayerMotor>().Teleport(resident.transform.position+Vector3.back,Quaternion.identity);
+            yield return null;
+            Assert.AreEqual(resident,hub.NearestInteraction);Assert.AreEqual("F · "+resident.Label,hub.Hint);
+            int uses=0;resident.Used.AddListener(()=>uses++);Assert.IsTrue(hub.TryInteractNearest());Assert.AreEqual(1,uses);
+            resident.enabled=false;Assert.AreNotEqual(resident,hub.NearestInteraction);
+        }
         [Test]public void InteractionApproachIgnoresVisualScale(){var target=GameObject.Find("RestFountain").GetComponent<WorldClickTarget>();Assert.Less(Vector3.Distance(target.Approach,target.transform.position),3);}
         [Test]public void FourArrivalPointsAreWalkableAndUnobstructed()
         {Assert.AreEqual(4,hub.ArrivalPoints.Length);foreach(var point in hub.ArrivalPoints){Assert.IsTrue(NavMesh.SamplePosition(point,out _,1,NavMesh.AllAreas));Assert.IsFalse(Physics.CheckCapsule(point+Vector3.up*.5f,point+Vector3.up*1.3f,.3f,1<<9));}}
