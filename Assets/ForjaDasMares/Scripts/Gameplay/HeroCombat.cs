@@ -58,6 +58,8 @@ namespace ForjaDasMares
         public bool IsAttacking => active && !special;
         public bool IsUsingSpecial => active && special;
         public bool IsBusy => active;
+        public bool MovementWindowOpen=>!active||NormalizedTime>=ImpactTime+.04f;
+        public void CancelCharge(){wasHeld=false;heldTime=heavyBuffer=0;}
         public float NormalizedTime => active ? Mathf.Clamp01(elapsed / length) : 0;
         public float SpecialCooldownRemaining => specialCooldown;
         public HeroDefinition Profile => profile;

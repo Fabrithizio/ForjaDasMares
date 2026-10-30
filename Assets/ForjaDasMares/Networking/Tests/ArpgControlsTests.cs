@@ -72,6 +72,18 @@ namespace ForjaDasMares.Networking.Tests
             while(Time.time<until){crossed|=block.GetComponent<Collider>().bounds.Contains(world.Hero.transform.position+Vector3.up);yield return null;}
             Assert.IsFalse(crossed,"The character must not cross the obstacle");Assert.Less(Vector3.Distance(goal,world.Hero.transform.position),1.3f);Object.Destroy(block);
         }
+        [UnityTest]public IEnumerator GroundClickDuringAttackIsNotDiscarded()
+        {
+            input.PointerBlocked=_=>false;var start=world.Hero.transform.position;var target=Target(start+Vector3.forward*3);var goal=start+Vector3.right*4;
+            try{Point(target.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(.15f);Point(target.transform.position,false);Point(goal,true);yield return new WaitForSeconds(.06f);Point(goal,false);yield return new WaitForSeconds(1.3f);Assert.Less(Vector3.Distance(goal,world.Hero.transform.position),1.2f,"The click issued during recovery must be buffered");}
+            finally{Object.Destroy(target.gameObject);}
+        }
+        [UnityTest]public IEnumerator NpcClickApproachesAndUsesExactlyOnceWhileHeld()
+        {
+            input.PointerBlocked=_=>false;var start=world.Hero.transform.position;var npc=GameObject.CreatePrimitive(PrimitiveType.Capsule);npc.layer=0;npc.transform.position=start+Vector3.forward*4;var use=npc.AddComponent<WorldClickTarget>();int calls=0;use.Used.AddListener(()=>calls++);Physics.SyncTransforms();
+            try{Point(npc.transform.position+Vector3.up*.6f,true);yield return new WaitForSeconds(1.5f);Assert.AreEqual(1,calls);Assert.IsTrue(use.InRange(world.Hero.transform));Assert.Greater(Vector3.Distance(npc.transform.position,world.Hero.transform.position),.6f);}
+            finally{Object.Destroy(npc);}
+        }
         [UnityTest]public IEnumerator ShiftAllowsStationaryGroundAttackInMouseMode()
         {
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.LeftShift));InputSystem.Update();yield return null;
@@ -83,10 +95,10 @@ namespace ForjaDasMares.Networking.Tests
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);input.PointerBlocked=_=>true;yield return null;Vector3 start=world.Hero.transform.position;int version=world.Hero.GetComponent<HeroCombat>().ActionVersion;
             Point(start+Vector3.forward*5,true);yield return new WaitForSeconds(.5f);Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.15f);Assert.AreEqual(version,world.Hero.GetComponent<HeroCombat>().ActionVersion);
         }
-        [UnityTest]public IEnumerator KeyboardOverrideStaysNormalizedInMouseMode()
+        [UnityTest]public IEnumerator KeyboardMovementIsRemovedWhileTouchRemainsNormalized()
         {
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W,Key.D));InputSystem.Update();Vector3 start=world.Hero.transform.position;yield return new WaitForSeconds(.5f);
-            Assert.Greater(Vector3.Distance(start,world.Hero.transform.position),1);Assert.LessOrEqual(input.Move.magnitude,1.001f);Assert.LessOrEqual(world.Hero.GetComponent<PlayerMotor>().PlanarVelocity.magnitude,world.Hero.GetComponent<PlayerMotor>().Speed+.01f);
+            Assert.Less(Vector3.Distance(start,world.Hero.transform.position),.05f);Assert.LessOrEqual(input.Move.magnitude,1.001f);Assert.LessOrEqual(world.Hero.GetComponent<PlayerMotor>().PlanarVelocity.magnitude,world.Hero.GetComponent<PlayerMotor>().Speed+.01f);
         }
         [UnityTest]public IEnumerator DeathCancelsNavigationBeforeRespawn()
         {

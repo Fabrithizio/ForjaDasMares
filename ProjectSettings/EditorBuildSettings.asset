@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ForjaDasMares/Scenes/CostaAto1.unity
     guid: 9d56ea13f55dfae489fa9f948fca8c80
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/RefugioUltimoSino.unity
+    guid: 18fbfb08606b82145a1a71f1338fb1e8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

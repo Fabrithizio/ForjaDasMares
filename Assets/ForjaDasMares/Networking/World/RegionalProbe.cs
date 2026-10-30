@@ -11,15 +11,15 @@ namespace ForjaDasMares.Networking
         RegionalWorld world;string path;float tick;bool loading;int samples;float totalFrameSeconds,worstFrameSeconds;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Boot()
         {
-            var args=Environment.GetCommandLineArgs();if(Array.IndexOf(args,"-regionProbe")>=0||Array.IndexOf(args,"-catacombProbe")>=0||Array.IndexOf(args,"-actOneProbe")>=0)new GameObject("RegionalProbeLauncher").AddComponent<RegionalProbe>().tick=1;
+            var args=Environment.GetCommandLineArgs();if(Array.IndexOf(args,"-regionProbe")>=0||Array.IndexOf(args,"-catacombProbe")>=0||Array.IndexOf(args,"-actOneProbe")>=0||Array.IndexOf(args,"-townProbe")>=0)new GameObject("RegionalProbeLauncher").AddComponent<RegionalProbe>().tick=1;
         }
         void Update()
         {
             if(world!=null&&Time.timeSinceLevelLoad>5){samples++;totalFrameSeconds+=Time.unscaledDeltaTime;worstFrameSeconds=Mathf.Max(worstFrameSeconds,Time.unscaledDeltaTime);}tick-=Time.unscaledDeltaTime;if(tick>0)return;tick=.3f;
             if(world==null)
             {
-                var launchArgs=Environment.GetCommandLineArgs();string targetScene=Array.IndexOf(launchArgs,"-actOneProbe")>=0?"CostaAto1":Array.IndexOf(launchArgs,"-catacombProbe")>=0?"CatacumbasDasMares":"CostaDasRuinas";if(SceneManager.GetActiveScene().name!=targetScene){if(!loading){loading=true;SceneManager.LoadSceneAsync(targetScene);DontDestroyOnLoad(gameObject);}return;}
-                world=UnityEngine.Object.FindFirstObjectByType<RegionalWorld>();var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-regionProbe");if(i<0)i=Array.IndexOf(args,"-catacombProbe");if(i<0)i=Array.IndexOf(args,"-actOneProbe");path=Path.GetFullPath(args[i+1]);Directory.CreateDirectory(path);
+                var launchArgs=Environment.GetCommandLineArgs();string targetScene=Array.IndexOf(launchArgs,"-townProbe")>=0?"RefugioUltimoSino":Array.IndexOf(launchArgs,"-actOneProbe")>=0?"CostaAto1":Array.IndexOf(launchArgs,"-catacombProbe")>=0?"CatacumbasDasMares":"CostaDasRuinas";if(SceneManager.GetActiveScene().name!=targetScene){if(!loading){loading=true;SceneManager.LoadSceneAsync(targetScene);DontDestroyOnLoad(gameObject);}return;}
+                world=UnityEngine.Object.FindFirstObjectByType<RegionalWorld>();var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-regionProbe");if(i<0)i=Array.IndexOf(args,"-catacombProbe");if(i<0)i=Array.IndexOf(args,"-actOneProbe");if(i<0)i=Array.IndexOf(args,"-townProbe");path=Path.GetFullPath(args[i+1]);Directory.CreateDirectory(path);
             }
             string control=Path.Combine(path,"control.txt");
             if(File.Exists(control))

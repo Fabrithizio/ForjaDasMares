@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0485f080ca94a2a90cfe2e440796c47, type: 3}
+  m_Name: Region
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionDefinition
+  regionId: refugio-ultimo-sino
+  displayName: "Ref\xFAgio do \xDAltimo Sino \xB7 Cidade segura"
+  refuge: {x: 0, y: 0.16, z: 0}
+  portal: {x: 0, y: 0.08, z: -31}
+  route:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: -31}
+  camps: []
+  connections: []
+  landmarks:
+  - label: Nara
+    position: {x: -10, y: 0, z: -4}
+    color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  - label: Daro
+    position: {x: 10, y: 0, z: -4}
+    color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  - label: Treino
+    position: {x: 24, y: 0, z: -21}
+    color: {r: 0, g: 1, b: 1, a: 1}
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 38, y: 15, z: 38}
+  activeEnemyLimit: 12

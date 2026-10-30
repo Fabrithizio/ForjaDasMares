@@ -59,8 +59,7 @@ namespace ForjaDasMares.Networking
             Button(options.transform,"GraphicsQuality",560,560,470,"GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected),()=>{GetComponent<PresentationQuality>()?.Cycle();options.transform.Find("GraphicsQuality").GetComponentInChildren<Text>().text="GRÁFICOS: "+PresentationQuality.ModeName(PresentationQuality.Selected);});
             SoundVolumeButton(options.transform,"MusicVolume",30,612,500,"MÚSICA",CampaignSoundscape.MusicKey);
             SoundVolumeButton(options.transform,"AmbienceVolume",560,612,470,"AMBIENTE",CampaignSoundscape.AmbienceKey);
-            Button(options.transform,"MovementMode",560,510,470,"CONTROLES: "+DesktopRpgControls.ModeName,()=>{DesktopRpgControls.ToggleMode();options.transform.Find("MovementMode").GetComponentInChildren<Text>().text="CONTROLES: "+DesktopRpgControls.ModeName;},36);
-            Label(options.transform,"PC: F8 alterna mouse RPG / WASD · Shift: parado · roda: zoom\nWASD/setas · mouse segurado: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: SUPER\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,410,1040,100,16);
+            Label(options.transform,"PC: mouse para andar e atacar · Shift: parado · roda: zoom\nClique no chão: mover · segure no alvo: ataque · E: habilidade\nEspaço: esquiva · F: interagir · G / direcional ↑: marcar · Esc: menu · Q: SUPER\nCelular: joystick e botões à direita. Menu no canto superior direito.\nSegure ataque para o combo; solte com carga para antecipar o pesado.",30,410,1040,100,16);
             warning=Label(confirm.transform,"",60,215,1000,180,25);
             Button(confirm.transform,"CancelLeave",60,445,450,"CONTINUAR NA SALA",()=>Show(room));
             Button(confirm.transform,"ConfirmLeave",580,445,450,"CONFIRMAR SAÍDA",()=>{Close();director.Close();});

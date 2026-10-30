@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ad368d4b6dc9c419edd4f52cb96dbd, type: 3}
+  m_Name: Story(Clone)
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionStoryDefinition
+  questId: sino-ato1-v1
+  title: "O sino que n\xE3o responde"
+  requiredClues: 2
+  interactionDistance: 3
+  points:
+  - label: Conversar com Nara
+    interaction: 0
+    position: {x: -10, y: 0.08, z: -4}
+    clue: 0
+    discovery: 
+  - label: Conversar com Daro
+    interaction: 1
+    position: {x: 10, y: 0.08, z: -4}
+    clue: 0
+    discovery: 
+  - label: "Examinar di\xE1rio da expedi\xE7\xE3o"
+    interaction: 2
+    position: {x: -92, y: 0.08, z: -51}
+    clue: 0
+    discovery: "O di\xE1rio menciona um sino silenciado e registros levados ao jardim."
+  - label: "Examinar mecanismo de extra\xE7\xE3o"
+    interaction: 2
+    position: {x: 90, y: 0.08, z: -3}
+    clue: 1
+    discovery: "O extrator desviava a Mar\xE9. O sino ficou sem energia."
+  - label: Ler registro dos nomes
+    interaction: 2
+    position: {x: -28, y: 0.08, z: 101}
+    clue: 2
+    discovery: "Os nomes pertencem \xE0 cidade perdida. Os guardi\xF5es repetem suas
+      lembran\xE7as."
+  - label: Entrar nas catacumbas
+    interaction: 3
+    position: {x: 0, y: 0.08, z: 128}
+    clue: 0
+    discovery: 

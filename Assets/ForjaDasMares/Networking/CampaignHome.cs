@@ -26,7 +26,7 @@ namespace ForjaDasMares.Networking
             var primary=Button(main,"Campaign",65,330,470,"JOGAR · CAMPANHA",()=>play());primary.GetComponent<RoundedHudGraphic>().borderColor=RusticHudTheme.Gold;
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
             Button(main,"RegionalWorld",760,549,460,"EXPLORAR MUNDO · PROTÓTIPO LOCAL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CostaDasRuinas");});
-            Button(main,"ActOne",760,403,460,"COSTA DAS RUÍNAS · HISTÓRIA DO ATO 1",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CostaAto1");});
+            Button(main,"ActOne",760,403,460,"ENTRAR NA CIDADE · REFÚGIO DO SINO",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");});
             Button(main,"CatacombPreview",760,476,460,"CATACUMBAS · PRÉVIA JOGÁVEL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CatacumbasDasMares");});
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
@@ -49,8 +49,7 @@ namespace ForjaDasMares.Networking
             Label(options,"Nítido: bordas mais suaves. Econômico: resolução menor para aparelhos lentos.",50,380,1150,45,18);
             SoundVolumeButton(options,"MusicVolume",50,430,510,"MÚSICA",CampaignSoundscape.MusicKey);
             SoundVolumeButton(options,"AmbienceVolume",590,430,510,"AMBIENTE",CampaignSoundscape.AmbienceKey);
-            Button(options,"MovementMode",590,310,510,"CONTROLES: "+DesktopRpgControls.ModeName,()=>{DesktopRpgControls.ToggleMode();options.transform.Find("MovementMode").GetComponentInChildren<Text>().text="CONTROLES: "+DesktopRpgControls.ModeName;});
-            Label(options,"Mouse RPG: chão para andar; segure no inimigo para atacar; Shift mantém parado.\nWASD: teclas para mover e mouse para mirar/atacar. F8 alterna os modos.\nBotão direito/E: habilidade · espaço: esquiva · roda: zoom · Q: super.\nCelular mantém joystick e botões.",50,500,1150,105,18);
+            Label(options,"Mouse RPG: chão para andar; segure no inimigo para atacar; Shift mantém parado.\nClique no chão para andar; NPCs para conversar. Sem WASD.\nBotão direito/E: habilidade · espaço: esquiva · roda: zoom · Q: super.\nCelular mantém joystick e botões.",50,500,1150,105,18);
             Button(options,"Back",50,620,500,"VOLTAR AO INÍCIO",()=>Show(main));
             Label(confirm,"ENCERRAR O JOGO?",150,220,1000,100,36);
             Button(confirm,"Cancel",150,400,430,"CONTINUAR AQUI",()=>Show(main));Button(confirm,"Confirm",690,400,430,"ENCERRAR",Application.Quit);

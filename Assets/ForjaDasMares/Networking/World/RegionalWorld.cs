@@ -12,6 +12,7 @@ namespace ForjaDasMares.Networking
         [SerializeField] SoundscapeLibrary soundscape;
         readonly Dictionary<EnemyActor,int> ownership=new Dictionary<EnemyActor,int>(24);
         float[][] timers;EnemyActor[][] residents;int[] firstKills;bool[] cleared;bool[][] firstDefeated;bool travelling;float poll;
+        TownHub town;
         public RegionDefinition Definition=>definition;public HeroRoster Hero=>hero;public EnemyPool Enemies=>enemies;
         public RegionalJourney Journey {get;private set;}
         public void SetJourney(RegionalJourney value)=>Journey=value;
@@ -24,6 +25,7 @@ namespace ForjaDasMares.Networking
         void Start()
         {
             if(Journey==null)Journey=GetComponent<RegionalJourney>();
+            town=GetComponent<TownHub>();
             hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
             var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
             follow.UseRpgFraming();hero.Select(2);hero.enabled=false;hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);hero.Changed+=HeroChanged;
@@ -32,7 +34,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<residents.Length;i++){residents[i]=new EnemyActor[definition.camps[i].enemies.Length];timers[i]=new float[residents[i].Length];firstDefeated[i]=new bool[residents[i].Length];}
             enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignMasterVolume",.8f));
-            if(soundscape!=null){Voice("RegionalMusic",soundscape.biomes[0].music,.26f*CampaignSoundscape.Volume(CampaignSoundscape.MusicKey));Voice("RegionalAmbience",soundscape.menu.ambience,.16f*CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey));}
+            if(soundscape!=null){Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f*CampaignSoundscape.Volume(CampaignSoundscape.MusicKey));Voice("RegionalAmbience",soundscape.menu.ambience,.16f*CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey));}
             Debug.Log("REGION_READY localPrototype=true camps="+residents.Length+" capacity="+enemies.Capacity);
         }
         void Voice(string label,AudioClip clip,float volume){var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;source.volume=volume;source.Play();}
@@ -64,11 +66,12 @@ namespace ForjaDasMares.Networking
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
+            if(town!=null&&town.TryInteractNearest())return;
             if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
             else if(Journey==null&&PortalReady&&Vector3.Distance(hero.transform.position,definition.portal)<5)ReturnToCampaign();
         }
-        public void Respawn(){hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
+        public void Respawn(){hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign(){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync("CampaignCoop");}
         void OnDestroy(){if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }

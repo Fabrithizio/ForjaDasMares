@@ -29,14 +29,14 @@ namespace ForjaDasMares
         public void SetUiAttackHeld(bool held) { if(!blocked && held && !uiAttackHeld) attackPending=true; uiAttackHeld = !blocked && held; }
         public void RequestAttack() { if(!blocked) attackPending=true; }
         public void RequestDodge() { if(!blocked) dodgePending=true; }
-        public void RequestSpecial() { if(!blocked) specialPending=true; }
+        public void RequestSpecial() { if(!blocked){specialPending=true;desktop?.StopForAbility();} }
         public void RequestSuper() { if(!blocked) superPending = true; }
         public bool TakeSuper() { bool value = !blocked && superPending; superPending = false; return value; }
         public System.Predicate<Vector2> PointerBlocked { get; set; }
         public void BlockCommands(bool value) { blocked = value; ClearRequests(); }
         public InputActionAsset Actions => actions;
 
-        public Vector2 RawMove => blocked ? Vector2.zero : touchHeld ? touchMove : move != null && move.enabled ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+        public Vector2 RawMove => blocked ? Vector2.zero : touchHeld ? touchMove : move != null && move.enabled && !(move.activeControl?.device is Keyboard) ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
         public Vector2 Move=>blocked?Vector2.zero:desktop!=null&&desktop.isActiveAndEnabled?desktop.Movement:RawMove;
         public void SetTouchMove(Vector2 value, bool held) { touchHeld = held; touchMove = Vector2.ClampMagnitude(value, 1f); if (held) pointerMode = false; }
         public Vector2 PointerPosition => pointer != null && pointer.enabled ? pointer.ReadValue<Vector2>() : Vector2.zero;
@@ -60,7 +60,7 @@ namespace ForjaDasMares
             gameplay.FindAction("Dodge", true).performed += OnDodge;
             gameplay.FindAction("Reset", true).performed += OnReset;
             var ability=gameplay.FindAction("Special");if(ability!=null&&!Application.isMobilePlatform)ability.AddBinding("<Mouse>/rightButton");
-            BindOptional("Special", () => specialPending = true);
+            BindOptional("Special", RequestSpecial);
             BindOptional("NextHero", () => nextPending = true);
             BindOptional("TestDamage", () => damagePending = true);
             BindOptional("Victory", () => victoryPending = true);

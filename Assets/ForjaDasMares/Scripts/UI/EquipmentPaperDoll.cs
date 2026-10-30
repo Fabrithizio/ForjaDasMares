@@ -37,6 +37,7 @@ namespace ForjaDasMares
             foreach(var line in model.GetComponentsInChildren<LineRenderer>(true))line.enabled=false;
             foreach(var effect in model.GetComponentsInChildren<TrailRenderer>(true)){effect.emitting=false;effect.Clear();effect.enabled=false;}
             foreach(var renderer in model.GetComponentsInChildren<Renderer>(true)){renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;}
+            if(portrait){var renderers=model.GetComponentsInChildren<Renderer>();Bounds bounds=new Bounds();bool first=true;foreach(var renderer in renderers){if(!renderer.enabled||renderer is ParticleSystemRenderer||renderer is LineRenderer||renderer is TrailRenderer)continue;if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);}if(!first){var focus=bounds.center+Vector3.up*bounds.size.y*.28f;preview.orthographicSize=Mathf.Max(.12f,bounds.size.y*.25f);preview.transform.position=focus+Vector3.forward*4;preview.transform.rotation=Quaternion.LookRotation(focus-preview.transform.position);}}
             var animator=model.GetComponentInChildren<Animator>();if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");}
         }
         void LateUpdate(){if(portrait&&preview!=null&&preview.enabled&&--dirty<=0){preview.enabled=false;world.SetActive(false);}}

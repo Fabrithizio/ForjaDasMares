@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 namespace ForjaDasMares
 {
     // Stable hit area: only the visual handle moves. The captured finger owns movement.
-    public sealed class TouchMoveStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    public sealed class TouchMoveStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IInitializePotentialDragHandler
     {
         [SerializeField] ArenaInput input;
         [SerializeField] RectTransform handle;
@@ -18,6 +18,7 @@ namespace ForjaDasMares
         public void OnPointerDown(PointerEventData data)
         { if (pointerId != int.MinValue) return; pointerId = data.pointerId; Move(data); }
         public void OnDrag(PointerEventData data) { if (data.pointerId == pointerId) Move(data); }
+        public void OnInitializePotentialDrag(PointerEventData data)=>data.useDragThreshold=false;
         public void OnPointerUp(PointerEventData data) { if (data.pointerId == pointerId) Release(); }
         void Move(PointerEventData data)
         {

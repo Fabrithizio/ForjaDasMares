@@ -1,3 +1,7 @@
+## 0.25.0 — cidade segura e controles de mouse (30/10/2026)
+
+Refúgio do Último Sino separado da costa, oito NPCs provisórios, fonte funcional, treino, saída para a costa e ponto de chegada circular. PC sem WASD/F8; ataque parado sem perseguir e clique durante recuperação preservado. HUD com retrato/vida/super reais e ações circulares. 59 testes passaram; após corrigir colisão invisível do cilindro, 22 testes de cidade/controles repetidos com sucesso. Windows compilado sem erros. APK 0.25.0/code49 gerado a pedido posterior; instalação ainda não confirmada por queda do USB. Sem teste físico desta versão. [Relatório e limitações](CIDADE_E_CONTROLES_0_25_0.md).
+
 ## Auditoria do mago inimigo — 29/10/2026 (não integrado)
 
 FBX Crystal Arcane Sentinel inspecionado no Blender: 6.931 vértices, 13.462 triângulos, texturas e nenhuma Armature/peso/animação. Bom candidato a rig humanoide próprio; ombreiras, mãos, mangas e manto precisam de revisão de pesos e teste de deformação. Renders reais de frente/lateral e relatório em ArtSource/Characters/ArcaneSentinelAudit. Originais preservados; não foi criado rig nem animação, nem alterado o jogo ou gerada build nesta auditoria. Não é necessário gastar outra geração antes de tentar o rig.
