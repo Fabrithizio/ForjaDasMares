@@ -1,3 +1,11 @@
+# Atualização 0.24.0 — primeiro trecho aberto do Ato 1
+
+No Windows, escolha **COSTA DAS RUÍNAS · HISTÓRIA DO ATO 1** no menu. Região local de 320 × 320 m, refúgio central, caminhos alternativos, cais/pedreira/jardim, árvore com caveiras, dois NPCs geométricos e missão com diário persistente. F: conversar/investigar; duas pistas em qualquer ordem e retorno a Daro liberam a prévia das catacumbas. As cenas anteriores continuam disponíveis.
+
+Esta revisão atualiza somente o PC em `Builds/Atual/Windows/ForjaDasMaresCampanha.exe`. Não foi gerado APK 0.24.0; o arquivo Android existente é de uma versão anterior. Região pública online de 20 jogadores, restante do Ato 1 e chefes narrativos ainda não estão implementados. [Relatório, instruções, testes e limites](Docs/ATO_1_0_24_0.md).
+
+---
+
 # Atualização 0.15.0 — Prisma, o Arcanista
 
 Modelo original do mago com 25 clipes reais, manto/rig, animações de cajado, grimório e orbe, efeitos/sons e encaixes de arma configurados nos dados. Mantidos ataque segurado, pesado, habilidades, Convergência, equipamentos/talentos, arenas e jogo cooperativo. Corrigidos perfil sonoro por herói, indicador do super e relógio da animação de esquiva remota. Foco de Brasa preserva sua identidade.

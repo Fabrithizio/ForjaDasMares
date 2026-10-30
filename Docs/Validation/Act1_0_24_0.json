@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-30",
+  "playModeFinal": {
+    "id": "2",
+    "testcasecount": "48",
+    "result": "Passed",
+    "total": "48",
+    "passed": "48",
+    "failed": "0",
+    "inconclusive": "0",
+    "skipped": "0",
+    "asserts": "0",
+    "engine-version": "3.5.0.0",
+    "clr-version": "4.0.30319.42000",
+    "start-time": "2026-10-30 06:00:03Z",
+    "end-time": "2026-10-30 06:01:08Z",
+    "duration": "65,5318886"
+  },
+  "nativeIntermediate": [
+    {
+      "step": "04-complete.json",
+      "position": {
+        "x": 6.0,
+        "y": 0.03999991714954376,
+        "z": -5.300000190734863
+      },
+      "hp": 72,
+      "enemies": 9,
+      "cleared": 0,
+      "clues": 2,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 30344,
+      "averageFrameMs": 13.844036102294922,
+      "worstFrameMs": 158.41830444335938,
+      "allocatedMB": 130.125,
+      "gpu": "NVIDIA GeForce MX130"
+    },
+    {
+      "step": "05-repeat.json",
+      "position": {
+        "x": 6.0,
+        "y": 0.03999991714954376,
+        "z": -5.300000190734863
+      },
+      "hp": 72,
+      "enemies": 9,
+      "cleared": 0,
+      "clues": 2,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 30372,
+      "averageFrameMs": 13.852336883544922,
+      "worstFrameMs": 158.41830444335938,
+      "allocatedMB": 130.12420654296875,
+      "gpu": "NVIDIA GeForce MX130"
+    },
+    {
+      "step": "06-reloaded.json",
+      "position": {
+        "x": 0.0,
+        "y": 0.03999991714954376,
+        "z": 0.0
+      },
+      "hp": 72,
+      "enemies": 3,
+      "cleared": 0,
+      "clues": 2,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 5683,
+      "averageFrameMs": 16.383684158325195,
+      "worstFrameMs": 30.28879737854004,
+      "allocatedMB": 128.42367553710938,
+      "gpu": "NVIDIA GeForce MX130"
+    }
+  ],
+  "limits": [
+    "native measurements precede final grouped foliage",
+    "not Android",
+    "not public multiplayer",
+    "not sustained combat profiling"
+  ],
+  "nativeFinal": [
+    {
+      "step": "encosta.json",
+      "position": {
+        "x": -57.00715637207031,
+        "y": 0.03999989852309227,
+        "z": 25.97037696838379
+      },
+      "hp": 62,
+      "enemies": 9,
+      "cleared": 0,
+      "clues": 2,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 19630,
+      "averageFrameMs": 13.197776794433594,
+      "worstFrameMs": 111.3416976928711,
+      "allocatedMB": 130.43353271484375,
+      "gpu": "NVIDIA GeForce MX130"
+    },
+    {
+      "step": "clear.json",
+      "position": {
+        "x": -65.97174072265625,
+        "y": 0.0590134859085083,
+        "z": -66.3713150024414
+      },
+      "hp": 44,
+      "enemies": 11,
+      "cleared": 3,
+      "clues": 3,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 1752328,
+      "averageFrameMs": 10.725397109985352,
+      "worstFrameMs": 111.3416976928711,
+      "allocatedMB": 131.38189697265625,
+      "gpu": "NVIDIA GeForce MX130"
+    },
+    {
+      "step": "death.json",
+      "position": {
+        "x": -65.97174072265625,
+        "y": 0.0590134859085083,
+        "z": -66.3713150024414
+      },
+      "hp": 0,
+      "enemies": 11,
+      "cleared": 3,
+      "clues": 3,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 1752370,
+      "averageFrameMs": 10.725668907165527,
+      "worstFrameMs": 111.3416976928711,
+      "allocatedMB": 131.43994140625,
+      "gpu": "NVIDIA GeForce MX130"
+    },
+    {
+      "step": "respawn.json",
+      "position": {
+        "x": 0.0,
+        "y": 0.03999991714954376,
+        "z": 0.0
+      },
+      "hp": 72,
+      "enemies": 11,
+      "cleared": 3,
+      "clues": 3,
+      "portal": false,
+      "storyAccepted": true,
+      "storyComplete": true,
+      "sampledFrames": 1752397,
+      "averageFrameMs": 10.725863456726074,
+      "worstFrameMs": 111.3416976928711,
+      "allocatedMB": 131.37258911132812,
+      "gpu": "NVIDIA GeForce MX130"
+    }
+  ],
+  "nativeFinalNote": "Native Windows development player. Later counters include interactive user activity; not a controlled sustained FPS benchmark. clear-near/die/respawn are development probe commands, not a human victory.",
+  "buildWindows": {
+    "version": "0.24.0",
+    "result": "Succeeded",
+    "errors": 0,
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe",
+    "sha256": "b7cca8b82003185f22644d0ee1c23b3640de1b996802d4f5d0501e287011afa6"
+  }
+}

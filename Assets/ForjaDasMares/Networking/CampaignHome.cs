@@ -26,6 +26,7 @@ namespace ForjaDasMares.Networking
             var primary=Button(main,"Campaign",65,330,470,"JOGAR · CAMPANHA",()=>play());primary.GetComponent<RoundedHudGraphic>().borderColor=RusticHudTheme.Gold;
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
             Button(main,"RegionalWorld",760,549,460,"EXPLORAR MUNDO · PROTÓTIPO LOCAL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CostaDasRuinas");});
+            Button(main,"ActOne",760,403,460,"COSTA DAS RUÍNAS · HISTÓRIA DO ATO 1",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CostaAto1");});
             Button(main,"CatacombPreview",760,476,460,"CATACUMBAS · PRÉVIA JOGÁVEL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CatacumbasDasMares");});
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));

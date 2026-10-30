@@ -1,0 +1,51 @@
+[
+  {
+    "name": "RefugeTent",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\RefugeTent\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\RefugeTent\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Tenda de abrigo azul\\Tenda de abrigo azul - Modelo.fbx",
+    "sha256": "302144b0e4fad2e0b2c436ba86310c56a2e2b43637c4cb2860d8c6491847c09c"
+  },
+  {
+    "name": "CoastalRock",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\CoastalRock\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\CoastalRock\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Rocha costeira com musgo\\Rocha costeira com musgo - Modelo.fbx",
+    "sha256": "42ba8751f5e904d1c84f74c8afe52df14139033e43df2a10e6c2be5f0a9bdd90"
+  },
+  {
+    "name": "LowWall",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\LowWall\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\LowWall\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Muro de pedra com musgo\\Muro de pedra com musgo - Modelo.fbx",
+    "sha256": "3713c894901cc6dd605560af1ade070e46049c89e95db7328347f167d544f061"
+  },
+  {
+    "name": "GuardianStatue",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\GuardianStatue\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\GuardianStatue\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Estatua do guardiao das mares\\Estatua do guardiao das mares - Modelo.fbx",
+    "sha256": "eddccbdd31f2b51620ef6fe8b8d0d2a2fc99feb7055d7e7cd6dd550dc0867fe8"
+  },
+  {
+    "name": "RootStump",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\RootStump\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\RootStump\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Toco de arvore com raizes\\Toco de arvore com raizes - Modelo.fbx",
+    "sha256": "e2ea1d3f48952104ca62cc1303d96b7964bd3043ee174369dfb6b3205af5af7e"
+  },
+  {
+    "name": "CoalBrazier",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\CoalBrazier\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\CoalBrazier\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Braseiro de pedra sem fogo\\Braseiro de pedra sem fogo - Modelo.fbx",
+    "sha256": "2aadd5e4764127613ddcff5c2d4ecffe3813bd216c5dceeb9a10a34dbc4ce353"
+  },
+  {
+    "name": "Gravewood",
+    "source": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\ArtSource\\WorldDesign\\Act1\\Sources\\Gravewood\\Source.fbx",
+    "output": "C:\\Users\\Fabricio_S\\Desktop\\Jogos\\ForjaDasMares\\Assets\\ForjaDasMares\\Art\\World\\Act1\\Gravewood\\Model.fbx",
+    "original": "\\\\?\\C:\\Users\\Fabricio_S\\Desktop\\Jogos\\Materiais do jogo\\01 Modelos 3D\\Cenarios\\Arvore Velha Com caveiras\\Meshy_AI_Gravewood_Sentinel_20261030_texture_fbx\\Meshy_AI_Gravewood_Sentinel_20261030_texture.fbx",
+    "sha256": "e931fabbec417b956021e3bd8e2cc65b7f92de33b7891c39b7c729f49435a09c"
+  }
+]

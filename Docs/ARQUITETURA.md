@@ -278,3 +278,10 @@ HeroModelView resolve animações de cajado, grimório e orbe com fallback para 
 PrismaCastingView lê HeroPresentation (incluindo carga replicada), com oito linhas e arrays reutilizados. PooledProjectileTrail permanece vinculado aos slots finitos do pool/proxies. Efeitos não concedem dano. HeroAttackArea usa os dados do super quando variante4; os golpes continuam resolvidos uma única vez pelos sistemas existentes. Foco de Brasa conserva sua explosão e cadência específicas.
 
 CoopDirector envia HeroPresentation.ActionProgress, que seleciona o relógio de ataque, esquiva ou reação a dano. O campo animation já existia: protocolo10 e salvamento v2 não mudam. Dados de dano/controle, RNG, inventário e recompensas continuam na autoridade. Sem novo serviço/pacote; teste desta revisão em Android físico continua necessário. Fontes, valores e evidências: PRISMA_0_15_0.md.
+
+
+## Região narrativa local 0.24.0
+
+CostaAto1 reutiliza RegionalWorld, EnemyPool, HeroRoster/Combat, ArenaCamera e navegação. RegionDefinition inclui ligações/marcos opcionais; cenas antigas usam seu percurso original. RegionStoryDefinition configura a primeira missão e RegionalJourney mantém um diário local separado com gravação temporária/backup e autorização única derivada da conclusão. RegionalWorld delega a interação narrativa quando o componente existe; a camada anterior continua sem história. Nenhum estado de missão é confiável para futura economia online.
+
+ActOneInstaller gera somente a cena/dados novos e valida navegação de todos os destinos e spawns. Arte otimizada preserva originais; vegetação é combinada por setor, terreno em quatro partes e props usam LODs. PresentationQuality é aplicada à câmera por cópia do pipeline em runtime. Região não está conectada à autoridade multiplayer; ampliar para20 exige backend/servidor e adaptação explícita. Detalhes em ATO_1_0_24_0.md.

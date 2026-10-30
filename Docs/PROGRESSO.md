@@ -691,3 +691,14 @@ Correções encontradas em QA: arma herdava escala dos ossos e cobria câmera �
 Relatório/arquivos/passos manuais: PAISAGENS_E_HORDAS_0_10_2026-10-17.md, ARQUIVOS_0_10.txt, CAMPANHA_COMO_JOGAR.md e ASSETS_E_DIRECAO_0_10.md. AtalhoPC e APK compartilhável atualizados para0.10.1, salasQA encerradas e saves preservados. Aprovado com limitações para testes privados; não equivale a concluir todos os pedidos históricos ou lançamento comercial. Importantes: performance/balanceamento humano, mapas ainda modulares/encontros serializados e arte/animação final. Nenhuma compra necessária agora.
 
 Build Windows 0.16.3: Succeeded/errors=0/exit=0; executável estável atualizado.
+
+
+## 0.24.0 — Ato 1, primeiro trecho aberto (30/10/2026)
+
+Premissa/região aprovadas pelo usuário. Implementada cena separada CostaAto1 com terreno 320×320, refúgio central, 12 ligações/4 circuitos, cais, pedreira, jardim, passagem do breu e entrada das catacumbas. Sete modelos fornecidos preparados com três LODs, incluindo árvore nova; vegetação rasteira geométrica agrupada e NPCs Nara/Daro provisórios. Iluminação/material e gradação exclusivos da nova cena, originais preservados.
+
+Missão funcional de conversa → duas pistas de três em qualquer ordem → retorno a Daro → autorização única das catacumbas. Diário local versionado separado; conclusão/pistas preservadas após morte e novo processo. Não altera economia da campanha nem concede moeda online. Patrulhas reutilizadas, máximo12 vivos, respawn65s, sem fechar áreas de combate. Botão próprio no menu; controles PC preservados e entrada móvel preparada sem APK/teste físico.
+
+Rodada final PlayMode48/48, zero ignorados/falhas; inclui seis testes do Ato1 e42 regressões existentes. Native player intermediário conferiu fluxo e reabertura no perfil QA isolado; ajustes finais de vegetação/HUD têm rodada final aprovada. Ver ATO_1_0_24_0.md para arquivos, builds, evidências e limitações. Ato1 completo, chefe, missões restantes, região pública20, dispositivos reais e balanceamento prolongado seguem pendentes.
+
+Fechamento Windows0.24.0: instalador final exit0,48/48 testes finais, build final Succeeded/errors0/exit0. APK não gerado. Conferência nativa final e backup registrados no relatório do Ato1.

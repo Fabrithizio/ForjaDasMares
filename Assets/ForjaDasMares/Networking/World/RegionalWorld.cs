@@ -13,6 +13,8 @@ namespace ForjaDasMares.Networking
         readonly Dictionary<EnemyActor,int> ownership=new Dictionary<EnemyActor,int>(24);
         float[][] timers;EnemyActor[][] residents;int[] firstKills;bool[] cleared;bool[][] firstDefeated;bool travelling;float poll;
         public RegionDefinition Definition=>definition;public HeroRoster Hero=>hero;public EnemyPool Enemies=>enemies;
+        public RegionalJourney Journey {get;private set;}
+        public void SetJourney(RegionalJourney value)=>Journey=value;
         public int ClearedCount{get{int n=0;if(cleared!=null)foreach(bool c in cleared)if(c)n++;return n;}}
         public bool PortalReady=>ClearedCount==definition.camps.Length;
         public bool IsCampCleared(int index)=>cleared!=null&&index>=0&&index<cleared.Length&&cleared[index];
@@ -21,6 +23,8 @@ namespace ForjaDasMares.Networking
         public void Configure(RegionDefinition data,HeroRoster player,EnemyPool pool,ArenaCamera camera,SoundscapeLibrary audio){definition=data;hero=player;enemies=pool;follow=camera;soundscape=audio;}
         void Start()
         {
+            if(Journey==null)Journey=GetComponent<RegionalJourney>();
+            var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
             follow.UseRpgFraming();hero.Select(2);hero.enabled=false;hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);hero.Changed+=HeroChanged;
             hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.SetFocusBounds(definition.bounds,true);follow.Snap();
             residents=new EnemyActor[definition.camps.Length][];timers=new float[residents.Length][];firstKills=new int[residents.Length];cleared=new bool[residents.Length];firstDefeated=new bool[residents.Length][];
@@ -59,8 +63,9 @@ namespace ForjaDasMares.Networking
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
+            if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
-            else if(PortalReady&&Vector3.Distance(hero.transform.position,definition.portal)<5)ReturnToCampaign();
+            else if(Journey==null&&PortalReady&&Vector3.Distance(hero.transform.position,definition.portal)<5)ReturnToCampaign();
         }
         public void Respawn(){hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign(){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync("CampaignCoop");}

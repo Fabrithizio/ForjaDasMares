@@ -28,6 +28,8 @@ namespace ForjaDasMares
         public bool CombatBlocked => blocked;
         public void SetUiAttackHeld(bool held) { if(!blocked && held && !uiAttackHeld) attackPending=true; uiAttackHeld = !blocked && held; }
         public void RequestAttack() { if(!blocked) attackPending=true; }
+        public void RequestDodge() { if(!blocked) dodgePending=true; }
+        public void RequestSpecial() { if(!blocked) specialPending=true; }
         public void RequestSuper() { if(!blocked) superPending = true; }
         public bool TakeSuper() { bool value = !blocked && superPending; superPending = false; return value; }
         public System.Predicate<Vector2> PointerBlocked { get; set; }

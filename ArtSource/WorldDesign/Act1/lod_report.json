@@ -1,0 +1,58 @@
+[
+  {
+    "name": "RefugeTent",
+    "triangles": [
+      1972,
+      886,
+      353
+    ]
+  },
+  {
+    "name": "CoastalRock",
+    "triangles": [
+      838,
+      376,
+      150
+    ]
+  },
+  {
+    "name": "LowWall",
+    "triangles": [
+      980,
+      440,
+      175
+    ]
+  },
+  {
+    "name": "GuardianStatue",
+    "triangles": [
+      3156,
+      1420,
+      568
+    ]
+  },
+  {
+    "name": "RootStump",
+    "triangles": [
+      4633,
+      2083,
+      833
+    ]
+  },
+  {
+    "name": "CoalBrazier",
+    "triangles": [
+      1862,
+      836,
+      334
+    ]
+  },
+  {
+    "name": "Gravewood",
+    "triangles": [
+      2948,
+      1326,
+      530
+    ]
+  }
+]
