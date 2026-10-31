@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
@@ -117,6 +118,31 @@ namespace ForjaDasMares.Networking.Tests
         {
             PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,1);yield return null;Point(world.Hero.transform.position+Vector3.forward*6,true);yield return new WaitForSeconds(.1f);Point(world.Hero.transform.position+Vector3.forward*6,false);
             world.Hero.Health.ApplyDamage(10000);yield return new WaitForSeconds(.1f);world.Respawn();yield return new WaitForSeconds(.4f);Assert.Less(Vector3.Distance(world.Hero.transform.position,world.Definition.refuge),.2f);
+        }
+        [UnityTest]public IEnumerator PointerGroundQueryPassesThroughSolidScenery()
+        {
+            var goal=world.Hero.transform.position+Vector3.forward*5;var block=GameObject.CreatePrimitive(PrimitiveType.Cube);block.layer=9;block.transform.position=goal+Vector3.up;block.transform.localScale=new Vector3(3,3,3);Physics.SyncTransforms();
+            try{Point(goal,false);yield return null;Assert.IsTrue(controls.TryPointer(out var point,out var hp));Assert.IsNull(hp);Assert.Less(Vector3.Distance(new Vector3(point.x,goal.y,point.z),goal),.3f);Assert.Less(point.y,.3f,"Scenery top must not become the walk destination");}
+            finally{Object.Destroy(block);}
+        }
+        [UnityTest]public IEnumerator ClickingInsideObstacleStopsAtNearbyWalkablePoint()
+        {
+            var goal=world.Hero.transform.position+Vector3.forward*5;var block=GameObject.CreatePrimitive(PrimitiveType.Cube);block.layer=9;block.transform.position=goal+Vector3.up;block.transform.localScale=new Vector3(2,2,2);
+            var obstacle=block.AddComponent<NavMeshObstacle>();obstacle.shape=NavMeshObstacleShape.Box;obstacle.size=Vector3.one;obstacle.carving=true;
+            try{yield return new WaitForSeconds(1);Point(goal,true);yield return new WaitForSeconds(.1f);Point(goal,false);yield return new WaitForSeconds(2);Assert.Less(Vector3.Distance(world.Hero.transform.position,goal),3);Assert.IsFalse(block.GetComponent<Collider>().bounds.Contains(world.Hero.transform.position+Vector3.up));Assert.Less(world.Hero.GetComponent<PlayerMotor>().PlanarVelocity.magnitude,.1f);}
+            finally{Object.Destroy(block);}
+        }
+        [UnityTest]public IEnumerator HoverOutlineClearsOnUiAndDeathWithoutDamage()
+        {
+            var hp=Target(world.Hero.transform.position+Vector3.forward*3);input.PointerBlocked=_=>false;
+            try{Point(hp.transform.position+Vector3.up*.6f,false);yield return null;yield return null;var outline=controls.GetComponent<TargetOutline>();Assert.NotNull(outline);Assert.AreEqual(hp,outline.Selected);Assert.AreEqual(2000,hp.Current);Assert.Greater(hp.GetComponentsInChildren<MeshRenderer>().Count(r=>r.name.StartsWith("SelectionOutline")),0);
+                input.PointerBlocked=_=>true;yield return null;yield return null;Assert.IsNull(outline.Selected);
+                input.PointerBlocked=_=>false;Point(hp.transform.position+Vector3.up*.6f,false);yield return null;hp.ApplyDamage(10000);yield return null;yield return null;Assert.IsNull(outline.Selected);}
+            finally{Object.Destroy(hp.gameObject);}
+        }
+        [UnityTest]public IEnumerator RegionalPerformanceHudShowsRealSamplesWhenEnabled()
+        {
+            var hud=Object.FindFirstObjectByType<CampaignPerformanceHud>();Assert.NotNull(hud);hud.Toggle();yield return new WaitForSeconds(.7f);Assert.Greater(hud.SampleCount,0);Assert.IsTrue(hud.IsVisible);StringAssert.Contains("FPS",hud.Readout);StringAssert.Contains("ms",hud.Readout);hud.Toggle();Assert.IsFalse(hud.IsVisible);
         }
         [Test]public void InvalidDestinationIsRejected(){Assert.IsFalse(controls.Plan(new Vector3(10000,0,10000)));}
         [UnityTest]public IEnumerator ZoomChangesDistanceWithoutChangingCameraPitch()

@@ -20,10 +20,12 @@ namespace ForjaDasMares
         public bool EffectiveMouseMode=>!Application.isMobilePlatform&&MouseMode&&input!=null&&input.HasPointer;
         public bool StandStill=>stationary!=null&&stationary.enabled&&stationary.IsPressed();
         public bool CanAttack{get;private set;}=true;
+        public Health SelectionTarget{get;private set;}
+        public bool SelectionAttacking=>target!=null&&target==SelectionTarget&&input!=null&&input.MouseAttackHeld&&CanAttack;
         public Vector2 Movement{get;private set;}
         public string Notice{get;private set;}="";
         public void Configure(ArenaInput controls,PlayerMotor player,Camera view,HeroCombat attacks)
-        {input=controls;if(motor!=player){Cancel();motor=player;health=player!=null?player.GetComponent<Health>():null;}camera=view;combat=attacks;}
+        {input=controls;if(motor!=player){Cancel();motor=player;health=player!=null?player.GetComponent<Health>():null;}camera=view;combat=attacks;if(GetComponent<TargetOutline>()==null)gameObject.AddComponent<TargetOutline>();}
         void Awake()
         {
             path=new NavMeshPath();
@@ -33,7 +35,7 @@ namespace ForjaDasMares
         void OnDisable(){stationary?.Disable();Cancel();}
         void OnDestroy(){stationary?.Dispose();}
         public void PressMouse(){pressed=true;}
-        public void Cancel(){Notice="";navigating=false;target=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
+        public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
         public Vector3 AimDirection
         {
             get
@@ -53,7 +55,9 @@ namespace ForjaDasMares
             enemy=null;point=Vector3.zero;if(camera==null||input==null||motor==null)return false;
             Ray ray=camera.ScreenPointToRay(input.PointerPosition);
             if(Physics.Raycast(ray,out var hit,500,(1<<0)|(1<<8)|(combat!=null?combat.GeometryMask|combat.TargetMask:(1<<9)|(1<<13)),QueryTriggerInteraction.Ignore))
-            {point=hit.point;var hp=hit.collider.GetComponentInParent<Health>();if(hp!=null&&hp.Faction!=CombatFaction.Player&&hp.IsAlive){enemy=hp;point=hp.transform.position;}return true;}
+            {var hp=hit.collider.GetComponentInParent<Health>();if(hp!=null&&hp.Faction!=CombatFaction.Player&&hp.IsAlive){enemy=hp;point=hp.transform.position;return true;}}
+            // Scenery is still solid for physics, but must not intercept a ground command.
+            if(Physics.Raycast(ray,out var ground,500,1<<8,QueryTriggerInteraction.Ignore)){point=ground.point;return true;}
             var plane=new Plane(Vector3.up,motor.transform.position);if(!plane.Raycast(ray,out float distance))return false;point=ray.GetPoint(distance);return true;
         }
         void Update()
@@ -67,11 +71,12 @@ namespace ForjaDasMares
                 {
                     autoAimClock-=Time.unscaledDeltaTime;if(autoAimClock<=0){autoAimClock=.12f;autoAim.BeginScan(motor.transform.position,Mathf.Min(12,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range:3),combat!=null?combat.GeometryMask:1<<9);foreach(var enemy in autoAimEnemies.Actors)if(enemy.IsAlive)autoAim.Consider(enemy.Health);autoAimTarget=autoAim.EndScan();}
                 }
-                CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;
+                SelectionTarget=autoAimTarget!=null&&autoAimTarget.IsAlive?autoAimTarget:null;CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;
             }
             bool ui=input.PointerIsBlocked;
             if(ui){Cancel();Movement=input.RawMove;return;}
             bool pointer=TryPointer(out var point,out var hovered);
+            SelectionTarget=hovered;
             WorldClickTarget clicked=null;
             if(pressed&&camera!=null&&Physics.Raycast(camera.ScreenPointToRay(input.PointerPosition),out var clickHit,500,(1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),QueryTriggerInteraction.Ignore))clicked=clickHit.collider.GetComponentInParent<WorldClickTarget>();
             bool groundPress=pressed&&pointer&&hovered==null&&!StandStill;
@@ -117,7 +122,7 @@ namespace ForjaDasMares
         {
             destination=point;replan=.15f;lastPlanned=point;count=corner=0;
             var filter=new NavMeshQueryFilter{agentTypeID=0,areaMask=NavMesh.AllAreas};
-            if(!NavMesh.SamplePosition(motor.transform.position,out var start,2,filter)||!NavMesh.SamplePosition(point,out var end,1.5f,filter)||!NavMesh.CalculatePath(start.position,end.position,filter,path)||path.status!=NavMeshPathStatus.PathComplete)
+            if(!NavMesh.SamplePosition(motor.transform.position,out var start,2,filter)||!NavMesh.SamplePosition(point,out var end,4,filter)||Mathf.Abs(end.position.y-point.y)>2||!NavMesh.CalculatePath(start.position,end.position,filter,path)||path.status!=NavMeshPathStatus.PathComplete)
             {Notice="Caminho bloqueado";navigating=false;return false;}
             count=path.GetCornersNonAlloc(corners);corner=count>1?1:0;navigating=count>0;Notice="";return navigating;
         }

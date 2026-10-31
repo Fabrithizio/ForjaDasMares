@@ -27,6 +27,16 @@ namespace ForjaDasMares.Networking
                 string command=File.ReadAllText(control).Trim();File.Delete(control);
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(path,"screen.png"));
                 else if(command=="exit"){Application.Quit();return;}
+                else if(command=="fps")UnityEngine.Object.FindFirstObjectByType<CampaignPerformanceHud>()?.Toggle();
+                else if(command=="training")
+                {
+                    var dummy=GameObject.Find("TrainingDummy");if(dummy!=null)world.Hero.GetComponent<PlayerMotor>().Teleport(dummy.transform.position+Vector3.back*3-Vector3.up*.9f,Quaternion.identity);
+                }
+                else if(command=="hoverTraining")
+                {
+                    var dummy=GameObject.Find("TrainingDummy");var mouse=UnityEngine.InputSystem.Mouse.current;
+                    if(dummy!=null&&mouse!=null){var pixel=(Vector2)Camera.main.WorldToScreenPoint(dummy.transform.position);UnityEngine.InputSystem.InputSystem.QueueStateEvent(mouse,new UnityEngine.InputSystem.LowLevel.MouseState{position=pixel});}
+                }
                 else if(command=="die")world.Hero.Health.ApplyDamage(10000);
                 else if(command=="respawn")world.Respawn();
                 else if(command.StartsWith("story")&&world.Journey!=null&&int.TryParse(command.Substring(5),out int point)&&point>=0&&point<world.Journey.Definition.points.Length){world.Hero.GetComponent<PlayerMotor>().Teleport(world.Journey.Definition.points[point].position+Vector3.back*1.3f,Quaternion.identity);world.Hero.Health.Restore();world.Interact();}

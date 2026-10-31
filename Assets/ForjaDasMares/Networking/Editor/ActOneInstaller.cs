@@ -135,9 +135,29 @@ namespace ForjaDasMares.Networking.Editor
             var go=Terrain.CreateTerrainGameObject(data);go.name="Act1Terrain_"+x+"_"+z;go.transform.SetParent(parent);go.transform.position=new Vector3(-160+x*160,-2,-128+z*160);go.layer=8;var terrain=go.GetComponent<Terrain>();terrain.drawInstanced=true;terrain.heightmapPixelError=8;terrain.basemapDistance=120;
             string path=Data+"Terrain.mat";var material=AssetDatabase.LoadAssetAtPath<Material>(path);if(material==null){material=new Material(Shader.Find("Universal Render Pipeline/Terrain/Lit"));AssetDatabase.CreateAsset(material,path);}terrain.materialTemplate=material;EditorUtility.SetDirty(data);
         }
+        internal static Bounds RendererBounds(Transform root,Renderer renderer)
+        {
+            var source=renderer.localBounds;var result=new Bounds();
+            for(int i=0;i<8;i++){var p=source.center+Vector3.Scale(source.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));p=root.InverseTransformPoint(renderer.transform.TransformPoint(p));if(i==0)result=new Bounds(p,Vector3.zero);else result.Encapsulate(p);}return result;
+        }
+        // Targeted migration: preserve terrain, quest, layouts and saved progression.
+        public static void RepairPropCollisions()
+        {
+            var scene=EditorSceneManager.OpenScene(ScenePath);int repaired=0;
+            foreach(var group in UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None))
+            {
+                var box=group.GetComponent<BoxCollider>();if(box==null||group.name.StartsWith("Gravewood"))continue;
+                var renderer=group.GetComponentsInChildren<Renderer>().FirstOrDefault(r=>r.name=="LOD0");if(renderer==null)continue;
+                var bounds=RendererBounds(group.transform,renderer);box.center=bounds.center;box.size=bounds.size;EditorUtility.SetDirty(box);repaired++;
+            }
+            var nav=UnityEngine.Object.FindFirstObjectByType<NavMeshSurface>();if(nav==null)throw new InvalidOperationException("Missing Act1 navigation");
+            nav.BuildNavMesh();var existing=AssetDatabase.LoadAssetAtPath<NavMeshData>(Data+"Navigation.asset");if(existing==null)throw new InvalidOperationException("Missing navigation asset");
+            EditorUtility.CopySerialized(nav.navMeshData,existing);nav.navMeshData=existing;
+            EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();Debug.Log("ACT1_COLLIDERS_REPAIRED "+repaired);
+        }
         static Vector3 Ground(Vector3 p){foreach(var t in Terrain.activeTerrains){var v=t.transform.position;if(p.x>=v.x&&p.x<=v.x+t.terrainData.size.x&&p.z>=v.z&&p.z<=v.z+t.terrainData.size.z){p.y=t.SampleHeight(p)+v.y;break;}}return p;}
         static GameObject Place(string name,Transform parent,Vector3 p,float scale,float yaw,bool collision)
-        {var go=(GameObject)PrefabUtility.InstantiatePrefab(Props[name]);go.transform.SetParent(parent,false);go.transform.SetPositionAndRotation(Ground(p),Quaternion.Euler(0,yaw,0));go.transform.localScale=Vector3.one*scale;go.layer=9;if(collision){var box=go.AddComponent<BoxCollider>();var bounds=go.GetComponentsInChildren<Renderer>().First(r=>r.name=="LOD0").localBounds;if(name=="Gravewood"){box.center=new Vector3(0,1.3f,0);box.size=new Vector3(.9f,2.6f,.9f);}else{box.center=bounds.center;box.size=bounds.size*.88f;}}return go;}
+        {var go=(GameObject)PrefabUtility.InstantiatePrefab(Props[name]);go.transform.SetParent(parent,false);go.transform.SetPositionAndRotation(Ground(p),Quaternion.Euler(0,yaw,0));go.transform.localScale=Vector3.one*scale;go.layer=9;if(collision){var box=go.AddComponent<BoxCollider>();var renderer=go.GetComponentsInChildren<Renderer>().First(r=>r.name=="LOD0");var bounds=RendererBounds(go.transform,renderer);if(name=="Gravewood"){box.center=new Vector3(0,1.3f,0);box.size=new Vector3(.9f,2.6f,.9f);}else{box.center=bounds.center;box.size=bounds.size;}}return go;}
         static GameObject Box(Transform parent,string name,Vector3 p,Vector3 size,Material material,bool collision,int layer=9)
         {var go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.name=name;go.transform.SetParent(parent,false);go.transform.position=p;go.transform.localScale=size;go.layer=layer;go.GetComponent<Renderer>().sharedMaterial=material;if(!collision)UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
         static void Npc(Transform parent,string name,Vector3 p,Material mat)

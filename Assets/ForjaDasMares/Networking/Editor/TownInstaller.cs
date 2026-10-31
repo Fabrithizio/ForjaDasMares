@@ -50,16 +50,60 @@ namespace ForjaDasMares.Networking.Editor
             var fountain=GameObject.CreatePrimitive(PrimitiveType.Cylinder);fountain.name="RestFountain";FlatCylinderCollider(fountain);fountain.transform.SetParent(root,false);fountain.transform.position=new Vector3(-11,.35f,10);fountain.transform.localScale=new Vector3(2,.35f,2);fountain.GetComponent<Renderer>().sharedMaterial=blue;fountain.layer=9;var rest=fountain.AddComponent<WorldClickTarget>();rest.Configure("Descansar na fonte",3);UnityEventTools.AddPersistentListener(rest.Used,hub.Rest);
             var exit=Box("SouthExpeditionGate",new Vector3(0,1.5f,-32),new Vector3(5,3,.4f),roof,true);Label("EXPEDIÇÃO · COSTA DAS RUÍNAS",new Vector3(0,4,-31),.05f);var door=exit.AddComponent<WorldClickTarget>();door.Configure("Sair para a Costa",4);UnityEventTools.AddPersistentListener(door.Used,hub.Explore);
             var dummy=Box("TrainingDummy",new Vector3(25,1,-22),new Vector3(.9f,2,.9f),wood,true,13);dummy.AddComponent<Health>().Configure(10000,CombatFaction.Training);Label("TREINO",new Vector3(25,3,-22),.05f);
+            MemorySite();
             var nav=new GameObject("TownNavigation").AddComponent<NavMeshSurface>();nav.layerMask=(1<<8)|(1<<9)|(1<<13);nav.collectObjects=CollectObjects.All;nav.useGeometry=NavMeshCollectGeometry.PhysicsColliders;nav.BuildNavMesh();string navPath=Data+"Navigation.asset";var prior=AssetDatabase.LoadAssetAtPath<NavMeshData>(navPath);if(prior==null)AssetDatabase.CreateAsset(nav.navMeshData,navPath);else{EditorUtility.CopySerialized(nav.navMeshData,prior);nav.navMeshData=prior;}
             foreach(var go in UnityEngine.Object.FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None)){if(!NavMesh.SamplePosition(go.Approach,out _,2.5f,NavMesh.AllAreas))throw new InvalidOperationException("Unreachable town interaction: "+go.name);}
             EditorUtility.SetDirty(region);EditorUtility.SetDirty(existing);EditorSceneManager.SaveScene(scene,ScenePath);var scenes=EditorBuildSettings.scenes.ToList();if(!scenes.Any(x=>x.path==ScenePath))scenes.Add(new EditorBuildSettingsScene(ScenePath,true));EditorBuildSettings.scenes=scenes.ToArray();AssetDatabase.SaveAssets();Debug.Log("TOWN_READY safe=true NPCs=8 roaming=3 arrivals=4 local=true");
+        }
+        // Original blockout: three combined static meshes, no dynamic lights or update scripts.
+        static void MemorySite()
+        {
+            Vector3 origin=new Vector3(10,0,13);
+            var site=new GameObject("AncientMemorySite").transform;site.SetParent(root,false);site.position=origin;
+            var shell=Material("AncientShell",new Color(.22f,.28f,.31f));
+            var pale=Material("AncientInlay",new Color(.68f,.72f,.62f));
+            var glow=Material("AncientLight",new Color(.16f,.62f,.65f));glow.EnableKeyword("_EMISSION");glow.SetColor("_EmissionColor",new Color(.08f,.45f,.5f));EditorUtility.SetDirty(glow);
+            var groups=new[]{new GameObject("Shell").transform,new GameObject("Inlay").transform,new GameObject("Light").transform};
+            foreach(var group in groups)group.SetParent(site,false);
+            void Piece(int group,string name,Vector3 position,Vector3 size,float tilt=0)
+            {var go=Box(name,origin+position,size,group==0?shell:group==1?pale:glow,false);go.transform.rotation=Quaternion.Euler(0,0,tilt);go.transform.SetParent(groups[group],true);}
+            void Block(string name,Vector3 position,Vector3 size)
+            {var go=new GameObject(name);go.transform.SetParent(site,false);go.transform.localPosition=position;go.layer=9;go.AddComponent<BoxCollider>().size=size;}
+            Piece(0,"EmbeddedFoundation",new Vector3(0,.08f,0),new Vector3(5.8f,.16f,4.5f));
+            // Three uneven pylons suggest manufactured geometry beneath later stone repairs.
+            for(int i=0;i<3;i++)
+            {
+                Vector3 p=new Vector3(i==0?-2:i==1?2:0,0,i==2?1.5f:.2f);float h=i==0?3.4f:i==1?2.6f:3.9f;
+                Piece(0,"Pylon",p+Vector3.up*h*.5f,new Vector3(.65f,h,.65f));
+                Piece(1,"Inset",p+new Vector3(0,h*.55f,-.34f),new Vector3(.32f,h*.7f,.04f));
+                Piece(2,"Seam",p+new Vector3(0,h*.55f,-.37f),new Vector3(.07f,h*.52f,.035f));
+                Block("PylonCollision",p+Vector3.up*h*.5f,new Vector3(.65f,h,.65f));
+            }
+            Piece(0,"BrokenCrossbar",new Vector3(-.7f,3.5f,1.5f),new Vector3(2.3f,.4f,.65f),-12);
+            Piece(1,"Console",new Vector3(0,.55f,-1),new Vector3(1.25f,1.1f,.7f));
+            Piece(0,"ConsoleFace",new Vector3(0,.9f,-1.37f),new Vector3(1,.4f,.05f));
+            for(int i=0;i<3;i++)Piece(2,"UntranslatedMark",new Vector3(-.27f+i*.27f,.9f,-1.405f),new Vector3(.1f,.13f,.025f));
+            Block("ConsoleCollision",new Vector3(0,.55f,-1),new Vector3(1.25f,1.1f,.7f));
+            Block("FoundationCollision",new Vector3(0,.08f,0),new Vector3(5.8f,.16f,4.5f));
+            var terminal=new GameObject("MemorySiteConsole");terminal.transform.SetParent(site,false);terminal.transform.localPosition=new Vector3(0,.6f,-1);terminal.layer=0;terminal.AddComponent<BoxCollider>().size=new Vector3(1.3f,1.2f,.8f);
+            var examine=terminal.AddComponent<WorldClickTarget>();examine.Configure("Examinar estrutura antiga",2.8f);
+            UnityEventTools.AddStringPersistentListener(examine.Used,hub.Speak,"Três marcas ainda emitem luz. Sob os reparos de pedra há uma peça única de metal, sem juntas visíveis. Alguém preservou esta máquina sem saber construí-la.");
+            for(int g=0;g<groups.Length;g++)
+            {
+                var filters=groups[g].GetComponentsInChildren<MeshFilter>();var combine=new CombineInstance[filters.Length];
+                for(int i=0;i<filters.Length;i++)combine[i]=new CombineInstance{mesh=filters[i].sharedMesh,transform=groups[g].worldToLocalMatrix*filters[i].transform.localToWorldMatrix};
+                var mesh=new Mesh{name="AncientSite_"+g};mesh.CombineMeshes(combine);string path=Data+mesh.name+".asset";var prior=AssetDatabase.LoadAssetAtPath<Mesh>(path);
+                if(prior==null)AssetDatabase.CreateAsset(mesh,path);else{EditorUtility.CopySerialized(mesh,prior);UnityEngine.Object.DestroyImmediate(mesh);mesh=prior;}
+                foreach(var f in filters)UnityEngine.Object.DestroyImmediate(f.gameObject);
+                groups[g].gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;groups[g].gameObject.AddComponent<MeshRenderer>().sharedMaterial=g==0?shell:g==1?pale:glow;
+            }
         }
         static Material Material(string name,Color color){string p=Data+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(p);if(m==null){m=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(m,p);}m.color=color;m.enableInstancing=true;m.SetFloat("_Smoothness",.2f);EditorUtility.SetDirty(m);return m;}
         static void FlatCylinderCollider(GameObject go){UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());go.AddComponent<MeshCollider>().sharedMesh=go.GetComponent<MeshFilter>().sharedMesh;}
         static GameObject Box(string name,Vector3 p,Vector3 size,Material mat,bool collision,int layer=9){var g=GameObject.CreatePrimitive(PrimitiveType.Cube);g.name=name;g.transform.SetParent(root,false);g.transform.position=p;g.transform.localScale=size;g.layer=layer;g.GetComponent<Renderer>().sharedMaterial=mat;if(!collision)UnityEngine.Object.DestroyImmediate(g.GetComponent<Collider>());return g;}
         static TextMesh Label(string text,Vector3 p,float size){var t=new GameObject(text).AddComponent<TextMesh>();t.transform.SetParent(root,false);t.transform.position=p;t.transform.rotation=Quaternion.Euler(50,0,0);t.text=text;t.fontSize=48;t.characterSize=size;t.anchor=TextAnchor.MiddleCenter;t.color=new Color(1,.86f,.6f);return t;}
         static void House(string name,Vector3 p,Material wood,Material plaster,Material roof){Box(name,p+Vector3.up*2,new Vector3(9,4,7),plaster,true);Box("Door",p+new Vector3(0,1.2f,-3.55f),new Vector3(1.6f,2.4f,.15f),wood,false);for(int s=-1;s<=1;s+=2){var panel=Box("Roof",p+new Vector3(s*2.4f,4.8f,0),new Vector3(5.5f,.3f,8),roof,true);panel.transform.rotation=Quaternion.Euler(0,0,-s*22);Box("Window",p+new Vector3(s*2.8f,2,-3.55f),new Vector3(1.3f,1.3f,.1f),roof,false);}Label(name,p+new Vector3(0,3.6f,-4.2f),.04f);}
-        static void Model(string name,Vector3 p,float scale,float yaw,bool collision){var asset=AssetDatabase.LoadAssetAtPath<GameObject>(Art+name+"/"+name+".prefab");var go=(GameObject)PrefabUtility.InstantiatePrefab(asset);go.transform.SetParent(root,false);go.transform.SetPositionAndRotation(p,Quaternion.Euler(0,yaw,0));go.transform.localScale=Vector3.one*scale;go.layer=9;if(!collision)return;var renderer=go.GetComponentsInChildren<Renderer>().First(r=>r.name=="LOD0");Bounds b=renderer.localBounds;var points=new Bounds();bool first=true;for(int i=0;i<8;i++){var v=b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));v=go.transform.InverseTransformPoint(renderer.transform.TransformPoint(v));if(first){points=new Bounds(v,Vector3.zero);first=false;}else points.Encapsulate(v);}var col=go.AddComponent<BoxCollider>();col.center=points.center;col.size=points.size;}
+        static void Model(string name,Vector3 p,float scale,float yaw,bool collision){var asset=AssetDatabase.LoadAssetAtPath<GameObject>(Art+name+"/"+name+".prefab");var go=(GameObject)PrefabUtility.InstantiatePrefab(asset);go.transform.SetParent(root,false);go.transform.SetPositionAndRotation(p,Quaternion.Euler(0,yaw,0));go.transform.localScale=Vector3.one*scale;go.layer=9;if(!collision)return;var renderer=go.GetComponentsInChildren<Renderer>().First(r=>r.name=="LOD0");Bounds b=renderer.localBounds;var points=new Bounds();bool first=true;for(int i=0;i<8;i++){var v=b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));v=go.transform.InverseTransformPoint(renderer.transform.TransformPoint(v));if(first){points=new Bounds(v,Vector3.zero);first=false;}else points.Encapsulate(v);}var col=go.AddComponent<BoxCollider>();col.center=points.center;col.size=points.size;if(name=="Gravewood"){col.center=points.center-Vector3.up*points.size.y*.2f;col.size=new Vector3(points.size.x*.18f,points.size.y*.55f,points.size.z*.18f);}}
         static WorldClickTarget Resident(string name,Vector3 p,Color tint,Vector3[] path=null)
         {
             var actor=new GameObject(name);actor.transform.SetParent(root,false);actor.transform.position=p;var collider=actor.AddComponent<CapsuleCollider>();collider.radius=.32f;collider.height=1.8f;collider.center=Vector3.up*.9f;var target=actor.AddComponent<WorldClickTarget>();target.Configure("Conversar · "+name);var coat=Material("Cloth_"+name.Split(' ')[0],tint);var skin=Material("Skin",new Color(.65f,.43f,.29f));

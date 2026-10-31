@@ -36,6 +36,7 @@ namespace ForjaDasMares.Networking
             interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
+            gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
         }
         void BuildVitals(RectTransform root)
         {

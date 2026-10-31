@@ -1,3 +1,5 @@
+> Nota de 31/10/2026: premissa marítima substituída pela BASE_DO_MUNDO_2026_10_31.md. Este texto permanece como histórico da proposta anterior; cenas e missão legadas ainda não foram migradas.
+
 # Forja das Marés — proposta de história e primeira região
 
 29/10/2026. PROPOSTA PARA APROVAÇÃO. Não é uma lista de sistemas implementados. Esta entrega contém roteiro, direção de mapa e imagens de referência; não altera cenas, missões, saves, código ou builds. A Costa das Ruínas e a prévia CatacumbasDasMares da 0.23.0 continuam no estado documentado anteriormente.

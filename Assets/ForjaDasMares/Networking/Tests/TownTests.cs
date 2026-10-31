@@ -24,6 +24,22 @@ namespace ForjaDasMares.Networking.Tests
             int uses=0;resident.Used.AddListener(()=>uses++);Assert.IsTrue(hub.TryInteractNearest());Assert.AreEqual(1,uses);
             resident.enabled=false;Assert.AreNotEqual(resident,hub.NearestInteraction);
         }
+        [UnityTest]public IEnumerator AncientSiteIsReachableAndInspectionDoesNotChangeQuest()
+        {
+            var site=GameObject.Find("AncientMemorySite");Assert.NotNull(site);
+            Assert.AreEqual(3,site.GetComponentsInChildren<MeshRenderer>().Length);
+            Assert.AreEqual(0,site.GetComponentsInChildren<Light>().Length);
+            Assert.IsNull(site.GetComponentInChildren<Health>());
+            var target=GameObject.Find("MemorySiteConsole").GetComponent<WorldClickTarget>();
+            Assert.IsTrue(NavMesh.SamplePosition(target.Approach,out var end,1,NavMesh.AllAreas));
+            Assert.IsTrue(NavMesh.SamplePosition(world.Hero.transform.position,out var start,1,NavMesh.AllAreas));
+            var path=new NavMeshPath();Assert.IsTrue(NavMesh.CalculatePath(start.position,end.position,NavMesh.AllAreas,path));Assert.AreEqual(NavMeshPathStatus.PathComplete,path.status);
+            world.Hero.GetComponent<PlayerMotor>().Teleport(end.position,Quaternion.identity);yield return null;
+            int clues=world.Journey.ClueCount;bool completed=world.Journey.Completed;
+            Assert.IsTrue(target.TryUse(world.Hero.transform));StringAssert.Contains("metal",hub.Notice);
+            Assert.AreEqual(clues,world.Journey.ClueCount);Assert.AreEqual(completed,world.Journey.Completed);
+            Assert.IsTrue(target.TryUse(world.Hero.transform));Assert.AreEqual(clues,world.Journey.ClueCount);
+        }
         [Test]public void InteractionApproachIgnoresVisualScale(){var target=GameObject.Find("RestFountain").GetComponent<WorldClickTarget>();Assert.Less(Vector3.Distance(target.Approach,target.transform.position),3);}
         [Test]public void FourArrivalPointsAreWalkableAndUnobstructed()
         {Assert.AreEqual(4,hub.ArrivalPoints.Length);foreach(var point in hub.ArrivalPoints){Assert.IsTrue(NavMesh.SamplePosition(point,out _,1,NavMesh.AllAreas));Assert.IsFalse(Physics.CheckCapsule(point+Vector3.up*.5f,point+Vector3.up*1.3f,.3f,1<<9));}}

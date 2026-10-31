@@ -1,3 +1,7 @@
+## 0.26.0 — referências, cliques, FPS e seleção
+
+12 referências individuais geradas para Meshy e catálogo de 122 entradas futuras. Cidade/costa: clique no chão separado de colisores; 112 props da costa corrigidos e NavMeshes atualizados. F8 mostra FPS/tempo de quadro/memória; alvo sob o mouse recebe contorno. Primeiro vestígio tecnológico provisório na cidade e nova base narrativa registrada, sem reescrever a missão legada. 50/50 testes passaram; Windows compilado sem erros. Sem APK novo. [Relatório](REFERENCIAS_E_CONTROLES_0_26_0.md).
+
 ## 0.25.1 — interações consistentes na cidade
 
 Indicador e F usam o mesmo morador próximo; clique acompanha a posição dos moradores móveis. 25/25 testes de cidade e controles passaram. APK 0.25.0 enviado para Mensagens para mim no WhatsApp; instalação pelo usuário não confirmada. [Detalhes](INTERACOES_0_25_1.md).
