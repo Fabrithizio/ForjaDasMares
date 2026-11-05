@@ -1,0 +1,37 @@
+﻿asset,triangulos_LOD0,triangulos_LOD1,largura_m,profundidade_m,altura_m,materiais,funcao
+Casa_do_artesao,5216,2346,6.49,6.25,5.28,1,Edificio exterior com chamine
+Casa_do_herbalista,5372,2416,6.49,6.25,5.14,1,Edificio exterior com floreiras
+Parede_enxaimel,232,104,2.88,0.45,3.0,1,Modulo de fachada
+Porta_de_madeira,556,250,1.4,0.42,2.27,1,"Porta separada, sem animacao"
+Janela_trabalhada,352,158,1.3,0.44,1.39,1,Modulo de janela
+Arbusto_folhoso,2240,402,2.61,2.47,1.26,1,Vegetacao com folhas modeladas
+Arbusto_florido,2432,432,2.59,2.58,1.22,1,Vegetacao com flores
+Arvore_copa_aberta,10002,1692,5.14,5.11,4.25,1,Arvore com raizes e galhos
+Arvore_luminosa,10434,1756,5.23,5.21,4.29,1,Variante fantastica turquesa
+Samambaia,2538,450,1.75,1.77,0.55,1,Vegetacao baixa
+Tufo_de_grama,512,72,1.29,1.49,0.18,1,Vegetacao baixa
+Flores_violetas,1376,200,1.45,1.31,0.65,1,Vegetacao florida
+Cogumelos_do_breu,264,118,1.04,0.8,0.84,1,Conjunto de cogumelos
+Banco_de_madeira,464,208,1.9,0.63,1.21,1,Mobiliario urbano
+Cerca_de_madeira,408,176,2.64,0.24,1.45,1,Modulo 2.5m
+Lanterna_de_rua,246,110,1.1,0.6,2.6,1,Luminaria sem luz de runtime
+Poco_de_pedra,2632,1184,1.91,2.6,2.71,1,Decoracao urbana
+Fonte_de_cristal,1060,466,2.45,2.45,1.8,1,Marco urbano sem VFX de agua
+Placa_de_caminho,156,70,1.25,0.21,1.8,1,Sinalizacao sem texto fixo
+Floreira_folhosa,1436,234,2.1,2.07,1.25,1,Vaso com folhas
+Console_antigo,162,46,1.4,0.9,1.36,1,Tecnologia antiga sem logica
+Marco_antigo,80,36,0.8,0.69,1.5,1,Pista visual sem logica
+Carrinho_de_feira,1032,474,1.71,3.11,1.16,1,Prop urbano
+Banca_de_mercado,752,338,2.62,1.7,2.55,1,Prop urbano
+Lenha_empilhada,384,172,1.19,1.28,1.07,1,Decoracao de oficina
+Cesto_trancado,1552,698,0.85,0.85,0.55,1,Recipiente urbano
+Altar_antigo,188,66,1.6,1.1,1.65,1,Prop interativo sem logica
+Toco_cortado,192,86,1.29,1.36,0.97,1,Vegetacao morta
+Ponte_de_madeira,1000,450,1.98,3.81,1.3,1,Passagem modular 3.8m
+Escada_de_pedra,220,98,2.0,1.76,0.8,1,Cinco degraus
+Trepadeira_em_trelica,980,238,1.75,0.47,2.46,1,Vegetacao vertical
+Toldo_de_fachada,184,82,2.34,1.4,2.3,1,Modulo de fachada
+Cristais_arcanos,72,40,1.13,0.87,1.28,1,Decoracao fantastica
+Estandarte_de_tecido,84,36,1.0,0.16,1.69,1,Decoracao sem simulacao
+Estante_de_potes,352,158,1.85,0.6,1.5,1,Decoracao de oficina
+Marco_de_transporte,136,50,1.4,1.4,1.0,1,Prop visual sem teleporte

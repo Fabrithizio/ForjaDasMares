@@ -721,3 +721,7 @@ Fechamento Windows0.24.0: instalador final exit0,48/48 testes finais, build fina
 Mouse no PC só inicia ataque básico no mundo sobre alvo válido ou com Shift; remove perseguição automática e disparo livre por WASD. Gesto de ataque não vira caminhada ao sair do alvo. StopWalking não remove esquiva/impulso. Mira móvel regional reutiliza seletor existente, botões de toque incluem SUPER e diálogo não cobre personagem. Perfis móveis ajustados por medida física; configurações PC preservadas.
 
 54/54 testes finais; builds reais Windows/Android Succeeded/errors0. APK0.24.1/code48/v2 instalado-r no moto g15 sobre0.15.9/code40, um único pacote. Toque físico conferiu movimento, projétil segurado, aceitação da missão e layout. Amostras curtas no refúgio melhoraram de~16,5 para~24,6FPS, ainda sem30FPS sustentados garantidos. Não testado PC–Android online nesta revisão nem combate móvel prolongado. Ver CONTROLES_0_24_1.md para arquivos, evidências e limites.
+
+## 0.27.0 — ambiente em produção (05/11/2026)
+
+Retomada A01/A02 do Trello. Kit original de 36 peças/72 FBX preparado, instalador de migração pontual e testes escritos. NÃO integrado/compilado/testado na Unity: Editor terminou com código 198 por licença ausente, Hub exige termos e ativação pelo titular. Build estável 0.26.0 preservada; nenhum APK. Detalhes, arquivos e retomada em AMBIENTE_0_27_0_EM_PRODUCAO.md. Não marcar A01/A02/A04 como concluídos.
