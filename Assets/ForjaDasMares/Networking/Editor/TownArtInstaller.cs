@@ -215,6 +215,13 @@ namespace ForjaDasMares.Networking.Editor
             EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
             Debug.Log("TOWN_FACADES_FIXED count=3");
         }
+        public static void RepairCoastNavigationOnly()
+        {
+            var scene = EditorSceneManager.OpenScene(ActOneInstaller.ScenePath);
+            UpdateNavigation("Assets/ForjaDasMares/Data/World/Act1/Navigation.asset", false);
+            EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("COAST_NAVIGATION_REPAIRED layoutUnchanged=true");
+        }
         static void UpdateNavigation(string path, bool town)
         {
             Physics.SyncTransforms();

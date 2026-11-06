@@ -35,6 +35,13 @@ namespace ForjaDasMares.Networking
                     world.Hero.GetComponent<PlayerMotor>().Teleport(point,Quaternion.identity);
                     UnityEngine.Object.FindFirstObjectByType<ArenaCamera>()?.Snap();
                 }
+                else if(command=="viewGate"||command=="viewEdge"||command=="viewSquare"||command=="viewExpedition")
+                {
+                    var point=command=="viewGate"?new Vector3(0,.08f,-34):command=="viewEdge"?new Vector3(33,.08f,29):command=="viewExpedition"?new Vector3(21,.08f,-18):new Vector3(0,.08f,5);
+                    world.Hero.GetComponent<ArenaInput>().Desktop?.Cancel();
+                    world.Hero.GetComponent<PlayerMotor>().Teleport(point,Quaternion.identity);
+                    UnityEngine.Object.FindFirstObjectByType<ArenaCamera>()?.Snap();
+                }
                 else if(command=="useFountain")
                 {
                     var fountain=GameObject.Find("RestFountain");

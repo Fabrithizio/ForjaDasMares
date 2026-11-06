@@ -6,3 +6,5 @@
 - Separar o que foi realmente conferido no PC das verificações móveis/online ainda pendentes.
 
 Preferência registrada em 25/10/2026 a pedido do usuário.
+
+- Arquivos .asset podem ser binários (NavMeshData/Mesh). Nunca normalizar ou regravar esses arquivos com APIs de texto; conferir o formato antes de qualquer limpeza de whitespace.

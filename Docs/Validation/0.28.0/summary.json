@@ -1,0 +1,29 @@
+{
+  "version": "0.28.0",
+  "date": "2026-11-06",
+  "scope": "Town scene, surrounding visual coverage, road passage and internal expedition access",
+  "tests": {
+    "result": "Passed",
+    "total": 45,
+    "failed": 0,
+    "file": "Logs/town028-verified.xml",
+    "note": "Final logic tests; subsequent road material UV adjustment only. Earlier runs are repeated subsets, not additional unique tests."
+  },
+  "windowsBuild": {
+    "produced": true,
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe",
+    "finalLog": "Logs/town028-release-windows.log"
+  },
+  "android": {
+    "built": false,
+    "physicalTest": false
+  },
+  "onlineTest": false,
+  "limits": [
+    "Destination map unchanged; scene load rather than seamless streaming",
+    "Local town preview, not a shared public-city server",
+    "NPCs and art remain provisional",
+    "Hidden-window captures and frame rates discarded; visible QA launched with -noaudio"
+  ],
+  "navigationRepair": "Town and Act1 binary navigation assets restored from valid commit and rebuilt; no text normalization applied to binary assets"
+}
