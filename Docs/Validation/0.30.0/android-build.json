@@ -1,0 +1,16 @@
+{
+  "version": "0.30.0",
+  "versionCode": 53,
+  "package": "com.forjadasmares.campaign",
+  "bytes": 109893581,
+  "sha256": "F346BCC45D9156DDA1A4EB7A55FF678062ABF350A06014710185F2F373B25418",
+  "buildResult": "Succeeded",
+  "buildErrors": 0,
+  "buildLog": "Logs/android030-build.log",
+  "file": "Builds/Atual/Android/ForjaDasMaresCampanha.apk",
+  "windowsTargetRestored": true,
+  "installedOnDevice": false,
+  "physicalTest": false,
+  "whatsappSent": false,
+  "whatsappBlocker": "WhatsApp Web disconnected; personal login required"
+}
