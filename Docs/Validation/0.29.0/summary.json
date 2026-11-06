@@ -1,0 +1,43 @@
+{
+  "version": "0.29.0",
+  "date": "2026-11-06",
+  "blender": {
+    "contentModels": 15,
+    "lodFiles": 30,
+    "reimportPassed": 30,
+    "reimportFailed": 0,
+    "source": "ArtSource/CityLifeKit/Cidade_viva_editavel.blend"
+  },
+  "unityTests": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0,
+    "file": "tests.xml"
+  },
+  "windows": {
+    "built": true,
+    "errors": 0,
+    "log": "Logs/citylife-windows-final.log",
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe"
+  },
+  "android": {
+    "built": false,
+    "deviceTest": false
+  },
+  "onlineTest": false,
+  "scene": {
+    "marketVariants": 6,
+    "authoringReservations": 3,
+    "vegetationLodInstancesAdjusted": 80,
+    "newRuntimeShops": 0,
+    "newRuntimeEvents": 0
+  },
+  "qa": {
+    "visual": "Visible Windows build at 1280x800, audio disabled only for QA",
+    "captures": [
+      "gate.png",
+      "market.png"
+    ],
+    "note": "No controlled mobile/CPU/GPU benchmark; no promised FPS"
+  }
+}

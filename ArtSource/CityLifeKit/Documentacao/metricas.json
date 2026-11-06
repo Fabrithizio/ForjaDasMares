@@ -1,0 +1,152 @@
+[
+  {
+    "asset": "Portao_da_cidade",
+    "triangulos_LOD0": 1306,
+    "triangulos_LOD1": 718,
+    "largura_m": 9.5,
+    "profundidade_m": 2.1,
+    "altura_m": 6.85,
+    "materiais": 1,
+    "funcao": "Arco aberto 6.2m; sem portas embutidas"
+  },
+  {
+    "asset": "Folha_portao",
+    "triangulos_LOD0": 680,
+    "triangulos_LOD1": 374,
+    "largura_m": 3.09,
+    "profundidade_m": 0.35,
+    "altura_m": 3.9,
+    "materiais": 1,
+    "funcao": "Pivo na dobradica, modelo separado"
+  },
+  {
+    "asset": "Entrada_estacao_invadida",
+    "triangulos_LOD0": 1782,
+    "triangulos_LOD1": 980,
+    "largura_m": 11.27,
+    "profundidade_m": 4.1,
+    "altura_m": 6.87,
+    "materiais": 1,
+    "funcao": "Fachada aberta do desafio; raizes e mecanismo"
+  },
+  {
+    "asset": "Protetor_da_praca",
+    "triangulos_LOD0": 1340,
+    "triangulos_LOD1": 736,
+    "largura_m": 5.0,
+    "profundidade_m": 5.0,
+    "altura_m": 5.02,
+    "materiais": 1,
+    "funcao": "Monumento visual; sem logica de protecao"
+  },
+  {
+    "asset": "Pavilhao_de_eventos",
+    "triangulos_LOD0": 948,
+    "triangulos_LOD1": 520,
+    "largura_m": 5.8,
+    "profundidade_m": 4.4,
+    "altura_m": 4.41,
+    "materiais": 1,
+    "funcao": "Estrutura aberta de evento, sem comercio"
+  },
+  {
+    "asset": "Quadro_de_avisos",
+    "triangulos_LOD0": 520,
+    "triangulos_LOD1": 286,
+    "largura_m": 2.7,
+    "profundidade_m": 0.9,
+    "altura_m": 2.71,
+    "materiais": 1,
+    "funcao": "Quadro de NPC/missoes; texto de runtime separado"
+  },
+  {
+    "asset": "Bandeirolas_de_rua",
+    "triangulos_LOD0": 290,
+    "triangulos_LOD1": 158,
+    "largura_m": 7.2,
+    "profundidade_m": 0.17,
+    "altura_m": 3.82,
+    "materiais": 1,
+    "funcao": "Decoracao sobre caminho; vao livre"
+  },
+  {
+    "asset": "Raizes_na_maquina",
+    "triangulos_LOD0": 894,
+    "triangulos_LOD1": 490,
+    "largura_m": 3.93,
+    "profundidade_m": 2.66,
+    "altura_m": 1.86,
+    "materiais": 1,
+    "funcao": "Natureza envolvendo tecnologia"
+  },
+  {
+    "asset": "Arco_do_jardim",
+    "triangulos_LOD0": 1352,
+    "triangulos_LOD1": 742,
+    "largura_m": 3.97,
+    "profundidade_m": 0.7,
+    "altura_m": 3.37,
+    "materiais": 1,
+    "funcao": "Passagem de jardim"
+  },
+  {
+    "asset": "Banca_de_frutas",
+    "triangulos_LOD0": 1852,
+    "triangulos_LOD1": 1018,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  },
+  {
+    "asset": "Banca_do_padeiro",
+    "triangulos_LOD0": 1396,
+    "triangulos_LOD1": 766,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  },
+  {
+    "asset": "Banca_de_ervas",
+    "triangulos_LOD0": 1708,
+    "triangulos_LOD1": 938,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  },
+  {
+    "asset": "Banca_de_ferramentas",
+    "triangulos_LOD0": 1616,
+    "triangulos_LOD1": 888,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  },
+  {
+    "asset": "Banca_de_tecidos",
+    "triangulos_LOD0": 1460,
+    "triangulos_LOD1": 802,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  },
+  {
+    "asset": "Banca_de_reliquias",
+    "triangulos_LOD0": 1328,
+    "triangulos_LOD1": 730,
+    "largura_m": 3.2,
+    "profundidade_m": 2.09,
+    "altura_m": 3.0,
+    "materiais": 1,
+    "funcao": "Banca decorativa identificavel; nenhum comercio ficticio"
+  }
+]
