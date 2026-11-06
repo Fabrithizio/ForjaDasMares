@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:22Z" duration="3,3057606">
+  <test-suite type="TestSuite" id="1385" name="Forja das Mares - Campanha" fullname="Forja das Mares - Campanha" runstate="Runnable" testcasecount="336" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:22Z" duration="3.305761" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1252" name="ForjaDasMares.Networking.Tests.dll" fullname="C:/Users/Fabricio_S/Desktop/Jogos/ForjaDasMares/Library/ScriptAssemblies/ForjaDasMares.Networking.Tests.dll" runstate="Runnable" testcasecount="226" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="2.296460" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15500" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1253" name="ForjaDasMares" fullname="ForjaDasMares" runstate="Runnable" testcasecount="226" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="2.291923" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1254" name="Networking" fullname="ForjaDasMares.Networking" runstate="Runnable" testcasecount="226" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="2.287620" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1255" name="Tests" fullname="ForjaDasMares.Networking.Tests" runstate="Runnable" testcasecount="226" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="2.283162" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1150" name="FloatingStickTests" fullname="ForjaDasMares.Networking.Tests.FloatingStickTests" classname="ForjaDasMares.Networking.Tests.FloatingStickTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="2.269624" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1151" name="CaptureIsNeutralAndDragIsNormalizedAndOwned" fullname="ForjaDasMares.Networking.Tests.FloatingStickTests.CaptureIsNeutralAndDragIsNormalizedAndOwned" methodname="CaptureIsNeutralAndDragIsNormalizedAndOwned" classname="ForjaDasMares.Networking.Tests.FloatingStickTests" runstate="Runnable" seed="1441382191" result="Passed" start-time="2026-11-06 07:37:19Z" end-time="2026-11-06 07:37:21Z" duration="1.783327" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1152" name="RightSideCannotCaptureAndDisableReleases" fullname="ForjaDasMares.Networking.Tests.FloatingStickTests.RightSideCannotCaptureAndDisableReleases" methodname="RightSideCannotCaptureAndDisableReleases" classname="ForjaDasMares.Networking.Tests.FloatingStickTests" runstate="Runnable" seed="1970262362" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:21Z" duration="0.468715" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1379" name="ForjaDasMares.PlayModeTests.dll" fullname="C:/Users/Fabricio_S/Desktop/Jogos/ForjaDasMares/Library/ScriptAssemblies/ForjaDasMares.PlayModeTests.dll" runstate="Runnable" testcasecount="110" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:22Z" duration="0.989816" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15500" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1380" name="ForjaDasMares" fullname="ForjaDasMares" runstate="Runnable" testcasecount="110" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:22Z" duration="0.985654" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1381" name="Tests" fullname="ForjaDasMares.Tests" runstate="Runnable" testcasecount="110" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:22Z" duration="0.982091" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1256" name="ArenaAcceptanceTests" fullname="ForjaDasMares.Tests.ArenaAcceptanceTests" classname="ForjaDasMares.Tests.ArenaAcceptanceTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:22Z" duration="0.469390" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1267" name="TouchWidgetsSendVirtualGamepadCommandsWithoutSubmittingReset" fullname="ForjaDasMares.Tests.ArenaAcceptanceTests.TouchWidgetsSendVirtualGamepadCommandsWithoutSubmittingReset" methodname="TouchWidgetsSendVirtualGamepadCommandsWithoutSubmittingReset" classname="ForjaDasMares.Tests.ArenaAcceptanceTests" runstate="Runnable" seed="2063320649" result="Passed" start-time="2026-11-06 07:37:21Z" end-time="2026-11-06 07:37:22Z" duration="0.465635" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[ARENA_RUNTIME_READY player=(0.00, 0.06, -5.00) camera=(9.00, 13.96, -14.00) mask=-1 quality=0 pipeline=PC_RPAsset (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset) targetViewport=(0.64, 0.63, 21.34)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1317" name="HeroAcceptanceTests" fullname="ForjaDasMares.Tests.HeroAcceptanceTests" classname="ForjaDasMares.Tests.HeroAcceptanceTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-11-06 07:37:22Z" end-time="2026-11-06 07:37:22Z" duration="0.503872" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1325" name="CapturedTouchStickHoldsInputAndIgnoresOtherFingerRelease" fullname="ForjaDasMares.Tests.HeroAcceptanceTests.CapturedTouchStickHoldsInputAndIgnoresOtherFingerRelease" methodname="CapturedTouchStickHoldsInputAndIgnoresOtherFingerRelease" classname="ForjaDasMares.Tests.HeroAcceptanceTests" runstate="Runnable" seed="871748365" result="Passed" start-time="2026-11-06 07:37:22Z" end-time="2026-11-06 07:37:22Z" duration="0.498385" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[ARENA_RUNTIME_READY player=(0.00, 0.06, -5.00) camera=(9.00, 13.96, -14.00) mask=-1 quality=0 pipeline=PC_RPAsset (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset) targetViewport=(0.64, 0.63, 21.34)
+Saving results to: C:/Users/Fabricio_S/AppData/LocalLow/ForjaDasMaresPrototype/Forja das Mares - Campanha\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

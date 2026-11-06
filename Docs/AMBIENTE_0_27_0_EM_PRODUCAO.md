@@ -1,6 +1,6 @@
 # Ambiente 0.27.0 — em produção, 05/11/2026
 
-**Não é uma entrega jogável aprovada.** A execução do Editor foi interrompida antes da compilação/importação por falta de licença. O Unity Hub abriu a tela de novos termos e depende da ação do titular. A build estável 0.26.0 não foi substituída. Não houve APK.
+**Registro histórico do bloqueio inicial, já resolvido.** O titular concluiu a ativação; a integração, os testes e os builds passaram depois. Consulte `AMBIENTE_0_27_0.md` para o estado atual, instalação no moto g15 e limitações. O texto abaixo preserva onde a execução havia parado.
 
 ## Ordem retomada no Trello
 

@@ -1,0 +1,19 @@
+{
+  "playMode": {
+    "total": "53",
+    "skipped": "0",
+    "failed": "0",
+    "passed": "53"
+  },
+  "townRecheck": {
+    "total": "12",
+    "failed": "0",
+    "passed": "12"
+  },
+  "windowsBuild": "Succeeded errors=0",
+  "androidBuild": "Succeeded errors=0",
+  "androidVersion": "0.27.0",
+  "androidCode": 50,
+  "androidInstall": "adb install -r Success",
+  "scope": "Town integration; no new crossplay validation"
+}

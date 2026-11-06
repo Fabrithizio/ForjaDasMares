@@ -79,18 +79,19 @@ namespace ForjaDasMares.Tests
             roster.Health.ApplyDamage(10000); Vector3 start = motor.transform.position; motor.Simulate(0.2f, Vector2.up); Assert.That(Vector3.Distance(new Vector3(start.x, 0, start.z), new Vector3(motor.transform.position.x, 0, motor.transform.position.z)), Is.LessThan(0.01f));
             session.ResetArena(); Assert.That(roster.Health.Current, Is.EqualTo(roster.Health.Maximum)); Assert.That(motor.IsInvulnerable, Is.False);
         }
-        [UnityTest] public IEnumerator FixedTouchStickHoldsInputAndIgnoresOtherFingerRelease()
+        [UnityTest] public IEnumerator CapturedTouchStickHoldsInputAndIgnoresOtherFingerRelease()
         {
             var hud = Object.FindFirstObjectByType<ArenaHud>(); var stick = hud.GetComponentInChildren<TouchMoveStick>(true); stick.transform.parent.gameObject.SetActive(true);
             var reader = motor.GetComponent<ArenaInput>(); reader.enabled = true; yield return null;
             Vector3 basePosition = stick.transform.position; Vector2 center = RectTransformUtility.WorldToScreenPoint(null, basePosition);
             var finger = new PointerEventData(EventSystem.current) { pointerId = 10, position = center };
-            stick.OnPointerDown(finger); finger.position += Vector2.right * stick.Radius * hud.GetComponent<Canvas>().scaleFactor; stick.OnDrag(finger);
+            stick.OnPointerDown(finger); basePosition=stick.transform.position; finger.position += Vector2.right * stick.Radius * hud.GetComponent<Canvas>().scaleFactor; stick.OnDrag(finger);
             Vector3 initial = motor.transform.position; motor.enabled = true;
             yield return new WaitForSeconds(0.2f); Assert.That(reader.Move.x, Is.GreaterThan(0.8f));
             Assert.That(Vector3.Distance(initial, motor.transform.position), Is.GreaterThan(0.5f)); motor.enabled = false;
             stick.OnPointerUp(new PointerEventData(EventSystem.current) { pointerId = 11 }); Assert.That(reader.Move.x, Is.GreaterThan(0.8f)); Assert.That(stick.transform.position, Is.EqualTo(basePosition));
-            stick.OnPointerUp(finger); Assert.That(reader.Move, Is.EqualTo(Vector2.zero));
+            stick.OnPointerUp(finger); Assert.That(reader.RawMove, Is.EqualTo(Vector2.zero));
+            yield return null; Assert.That(reader.Move, Is.EqualTo(Vector2.zero));
         }
         [Test] public void SwitchingHeroClearsPooledAttacksAndResetsFiniteCooldowns()
         {
@@ -123,3 +124,4 @@ namespace ForjaDasMares.Tests
         }
     }
 }
+

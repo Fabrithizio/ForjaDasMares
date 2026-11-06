@@ -28,6 +28,18 @@ namespace ForjaDasMares.Networking
                 if(command=="capture")ScreenCapture.CaptureScreenshot(Path.Combine(path,"screen.png"));
                 else if(command=="exit"){Application.Quit();return;}
                 else if(command=="fps")UnityEngine.Object.FindFirstObjectByType<CampaignPerformanceHud>()?.Toggle();
+                else if(command=="viewHouse"||command=="viewFountain"||command=="viewMarket")
+                {
+                    var point=command=="viewHouse"?new Vector3(24,.08f,0):command=="viewFountain"?new Vector3(-11,.08f,7.5f):new Vector3(-19,.08f,-23);
+                    world.Hero.GetComponent<ArenaInput>().Desktop?.Cancel();
+                    world.Hero.GetComponent<PlayerMotor>().Teleport(point,Quaternion.identity);
+                    UnityEngine.Object.FindFirstObjectByType<ArenaCamera>()?.Snap();
+                }
+                else if(command=="useFountain")
+                {
+                    var fountain=GameObject.Find("RestFountain");
+                    if(fountain!=null)fountain.GetComponent<WorldClickTarget>().TryUse(world.Hero.transform);
+                }
                 else if(command=="training")
                 {
                     var dummy=GameObject.Find("TrainingDummy");if(dummy!=null)world.Hero.GetComponent<PlayerMotor>().Teleport(dummy.transform.position+Vector3.back*3-Vector3.up*.9f,Quaternion.identity);

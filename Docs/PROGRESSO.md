@@ -725,3 +725,8 @@ Mouse no PC só inicia ataque básico no mundo sobre alvo válido ou com Shift; 
 ## 0.27.0 — ambiente em produção (05/11/2026)
 
 Retomada A01/A02 do Trello. Kit original de 36 peças/72 FBX preparado, instalador de migração pontual e testes escritos. NÃO integrado/compilado/testado na Unity: Editor terminou com código 198 por licença ausente, Hub exige termos e ativação pelo titular. Build estável 0.26.0 preservada; nenhum APK. Detalhes, arquivos e retomada em AMBIENTE_0_27_0_EM_PRODUCAO.md. Não marcar A01/A02/A04 como concluídos.
+
+## 0.27.0 — cidade integrada e Android atualizado
+
+Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 instâncias na cidade, nova fonte e decoração de duas rotas da costa. 53/53 PlayMode; 12/12 da cidade repetidos após orientação das fachadas. Windows e Android reais Succeeded/errors=0. APK0.27.0/code50 instalado-r no moto g15 sobre0.25.0/code49, um único pacote, sem limpar dados. Menu/cidade, joystick e ataque segurado conferidos no aparelho; amostra curta 28,84FPS, p95 49,98ms na cidade, sem garantia de30FPS sustentados ou combate/online. PC sem saída de som no momento, FMOD60 registrado e não declarado corrigido. Ver AMBIENTE_0_27_0.md para arquivos, evidências, testes e pendências. Mundo/história/segredos completos e feedback universal continuam pendentes.
+`n06/11/2026: joystick flutuante limitado implementado; detalhes e limites em JOYSTICK_FLUTUANTE.md. Celular levado pelo titular: validação física pendente; sem novo APK.

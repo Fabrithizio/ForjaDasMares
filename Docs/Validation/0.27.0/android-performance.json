@@ -1,0 +1,9 @@
+{
+  "method": "SurfaceFlinger actual-present timestamps, Unity SurfaceView",
+  "device": "moto g15",
+  "scene": "RefugioUltimoSino",
+  "presentedFrames": 125,
+  "averageFPS": 28.84,
+  "p95FrameMs": 49.98,
+  "scope": "Short stationary town sample; not combat/online/sustained heat"
+}

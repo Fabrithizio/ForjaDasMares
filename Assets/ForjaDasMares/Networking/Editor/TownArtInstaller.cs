@@ -123,9 +123,10 @@ namespace ForjaDasMares.Networking.Editor
                 if (blockouts.Contains(child.name) && child.GetComponent<TextMesh>() == null) UnityEngine.Object.DestroyImmediate(child.gameObject);
             foreach (var wall in root.GetComponentsInChildren<MeshRenderer>().Where(r => r.name == "BoundaryWall")) wall.enabled = false;
             var art = new GameObject("TownArt027").transform; art.SetParent(root, false);
-            Place(art, "Casa_do_artesao", new Vector3(24, 0, 11), 1.35f, 0, true);
-            Place(art, "Casa_do_herbalista", new Vector3(-24, 0, 11), 1.35f, 0, true);
-            Place(art, "Casa_do_herbalista", new Vector3(0, 0, 27), 1.55f, 0, true);
+            // Imported FBX façades face +Z; turn them toward the central approach (-Z).
+            Place(art, "Casa_do_artesao", new Vector3(24, 0, 11), 1.35f, 180, true);
+            Place(art, "Casa_do_herbalista", new Vector3(-24, 0, 11), 1.35f, 180, true);
+            Place(art, "Casa_do_herbalista", new Vector3(0, 0, 27), 1.55f, 180, true);
             Place(art, "Toldo_de_fachada", new Vector3(24, 0, 7), 1.4f);
             Place(art, "Estante_de_potes", new Vector3(19, 0, 8), 1, 25, true);
             Place(art, "Lenha_empilhada", new Vector3(29, 0, 8), 1.2f, 90, true);
@@ -201,6 +202,18 @@ namespace ForjaDasMares.Networking.Editor
                 { p.y = terrain.SampleHeight(p) + start.y; break; }
             }
             return p;
+        }
+        public static void FixFacadeOrientation()
+        {
+            var scene = EditorSceneManager.OpenScene(TownInstaller.ScenePath);
+            var art = GameObject.Find("TownArt027");
+            if (art == null) throw new InvalidOperationException("Town art must be installed first");
+            var houses = art.GetComponentsInChildren<LODGroup>().Where(g => g.name.StartsWith("Casa_")).ToArray();
+            if (houses.Length != 3) throw new InvalidOperationException("Expected three existing houses");
+            foreach (var house in houses) house.transform.rotation = Quaternion.Euler(0, 180, 0);
+            // Box collision is centred in X/Z and invariant under this 180-degree turn.
+            EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("TOWN_FACADES_FIXED count=3");
         }
         static void UpdateNavigation(string path, bool town)
         {
