@@ -1,0 +1,425 @@
+{
+    "assets": [
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Molten_Spire_Citadel/Molten_Spire_Citadel.prefab",
+            "lod0Triangles": 12681,
+            "lod1Triangles": 6339,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Sunfall_Ruin/Sunfall_Ruin.prefab",
+            "lod0Triangles": 12290,
+            "lod1Triangles": 6144,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Ancient_Flame_Bastion/Ancient_Flame_Bastion.prefab",
+            "lod0Triangles": 11978,
+            "lod1Triangles": 5989,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Emberwatch_Gate/Emberwatch_Gate.prefab",
+            "lod0Triangles": 11634,
+            "lod1Triangles": 5817,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Mossbound_Relic/Mossbound_Relic.prefab",
+            "lod0Triangles": 11351,
+            "lod1Triangles": 5675,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Mossbound_Ruin_Gate/Mossbound_Ruin_Gate.prefab",
+            "lod0Triangles": 11153,
+            "lod1Triangles": 5576,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Coast/Emberstone_Citadel_Bridge/Emberstone_Citadel_Bridge.prefab",
+            "lod0Triangles": 10950,
+            "lod1Triangles": 5475,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Arvore_luminosa.prefab",
+            "lod0Triangles": 10434,
+            "lod1Triangles": 1756,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Arvore_copa_aberta.prefab",
+            "lod0Triangles": 10002,
+            "lod1Triangles": 1692,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Casa_do_herbalista.prefab",
+            "lod0Triangles": 5372,
+            "lod1Triangles": 2416,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Casa_do_artesao.prefab",
+            "lod0Triangles": 5216,
+            "lod1Triangles": 2346,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/RootStump/RootStump.prefab",
+            "lod0Triangles": 4633,
+            "lod1Triangles": 2083,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Catacombs/Ancient_Tidegate/Ancient_Tidegate.prefab",
+            "lod0Triangles": 3191,
+            "lod1Triangles": 1594,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/GuardianStatue/GuardianStatue.prefab",
+            "lod0Triangles": 3156,
+            "lod1Triangles": 1420,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/Gravewood/Gravewood.prefab",
+            "lod0Triangles": 2948,
+            "lod1Triangles": 1326,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Poco_de_pedra.prefab",
+            "lod0Triangles": 2632,
+            "lod1Triangles": 1184,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Samambaia.prefab",
+            "lod0Triangles": 2538,
+            "lod1Triangles": 450,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Arbusto_florido.prefab",
+            "lod0Triangles": 2432,
+            "lod1Triangles": 432,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Catacombs/Ancient_Wave_Urn/Ancient_Wave_Urn.prefab",
+            "lod0Triangles": 2314,
+            "lod1Triangles": 1156,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Arbusto_folhoso.prefab",
+            "lod0Triangles": 2240,
+            "lod1Triangles": 402,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/RefugeTent/RefugeTent.prefab",
+            "lod0Triangles": 1972,
+            "lod1Triangles": 886,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/CoalBrazier/CoalBrazier.prefab",
+            "lod0Triangles": 1862,
+            "lod1Triangles": 836,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_de_frutas.prefab",
+            "lod0Triangles": 1852,
+            "lod1Triangles": 1018,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Entrada_estacao_invadida.prefab",
+            "lod0Triangles": 1782,
+            "lod1Triangles": 980,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_de_ervas.prefab",
+            "lod0Triangles": 1708,
+            "lod1Triangles": 938,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_de_ferramentas.prefab",
+            "lod0Triangles": 1616,
+            "lod1Triangles": 888,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Cesto_trancado.prefab",
+            "lod0Triangles": 1552,
+            "lod1Triangles": 698,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_de_tecidos.prefab",
+            "lod0Triangles": 1460,
+            "lod1Triangles": 802,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Floreira_folhosa.prefab",
+            "lod0Triangles": 1436,
+            "lod1Triangles": 234,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_do_padeiro.prefab",
+            "lod0Triangles": 1396,
+            "lod1Triangles": 766,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Flores_violetas.prefab",
+            "lod0Triangles": 1376,
+            "lod1Triangles": 200,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Arco_do_jardim.prefab",
+            "lod0Triangles": 1352,
+            "lod1Triangles": 742,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Protetor_da_praca.prefab",
+            "lod0Triangles": 1340,
+            "lod1Triangles": 736,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Banca_de_reliquias.prefab",
+            "lod0Triangles": 1328,
+            "lod1Triangles": 730,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Portao_da_cidade.prefab",
+            "lod0Triangles": 1306,
+            "lod1Triangles": 718,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Fonte_de_cristal.prefab",
+            "lod0Triangles": 1060,
+            "lod1Triangles": 466,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Carrinho_de_feira.prefab",
+            "lod0Triangles": 1032,
+            "lod1Triangles": 474,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Ponte_de_madeira.prefab",
+            "lod0Triangles": 1000,
+            "lod1Triangles": 450,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/LowWall/LowWall.prefab",
+            "lod0Triangles": 980,
+            "lod1Triangles": 440,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Trepadeira_em_trelica.prefab",
+            "lod0Triangles": 980,
+            "lod1Triangles": 238,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Pavilhao_de_eventos.prefab",
+            "lod0Triangles": 948,
+            "lod1Triangles": 520,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Raizes_na_maquina.prefab",
+            "lod0Triangles": 894,
+            "lod1Triangles": 490,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/Act1/CoastalRock/CoastalRock.prefab",
+            "lod0Triangles": 838,
+            "lod1Triangles": 376,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Banca_de_mercado.prefab",
+            "lod0Triangles": 752,
+            "lod1Triangles": 338,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Folha_portao.prefab",
+            "lod0Triangles": 680,
+            "lod1Triangles": 374,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Porta_de_madeira.prefab",
+            "lod0Triangles": 556,
+            "lod1Triangles": 250,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Quadro_de_avisos.prefab",
+            "lod0Triangles": 520,
+            "lod1Triangles": 286,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Tufo_de_grama.prefab",
+            "lod0Triangles": 512,
+            "lod1Triangles": 72,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Banco_de_madeira.prefab",
+            "lod0Triangles": 464,
+            "lod1Triangles": 208,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Cerca_de_madeira.prefab",
+            "lod0Triangles": 408,
+            "lod1Triangles": 176,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Lenha_empilhada.prefab",
+            "lod0Triangles": 384,
+            "lod1Triangles": 172,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Estante_de_potes.prefab",
+            "lod0Triangles": 352,
+            "lod1Triangles": 158,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Janela_trabalhada.prefab",
+            "lod0Triangles": 352,
+            "lod1Triangles": 158,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Bandeirolas_de_rua.prefab",
+            "lod0Triangles": 290,
+            "lod1Triangles": 158,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Placa_da_oficina.prefab",
+            "lod0Triangles": 272,
+            "lod1Triangles": 148,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Cogumelos_do_breu.prefab",
+            "lod0Triangles": 264,
+            "lod1Triangles": 118,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Lanterna_de_rua.prefab",
+            "lod0Triangles": 246,
+            "lod1Triangles": 110,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Placa_da_padaria.prefab",
+            "lod0Triangles": 240,
+            "lod1Triangles": 132,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Parede_enxaimel.prefab",
+            "lod0Triangles": 232,
+            "lod1Triangles": 104,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Escada_de_pedra.prefab",
+            "lod0Triangles": 220,
+            "lod1Triangles": 98,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Toco_cortado.prefab",
+            "lod0Triangles": 192,
+            "lod1Triangles": 86,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Altar_antigo.prefab",
+            "lod0Triangles": 188,
+            "lod1Triangles": 66,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Toldo_de_fachada.prefab",
+            "lod0Triangles": 184,
+            "lod1Triangles": 82,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/CityLifeKit/Placa_de_ervas.prefab",
+            "lod0Triangles": 172,
+            "lod1Triangles": 94,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Console_antigo.prefab",
+            "lod0Triangles": 162,
+            "lod1Triangles": 46,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Placa_de_caminho.prefab",
+            "lod0Triangles": 156,
+            "lod1Triangles": 70,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Marco_de_transporte.prefab",
+            "lod0Triangles": 136,
+            "lod1Triangles": 50,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Estandarte_de_tecido.prefab",
+            "lod0Triangles": 84,
+            "lod1Triangles": 36,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Marco_antigo.prefab",
+            "lod0Triangles": 80,
+            "lod1Triangles": 36,
+            "lod0Draws": 1
+        },
+        {
+            "asset": "Assets/ForjaDasMares/Art/World/SettlementKit/Cristais_arcanos.prefab",
+            "lod0Triangles": 72,
+            "lod1Triangles": 40,
+            "lod0Draws": 1
+        }
+    ],
+    "note": "Geometry counts, not GPU profiling. Existing assets are not deleted or decimated blindly."
+}

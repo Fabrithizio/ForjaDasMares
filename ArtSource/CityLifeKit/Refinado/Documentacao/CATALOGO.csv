@@ -1,0 +1,19 @@
+asset,triangulos_LOD0,triangulos_LOD1,largura_m,profundidade_m,altura_m,materiais,funcao
+Arco_do_jardim,1352,742,3.97,0.7,3.37,1,Passagem de jardim
+Banca_de_ervas,1708,938,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Banca_de_ferramentas,1616,888,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Banca_de_frutas,1852,1018,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Banca_de_reliquias,1328,730,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Banca_de_tecidos,1460,802,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Banca_do_padeiro,1396,766,3.2,2.09,3.0,1,Banca decorativa identificavel; nenhum comercio ficticio
+Bandeirolas_de_rua,290,158,7.2,0.17,3.82,1,Decoracao sobre caminho; vao livre
+Entrada_estacao_invadida,1782,980,11.27,4.1,6.87,1,Fachada aberta do desafio; raizes e mecanismo
+Folha_portao,680,374,3.09,0.35,3.9,1,"Pivo na dobradica, modelo separado"
+Pavilhao_de_eventos,948,520,5.8,4.4,4.41,1,"Estrutura aberta de evento, sem comercio"
+Placa_da_oficina,272,148,1.35,0.45,1.62,1,"Placa com simbolo modelado, sem texto ou loja ficticia"
+Placa_da_padaria,240,132,1.35,0.55,1.62,1,"Placa com simbolo modelado, sem texto ou loja ficticia"
+Placa_de_ervas,172,94,1.35,0.4,1.62,1,"Placa com simbolo modelado, sem texto ou loja ficticia"
+Portao_da_cidade,1306,718,9.5,2.1,6.85,1,Arco aberto 6.2m; sem portas embutidas
+Protetor_da_praca,1340,736,5.0,5.0,5.02,1,Monumento visual; sem logica de protecao
+Quadro_de_avisos,520,286,2.7,0.9,2.71,1,Quadro de NPC/missoes; texto de runtime separado
+Raizes_na_maquina,894,490,3.93,2.66,1.86,1,Natureza envolvendo tecnologia

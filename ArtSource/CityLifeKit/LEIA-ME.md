@@ -1,3 +1,5 @@
+> BASE 0.29 preservada. A revisão ativa está em Refinado; consulte Refinado/LEIA-ME.md e ArtSource/LEIA-ME.md.
+
 # Kit Cidade Viva — modelos originais
 
 06/11/2026. Blender 4.5.14 LTS. Fontes editáveis em Cidade_viva_editavel.blend; gerador em Ferramentas/gerar_cidade_viva.py. A biblioteca geométrica do SettlementKit é reutilizada sem executar os trabalhos antigos nem sobrescrever seus modelos.
@@ -13,3 +15,4 @@ Reprodução: executar o Blender em modo --background --factory-startup --disabl
 Na Unity: Assets/ForjaDasMares/Art/World/CityLifeKit. Prefabs com LODGroup, material URP compartilhado e colisores simples específicos; arcos mantêm vãos abertos. A folha de portão está preparada como peça separada, mas não tem animação nem lógica de abertura. Não importar o .blend no Assets: isso evitará dependência do Blender para abrir/compilar Unity.
 
 Não inclui inimigos novos, NPCs finais, rig, animações, comércio, evento ou missão novos. A fachada temática não implementa o desafio, seus inimigos ou recompensas. A lógica antiga de expedições continua conectada ao acesso existente.
+

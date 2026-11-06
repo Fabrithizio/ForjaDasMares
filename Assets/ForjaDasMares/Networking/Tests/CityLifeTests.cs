@@ -21,8 +21,15 @@ namespace ForjaDasMares.Networking.Tests
                 var high=lods[0].renderers[0].GetComponent<MeshFilter>().sharedMesh;var low=lods[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
                 Assert.LessOrEqual(high.GetIndexCount(0)/3,2500);Assert.Less(low.GetIndexCount(0),high.GetIndexCount(0));Assert.AreEqual(1,high.subMeshCount);
                 if(shared==null)shared=lods[0].renderers[0].sharedMaterial;Assert.AreEqual(shared,lods[0].renderers[0].sharedMaterial);
+                                var texture=lods[0].renderers[0].sharedMaterial.mainTexture;Assert.NotNull(texture);Assert.GreaterOrEqual(texture.width,512);Assert.GreaterOrEqual(texture.height,256);Assert.AreEqual(FilterMode.Bilinear,texture.filterMode);
                 Assert.IsNull(stall.GetComponent<WorldClickTarget>(),"Decorative stall must not advertise a fake shop");
             }
+        }
+        [Test]public void PlazaAndPathsAreVisibleAboveTheFloorWithoutNewCollision()
+        {
+            var paths=GameObject.Find("CityPaths");Assert.NotNull(paths);Assert.IsNull(paths.GetComponent<Collider>());
+            var mesh=paths.GetComponent<MeshFilter>().sharedMesh;Assert.IsTrue(mesh.normals.All(n=>n.y>.9f));
+            Assert.AreNotEqual(paths.GetComponent<Renderer>().sharedMaterial,GameObject.Find("TownFloor").GetComponent<Renderer>().sharedMaterial);
         }
         [Test]public void GateAndDungeonFacadeDoNotBlockTheirOwnOpenings()
         {

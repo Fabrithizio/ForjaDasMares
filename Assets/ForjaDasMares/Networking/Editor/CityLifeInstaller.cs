@@ -14,9 +14,9 @@ namespace ForjaDasMares.Networking.Editor
     public static class CityLifeInstaller
     {
         const string Art="Assets/ForjaDasMares/Art/World/CityLifeKit/";
-        const string Source="ArtSource/CityLifeKit/Modelos/";
-        static readonly string[] Names={"Portao_da_cidade","Folha_portao","Entrada_estacao_invadida","Protetor_da_praca","Pavilhao_de_eventos","Quadro_de_avisos","Bandeirolas_de_rua","Raizes_na_maquina","Arco_do_jardim","Banca_de_frutas","Banca_do_padeiro","Banca_de_ervas","Banca_de_ferramentas","Banca_de_tecidos","Banca_de_reliquias"};
-        [MenuItem("Forja/World/Integrar cidade viva 0.29")]
+        const string Source="ArtSource/CityLifeKit/Refinado/Modelos/";
+        static readonly string[] Names={"Portao_da_cidade","Folha_portao","Entrada_estacao_invadida","Protetor_da_praca","Pavilhao_de_eventos","Quadro_de_avisos","Bandeirolas_de_rua","Raizes_na_maquina","Arco_do_jardim","Banca_de_frutas","Banca_do_padeiro","Banca_de_ervas","Banca_de_ferramentas","Banca_de_tecidos","Banca_de_reliquias","Placa_da_padaria","Placa_de_ervas","Placa_da_oficina"};
+        [MenuItem("Forja/World/Integrar cidade viva refinada")]
         public static void Apply()
         {
             Prepare();
@@ -43,9 +43,13 @@ namespace ForjaDasMares.Networking.Editor
             Place(root,"Bandeirolas_de_rua",new Vector3(0,0,-23),1,0);
             Place(root,"Raizes_na_maquina",new Vector3(30,0,26),1,0);
             Place(root,"Arco_do_jardim",new Vector3(-23,0,20),1,0);
+            Place(root,"Placa_da_padaria",new Vector3(-25.5f,1.25f,-10),.55f,90);
+            Place(root,"Placa_de_ervas",new Vector3(-23,1.25f,.75f),.55f,180);
+            Place(root,"Placa_da_oficina",new Vector3(24,1.25f,1.75f),.55f,180);
             Reserve(root,"eventos-praca-oeste",TownSpaceKind.Event,new Vector3(-23,0,-28),new Vector2(7,6));
             Reserve(root,"moradores-praca-sul",TownSpaceKind.Resident,new Vector3(10,0,-18),new Vector2(5,5));
             Reserve(root,"expansao-leste",TownSpaceKind.FutureExpansion,new Vector3(39,0,18),new Vector2(10,14));
+            DressGround(root);
             ExitMarker(root,UnityEngine.Object.FindFirstObjectByType<RegionalWorld>());
             var merchant=env.GetComponentsInChildren<WorldClickTarget>().FirstOrDefault(t=>t.name.StartsWith("Téo"));if(merchant!=null)merchant.transform.position=new Vector3(-19,0,-21);
             int trees=0;
@@ -57,7 +61,7 @@ namespace ForjaDasMares.Networking.Editor
                     lods[1].screenRelativeTransitionHeight=.035f;group.SetLODs(lods);trees++;
                 }
             Rebuild();EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
-            Audit();Debug.Log("CITY_LIFE_READY prefabs=15 marketVariants=6 reservedSpaces=3 vegetationLodAdjusted="+trees);
+            Audit();Debug.Log("CITY_LIFE_READY prefabs=18 marketVariants=6 reservedSpaces=3 vegetationLodAdjusted="+trees);
         }
         static void Prepare()
         {
@@ -65,7 +69,7 @@ namespace ForjaDasMares.Networking.Editor
             foreach(var name in Names)foreach(var level in new[]{"LOD0","LOD1"})File.Copy(Source+name+"_"+level+".fbx",Art+name+"_"+level+".fbx",true);
             File.Copy(Source+"Paleta_cidade_viva.png",Art+"Paleta_cidade_viva.png",true);
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-            var texture=(TextureImporter)AssetImporter.GetAtPath(Art+"Paleta_cidade_viva.png");texture.mipmapEnabled=false;texture.filterMode=FilterMode.Point;texture.wrapMode=TextureWrapMode.Clamp;texture.textureCompression=TextureImporterCompression.Uncompressed;texture.SaveAndReimport();
+            var texture=(TextureImporter)AssetImporter.GetAtPath(Art+"Paleta_cidade_viva.png");texture.mipmapEnabled=true;texture.filterMode=FilterMode.Bilinear;texture.wrapMode=TextureWrapMode.Clamp;texture.npotScale=TextureImporterNPOTScale.None;texture.maxTextureSize=1024;texture.alphaSource=TextureImporterAlphaSource.None;texture.textureCompression=TextureImporterCompression.CompressedHQ;texture.SaveAndReimport();
             string materialPath=Art+"CityLifePalette.mat";var mat=AssetDatabase.LoadAssetAtPath<Material>(materialPath);
             if(mat==null){mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(mat,materialPath);}
             mat.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"Paleta_cidade_viva.png");mat.color=Color.white;mat.SetFloat("_Smoothness",.1f);mat.enableInstancing=true;EditorUtility.SetDirty(mat);
@@ -98,6 +102,34 @@ namespace ForjaDasMares.Networking.Editor
         {var go=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Art+name+".prefab"));go.transform.SetParent(root,false);go.transform.SetPositionAndRotation(point,Quaternion.Euler(0,yaw,0));go.transform.localScale=Vector3.one*scale;return go;}
         static void Reserve(Transform root,string id,TownSpaceKind kind,Vector3 p,Vector2 size)
         {var go=new GameObject("Reserva_"+id);go.transform.SetParent(root,false);go.transform.position=p;go.AddComponent<TownActivitySpace>().Configure(id,kind,size);}
+        static void DressGround(Transform root)
+        {
+            // Presentation only: keep the existing floor collider and navigation unchanged.
+            string folder="Assets/ForjaDasMares/Data/World/Town/Surroundings/";
+            var meadow=AssetDatabase.LoadAssetAtPath<Material>(folder+"CityMeadow.mat");
+            if(meadow==null){meadow=new Material(AssetDatabase.LoadAssetAtPath<Material>(folder+"Meadow.mat"));AssetDatabase.CreateAsset(meadow,folder+"CityMeadow.mat");}
+            meadow.color=new Color(.95f,1,.85f);meadow.mainTextureScale=Vector2.one*12;EditorUtility.SetDirty(meadow);
+            GameObject.Find("TownFloor").GetComponent<Renderer>().sharedMaterial=meadow;
+            var paving=AssetDatabase.LoadAssetAtPath<Material>(folder+"CityPaths.mat");
+            if(paving==null){paving=new Material(AssetDatabase.LoadAssetAtPath<Material>("Assets/ForjaDasMares/Data/World/Town/Paving.mat"));AssetDatabase.CreateAsset(paving,folder+"CityPaths.mat");}
+            paving.mainTextureScale=Vector2.one;paving.mainTextureOffset=Vector2.zero;EditorUtility.SetDirty(paving);
+            var vertices=new List<Vector3>();var indices=new List<int>();var uv=new List<Vector2>();
+            void Polygon(Vector2[] points)
+            {float signed=0;for(int j=0;j<points.Length;j++){var a=points[j];var b=points[(j+1)%points.Length];signed+=a.x*b.y-b.x*a.y;}if(signed<0)Array.Reverse(points);int start=vertices.Count;foreach(var p in points){vertices.Add(new Vector3(p.x,.023f,p.y));uv.Add(p/7.6f+Vector2.one*.5f);}for(int i=1;i<points.Length-1;i++){indices.Add(start);indices.Add(start+i+1);indices.Add(start+i);}}
+            void Path(Vector2 a,Vector2 b,float width)
+            {var d=(b-a).normalized;var n=new Vector2(-d.y,d.x)*width*.5f;Polygon(new[]{a+n,b+n,b-n,a-n});}
+            Polygon(Enumerable.Range(0,48).Select(i=>new Vector2(Mathf.Cos(i*Mathf.PI*2/48)*10.5f,7+Mathf.Sin(i*Mathf.PI*2/48)*10.5f)).ToArray());
+            Path(new Vector2(0,-2),new Vector2(0,-38),7);
+            Path(new Vector2(-7,7),new Vector2(-24,5),5);Path(new Vector2(7,7),new Vector2(24,5),5);
+            Path(new Vector2(0,15),new Vector2(0,22),5);
+            Path(new Vector2(0,-17),new Vector2(-19,-23),5);Path(new Vector2(-19,-23),new Vector2(-23,-29),4);
+            Path(new Vector2(0,-17),new Vector2(19,-20),5);Path(new Vector2(10,1),new Vector2(23,-14),5);
+            Path(new Vector2(-24,5),new Vector2(-20,21),4);Path(new Vector2(-20,21),new Vector2(18,21),4);
+            var mesh=new Mesh{name="CityPaths"};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,0);mesh.RecalculateNormals();mesh.RecalculateBounds();
+            string path=folder+"CityPaths.asset";var saved=AssetDatabase.LoadAssetAtPath<Mesh>(path);
+            if(saved==null){AssetDatabase.CreateAsset(mesh,path);saved=mesh;}else{EditorUtility.CopySerialized(mesh,saved);UnityEngine.Object.DestroyImmediate(mesh);}
+            var go=new GameObject("CityPaths",typeof(MeshFilter),typeof(MeshRenderer));go.layer=2;go.transform.SetParent(root,false);go.GetComponent<MeshFilter>().sharedMesh=saved;go.GetComponent<MeshRenderer>().sharedMaterial=paving;go.GetComponent<MeshRenderer>().shadowCastingMode=ShadowCastingMode.Off;
+        }
         static void ExitMarker(Transform root,RegionalWorld world)
         {
             var mesh=new Mesh{name="CityExitArrow"};
@@ -136,7 +168,7 @@ namespace ForjaDasMares.Networking.Editor
                 {var lods=group.GetLODs();if(lods.Length==0)continue;foreach(var r in lods[0].renderers){var mesh=r.GetComponent<MeshFilter>()?.sharedMesh;if(mesh==null)continue;for(int s=0;s<mesh.subMeshCount;s++)row.lod0Triangles+=(long)mesh.GetIndexCount(s)/3;row.lod0Draws+=mesh.subMeshCount;}if(lods.Length>1)foreach(var r in lods[1].renderers){var mesh=r.GetComponent<MeshFilter>()?.sharedMesh;if(mesh==null)continue;for(int s=0;s<mesh.subMeshCount;s++)row.lod1Triangles+=(long)mesh.GetIndexCount(s)/3;}}
                 rows.Add(row);
             }
-            Directory.CreateDirectory("Docs/Validation/0.29.0");File.WriteAllText("Docs/Validation/0.29.0/asset-audit.json",JsonUtility.ToJson(new AssetAudit{assets=rows.OrderByDescending(r=>r.lod0Triangles).ToArray()},true));
+            Directory.CreateDirectory("Docs/Validation/0.30.0");File.WriteAllText("Docs/Validation/0.30.0/asset-audit.json",JsonUtility.ToJson(new AssetAudit{assets=rows.OrderByDescending(r=>r.lod0Triangles).ToArray()},true));
             Debug.Log("ASSET_AUDIT count="+rows.Count+" heaviest="+string.Join(";",rows.OrderByDescending(r=>r.lod0Triangles).Take(5).Select(r=>r.asset+":"+r.lod0Triangles)));
         }
     }

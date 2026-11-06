@@ -1,0 +1,46 @@
+{
+  "version": "0.30.0",
+  "date": "2026-11-06",
+  "activeSource": "ArtSource/CityLifeKit/Refinado",
+  "models": 18,
+  "lodFiles": 36,
+  "newContentModels": 3,
+  "fbxValidation": {
+    "passed": 36,
+    "failed": 0
+  },
+  "unityTests": {
+    "passed": 24,
+    "failed": 0,
+    "file": "tests.xml"
+  },
+  "windows": {
+    "built": true,
+    "errors": 0,
+    "log": "Logs/city030-windows.log",
+    "path": "Builds/Atual/Windows/ForjaDasMaresCampanha.exe"
+  },
+  "androidBuilt": false,
+  "physicalAndroidTest": false,
+  "onlineTest": false,
+  "atlas": {
+    "width": 768,
+    "height": 512,
+    "materialsPerLod": 1,
+    "mipmaps": true
+  },
+  "qa": {
+    "visual": "Visible Windows build at 1280x800",
+    "audio": "Disabled only for this QA launch",
+    "captures": [
+      "market.png",
+      "square.png"
+    ]
+  },
+  "limits": [
+    "Art direction remains under review; not final painted art",
+    "No new commerce, events, quest, NPC or enemy systems",
+    "Road and plaza treatment is visual only; existing floor physics preserved",
+    "No claimed mobile FPS guarantee"
+  ]
+}
