@@ -740,3 +740,5 @@ Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 inst
 06/11/2026 — APK 0.30.0/code53 gerado a pedido: 109.893.581 bytes, Android build Succeeded/errors=0; pacote com.forjadasmares.campaign. Target Windows restaurado. Sem instalação/teste físico nesta entrega. Envio WhatsApp pendente: sessão Web desconectada. Ver Validation/0.30.0/android-build.json.
 
 06/11/2026 — 0.31.0: inventário da campanha integrado ao RPG nas quatro cenas regionais, mesmo catálogo/perfil local e equipamento real. 38/38 PlayMode; Windows Succeeded/errors=0. UI conferida no player; atalhos testados por Input System, teclado físico pendente. Sem APK novo/teste Android ou online real. Ver INVENTARIO_RPG_0_31_0.md.
+
+06/11/2026 — 0.31.1: bloqueios do inventário regional com motivos claros, avisos do perfil preservados, rodapé contextual e bônus percentual de velocidade de ataque. 40/40 PlayMode, Windows Succeeded/errors=0. Sem mapa novo, APK ou teste físico/online. Ver CLAREZA_INVENTARIO_0_31_1.md.

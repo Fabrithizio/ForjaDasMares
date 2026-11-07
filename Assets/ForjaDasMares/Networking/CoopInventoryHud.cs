@@ -311,14 +311,17 @@ namespace ForjaDasMares.Networking
             if(touchIdentity!=null)RefreshTouchInventory(profile);
             if(desktopInventory!=null)RefreshProfileAreas();
             RefreshEquipmentNotice();
-            notice.text = channel.Message ?? "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
+            notice.text = !CanManageNow&&!string.IsNullOrEmpty(channel.LocalManagementBlockReason)?channel.LocalManagementBlockReason:
+                !string.IsNullOrEmpty(channel.Message)?channel.Message:view.IsRegional?
+                "Perfil deste aparelho · compartilhado com os desafios. Equipamentos e talentos são salvos automaticamente.":
+                "Organize por slot e compare os atributos. Em partida, equipe fora de perigo. O perfil da sala é guardado pelo host; o perfil inicial é deste aparelho.";
         }
         void RefreshEquipmentNotice()
         {
             if(notice!=null)notice.gameObject.SetActive((sheet==null||!sheet.IsOpen)&&(itemPopup==null||!itemPopup.activeSelf));
             if(itemNotice==null||(!itemPopup.activeSelf&&desktopInventory==null))return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
-            if(!channel.HomeMode&&view.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
+            if((view.IsRegional||!channel.HomeMode&&view.Manager.IsServer)&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
             else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
             {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
             if(desktopStatus!=null)desktopStatus.text=string.IsNullOrEmpty(selected)?"":message;

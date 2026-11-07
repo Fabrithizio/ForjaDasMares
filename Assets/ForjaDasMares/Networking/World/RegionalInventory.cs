@@ -20,8 +20,20 @@ namespace ForjaDasMares.Networking
         static string testDirectory;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]static void ResetStatics(){testDirectory=null;}
         public void Configure(ProgressionCatalog data,string folder){catalog=data;profileDirectory=folder;}
-        public bool CanManage=>Service!=null&&world.Hero.Health.IsAlive&&Service.Profile.expedition==null&&!world.Hero.GetComponent<HeroCombat>().IsBusy&&!world.Hero.GetComponent<PlayerMotor>().IsCharging&&!world.Hero.GetComponent<PlayerMotor>().IsDodging&&!world.Enemies.ThreatNear(world.Hero.transform.position,12);
-        public string BlockReason=>Service?.Profile.expedition!=null?"Finalize a expedição pendente no modo de desafios.":!world.Hero.Health.IsAlive?"Reapareça antes de alterar o equipamento.":"Afaste-se dos inimigos e termine a ação antes de organizar o equipamento.";
+        public bool CanManage=>string.IsNullOrEmpty(BlockReason);
+        public string BlockReason
+        {
+            get
+            {
+                if(Service==null||world==null||world.Hero==null)return "Carregando o perfil do personagem...";
+                if(Service.Profile.expedition!=null)return "Finalize a expedição pendente no modo de desafios.";
+                if(!world.Hero.Health.IsAlive)return "Reapareça antes de alterar o equipamento.";
+                var motor=world.Hero.GetComponent<PlayerMotor>();
+                if(world.Hero.GetComponent<HeroCombat>().IsBusy||motor.IsCharging||motor.IsDodging)return "Termine o ataque, a habilidade ou a esquiva antes de alterar o equipamento.";
+                if(world.Enemies.ThreatNear(world.Hero.transform.position,12))return "Afaste-se dos inimigos para alterar o equipamento com segurança.";
+                return "";
+            }
+        }
         void Start()
         {
             world=GetComponent<RegionalWorld>();if(world==null||catalog==null)throw new InvalidOperationException("Regional inventory requires world and catalog");
@@ -33,7 +45,7 @@ namespace ForjaDasMares.Networking
 #endif
             for(int i=0;i<args.Length-1;i++){if(args[i]=="-netSavePath")directory=Path.GetFullPath(args[++i]);else if(args[i]=="-netIdentity")identity=args[++i];}
             if(!Guid.TryParseExact(identity,"N",out _)){identity=Guid.NewGuid().ToString("N");if(!tests){PlayerPrefs.SetString("CoopParticipantIdentity",identity);PlayerPrefs.Save();}}
-            SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath));Service.Changed+=Changed;
+            SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath));Service.Changed+=Changed;Notice=Service.Message??"";
             equipment=world.Hero.GetComponent<HeroEquipment>();if(equipment==null)equipment=world.Hero.gameObject.AddComponent<HeroEquipment>();
             equipment.Configure(world.Hero,world.Hero.GetComponent<PlayerMotor>(),world.Hero.GetComponent<HeroCombat>(),Visual("RegionalEquippedMain"),Visual("RegionalEquippedSecondary"));
             equipment.enabled=true;equipment.Initialize(Service,catalog);Changed();

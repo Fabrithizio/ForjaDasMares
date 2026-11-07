@@ -74,6 +74,15 @@ namespace ForjaDasMares.Networking.Tests
             Assert.AreSame(expected,UnityEngine.Object.FindFirstObjectByType<CoopProfileChannel>().Catalog);
             inventory=null;hud=UnityEngine.Object.FindFirstObjectByType<CoopInventoryHud>();
         }
+        [UnityTest]public IEnumerator DeadHeroSeesWhyEquipmentIsBlocked()
+        {
+            AddStaff();inventory.World.Hero.Health.ApplyDamage(100000);hud.OpenInventory();yield return null;
+            var texts=GameObject.Find("CoopInventory").GetComponentsInChildren<Text>(true);
+            Assert.IsTrue(texts.Any(t=>t.text.Contains("Reapareça")),"A UI deve explicar o bloqueio, não apenas desativar botões.");
+            hud.CloseInventory();
+        }
+        [Test]public void ReadyProfileHasNoBlockingReason()
+        {Assert.IsTrue(inventory.CanManage,inventory.BlockReason);Assert.AreEqual("",inventory.BlockReason);}
         [Test]public void DeadHeroCannotMutateEquipment()
         {
             var item=AddStaff();inventory.World.Hero.Health.ApplyDamage(100000);string before=JsonUtility.ToJson(inventory.Service.Profile);

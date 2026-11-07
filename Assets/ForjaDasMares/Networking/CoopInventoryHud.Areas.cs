@@ -197,7 +197,7 @@ namespace ForjaDasMares.Networking
             {
                 data.Add(new[]{"Movimento",s.speed.ToString("0.##")+" m/s","Velocidade sem efeitos temporários."});
                 data.Add(new[]{"Redução de recarga",((1-s.cooldownMultiplier)*100).ToString("0.#")+"%","Reduz o tempo de espera das habilidades compatíveis."});
-                data.Add(new[]{"Velocidade de ataque",s.attackSpeed.ToString("0.##")+"×","Bônus de cadência; já considerado em ataques por segundo."});
+                data.Add(new[]{"Velocidade de ataque",((s.attackSpeed-1)*100).ToString("+0.#;-0.#;0")+"%","Bônus sobre a velocidade base; já considerado na cadência em ataques por segundo."});
                 var equipped=profile.Item(profile.Loadout(hero.heroId)?.items[0]);var weapon=equipped!=null?catalog.Find(equipped.definitionId):null;var attack=weapon!=null?weapon.attacks[0]:hero.attacks[0];
                 data.Add(new[]{"Alcance do primeiro golpe",attack.range.ToString("0.#")+" m","Distância configurada para o primeiro ataque da arma atual."});
                 data.Add(new[]{"Duração da esquiva",hero.dodge.duration.ToString("0.##")+" s","Tempo do deslocamento de esquiva."});
