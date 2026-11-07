@@ -102,6 +102,19 @@ namespace ForjaDasMares
             foreach (var set in Profile.loadouts) foreach (var id in set.items) if (id == itemId) { Message = "Desequipe de todos os heróis antes de descartar."; return false; }
             return Transaction(next => {next.inventory.RemoveAll(item => item.instanceId == itemId);next.expedition?.items.RemoveAll(item=>item.instanceId==itemId);next.coins=Mathf.Min(100000000,next.coins+InventoryRules.SellValue(catalog,Profile.Item(itemId)));}, "Item reciclado por "+InventoryRules.SellValue(catalog,Profile.Item(itemId))+" ouro.");
         }
+        public bool BuyCommonEquipment(string definitionId,int price)
+        {
+            var definition=catalog.Find(definitionId);
+            if(definition==null||price<=0)return false;
+            if(Profile.expedition!=null){Message="Finalize a expedição antes de comprar.";return false;}
+            if(Profile.coins<price){Message="Ouro insuficiente.";return false;}
+            if(InventoryRules.BagCount(Profile)>=catalog.inventoryCapacity){Message="Mochila cheia.";return false;}
+            return Transaction(next=>
+            {
+                next.inventory.Add(LootGenerator.Create(catalog,definitionId,ItemRarity.Common,new System.Random()));
+                next.coins-=price;
+            },definition.displayName+" foi para a mochila.");
+        }
         public bool ClaimDelivery(string id)
         {
             if (InventoryRules.BagCount(Profile) >= catalog.inventoryCapacity) { Message = "Inventário cheio. Libere um espaço."; return false; }

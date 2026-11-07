@@ -39,7 +39,7 @@ namespace ForjaDasMares.Networking.Editor
             var daro=Resident("Daro · Artífice",new Vector3(10,0,-4),new Color(.65f,.3f,.12f));UnityEventTools.AddPersistentListener(daro.Used,hub.TalkStory);
             var healer=Resident("Iria · Guardiã da fonte",new Vector3(-11,0,14),new Color(.76f,.77f,.6f));UnityEventTools.AddPersistentListener(healer.Used,hub.Rest);
             var mentor=Resident("Luma · Instrutora",new Vector3(18,0,-23),new Color(.34f,.37f,.55f));UnityEventTools.AddPersistentListener(mentor.Used,hub.Mentor);
-            var merchant=Resident("Téo · Mercador",new Vector3(-19,0,-14),new Color(.48f,.3f,.46f));UnityEventTools.AddStringPersistentListener(merchant.Used,hub.Speak,"Téo: prepare seu equipamento antes de sair. Minha banca ainda está sendo montada; não há comércio nesta prévia.");
+            var merchant=Resident("Téo · Mercador",new Vector3(-19,0,-14),new Color(.48f,.3f,.46f));UnityEventTools.AddPersistentListener(merchant.Used,hub.OpenShop);
             for(int i=0;i<3;i++){var npc=Resident(new[]{"Ari · Mensageiro","Bento · Carregador","Sia · Viajante"}[i],new Vector3(-12+i*12,0,8),new Color(.3f+i*.13f,.4f,.25f),new[]{new Vector3(-12+i*10,0,8),new Vector3(-15+i*12,0,19),new Vector3(-5+i*8,0,-12)});UnityEventTools.AddStringPersistentListener(npc.Used,hub.Speak,"Morador: o sino voltou a reunir viajantes. Há rastros da expedição além do portão sul.");}
             // Workbenches, market canopy, barrels and planters share a small material set.
             for(int i=0;i<4;i++){Vector3 p=new Vector3(-18+i*12,0,21);Box("BenchSeat",p+Vector3.up*.6f,new Vector3(2.8f,.18f,.7f),wood,true);foreach(int s in new[]{-1,1})Box("BenchLeg",p+new Vector3(s,.3f,0),new Vector3(.25f,.6f,.6f),wood,true);}

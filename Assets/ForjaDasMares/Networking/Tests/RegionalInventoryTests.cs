@@ -22,6 +22,31 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTearDown]public IEnumerator Close(){if(hud!=null)hud.CloseInventory();RegionalInventory.TestDirectory=null;yield return null;}
         Button Button(string name)=>GameObject.Find("CoopInventory").GetComponentsInChildren<Button>(true).Single(b=>b.name==name);
+        [UnityTest]public IEnumerator MerchantFacesCustomerAndSavesPurchase()
+        {
+            var merchant=UnityEngine.Object.FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None)
+                .Single(target=>target.name.StartsWith("Téo"));
+            var hero=inventory.World.Hero;
+            hero.GetComponent<PlayerMotor>().Teleport(merchant.transform.position+Vector3.back,Quaternion.identity);
+            inventory.Service.Profile.coins=50;
+            int before=inventory.Service.Profile.inventory.Count;
+            Assert.IsTrue(merchant.TryUse(hero.transform));
+            yield return null;
+            var regionalHud=UnityEngine.Object.FindFirstObjectByType<RegionalWorldHud>();
+            Assert.IsTrue(regionalHud.ShopOpen);
+            Assert.Greater(Vector3.Dot(merchant.transform.forward,Vector3.back),.95f);
+            var buy=GameObject.Find("Buy0").GetComponent<Button>();
+            Assert.IsTrue(buy.interactable);
+            buy.onClick.Invoke();
+            Assert.AreEqual(5,inventory.Service.Profile.coins);
+            Assert.AreEqual(before+1,inventory.Service.Profile.inventory.Count);
+            Assert.IsFalse(buy.interactable);
+            var saved=new ProfileService(inventory.Catalog,new ProfileStore(inventory.SavePath));
+            Assert.AreEqual(5,saved.Profile.coins);
+            Assert.AreEqual(before+1,saved.Profile.inventory.Count);
+            regionalHud.CloseShop();
+        }
+
         ItemInstance AddStaff()
         {
             var staff=inventory.Catalog.equipment.First(d=>d.category==WeaponCategory.Staff&&!d.starter&&d.minimumLevel<=1);

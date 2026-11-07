@@ -16,7 +16,7 @@ namespace ForjaDasMares.Networking
             var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;gameObject.AddComponent<GraphicRaycaster>();
             var scale=gameObject.AddComponent<CanvasScaler>();scale.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scale.referenceResolution=new Vector2(1280,720);scale.matchWidthOrHeight=.5f;
             var root=RusticHudTheme.Rect(transform,"RegionSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);root.anchorMax=Vector2.one;root.offsetMin=root.offsetMax=Vector2.zero;
-            town=world.GetComponent<TownHub>();BuildVitals(root);if(world.Journey!=null)BuildJournal(root);
+            town=world.GetComponent<TownHub>();BuildVitals(root);if(town!=null)BuildShop(root);if(world.Journey!=null)BuildJournal(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
@@ -87,6 +87,74 @@ namespace ForjaDasMares.Networking
                     :journey.Offered
                         ?"DISPONÍVEL · Investigação de Nara\nDescubra o que aconteceu nos caminhos fora da proteção do Refúgio.\n\nNenhuma missão aceita."
                         :"Nenhuma missão aceita. Converse com Nara no Refúgio.\n\nHISTÓRICO\nNenhuma missão concluída.";
+        }
+        readonly string[] shopItems={"cais-blade","sal-staff","vento-bow","estrada-charm"};
+        readonly int[] shopPrices={45,45,45,35};
+        GameObject shop;
+        Text shopBalance,shopFeedback;
+        Button[] shopButtons;
+        RegionalInventory shopInventory;
+        public bool ShopOpen=>shop!=null&&shop.activeSelf;
+        void BuildShop(RectTransform root)
+        {
+            shopInventory=world.GetComponent<RegionalInventory>();
+            if(shopInventory==null)return;
+            var full=RusticHudTheme.Rect(root,"TownShop",Vector2.zero,Vector2.zero,Vector2.zero);
+            full.anchorMax=Vector2.one;
+            full.offsetMin=full.offsetMax=Vector2.zero;
+            full.gameObject.AddComponent<Image>().color=new Color(.015f,.025f,.02f,.92f);
+            shop=full.gameObject;
+            var panel=RusticHudTheme.Rect(full,"ShopPanel",Vector2.one*.5f,Vector2.zero,new Vector2(820,530));
+            RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
+            Label(panel,"ShopTitle",new Vector2(25,-20),new Vector2(540,42),"BANCA DO TÉO",28).color=RusticHudTheme.Gold;
+            shopBalance=Label(panel,"ShopBalance",new Vector2(25,-66),new Vector2(750,40),"",19);
+            shopFeedback=Label(panel,"ShopFeedback",new Vector2(25,-398),new Vector2(770,45),"",17);
+            shopButtons=new Button[shopItems.Length];
+            for(int i=0;i<shopItems.Length;i++)
+            {
+                int index=i;
+                var item=shopInventory.Catalog.Find(shopItems[i]);
+                if(item==null)continue;
+                float row=118+i*66;
+                Label(panel,"Item"+i,new Vector2(25,-row),new Vector2(540,47),item.displayName+" · Comum · Nível "+item.minimumLevel,18);
+                shopButtons[i]=RusticHudTheme.Button(panel,"Buy"+i,Top,new Vector2(590,-row),new Vector2(200,45),"COMPRAR · "+shopPrices[i]+" OURO",()=>BuyShopItem(index));
+            }
+            RusticHudTheme.Button(panel,"CloseShop",Top,new Vector2(565,-456),new Vector2(225,46),"VOLTAR · ESC",CloseShop);
+            shop.SetActive(false);
+        }
+        public void OpenShop()
+        {
+            if(shop==null||shopInventory.Service==null)return;
+            CloseJournal();
+            shop.transform.SetAsLastSibling();
+            shop.SetActive(true);
+            world.Hero.GetComponent<ArenaInput>().BlockCommands(true);
+            world.Hero.GetComponent<PlayerMotor>().StopWalking();
+            shopFeedback.text="Equipamentos comuns. Confira a compatibilidade na mochila.";
+            RefreshShop();
+        }
+        public void CloseShop()
+        {
+            if(!ShopOpen)return;
+            shop.SetActive(false);
+            world.Hero.GetComponent<ArenaInput>().BlockCommands(false);
+        }
+        void BuyShopItem(int index)
+        {
+            if(!ShopOpen||!world.Hero.Health.IsAlive)return;
+            var service=shopInventory.Service;
+            service.BuyCommonEquipment(shopItems[index],shopPrices[index]);
+            shopFeedback.text=service.Message;
+            RefreshShop();
+        }
+        void RefreshShop()
+        {
+            var profile=shopInventory.Service.Profile;
+            int used=InventoryRules.BagCount(profile);
+            int capacity=shopInventory.Catalog.inventoryCapacity;
+            shopBalance.text=profile.coins+" ouro   ·   Mochila "+used+" / "+capacity;
+            for(int i=0;i<shopButtons.Length;i++)
+                if(shopButtons[i]!=null)shopButtons[i].interactable=profile.coins>=shopPrices[i]&&used<capacity&&profile.expedition==null;
         }
         void BuildVitals(RectTransform root)
         {

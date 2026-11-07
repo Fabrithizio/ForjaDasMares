@@ -46,6 +46,11 @@ namespace ForjaDasMares.Networking
             world.Journey.AcceptOffer();
             Notice=world.Journey.Notice;
         }
+        public void OpenShop()
+        {
+            var hud=FindFirstObjectByType<RegionalWorldHud>();
+            if(hud!=null)hud.OpenShop();
+        }
         public void Rest(){world.Hero.Health.Restore();Notice="Fonte das Marés: vida restaurada.";}
         public void Mentor(){world.Hero.Select((world.Hero.Selected+1)%world.Hero.Count);Notice="Instrutora: agora você está com "+world.Hero.Current.displayName+". Experimente a área de treino.";}
         public void Explore()=>BeginTravel("CostaAto1");
