@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="51" result="Passed" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61,1261327">
+  <test-suite type="TestSuite" id="1415" name="Forja das Mares - Campanha" fullname="Forja das Mares - Campanha" runstate="Runnable" testcasecount="361" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61.126133" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1282" name="ForjaDasMares.Networking.Tests.dll" fullname="C:/Users/Fabricio_S/Desktop/Jogos/ForjaDasMares/Library/ScriptAssemblies/ForjaDasMares.Networking.Tests.dll" runstate="Runnable" testcasecount="251" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61.078684" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="1608" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1283" name="ForjaDasMares" fullname="ForjaDasMares" runstate="Runnable" testcasecount="251" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61.070044" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1284" name="Networking" fullname="ForjaDasMares.Networking" runstate="Runnable" testcasecount="251" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61.061717" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1285" name="Tests" fullname="ForjaDasMares.Networking.Tests" runstate="Runnable" testcasecount="251" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:32:09Z" duration="61.053118" total="51" passed="51" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1121" name="CityLifeTests" fullname="ForjaDasMares.Networking.Tests.CityLifeTests" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:31:16Z" duration="8.236845" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1126" name="ExitArrowAppearsOnlyNearThePassage" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.ExitArrowAppearsOnlyNearThePassage" methodname="ExitArrowAppearsOnlyNearThePassage" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="1452798806" result="Passed" start-time="2026-11-07 03:31:08Z" end-time="2026-11-07 03:31:12Z" duration="4.111741" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1124" name="GateAndDungeonFacadeDoNotBlockTheirOwnOpenings" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.GateAndDungeonFacadeDoNotBlockTheirOwnOpenings" methodname="GateAndDungeonFacadeDoNotBlockTheirOwnOpenings" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="325895762" result="Passed" start-time="2026-11-07 03:31:12Z" end-time="2026-11-07 03:31:13Z" duration="0.904848" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1122" name="MarketHasSixDistinctModelsWithSharedMaterialAndCheaperLods" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.MarketHasSixDistinctModelsWithSharedMaterialAndCheaperLods" methodname="MarketHasSixDistinctModelsWithSharedMaterialAndCheaperLods" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="436631179" result="Passed" start-time="2026-11-07 03:31:13Z" end-time="2026-11-07 03:31:14Z" duration="0.910752" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1127" name="OlderTreesUseLowerGeometryBeforeTakingOverTheScreen" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.OlderTreesUseLowerGeometryBeforeTakingOverTheScreen" methodname="OlderTreesUseLowerGeometryBeforeTakingOverTheScreen" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="16277586" result="Passed" start-time="2026-11-07 03:31:14Z" end-time="2026-11-07 03:31:15Z" duration="0.821173" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1123" name="PlazaAndPathsAreVisibleAboveTheFloorWithoutNewCollision" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.PlazaAndPathsAreVisibleAboveTheFloorWithoutNewCollision" methodname="PlazaAndPathsAreVisibleAboveTheFloorWithoutNewCollision" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="1337978740" result="Passed" start-time="2026-11-07 03:31:15Z" end-time="2026-11-07 03:31:15Z" duration="0.733082" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1125" name="ReservationsHaveUniqueIdsAndDoNotBecomeInvisibleWalls" fullname="ForjaDasMares.Networking.Tests.CityLifeTests.ReservationsHaveUniqueIdsAndDoNotBecomeInvisibleWalls" methodname="ReservationsHaveUniqueIdsAndDoNotBecomeInvisibleWalls" classname="ForjaDasMares.Networking.Tests.CityLifeTests" runstate="Runnable" seed="16624299" result="Passed" start-time="2026-11-07 03:31:15Z" end-time="2026-11-07 03:31:16Z" duration="0.717999" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1175" name="InventoryClarityTests" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-11-07 03:31:16Z" end-time="2026-11-07 03:31:27Z" duration="10.747180" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1188" name="BrowsingSourcesFiltersAndComparisonsDoesNotChangeSavedItemData" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.BrowsingSourcesFiltersAndComparisonsDoesNotChangeSavedItemData" methodname="BrowsingSourcesFiltersAndComparisonsDoesNotChangeSavedItemData" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="755824618" result="Passed" start-time="2026-11-07 03:31:16Z" end-time="2026-11-07 03:31:17Z" duration="1.290346" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1185" name="EmptyCategoryExplainsTheFilterAndCanShowAllItems" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.EmptyCategoryExplainsTheFilterAndCanShowAllItems" methodname="EmptyCategoryExplainsTheFilterAndCanShowAllItems" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="990397904" result="Passed" start-time="2026-11-07 03:31:17Z" end-time="2026-11-07 03:31:18Z" duration="0.677942" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1186" name="EmptyEquipmentSlotFiltersTheCorrectCategoryAndNamesRemainIcons" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.EmptyEquipmentSlotFiltersTheCorrectCategoryAndNamesRemainIcons" methodname="EmptyEquipmentSlotFiltersTheCorrectCategoryAndNamesRemainIcons" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="1056199002" result="Passed" start-time="2026-11-07 03:31:18Z" end-time="2026-11-07 03:31:19Z" duration="0.620796" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1182" name="EquippingMovesThePieceOutOfTheBagAndUnequippingReturnsIt" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.EquippingMovesThePieceOutOfTheBagAndUnequippingReturnsIt" methodname="EquippingMovesThePieceOutOfTheBagAndUnequippingReturnsIt" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="1817020996" result="Passed" start-time="2026-11-07 03:31:19Z" end-time="2026-11-07 03:31:19Z" duration="0.690837" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1189" name="LongNamesRemainAvailableInTheScrollableItemPanel" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.LongNamesRemainAvailableInTheScrollableItemPanel" methodname="LongNamesRemainAvailableInTheScrollableItemPanel" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="906909641" result="Passed" start-time="2026-11-07 03:31:19Z" end-time="2026-11-07 03:31:20Z" duration="0.774761" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1187" name="OffHandItemIsRecognizedAsEquippedRatherThanShownAsAnInvalidMainHand" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.OffHandItemIsRecognizedAsEquippedRatherThanShownAsAnInvalidMainHand" methodname="OffHandItemIsRecognizedAsEquippedRatherThanShownAsAnInvalidMainHand" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="509117519" result="Passed" start-time="2026-11-07 03:31:20Z" end-time="2026-11-07 03:31:21Z" duration="0.718568" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1177" name="PerformanceSamplesOnlyGameplayAndResetsForInventory" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.PerformanceSamplesOnlyGameplayAndResetsForInventory" methodname="PerformanceSamplesOnlyGameplayAndResetsForInventory" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="113122647" result="Passed" start-time="2026-11-07 03:31:21Z" end-time="2026-11-07 03:31:22Z" duration="1.231055" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_CONNECTED slot=0 count=1
+COOP_PHASE Lobby
+COOP_PHASE Loading
+DUNGEON_GENERATED seed=17411 rooms=12 signature=0:0,0/0[1,]1:1,0/1[0,2,]2:2,0/5[1,3,]3:3,0/2[2,4,]4:3,1/6[3,5,]5:2,1/1[4,6,]6:1,1/3[5,7,]7:0,1/1[6,8,]8:0,2/5[7,9,]9:1,2/2[8,10,]10:2,2/4[9,11,]11:3,2/7[10,]
+DUNGEON_RUNTIME_READY biome=catacumbas seed=17411
+COOP_PHASE Playing
+COOP_STARTED signature=0:0,0/0[1,]1:1,0/1[0,2,]2:2,0/5[1,3,]3:3,0/2[2,4,]4:3,1/6[3,5,]5:2,1/1[4,6,]6:1,1/3[5,7,]7:0,1/1[6,8,]8:0,2/5[7,9,]9:1,2/2[8,10,]10:2,2/4[9,11,]11:3,2/7[10,]
+COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1176" name="ProfileAreasSeparateBagStatusResourcesAndPreserveEquipment" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.ProfileAreasSeparateBagStatusResourcesAndPreserveEquipment" methodname="ProfileAreasSeparateBagStatusResourcesAndPreserveEquipment" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="1864294663" result="Passed" start-time="2026-11-07 03:31:22Z" end-time="2026-11-07 03:31:23Z" duration="0.659503" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1178" name="ProjectileDescriptionsDoNotInventAreaDamageAndShowActualSpread" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.ProjectileDescriptionsDoNotInventAreaDamageAndShowActualSpread" methodname="ProjectileDescriptionsDoNotInventAreaDamageAndShowActualSpread" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="961725845" result="Passed" start-time="2026-11-07 03:31:23Z" end-time="2026-11-07 03:31:23Z" duration="0.623983" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1180" name="QuickComparisonUsesTheRealAttributeFormulaWithoutMutatingTheProfile" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.QuickComparisonUsesTheRealAttributeFormulaWithoutMutatingTheProfile" methodname="QuickComparisonUsesTheRealAttributeFormulaWithoutMutatingTheProfile" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="1950606697" result="Passed" start-time="2026-11-07 03:31:23Z" end-time="2026-11-07 03:31:24Z" duration="0.638394" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1184" name="ReceivingADeliveryOpensItInTheBagWithoutAutomaticallyEquipping" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.ReceivingADeliveryOpensItInTheBagWithoutAutomaticallyEquipping" methodname="ReceivingADeliveryOpensItInTheBagWithoutAutomaticallyEquipping" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="883555688" result="Passed" start-time="2026-11-07 03:31:24Z" end-time="2026-11-07 03:31:25Z" duration="0.767020" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1183" name="RecyclingRequiresConfirmationAndGrantsTheDisplayedGoldOnce" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.RecyclingRequiresConfirmationAndGrantsTheDisplayedGoldOnce" methodname="RecyclingRequiresConfirmationAndGrantsTheDisplayedGoldOnce" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="572881138" result="Passed" start-time="2026-11-07 03:31:25Z" end-time="2026-11-07 03:31:25Z" duration="0.693099" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1181" name="SummaryAndAdvancedDetailsAreConnectedToAWorkingToggle" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.SummaryAndAdvancedDetailsAreConnectedToAWorkingToggle" methodname="SummaryAndAdvancedDetailsAreConnectedToAWorkingToggle" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="246535228" result="Passed" start-time="2026-11-07 03:31:25Z" end-time="2026-11-07 03:31:26Z" duration="0.629933" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+              <test-case id="1179" name="SummaryIdentifiesClassSlotLevelAndNumericalWeaponDamage" fullname="ForjaDasMares.Networking.Tests.InventoryClarityTests.SummaryIdentifiesClassSlotLevelAndNumericalWeaponDamage" methodname="SummaryIdentifiesClassSlotLevelAndNumericalWeaponDamage" classname="ForjaDasMares.Networking.Tests.InventoryClarityTests" runstate="Runnable" seed="542345078" result="Passed" start-time="2026-11-07 03:31:26Z" end-time="2026-11-07 03:31:27Z" duration="0.721520" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[COOP_PHASE Closed
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1209" name="RegionalInventoryTests" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-11-07 03:31:27Z" end-time="2026-11-07 03:31:36Z" duration="9.693830" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1217" name="DeadHeroCannotMutateEquipment" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.DeadHeroCannotMutateEquipment" methodname="DeadHeroCannotMutateEquipment" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="870590619" result="Passed" start-time="2026-11-07 03:31:27Z" end-time="2026-11-07 03:31:28Z" duration="1.117662" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1215" name="DeadHeroSeesWhyEquipmentIsBlocked" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.DeadHeroSeesWhyEquipmentIsBlocked" methodname="DeadHeroSeesWhyEquipmentIsBlocked" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="2028798392" result="Passed" start-time="2026-11-07 03:31:28Z" end-time="2026-11-07 03:31:29Z" duration="1.096934" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1210" name="ExistingInventoryOpensInWorldAndBlocksCommandsUntilClosed" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.ExistingInventoryOpensInWorldAndBlocksCommandsUntilClosed" methodname="ExistingInventoryOpensInWorldAndBlocksCommandsUntilClosed" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="623126462" result="Passed" start-time="2026-11-07 03:31:29Z" end-time="2026-11-07 03:31:30Z" duration="0.840584" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1211" name="KeyboardOpensAndEscapeClosesInventory" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.KeyboardOpensAndEscapeClosesInventory" methodname="KeyboardOpensAndEscapeClosesInventory" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="732287746" result="Passed" start-time="2026-11-07 03:31:30Z" end-time="2026-11-07 03:31:31Z" duration="1.055760" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1216" name="ReadyProfileHasNoBlockingReason" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.ReadyProfileHasNoBlockingReason" methodname="ReadyProfileHasNoBlockingReason" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="237411762" result="Passed" start-time="2026-11-07 03:31:31Z" end-time="2026-11-07 03:31:32Z" duration="0.810871" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1214" name="RegionalUsesExactlyTheCampaignCatalog" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.RegionalUsesExactlyTheCampaignCatalog" methodname="RegionalUsesExactlyTheCampaignCatalog" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="428399732" result="Passed" start-time="2026-11-07 03:31:32Z" end-time="2026-11-07 03:31:33Z" duration="1.602316" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1213" name="TravellingRetainsItemsAndDoesNotGrantStartersTwice" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.TravellingRetainsItemsAndDoesNotGrantStartersTwice" methodname="TravellingRetainsItemsAndDoesNotGrantStartersTwice" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="135810864" result="Passed" start-time="2026-11-07 03:31:33Z" end-time="2026-11-07 03:31:35Z" duration="1.920326" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+REGION_READY localPrototype=true camps=5 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1212" name="UiEquipAndUnequipChangeTheRealHeroAndPersist" fullname="ForjaDasMares.Networking.Tests.RegionalInventoryTests.UiEquipAndUnequipChangeTheRealHeroAndPersist" methodname="UiEquipAndUnequipChangeTheRealHeroAndPersist" classname="ForjaDasMares.Networking.Tests.RegionalInventoryTests" runstate="Runnable" seed="997679285" result="Passed" start-time="2026-11-07 03:31:35Z" end-time="2026-11-07 03:31:36Z" duration="1.244183" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1218" name="RegionalSettingsTests" fullname="ForjaDasMares.Networking.Tests.RegionalSettingsTests" classname="ForjaDasMares.Networking.Tests.RegionalSettingsTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-07 03:31:36Z" end-time="2026-11-07 03:31:39Z" duration="2.822557" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1220" name="AudioButtonsChangeTheRealSavedMasterVolume" fullname="ForjaDasMares.Networking.Tests.RegionalSettingsTests.AudioButtonsChangeTheRealSavedMasterVolume" methodname="AudioButtonsChangeTheRealSavedMasterVolume" classname="ForjaDasMares.Networking.Tests.RegionalSettingsTests" runstate="Runnable" seed="43038392" result="Passed" start-time="2026-11-07 03:31:36Z" end-time="2026-11-07 03:31:37Z" duration="1.020515" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1221" name="InventoryAndSettingsNeverLeaveTwoOverlaysOpen" fullname="ForjaDasMares.Networking.Tests.RegionalSettingsTests.InventoryAndSettingsNeverLeaveTwoOverlaysOpen" methodname="InventoryAndSettingsNeverLeaveTwoOverlaysOpen" classname="ForjaDasMares.Networking.Tests.RegionalSettingsTests" runstate="Runnable" seed="813640207" result="Passed" start-time="2026-11-07 03:31:37Z" end-time="2026-11-07 03:31:38Z" duration="0.964484" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1219" name="SettingsOpenAndCloseWithoutFreezingTime" fullname="ForjaDasMares.Networking.Tests.RegionalSettingsTests.SettingsOpenAndCloseWithoutFreezingTime" methodname="SettingsOpenAndCloseWithoutFreezingTime" classname="ForjaDasMares.Networking.Tests.RegionalSettingsTests" runstate="Runnable" seed="1006339085" result="Passed" start-time="2026-11-07 03:31:38Z" end-time="2026-11-07 03:31:39Z" duration="0.834365" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1248" name="TownArtTests" fullname="ForjaDasMares.Networking.Tests.TownArtTests" classname="ForjaDasMares.Networking.Tests.TownArtTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-07 03:31:39Z" end-time="2026-11-07 03:31:43Z" duration="3.829704" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1249" name="BuildingsAndVegetationAreImportedMeshesWithCheaperLods" fullname="ForjaDasMares.Networking.Tests.TownArtTests.BuildingsAndVegetationAreImportedMeshesWithCheaperLods" methodname="BuildingsAndVegetationAreImportedMeshesWithCheaperLods" classname="ForjaDasMares.Networking.Tests.TownArtTests" runstate="Runnable" seed="1380753853" result="Passed" start-time="2026-11-07 03:31:39Z" end-time="2026-11-07 03:31:40Z" duration="0.867380" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1251" name="FountainHealsAndHasVisibleFeedbackThatReturnsToRest" fullname="ForjaDasMares.Networking.Tests.TownArtTests.FountainHealsAndHasVisibleFeedbackThatReturnsToRest" methodname="FountainHealsAndHasVisibleFeedbackThatReturnsToRest" classname="ForjaDasMares.Networking.Tests.TownArtTests" runstate="Runnable" seed="1696003991" result="Passed" start-time="2026-11-07 03:31:40Z" end-time="2026-11-07 03:31:42Z" duration="1.985750" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1250" name="NewArtDoesNotDisconnectServicesOrTownExit" fullname="ForjaDasMares.Networking.Tests.TownArtTests.NewArtDoesNotDisconnectServicesOrTownExit" methodname="NewArtDoesNotDisconnectServicesOrTownExit" classname="ForjaDasMares.Networking.Tests.TownArtTests" runstate="Runnable" seed="921634531" result="Passed" start-time="2026-11-07 03:31:42Z" end-time="2026-11-07 03:31:43Z" duration="0.972601" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1252" name="TownLayoutTests" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-07 03:31:43Z" end-time="2026-11-07 03:31:53Z" duration="9.710897" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1256" name="ExitDoesNotAdvertiseAnUnrelatedChallengeInteraction" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.ExitDoesNotAdvertiseAnUnrelatedChallengeInteraction" methodname="ExitDoesNotAdvertiseAnUnrelatedChallengeInteraction" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="1293355374" result="Passed" start-time="2026-11-07 03:31:43Z" end-time="2026-11-07 03:31:44Z" duration="0.857256" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1257" name="ExpeditionCourtInsideTownOpensTheExistingFunctionalLobby" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.ExpeditionCourtInsideTownOpensTheExistingFunctionalLobby" methodname="ExpeditionCourtInsideTownOpensTheExistingFunctionalLobby" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="736801823" result="Passed" start-time="2026-11-07 03:31:44Z" end-time="2026-11-07 03:31:46Z" duration="1.976235" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1255" name="MaximumZoomAndScreenRatiosKeepLandscapeUnderEveryViewportCorner" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.MaximumZoomAndScreenRatiosKeepLandscapeUnderEveryViewportCorner" methodname="MaximumZoomAndScreenRatiosKeepLandscapeUnderEveryViewportCorner" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="1257312160" result="Passed" start-time="2026-11-07 03:31:46Z" end-time="2026-11-07 03:31:50Z" duration="3.791123" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1254" name="RoadHasAContinuousPathThroughTheTownWall" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.RoadHasAContinuousPathThroughTheTownWall" methodname="RoadHasAContinuousPathThroughTheTownWall" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="696045133" result="Passed" start-time="2026-11-07 03:31:50Z" end-time="2026-11-07 03:31:50Z" duration="0.677041" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1253" name="SceneryExtendsBeyondWalkableTownWithoutNavigationColliders" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.SceneryExtendsBeyondWalkableTownWithoutNavigationColliders" methodname="SceneryExtendsBeyondWalkableTownWithoutNavigationColliders" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="1678075585" result="Passed" start-time="2026-11-07 03:31:50Z" end-time="2026-11-07 03:31:51Z" duration="0.630585" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1258" name="WalkingThroughGateTransitionsOnceWithoutUsingADevice" fullname="ForjaDasMares.Networking.Tests.TownLayoutTests.WalkingThroughGateTransitionsOnceWithoutUsingADevice" methodname="WalkingThroughGateTransitionsOnceWithoutUsingADevice" classname="ForjaDasMares.Networking.Tests.TownLayoutTests" runstate="Runnable" seed="660923767" result="Passed" start-time="2026-11-07 03:31:51Z" end-time="2026-11-07 03:31:53Z" duration="1.770561" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+REGION_READY localPrototype=true camps=5 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1259" name="TownTests" fullname="ForjaDasMares.Networking.Tests.TownTests" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-11-07 03:31:53Z" end-time="2026-11-07 03:32:07Z" duration="13.983175" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1262" name="AncientSiteIsReachableAndInspectionDoesNotChangeQuest" fullname="ForjaDasMares.Networking.Tests.TownTests.AncientSiteIsReachableAndInspectionDoesNotChangeQuest" methodname="AncientSiteIsReachableAndInspectionDoesNotChangeQuest" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1842732210" result="Passed" start-time="2026-11-07 03:31:53Z" end-time="2026-11-07 03:31:54Z" duration="0.917139" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1267" name="ArrivalIsTraversableWithoutFallingOrEnteringProps" fullname="ForjaDasMares.Networking.Tests.TownTests.ArrivalIsTraversableWithoutFallingOrEnteringProps" methodname="ArrivalIsTraversableWithoutFallingOrEnteringProps" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1048984773" result="Passed" start-time="2026-11-07 03:31:54Z" end-time="2026-11-07 03:31:55Z" duration="1.296225" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1264" name="FourArrivalPointsAreWalkableAndUnobstructed" fullname="ForjaDasMares.Networking.Tests.TownTests.FourArrivalPointsAreWalkableAndUnobstructed" methodname="FourArrivalPointsAreWalkableAndUnobstructed" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1509032128" result="Passed" start-time="2026-11-07 03:31:55Z" end-time="2026-11-07 03:31:56Z" duration="1.183811" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1261" name="HintAndInteractionUseSameNearestAvailableTarget" fullname="ForjaDasMares.Networking.Tests.TownTests.HintAndInteractionUseSameNearestAvailableTarget" methodname="HintAndInteractionUseSameNearestAvailableTarget" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="981067415" result="Passed" start-time="2026-11-07 03:31:56Z" end-time="2026-11-07 03:31:57Z" duration="1.077668" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1266" name="ImportedTentAndBrazierHaveRealSizedCollisions" fullname="ForjaDasMares.Networking.Tests.TownTests.ImportedTentAndBrazierHaveRealSizedCollisions" methodname="ImportedTentAndBrazierHaveRealSizedCollisions" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1883538606" result="Passed" start-time="2026-11-07 03:31:57Z" end-time="2026-11-07 03:31:59Z" duration="1.214755" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1263" name="InteractionApproachIgnoresVisualScale" fullname="ForjaDasMares.Networking.Tests.TownTests.InteractionApproachIgnoresVisualScale" methodname="InteractionApproachIgnoresVisualScale" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1610533599" result="Passed" start-time="2026-11-07 03:31:59Z" end-time="2026-11-07 03:32:00Z" duration="1.021056" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1265" name="RestAndMentorPerformRealActions" fullname="ForjaDasMares.Networking.Tests.TownTests.RestAndMentorPerformRealActions" methodname="RestAndMentorPerformRealActions" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1117567662" result="Passed" start-time="2026-11-07 03:32:00Z" end-time="2026-11-07 03:32:01Z" duration="1.161568" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1268" name="TownGateLoadsExistingCoast" fullname="ForjaDasMares.Networking.Tests.TownTests.TownGateLoadsExistingCoast" methodname="TownGateLoadsExistingCoast" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="771785249" result="Passed" start-time="2026-11-07 03:32:01Z" end-time="2026-11-07 03:32:04Z" duration="2.814181" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+REGION_READY localPrototype=true camps=5 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1260" name="TownIsSafeAndResidentsActuallyMove" fullname="ForjaDasMares.Networking.Tests.TownTests.TownIsSafeAndResidentsActuallyMove" methodname="TownIsSafeAndResidentsActuallyMove" classname="ForjaDasMares.Networking.Tests.TownTests" runstate="Runnable" seed="1611031779" result="Passed" start-time="2026-11-07 03:32:04Z" end-time="2026-11-07 03:32:07Z" duration="3.286808" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1269" name="TownVisualRepairTests" fullname="ForjaDasMares.Networking.Tests.TownVisualRepairTests" classname="ForjaDasMares.Networking.Tests.TownVisualRepairTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-07 03:32:07Z" end-time="2026-11-07 03:32:09Z" duration="1.980266" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1270" name="PavingHasOneSurfacePerCellAndNoDuplicateFaces" fullname="ForjaDasMares.Networking.Tests.TownVisualRepairTests.PavingHasOneSurfacePerCellAndNoDuplicateFaces" methodname="PavingHasOneSurfacePerCellAndNoDuplicateFaces" classname="ForjaDasMares.Networking.Tests.TownVisualRepairTests" runstate="Runnable" seed="102263613" result="Passed" start-time="2026-11-07 03:32:07Z" end-time="2026-11-07 03:32:08Z" duration="0.979831" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+]]></output>
+              </test-case>
+              <test-case id="1271" name="ProtectorIsFantasyFountainAndGrassHasADefinedTexture" fullname="ForjaDasMares.Networking.Tests.TownVisualRepairTests.ProtectorIsFantasyFountainAndGrassHasADefinedTexture" methodname="ProtectorIsFantasyFountainAndGrassHasADefinedTexture" classname="ForjaDasMares.Networking.Tests.TownVisualRepairTests" runstate="Runnable" seed="1805974411" result="Passed" start-time="2026-11-07 03:32:08Z" end-time="2026-11-07 03:32:09Z" duration="0.994189" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[REGION_READY localPrototype=true camps=0 capacity=24
+Saving results to: C:/Users/Fabricio_S/AppData/LocalLow/ForjaDasMaresPrototype/Forja das Mares - Campanha\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

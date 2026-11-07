@@ -27,7 +27,7 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             if(panel==null)return;if(Keyboard.current!=null&&Keyboard.current.f8Key.wasPressedThisFrame)Toggle();
-            bool gameplay=(session!=null?session.Phase==CoopPhase.Playing:region!=null&&region.Hero!=null)&&GetComponent<CoopInventoryHud>()?.IsOpen!=true&&GetComponent<CampaignSessionMenu>()?.IsOpen!=true;
+            bool gameplay=(session!=null?session.Phase==CoopPhase.Playing:region!=null&&region.Hero!=null)&&GetComponent<CoopInventoryHud>()?.IsOpen!=true&&GetComponent<CampaignSessionMenu>()?.IsOpen!=true&&GetComponent<RegionalSettingsMenu>()?.IsOpen!=true;
             // Menu/lobby frames must not make combat measurements look faster.
             if(!gameplay){count=index=0;refresh=0;panel.SetActive(false);return;}
             float dt=Time.unscaledDeltaTime;if(dt>0&&dt<1){frames[index]=dt*1000;index=(index+1)%frames.Length;count=Mathf.Min(count+1,frames.Length);}

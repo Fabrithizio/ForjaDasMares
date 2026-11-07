@@ -178,7 +178,7 @@ namespace ForjaDasMares.Networking
             Refresh();OpenItem();
         }
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
-        public void OpenInventory(){activeArea=1;Show(false);}
+        public void OpenInventory(){if(view!=null&&view.IsRegional)GetComponent<RegionalSettingsMenu>()?.Close();activeArea=1;Show(false);}
         public void OpenCharacter(){Show(false);NavigateProfile(0);}
         public void CloseInventory(){if(IsOpen)Close();}
         void Show(bool result)

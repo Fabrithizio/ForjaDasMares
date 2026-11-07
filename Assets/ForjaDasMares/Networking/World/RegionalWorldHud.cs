@@ -37,6 +37,7 @@ namespace ForjaDasMares.Networking
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
+            gameObject.AddComponent<RegionalSettingsMenu>().Build(root,world);
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
         }
         void BuildVitals(RectTransform root)
@@ -82,7 +83,7 @@ namespace ForjaDasMares.Networking
             var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
             if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.anchorMin=panel.anchorMax=panel.pivot=Top;panel.sizeDelta=new Vector2(450,124);panel.anchoredPosition=new Vector2(22,-118);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(418,108);}
         }
-        void OnInteract(InputAction.CallbackContext _)=>world.Interact();
+        void OnInteract(InputAction.CallbackContext _){if(!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
