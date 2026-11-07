@@ -744,3 +744,5 @@ Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 inst
 06/11/2026 — 0.31.1: bloqueios do inventário regional com motivos claros, avisos do perfil preservados, rodapé contextual e bônus percentual de velocidade de ataque. 40/40 PlayMode, Windows Succeeded/errors=0. Sem mapa novo, APK ou teste físico/online. Ver CLAREZA_INVENTARIO_0_31_1.md.
 
 07/11/2026 — 0.32.0, primeiro bloco de direção mágica: configurações reais no RPG, volumes/gráficos/FPS, correção Esc/interface, piso sem polígonos sobrepostos, bancos laterais, fonte em vez de console e nova grama. 51/51 testes; Windows Succeeded/errors=0. Sem APK. Ampliação da cidade e reformulação artística completa de itens/cenário continuam pendentes. Ver DIRECAO_MAGICA_0_32_0.md.
+
+0.33.0 — Refúgio 76 × 104, Jardim Norte navegável, visual futurista desativado, fonte separada do braseiro, grama mais leve e sombras de folhagem reduzidas. 29/29 PlayMode, Windows sem erros; sem APK. Ver JARDIM_NORTE_0_33_0.md.

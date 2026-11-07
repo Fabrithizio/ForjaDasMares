@@ -32,6 +32,6 @@ MonoBehaviour:
     position: {x: 24, y: 0, z: -21}
     color: {r: 0, g: 1, b: 1, a: 1}
   bounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 38, y: 15, z: 38}
+    m_Center: {x: 0, y: 0, z: 14}
+    m_Extent: {x: 38, y: 15, z: 52}
   activeEnemyLimit: 12

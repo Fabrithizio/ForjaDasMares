@@ -127,6 +127,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -182,6 +186,10 @@ PrefabInstance:
     - target: {fileID: 4958709520481595340, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_Name
       value: Flores_violetas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -508,8 +516,8 @@ Transform:
   m_GameObject: {fileID: 37206487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.2, z: 0}
-  m_LocalScale: {x: 76, y: 0.4, z: 76}
+  m_LocalPosition: {x: 0, y: -0.2, z: 14}
+  m_LocalScale: {x: 76, y: 0.4, z: 104}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1625895712}
@@ -1142,7 +1150,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c7e6c40d74fa4b4d98364de6e24d284, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatFeedback
   attack: {fileID: 60716047}
   weaponPivot: {fileID: 1063822325}
@@ -1157,7 +1165,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4dccb47610f05a4abafdc796c5e295b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.MeleeAttack
   motor: {fileID: 60716049}
   definition: {fileID: 11400000, guid: 9140d5ae65fecb146aa1d8d841e380ea, type: 2}
@@ -1178,7 +1186,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2740506b1be65454d814a367fc3f04ff, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PlayerAim
   motor: {fileID: 60716049}
   viewCamera: {fileID: 936252431}
@@ -1194,7 +1202,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a43075983c5ce454daf337fa6fdefd64, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PlayerMotor
   commandSource: {fileID: 60716050}
   cameraBasis: {fileID: 936252432}
@@ -1220,7 +1228,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 003dbd074c753cc4e89a8ed6a6a9722e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ArenaInput
   actions: {fileID: -944628639613478452, guid: 0713524035847ed4097988bd2b86ebbb, type: 3}
 --- !u!143 &60716051
@@ -1258,7 +1266,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25cb51678dbe00347a8bd8d522e082d8, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroCombat
   motor: {fileID: 60716049}
   health: {fileID: 60716053}
@@ -1284,7 +1292,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 100
   faction: 0
@@ -1300,7 +1308,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98d4d94da4d0da047aa4c381155a3e66, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroPresentation
   models:
   - {fileID: 2074112483}
@@ -1321,7 +1329,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82a994f431b411e4888c17f09994cf06, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroRoster
   heroes:
   - {fileID: 11400000, guid: 56c2cc8dcc7f2374ba769a282d3c0e7c, type: 2}
@@ -1341,6 +1349,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -1408,6 +1420,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1521,6 +1537,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -1588,6 +1608,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1728,7 +1752,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: Examinar estrutura antiga
   useDistance: 2.8
@@ -1742,7 +1766,7 @@ MonoBehaviour:
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "Tr\xEAs marcas ainda emitem luz. Sob os reparos de pedra
@@ -1779,6 +1803,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1047185068990865942, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2657365962040208237, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8244137241342386590, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
       propertyPath: m_Name
       value: Samambaia
@@ -1853,6 +1885,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -1903,6 +1939,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
@@ -2226,6 +2266,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -2297,6 +2341,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2540,7 +2588,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 655201cfac6648a69d6a8466dd4a4757, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalWorld
   definition: {fileID: 11400000, guid: c156e85c49cf5ae4084caaadca51bd23, type: 2}
   hero: {fileID: 60716055}
@@ -2572,7 +2620,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 298aecd4f963efd4797e514254c2c1dd, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalJourney
   world: {fileID: 140178805}
   definition: {fileID: 11400000, guid: 82f51eaeee9befa49a5f1356e9a7e1bb, type: 2}
@@ -2586,7 +2634,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 413cf3ec0588f654a9bd294ed6825028, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownHub
   world: {fileID: 140178805}
   arrivalPoints:
@@ -2604,7 +2652,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f81a800b3763e845a71bf277f31bd65, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalInventory
   catalog: {fileID: 11400000, guid: cd8c0a63bd87f074381abe8f09ace44a, type: 2}
   profileDirectory: CampaignProfiles-v1
@@ -3080,6 +3128,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -3144,6 +3196,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Arbusto_folhoso
       objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3154,6 +3210,115 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
   m_PrefabInstance: {fileID: 197436948}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &198939787
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_Name
+      value: Arvore_luminosa
+      objectReference: {fileID: 0}
+    - target: {fileID: 6440874858033407837, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -24
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 59
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 198939790}
+  m_SourcePrefab: {fileID: 100100000, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+--- !u!4 &198939788 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+  m_PrefabInstance: {fileID: 198939787}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &198939789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+  m_PrefabInstance: {fileID: 198939787}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &198939790
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198939789}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &199061408
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,7 +3370,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints: []
   leftLeg: {fileID: 2123330738}
@@ -3223,7 +3388,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Luma \xB7 Instrutora"
   useDistance: 2.4
@@ -3237,10 +3402,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!136 &199061412
@@ -3355,7 +3520,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207382122}
-  m_Mesh: {fileID: 4300000, guid: 04c947b319935864eb1a835afa99771a, type: 2}
+  m_Mesh: {fileID: 4300000, guid: 6a9c6e90c90454d47b47f412810324d7, type: 2}
 --- !u!1 &214610109
 GameObject:
   m_ObjectHideFlags: 0
@@ -3479,6 +3644,10 @@ PrefabInstance:
     - target: {fileID: 2126243880573780065, guid: efb20f66c3013ed4abd1081cd24f4a81, type: 3}
       propertyPath: m_Name
       value: Entrada_estacao_invadida
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126243880573780065, guid: efb20f66c3013ed4abd1081cd24f4a81, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5291224243495657917, guid: efb20f66c3013ed4abd1081cd24f4a81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3708,6 +3877,127 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 541165565303091473, guid: ffb945b56957c184399b659b42ec22e5, type: 3}
   m_PrefabInstance: {fileID: 220462090}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &223470730
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_Name
+      value: Arvore_copa_aberta
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_Size
+      value: 5.1422353
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 2.055039
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: 0.033952713
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 49
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 223470733}
+  m_SourcePrefab: {fileID: 100100000, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+--- !u!4 &223470731 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+  m_PrefabInstance: {fileID: 223470730}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &223470732 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+  m_PrefabInstance: {fileID: 223470730}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &223470733
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223470732}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &225566134
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,6 +4088,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225566134}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &229016723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 229016724}
+  - component: {fileID: 229016726}
+  - component: {fileID: 229016725}
+  m_Layer: 2
+  m_Name: AlamedaLeste
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &229016724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229016723}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10, y: -0.016, z: 33}
+  m_LocalScale: {x: 5, y: 0.065, z: 24}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &229016725
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229016723}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9cce98a523df57b43b96fa5f088e6836, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &229016726
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229016723}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &229717763
 GameObject:
   m_ObjectHideFlags: 0
@@ -3825,7 +4205,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55a54a3f4dd34854893640a6df0b5d4c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyPool
   definitions:
   - {fileID: 11400000, guid: 6e185a0e1b640e044bd80e7c97c766cf, type: 2}
@@ -4242,6 +4622,96 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
   m_PrefabInstance: {fileID: 251422962}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &265372697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 265372698}
+  - component: {fileID: 265372700}
+  - component: {fileID: 265372699}
+  m_Layer: 2
+  m_Name: AlamedaOeste
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &265372698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265372697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10, y: -0.016, z: 33}
+  m_LocalScale: {x: 5, y: 0.065, z: 24}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &265372699
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265372697}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: eca9937d857a3804aa17a40b050db56f, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &265372700
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265372697}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &269710136
 GameObject:
   m_ObjectHideFlags: 0
@@ -4550,6 +5020,10 @@ PrefabInstance:
     - target: {fileID: 684410537217329543, guid: d2864d850304a8d44934ee6362a8acad, type: 3}
       propertyPath: m_Name
       value: Raizes_na_maquina
+      objectReference: {fileID: 0}
+    - target: {fileID: 684410537217329543, guid: d2864d850304a8d44934ee6362a8acad, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8431320155285522837, guid: d2864d850304a8d44934ee6362a8acad, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4992,6 +5466,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -5047,6 +5525,10 @@ PrefabInstance:
     - target: {fileID: 4958709520481595340, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_Name
       value: Flores_violetas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5263,6 +5745,121 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 335374691}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &340659888
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_Name
+      value: Banco_de_madeira
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_Size
+      value: 1.8999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: -0.059761822
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 340659891}
+  m_SourcePrefab: {fileID: 100100000, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+--- !u!4 &340659889 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+  m_PrefabInstance: {fileID: 340659888}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &340659890 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+  m_PrefabInstance: {fileID: 340659888}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &340659891
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340659890}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.2, y: 0.8, z: 0.65}
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!1 &350217777
 GameObject:
   m_ObjectHideFlags: 0
@@ -5447,6 +6044,118 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
   m_PrefabInstance: {fileID: 366710037}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &377522237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 377522238}
+  - component: {fileID: 377522241}
+  - component: {fileID: 377522240}
+  - component: {fileID: 377522239}
+  m_Layer: 9
+  m_Name: JardimMuralhaLateral
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &377522238
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377522237}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -36, y: 1.5, z: 50}
+  m_LocalScale: {x: 1, y: 1, z: 0.38356164}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &377522239
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377522237}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9, y: 3, z: 73}
+  m_Center: {x: 0, y: 0.36250007, z: 0}
+--- !u!23 &377522240
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377522237}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: cfc7cdac43caef74386bf54d6d1f24dc, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &377522241
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377522237}
+  m_Mesh: {fileID: 4300000, guid: 69c7b4c71ba776d48b558a60b0bbb7f3, type: 2}
 --- !u!1 &386730842
 GameObject:
   m_ObjectHideFlags: 0
@@ -5790,6 +6499,100 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
   m_PrefabInstance: {fileID: 393867997}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &396152481
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 53
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Size
+      value: 2.590452
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: -0.030646324
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072723188862028196, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Name
+      value: Arbusto_florido
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+--- !u!4 &396152482 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+  m_PrefabInstance: {fileID: 396152481}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &400161646
 PrefabInstance:
@@ -6197,6 +7000,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1047185068990865942, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2657365962040208237, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8244137241342386590, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
       propertyPath: m_Name
       value: Samambaia
@@ -6538,6 +7349,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -6605,6 +7420,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6914,7 +7733,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -6929,7 +7748,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 461781655}
   body: {fileID: 1847431255}
@@ -6945,7 +7764,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 140
   faction: 0
@@ -7383,6 +8202,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -7438,6 +8261,10 @@ PrefabInstance:
     - target: {fileID: 4958709520481595340, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_Name
       value: Flores_violetas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7694,7 +8521,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints: []
   leftLeg: {fileID: 492033108}
@@ -7712,7 +8539,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Daro \xB7 Art\xEDfice"
   useDistance: 2.4
@@ -7726,10 +8553,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!136 &507509861
@@ -7905,7 +8732,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4dc834be7568e7a4883b76a63b508af5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownExitCue
   traveller: {fileID: 60716045}
   arrow: {fileID: 517369976}
@@ -7920,7 +8747,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Costa \xB7 seguir pela estrada"
   useDistance: 0.8
@@ -7934,10 +8761,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!65 &517369975
@@ -9311,6 +10138,100 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 596629853}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &606356743
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 53
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Size
+      value: 2.590452
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: -0.030646324
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072723188862028196, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Name
+      value: Arbusto_florido
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+--- !u!4 &606356744 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+  m_PrefabInstance: {fileID: 606356743}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &625999235
 GameObject:
   m_ObjectHideFlags: 0
@@ -9741,6 +10662,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -9796,6 +10721,10 @@ PrefabInstance:
     - target: {fileID: 4958709520481595340, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_Name
       value: Flores_violetas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10249,6 +11178,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -10320,6 +11253,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10676,6 +11613,100 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.6399992, y: 1.4499998, z: 0.2399983}
   m_Center: {x: 0, y: 0.7249999, z: 0}
+--- !u!1001 &733155337
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_Size
+      value: 2.1001966
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.x
+      value: -0.013456225
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 0.6269535
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: 0.005600691
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6747332014078744247, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_Name
+      value: Floreira_folhosa
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+--- !u!4 &733155338 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+  m_PrefabInstance: {fileID: 733155337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &735291826
 GameObject:
   m_ObjectHideFlags: 0
@@ -11158,7 +12189,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
   m_SerializedVersion: 0
   m_AgentTypeID: 0
@@ -11520,7 +12551,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints:
   - {x: -2, y: 0, z: 8}
@@ -11541,7 +12572,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Bento \xB7 Carregador"
   useDistance: 2.4
@@ -11555,7 +12586,7 @@ MonoBehaviour:
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "Morador: o sino voltou a reunir viajantes. H\xE1 rastros
@@ -11593,6 +12624,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -11649,6 +12684,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flores_violetas
       objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -11659,6 +12698,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
   m_PrefabInstance: {fileID: 791227650}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &792400994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 792400995}
+  m_Layer: 0
+  m_Name: JardimNorte
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &792400995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792400994}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 377522238}
+  - {fileID: 1027699077}
+  - {fileID: 265372698}
+  - {fileID: 229016724}
+  - {fileID: 1510878358}
+  - {fileID: 1053924978}
+  - {fileID: 223470731}
+  - {fileID: 198939788}
+  - {fileID: 340659889}
+  - {fileID: 733155338}
+  - {fileID: 606356744}
+  - {fileID: 1192952369}
+  - {fileID: 1208936855}
+  - {fileID: 957792724}
+  - {fileID: 1451666248}
+  - {fileID: 1864110288}
+  - {fileID: 396152482}
+  - {fileID: 1170560844}
+  m_Father: {fileID: 1625895712}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &804653638
 GameObject:
   m_ObjectHideFlags: 0
@@ -12412,6 +13500,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -12462,6 +13554,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
@@ -12564,6 +13660,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -12620,6 +13720,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flores_violetas
       objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12638,6 +13742,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -12690,6 +13798,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_Size
       value: 2.590452
@@ -12728,6 +13840,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -12795,6 +13911,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13325,7 +14445,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -13714,7 +14834,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e5063a69d768124d8edd0e3f99d4089, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ArenaCamera
   target: {fileID: 60716045}
   offset: {x: 7, y: 10, z: -7}
@@ -13753,7 +14873,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -13797,7 +14917,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3259978c4bce20b4e9ad5455818796f9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PresentationQuality
 --- !u!1001 &952072052
 PrefabInstance:
@@ -13998,6 +15118,115 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 953906523}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &957792723
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_Name
+      value: Arvore_luminosa
+      objectReference: {fileID: 0}
+    - target: {fileID: 6440874858033407837, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 59
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 957792726}
+  m_SourcePrefab: {fileID: 100100000, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+--- !u!4 &957792724 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8708281224960851169, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+  m_PrefabInstance: {fileID: 957792723}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &957792725 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 499004635208194573, guid: d89a3fbd0d274aa4b8f674fb9fc39295, type: 3}
+  m_PrefabInstance: {fileID: 957792723}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &957792726
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957792725}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &961871288
 GameObject:
   m_ObjectHideFlags: 0
@@ -14096,6 +15325,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -14159,6 +15392,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14687,6 +15924,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -14739,6 +15980,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LODs.Array.data[0].screenRelativeHeight
       value: 0.32
@@ -14788,7 +16033,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 100
   faction: 0
@@ -14804,7 +16049,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 1011635940}
   body: {fileID: 2140049195}
@@ -14860,7 +16105,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -15086,6 +16331,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -15136,6 +16385,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
@@ -15251,6 +16504,118 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.7100012, y: 1.1576318, z: 3.1070719}
   m_Center: {x: 0.00000023841858, y: 0.5811843, z: -0.7035353}
+--- !u!1 &1027699076
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1027699077}
+  - component: {fileID: 1027699080}
+  - component: {fileID: 1027699079}
+  - component: {fileID: 1027699078}
+  m_Layer: 9
+  m_Name: JardimMuralhaLateral
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1027699077
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027699076}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 36, y: 1.5, z: 50}
+  m_LocalScale: {x: 1, y: 1, z: 0.38356164}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1027699078
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027699076}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9, y: 3, z: 73}
+  m_Center: {x: 0, y: 0.36250007, z: 0}
+--- !u!23 &1027699079
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027699076}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: cfc7cdac43caef74386bf54d6d1f24dc, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1027699080
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027699076}
+  m_Mesh: {fileID: 4300000, guid: de1e8e8a71af13447b976e28ff3f820d, type: 2}
 --- !u!1 &1044966116
 GameObject:
   m_ObjectHideFlags: 0
@@ -15439,7 +16804,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 10000
   faction: 0
@@ -15522,6 +16887,96 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1046897087}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1053924977
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1053924978}
+  - component: {fileID: 1053924980}
+  - component: {fileID: 1053924979}
+  m_Layer: 2
+  m_Name: PasseioJardim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1053924978
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053924977}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.016, z: 58}
+  m_LocalScale: {x: 28, y: 0.065, z: 5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1053924979
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053924977}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: c207a94e72d08d749953bfb4399043e7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1053924980
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053924977}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1054910503
 GameObject:
@@ -15621,6 +17076,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -15677,6 +17136,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flores_violetas
       objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15695,6 +17158,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -15754,6 +17221,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -15993,6 +17464,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1047185068990865942, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2657365962040208237, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8244137241342386590, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
       propertyPath: m_Name
       value: Samambaia
@@ -16424,7 +17903,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
   m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
@@ -16455,7 +17934,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 0
@@ -16980,6 +18459,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1160770006}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1170560843
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 56
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalReferencePoint.x
+      value: 0.014370203
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072723188862028196, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Name
+      value: Arbusto_florido
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+--- !u!4 &1170560844 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+  m_PrefabInstance: {fileID: 1170560843}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1176649276
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16988,6 +18557,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -17038,6 +18611,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
@@ -17612,7 +19189,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Expedi\xE7\xF5es \xB7 abrir desafios em grupo"
   useDistance: 3
@@ -17626,10 +19203,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!65 &1192344825
@@ -17653,6 +19230,96 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.25, y: 1.8, z: 0.20600027}
   m_Center: {x: -0.2500006, y: 0.9, z: 0.012999684}
+--- !u!1001 &1192952368
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 56
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LocalReferencePoint.x
+      value: 0.014367223
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072723188862028196, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_Name
+      value: Arbusto_florido
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+--- !u!4 &1192952369 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+  m_PrefabInstance: {fileID: 1192952368}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1199270997
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17949,6 +19616,127 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0999995, y: 2.5999997, z: 0.60000056}
   m_Center: {x: -0.2999999, y: 1.2999998, z: 0}
+--- !u!1001 &1208936854
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_Name
+      value: Arvore_copa_aberta
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_Size
+      value: 5.1422353
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 2.055039
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: 0.033952713
+      objectReference: {fileID: 0}
+    - target: {fileID: 994622443598816372, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 49
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1208936857}
+  m_SourcePrefab: {fileID: 100100000, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+--- !u!4 &1208936855 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6409906432224085892, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+  m_PrefabInstance: {fileID: 1208936854}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1208936856 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 269588229014578190, guid: c676d6c9d40580843a6511afe92b4e33, type: 3}
+  m_PrefabInstance: {fileID: 1208936854}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &1208936857
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208936856}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.45
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1226990431
 GameObject:
   m_ObjectHideFlags: 0
@@ -18268,7 +20056,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: Descansar na fonte
   useDistance: 3
@@ -18282,10 +20070,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1231567839
@@ -18298,7 +20086,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9b13cf16f7027a4db5ee44ab5514d5c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.WorldInteractionFeedback
   target: {fileID: 1231567838}
   movingPart: {fileID: 2126552689}
@@ -19410,7 +21198,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints:
   - {x: 8, y: 0, z: 8}
@@ -19431,7 +21219,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Sia \xB7 Viajante"
   useDistance: 2.4
@@ -19445,7 +21233,7 @@ MonoBehaviour:
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "Morador: o sino voltou a reunir viajantes. H\xE1 rastros
@@ -19847,7 +21635,7 @@ Transform:
   m_GameObject: {fileID: 1378022297}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 36}
+  m_LocalPosition: {x: 0, y: 1.5, z: 64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20346,7 +22134,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 1398791425}
   body: {fileID: 2041000957}
@@ -20362,7 +22150,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 150
   faction: 1
@@ -20621,7 +22409,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a16fa55c82c7044aad50292257cd82d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatEffectPool
   material: {fileID: 2100000, guid: 145bf6acecd879e44a08fc7d10d09ebb, type: 2}
   projectileTrailMaterial: {fileID: 2100000, guid: 216bea98382e3794c8bd4dd056fa875c, type: 2}
@@ -20652,6 +22440,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1047185068990865942, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2657365962040208237, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8244137241342386590, guid: e65c608ecdde6b24391ea1677d0bd9ed, type: 3}
       propertyPath: m_Name
       value: Samambaia
@@ -20906,6 +22702,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 2140379269305498224, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2531824028219551017, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2
@@ -20961,6 +22761,10 @@ PrefabInstance:
     - target: {fileID: 4958709520481595340, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
       propertyPath: m_Name
       value: Flores_violetas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529479224470385762, guid: 172e2d390ee0e8046aa79e13364f020c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21268,6 +23072,121 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5.9, y: 3.3, z: 4.8}
   m_Center: {x: 0, y: 1.65, z: 0}
+--- !u!1001 &1451666247
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_Name
+      value: Banco_de_madeira
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_Size
+      value: 1.8999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: -0.059761822
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571839394857372155, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1451666250}
+  m_SourcePrefab: {fileID: 100100000, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+--- !u!4 &1451666248 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8388125285115974889, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+  m_PrefabInstance: {fileID: 1451666247}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1451666249 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3003291964390486038, guid: 7631cdd78bc76bd48bb10b8936555d6c, type: 3}
+  m_PrefabInstance: {fileID: 1451666247}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1451666250
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1451666249}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.2, y: 0.8, z: 0.65}
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!1001 &1460457126
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21504,7 +23423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3842906201697175486, guid: 9733b2b8cc5ad0c42829d673343e959e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 12
+      value: 49
       objectReference: {fileID: 0}
     - target: {fileID: 3842906201697175486, guid: 9733b2b8cc5ad0c42829d673343e959e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -22024,7 +23943,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints: []
   leftLeg: {fileID: 1491219461}
@@ -22042,7 +23961,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Iria \xB7 Guardi\xE3 da fonte"
   useDistance: 2.4
@@ -22056,10 +23975,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!136 &1504960137
@@ -22093,6 +24012,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -22145,6 +24068,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_Size
       value: 2.5904527
@@ -22171,6 +24098,96 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
   m_PrefabInstance: {fileID: 1509558497}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1510878357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1510878358}
+  - component: {fileID: 1510878360}
+  - component: {fileID: 1510878359}
+  m_Layer: 2
+  m_Name: PracaJardim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1510878358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510878357}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.016, z: 49}
+  m_LocalScale: {x: 33, y: 0.065, z: 8}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 792400995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1510878359
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510878357}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8df4d711104d3594d9b1ad80d4efbcea, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1510878360
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510878357}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &1512996935
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22640,7 +24657,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4030f1a4b8ef27e44a47d741ae63ab44, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownActivitySpace
   spaceId: expansao-leste
   kind: 2
@@ -22653,6 +24670,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -22703,6 +24724,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
@@ -22859,7 +24884,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4030f1a4b8ef27e44a47d741ae63ab44, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownActivitySpace
   spaceId: moradores-praca-sul
   kind: 1
@@ -22872,6 +24897,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -22935,6 +24964,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -23063,7 +25096,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
   priority: 2
@@ -23562,6 +25595,7 @@ Transform:
   - {fileID: 747589091}
   - {fileID: 181186642}
   - {fileID: 1481360595}
+  - {fileID: 792400995}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1627459509
@@ -23615,7 +25649,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints:
   - {x: -12, y: 0, z: 8}
@@ -23636,7 +25670,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Ari \xB7 Mensageiro"
   useDistance: 2.4
@@ -23650,7 +25684,7 @@ MonoBehaviour:
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "Morador: o sino voltou a reunir viajantes. H\xE1 rastros
@@ -24727,6 +26761,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -24798,6 +26836,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25270,6 +27312,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -25333,6 +27379,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25546,6 +27596,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -25598,6 +27652,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalReferencePoint.z
       value: -0.030642986
@@ -25647,7 +27705,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a3101c4a16a48698fc0ba7104096f65, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalWorldHud
   world: {fileID: 140178805}
 --- !u!224 &1823962443
@@ -25799,6 +27857,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -25862,6 +27924,10 @@ PrefabInstance:
     - target: {fileID: 5780269051490367340, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_Name
       value: Arbusto_folhoso
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -26067,7 +28133,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints: []
   leftLeg: {fileID: 13728040}
@@ -26085,7 +28151,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 T\xE9o \xB7 Mercador"
   useDistance: 2.4
@@ -26099,7 +28165,7 @@ MonoBehaviour:
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "T\xE9o: prepare seu equipamento antes de sair. Minha
@@ -26219,6 +28285,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857276717}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1864110287
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 792400995}
+    m_Modifications:
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.x
+      value: -0.013457775
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 0.6269535
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: 0.005600691
+      objectReference: {fileID: 0}
+    - target: {fileID: 117365090483954944, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6747332014078744247, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+      propertyPath: m_Name
+      value: Floreira_folhosa
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+--- !u!4 &1864110288 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2569390364124317290, guid: d3e44d472c8ae294598968d90476ea33, type: 3}
+  m_PrefabInstance: {fileID: 1864110287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1864523643
 GameObject:
   m_ObjectHideFlags: 0
@@ -26928,7 +29084,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4030f1a4b8ef27e44a47d741ae63ab44, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownActivitySpace
   spaceId: eventos-praca-oeste
   kind: 0
@@ -26978,7 +29134,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Seguir pela estrada \xB7 Costa"
   useDistance: 2.2
@@ -26992,10 +29148,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1899828292
@@ -27008,7 +29164,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f609d8480fe2fd64e989a544a5d91b7d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownRoadPassage
   hub: {fileID: 140178808}
   traveller: {fileID: 60716045}
@@ -27207,7 +29363,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f0df448a4789214db2c75fdf7742498, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TelegraphPool
   circleMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   lineMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
@@ -27675,7 +29831,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 706aa491f217deb4c87032a516859b14, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.TownResident
   waypoints: []
   leftLeg: {fileID: 1054910504}
@@ -27693,7 +29849,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdb90bf4e155a4443bb9b85a3052dc48, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.WorldClickTarget
   label: "Conversar \xB7 Nara \xB7 Cart\xF3grafa"
   useDistance: 2.4
@@ -27707,10 +29863,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!136 &1957431035
@@ -28735,6 +30891,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 1400585486473425370, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2558545232439592081, guid: dae71d40473f237498651385f012a704, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.25
@@ -28807,6 +30967,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Arbusto_folhoso
       objectReference: {fileID: 0}
+    - target: {fileID: 7477816818003914017, guid: dae71d40473f237498651385f012a704, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28864,7 +31028,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -28879,7 +31043,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 2067434485}
   body: {fileID: 132349642}
@@ -28895,7 +31059,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 140
   faction: 0
@@ -29744,6 +31908,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1404405927}
     m_Modifications:
+    - target: {fileID: 589591428389964682, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -29794,6 +31962,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367022283857675761, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412560039091709652, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946453782603105512, guid: e5e2d5e6cfff7cf43be64bf7313cfa1a, type: 3}
