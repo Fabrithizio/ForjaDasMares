@@ -8,7 +8,7 @@ namespace ForjaDasMares.Networking
     {
         [SerializeField]RegionalWorld world;
         [SerializeField]Vector3[] arrivalPoints;
-        public string Notice {get;private set;}="Bem-vindo ao Refúgio do Último Sino. Clique nos moradores para conversar.";
+        public string Notice {get;private set;}="Fale com Nara para conhecer o Refúgio. Clique nela ou use F quando estiver perto.";
         public Vector3[] ArrivalPoints=>arrivalPoints;
         WorldClickTarget[] targets;
         bool travelling;
@@ -33,11 +33,23 @@ namespace ForjaDasMares.Networking
         }
         public bool TryInteractNearest(){var nearest=NearestInteraction;return nearest!=null&&nearest.TryUse(world.Hero.transform);}
         public string Hint {get{var nearest=NearestInteraction;return nearest!=null?"F · "+nearest.Label:world.RefugeDistance<5?"F · Descansar no refúgio":"";}}
-        public void TalkStory(){world.Journey.Interact();Notice=world.Journey.Notice;}
+        public void TalkStory()
+        {
+            var journey=world.Journey;
+            int index=journey.NearestPoint();
+            if(!journey.Accepted&&index>=0&&journey.Definition.points[index].interaction==RegionalInteraction.Cartographer)journey.Offer();
+            else journey.Interact();
+            Notice=journey.Notice;
+        }
+        public void AcceptStoryOffer()
+        {
+            world.Journey.AcceptOffer();
+            Notice=world.Journey.Notice;
+        }
         public void Rest(){world.Hero.Health.Restore();Notice="Fonte das Marés: vida restaurada.";}
         public void Mentor(){world.Hero.Select((world.Hero.Selected+1)%world.Hero.Count);Notice="Instrutora: agora você está com "+world.Hero.Current.displayName+". Experimente a área de treino.";}
         public void Explore()=>BeginTravel("CostaAto1");
-        public void OpenExpeditions()=>BeginTravel("CampaignCoop");
+        public void OpenExpeditions(){if(travelling||!world.Hero.Health.IsAlive)return;CampaignHome.EnterExpeditionRoutes=true;BeginTravel("CampaignCoop");}
         void BeginTravel(string scene)
         {
             if(travelling || world==null || !world.Hero.Health.IsAlive) return;

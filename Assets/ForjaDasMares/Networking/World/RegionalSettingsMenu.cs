@@ -31,14 +31,14 @@ namespace ForjaDasMares.Networking
             quality=qualityButton.GetComponentInChildren<Text>();
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · E: habilidade · Espaço: esquiva · F: interagir",30,500,880,17).rectTransform.sizeDelta=new Vector2(880,70);
-            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
+            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
         }
         void ChangeVolume(int i,float step)
         {
             float value=Mathf.Clamp01(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)+step);PlayerPrefs.SetFloat(keys[i],value);PlayerPrefs.Save();if(i==0)AudioListener.volume=value;Refresh();
         }
         void Refresh(){for(int i=0;i<4;i++)values[i].text=Mathf.RoundToInt(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)*100)+"%";quality.text="GRÁFICOS · "+PresentationQuality.ModeName(PresentationQuality.Selected);}
-        public void Open(){if(overlay==null)return;GetComponent<CoopInventoryHud>()?.CloseInventory();overlay.SetActive(true);overlay.transform.SetAsLastSibling();SetBlocked(true);Refresh();}
+        public void Open(){if(overlay==null)return;GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<CoopInventoryHud>()?.CloseInventory();overlay.SetActive(true);overlay.transform.SetAsLastSibling();SetBlocked(true);Refresh();}
         public void Close(){if(overlay==null)return;overlay.SetActive(false);SetBlocked(false);}
         void SetBlocked(bool blocked){if(world==null||world.Hero==null)return;world.Hero.GetComponent<ArenaInput>().BlockCommands(blocked);world.Hero.GetComponent<PlayerMotor>().StopWalking();}
         void Update(){if(!requested)return;requested=false;if(closeInventory){closeInventory=false;GetComponent<CoopInventoryHud>()?.CloseInventory();return;}if(IsOpen)Close();else if(GetComponent<CoopInventoryHud>()?.IsOpen!=true)Open();}

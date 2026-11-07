@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Story
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionStoryDefinition
   questId: sino-ato1-v1
-  title: "O sino que n\xE3o responde"
+  title: Rastros da Distorção
   requiredClues: 2
   interactionDistance: 3
   points:

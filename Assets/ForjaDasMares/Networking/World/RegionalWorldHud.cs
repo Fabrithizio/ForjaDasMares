@@ -16,15 +16,15 @@ namespace ForjaDasMares.Networking
             var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;gameObject.AddComponent<GraphicRaycaster>();
             var scale=gameObject.AddComponent<CanvasScaler>();scale.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scale.referenceResolution=new Vector2(1280,720);scale.matchWidthOrHeight=.5f;
             var root=RusticHudTheme.Rect(transform,"RegionSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);root.anchorMax=Vector2.one;root.offsetMin=root.offsetMax=Vector2.zero;
-            town=world.GetComponent<TownHub>();BuildVitals(root);
+            town=world.GetComponent<TownHub>();BuildVitals(root);if(world.Journey!=null)BuildJournal(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
             var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
-            Label(root,"MapLegend",new Vector2(1060,-403),new Vector2(200,42),"Branco: você · verde: refúgio\nLaranja: patrulhas · azul: portal",11);
+            mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,-403),new Vector2(200,42),"Branco: você · verde: refúgio\nLaranja: patrulhas · azul: portal",11).gameObject;
             RusticHudTheme.Button(root,"ReturnToMenu",new Vector2(1,1),new Vector2(-20,-20),new Vector2(210,42),"VOLTAR AO MENU",world.ReturnToCampaign);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
-            Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir · R: refúgio",13);
+            desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir · R: refúgio",13).gameObject;
             Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).color=RusticHudTheme.Muted;
             if(world.Journey!=null)
             {
@@ -39,6 +39,54 @@ namespace ForjaDasMares.Networking
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
             gameObject.AddComponent<RegionalSettingsMenu>().Build(root,world);
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
+        }
+        GameObject journalPanel;
+        Text journalText; GameObject mapPanel,mapLegend,desktopLegend; public bool JournalOpen=>journalPanel!=null&&journalPanel.activeSelf;
+        Button acceptMission;
+        void BuildJournal(RectTransform root)
+        {
+            RusticHudTheme.Button(root,"OpenJournal",new Vector2(1,1),new Vector2(-420,-20),new Vector2(170,42),"MISSÕES",()=>
+            {
+                if(JournalOpen){CloseJournal();return;} journalPanel.SetActive(true);var input=world.Hero.GetComponent<ArenaInput>();input.BlockCommands(true);world.Hero.GetComponent<PlayerMotor>().StopWalking();
+                journalPanel.transform.SetAsLastSibling();
+                RefreshJournal();
+            });
+            var full=RusticHudTheme.Rect(root,"MissionJournal",Vector2.zero,Vector2.zero,Vector2.zero);
+            full.anchorMax=Vector2.one;
+            full.offsetMin=full.offsetMax=Vector2.zero;
+            full.gameObject.AddComponent<Image>().color=new Color(.015f,.025f,.02f,.9f);
+            journalPanel=full.gameObject;
+            var panel=RusticHudTheme.Rect(full,"JournalPanel",Vector2.one*.5f,Vector2.zero,new Vector2(760,460));
+            RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
+            Label(panel,"JournalTitle",new Vector2(28,-20),new Vector2(520,44),"DIÁRIO DE MISSÕES",27);
+            journalText=Label(panel,"JournalEntries",new Vector2(28,-80),new Vector2(690,260),"",21);
+            acceptMission=RusticHudTheme.Button(panel,"AcceptMission",Top,new Vector2(28,-375),new Vector2(300,48),"ACEITAR INVESTIGAÇÃO",()=>
+            {
+                if(town!=null)town.AcceptStoryOffer();else world.Journey.AcceptOffer();
+                RefreshJournal();
+            });
+            RusticHudTheme.Button(panel,"CloseJournal",Top,new Vector2(490,-375),new Vector2(235,48),"VOLTAR",CloseJournal);
+            journalPanel.SetActive(false);
+        }
+        public void CloseJournal()
+        {
+            if(!JournalOpen)return;
+            journalPanel.SetActive(false);
+            world.Hero.GetComponent<ArenaInput>().BlockCommands(false);
+        }
+        void RefreshJournal()
+        {
+            if(journalPanel==null||!journalPanel.activeSelf)return;
+            var journey=world.Journey;
+            acceptMission.gameObject.SetActive(journey.Offered&&!journey.Accepted);
+            string progress=journey.ClueCount+" / "+journey.Definition.requiredClues+" pistas";
+            journalText.text=journey.Completed
+                ?"HISTÓRICO\n"+journey.Definition.title+" · Concluída\n"+progress+" registradas\nObtido: 1 Fragmento de Memória\n\nEM ANDAMENTO\nNenhuma missão aceita."
+                :journey.Accepted
+                    ?"EM ANDAMENTO\n"+journey.Definition.title+"\n"+journey.Objective+"\n"+progress+" registradas\n\nHISTÓRICO\nNenhuma missão concluída."
+                    :journey.Offered
+                        ?"DISPONÍVEL · Investigação de Nara\nDescubra o que aconteceu nos caminhos fora da proteção do Refúgio.\n\nNenhuma missão aceita."
+                        :"Nenhuma missão aceita. Converse com Nara no Refúgio.\n\nHISTÓRICO\nNenhuma missão concluída.";
         }
         void BuildVitals(RectTransform root)
         {
@@ -83,7 +131,7 @@ namespace ForjaDasMares.Networking
             var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
             if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.anchorMin=panel.anchorMax=panel.pivot=Top;panel.sizeDelta=new Vector2(450,124);panel.anchoredPosition=new Vector2(22,-118);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(418,108);}
         }
-        void OnInteract(InputAction.CallbackContext _){if(!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
+        void OnInteract(InputAction.CallbackContext _){if((journalPanel==null||!journalPanel.activeSelf)&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
@@ -96,7 +144,7 @@ namespace ForjaDasMares.Networking
             objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice;}
-            if(town!=null){if(storyNotice!=null)storyNotice.text=town.Notice;hint.text=town.Hint;}
+            if(town!=null){if(storyNotice!=null)storyNotice.text=town.Notice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(established&&!Application.isMobilePlatform);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(world.Journey.Accepted&&!world.Journey.Completed);RefreshJournal();}
             if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
         }
         void OnDestroy(){if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}

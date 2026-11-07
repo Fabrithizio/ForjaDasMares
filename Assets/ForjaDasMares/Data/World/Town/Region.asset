@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionDefinition
   regionId: refugio-ultimo-sino
   displayName: "Ref\xFAgio do \xDAltimo Sino \xB7 Cidade segura"
-  refuge: {x: 0, y: 0.16, z: 0}
+  refuge: {x: 0, y: 0.16, z: -9}
   portal: {x: 0, y: 0.08, z: -31}
   route:
   - {x: 0, y: 0, z: 0}

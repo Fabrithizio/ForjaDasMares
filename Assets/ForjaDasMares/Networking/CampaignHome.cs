@@ -9,7 +9,7 @@ namespace ForjaDasMares.Networking
     {
         [Serializable] public sealed class Invitation { public string name,code; }
         [Serializable] public sealed class Invitations { public List<Invitation> entries=new List<Invitation>(); }
-        const string InviteKey="CampaignInvitations-v1",VolumeKey="CampaignMasterVolume";
+        internal static bool EnterExpeditionRoutes; const string InviteKey="CampaignInvitations-v1",VolumeKey="CampaignMasterVolume";
         Invitations saved=new Invitations();CoopDirector director;CoopCloud cloud;Action play;
         GameObject main,friends,options,confirm;Text notice;InputField alias,code;Button[] entries=new Button[6];
         public void Build(RectTransform parent,CoopDirector owner,Action campaign,Action profile)
@@ -21,19 +21,16 @@ namespace ForjaDasMares.Networking
             MenuArtwork.Fill(parent,"HomeKeyArt","MenuArt/RoutesBackdrop",Color.white);
             main=Page(parent,"Home");friends=Page(parent,"Friends");options=Page(parent,"Options");confirm=Page(parent,"ConfirmExit");
             Label(main,"FORJA\nDAS MARÉS",64,62,640,155,62);
-            Label(main,"AS ROTAS DA MARÉ",68,220,550,38,21).color=RusticHudTheme.Gold;
-            Label(main,"Sua próxima expedição começa aqui.",68,264,550,40,19);
-            var primary=Button(main,"Campaign",65,330,470,"JOGAR · CAMPANHA",()=>play());primary.GetComponent<RoundedHudGraphic>().borderColor=RusticHudTheme.Gold;
+            Label(main,"O MUNDO ALÉM DO REFÚGIO",68,220,550,38,21).color=RusticHudTheme.Gold;
+            Label(main,"Comece sua jornada no Refúgio.",68,264,550,40,19);
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
-            Button(main,"RegionalWorld",760,549,460,"EXPLORAR MUNDO · PROTÓTIPO LOCAL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CostaDasRuinas");});
-            Button(main,"ActOne",760,403,460,"ENTRAR NA CIDADE · REFÚGIO DO SINO",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");});
-            Button(main,"CatacombPreview",760,476,460,"CATACUMBAS · PRÉVIA JOGÁVEL",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("CatacumbasDasMares");});
+            Button(main,"ActOne",65,330,470,"JOGAR RPG",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");});
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
             Button(main,"Quit",310,549,225,"SAIR",()=>Show(confirm));
-            Label(main,"1–4 jogadores · PC e Android\nEscolha a fase e entre solo ou com seu grupo.",68,625,630,60,17);
+            Label(main,"A jornada começa na cidade segura.",68,625,630,60,17);
             var badge=RusticHudTheme.Rect(main.transform,"VersionCard",new Vector2(1,0),new Vector2(-40,40),new Vector2(310,65));RusticHudTheme.Panel(badge,new Color(.025f,.05f,.055f,.85f),16);
-            RusticHudTheme.Label(badge,"Version",Vector2.one*.5f,Vector2.zero,new Vector2(280,60),"EXPEDIÇÕES COOPERATIVAS\nVersão de testes "+Application.version,17,TextAnchor.MiddleCenter);
+            RusticHudTheme.Label(badge,"Version",Vector2.one*.5f,Vector2.zero,new Vector2(280,60),"Versão "+Application.version,17,TextAnchor.MiddleCenter);
             Label(friends,"AMIGOS E CONVITES",40,30,1100,65,32);
             Label(friends,"Agenda neste aparelho: guarde o nome e o código que seu amigo compartilhar.\nCódigos expiram quando o host encerra a sala. Sem presença online ou contas de amigos ainda.",40,100,1180,70,18);
             alias=Field(friends,"FriendName",40,195,330,"Nome do amigo",24);code=Field(friends,"FriendCode",390,195,240,"Código da sala",12);
@@ -53,7 +50,7 @@ namespace ForjaDasMares.Networking
             Button(options,"Back",50,620,500,"VOLTAR AO INÍCIO",()=>Show(main));
             Label(confirm,"ENCERRAR O JOGO?",150,220,1000,100,36);
             Button(confirm,"Cancel",150,400,430,"CONTINUAR AQUI",()=>Show(main));Button(confirm,"Confirm",690,400,430,"ENCERRAR",Application.Quit);
-            Show(main);
+            Show(main); if(EnterExpeditionRoutes){EnterExpeditionRoutes=false;play();}
         }
         Text volume;
         void RefreshAudioLabels()
