@@ -37,6 +37,7 @@ namespace ForjaDasMares.Networking
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
+            var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
         }
         void BuildVitals(RectTransform root)
         {
@@ -90,7 +91,7 @@ namespace ForjaDasMares.Networking
             var hero=world.Hero;life.text=hero.Current.displayName;
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
-            portrait.Refresh(hero.GetComponent<HeroPresentation>(),previewProfile,hero.Current.heroId);
+            portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);
             objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice;}

@@ -1,0 +1,11 @@
+{
+  "version": "0.31.0",
+  "passed": 38,
+  "windowsBuild": "Succeeded",
+  "windowsErrors": 0,
+  "liveMultiplayerTest": false,
+  "failed": 0,
+  "androidBuild": false,
+  "tests": 38,
+  "physicalAndroidTest": false
+}

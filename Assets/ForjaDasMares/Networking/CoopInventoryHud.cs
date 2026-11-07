@@ -6,9 +6,10 @@ namespace ForjaDasMares.Networking
     [DefaultExecutionOrder(260)] public sealed partial class CoopInventoryHud : MonoBehaviour
     {
         [SerializeField] CoopDirector director;
-        CoopProfileChannel channel; Font font; GameObject overlay; Text detail, header, notice;
+        InventorySessionView view;RegionalInventory regional;RectTransform regionalRoot;
+        InventoryProfileView channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[16]; Button equip, remove, discard;
-        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;InventoryComparisonView visualComparison;bool touchLayout;int PageSize=>touchLayout?4:director.Campaign!=null?16:8;
+        Image inspectedIcon,comparedIcon;CampaignCharacterSheet sheet;GameObject itemPopup;Text ownDetails,otherDetails,itemNotice;string compared;Button compareButton;Text comparisonSummary,comparisonHeading;InventoryComparisonView visualComparison;bool touchLayout;int PageSize=>touchLayout?4:view.FullLayout?16:8;
         ScrollRect resultScroll;Text resultText;RectTransform resultContent;
         RectTransform detailViewport;
         Button inventoryButton,resultButton,stockView,previous,next,closeButton;bool deliveries,expeditionView;Button expeditionButton;readonly Image[] icons=new Image[16];
@@ -22,7 +23,7 @@ namespace ForjaDasMares.Networking
         readonly Text[] rowBadges=new Text[16];
         System.Comparison<ItemInstance> itemOrder;
         bool management;int category=-1;bool classOnly=true;
-        CoopActor ActiveActor=>director.Actor(director.LocalSlot>=0?director.LocalSlot:0);
+        InventoryHeroView ActiveActor=>view.Actor(view.LocalSlot>=0?view.LocalSlot:0);
         readonly System.Collections.Generic.List<ItemInstance> filtered=new System.Collections.Generic.List<ItemInstance>();
         System.Collections.Generic.List<ItemInstance> CurrentItems=>filtered;
         void FilterItems()
@@ -36,26 +37,29 @@ namespace ForjaDasMares.Networking
         {
             get
             {
+                if(view.IsRegional)return channel.CanManageLocal;
                 if (channel.HomeMode) return true;
-                if (director.LocalSlot < 0) return false;
-                if (director.Manager.IsServer) return channel.CanManageLocal;
+                if (view.LocalSlot < 0) return false;
+                if (view.Manager.IsServer) return channel.CanManageLocal;
                 var actor = ActiveActor;
                 if (actor == null) return false;
-                if (director.Phase == CoopPhase.Lobby) return true;
+                if (view.Phase == CoopPhase.Lobby) return true;
                 // Replicas cannot predict every host-owned effect. The host validates again
                 // and returns its reason if an effect is still active when the request arrives.
-                return actor.Health.IsAlive && director.Phase != CoopPhase.Loading && director.Phase != CoopPhase.Connecting
-                    && (director.EncounterStatus != EncounterState.Spawning && director.EncounterStatus != EncounterState.Fighting
-                        || director.Dungeon.OpenLandscape && !director.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position, 12));
+                return actor.Health.IsAlive && view.Phase != CoopPhase.Loading && view.Phase != CoopPhase.Connecting
+                    && (view.EncounterStatus != EncounterState.Spawning && view.EncounterStatus != EncounterState.Fighting
+                        || view.Dungeon.OpenLandscape && !view.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position, 12));
             }
         }
         int page, revision = -1,lastHero=-1; string selected, pendingDiscard; bool results;
         public void Configure(CoopDirector session) => director = session;
+        public void Configure(RegionalInventory local,RectTransform root){regional=local;regionalRoot=root;}
         void Start()
         {
             itemOrder=CompareInventoryItems;
-            channel = director.GetComponent<CoopProfileChannel>(); font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            var parent = GetComponent<CoopHud>().SafeRoot;
+            view=regional!=null?new InventorySessionView(regional):new InventorySessionView(director);
+            channel = view.Profiles; font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var parent = regionalRoot!=null?regionalRoot:GetComponent<CoopHud>().SafeRoot;
             inventoryButton=TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
             resultButton=TopRight(parent, "RESULTADO", -171, () => Show(true));
             overlay = new GameObject("CoopInventory", typeof(RectTransform), typeof(Image)); overlay.transform.SetParent(parent, false);
@@ -71,8 +75,9 @@ namespace ForjaDasMares.Networking
             remove = Button(overlay.transform, "DESEQUIPAR", new Vector2(825, -535), new Vector2(185, 48), Unequip);
             discard = Button(overlay.transform, "DESCARTAR", new Vector2(1030, -535), new Vector2(185, 48), Discard);
             notice = Label(overlay.transform, "", new Vector2(30, -620), new Vector2(1180, 75), 18);
-            if(director.Campaign!=null){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();else BuildTouchInventory();}
+            if(view.FullLayout){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();else BuildTouchInventory();}
             overlay.SetActive(false);
+            if(view.IsRegional)BuildRegionalKeys();
         }
         void BuildPaperDoll()
         {
@@ -96,7 +101,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<6;i++){int slot=i-1;var tab=categoryTabs[i]=Button(overlay.transform,categories[i],new Vector2(30+i*79,-80),new Vector2(75,34),()=>{category=slot;page=0;selected=null;Refresh();});RusticHudTheme.Skin(tab);tab.GetComponentInChildren<Text>().fontSize=10;}
             classFilter=Button(overlay.transform,"FILTRO DE CLASSE",new Vector2(30,-48),new Vector2(240,26),()=>{classOnly=!classOnly;page=0;selected=null;Refresh();});RusticHudTheme.Skin(classFilter);classFilter.GetComponentInChildren<Text>().fontSize=12;
             profileSource=Button(overlay.transform,"PERFIL",new Vector2(560,-58),new Vector2(640,28),()=>{channel.Hub.Toggle();selected=null;page=0;Refresh();});RusticHudTheme.Skin(profileSource);profileSource.GetComponentInChildren<Text>().fontSize=14;
-            heroChoice=Button(overlay.transform,"TROCAR HERÓI",new Vector2(820,-20),new Vector2(240,34),()=>{director.SelectHero((director.SelectedHero+1)%director.HeroCount);selected=null;Refresh();});RusticHudTheme.Skin(heroChoice);heroChoice.GetComponentInChildren<Text>().fontSize=13;
+            heroChoice=Button(overlay.transform,"TROCAR HERÓI",new Vector2(820,-20),new Vector2(240,34),()=>{view.SelectHero((view.SelectedHero+1)%view.HeroCount);selected=null;Refresh();});RusticHudTheme.Skin(heroChoice);heroChoice.GetComponentInChildren<Text>().fontSize=13;
             expeditionButton=Button(overlay.transform,"SAQUE",new Vector2(200,-555),new Vector2(160,42),()=>SelectSource(1));expeditionButton.name="ExpeditionSource";RusticHudTheme.Skin(expeditionButton);
             previous.GetComponent<RectTransform>().anchoredPosition=new Vector2(30,-610);previous.GetComponent<RectTransform>().sizeDelta=new Vector2(120,42);
             next.GetComponent<RectTransform>().anchoredPosition=new Vector2(410,-610);next.GetComponent<RectTransform>().sizeDelta=new Vector2(120,42);
@@ -131,7 +136,7 @@ namespace ForjaDasMares.Networking
         }
         void BuildItemPopup()
         {
-            sheet=overlay.AddComponent<CampaignCharacterSheet>();sheet.Build(overlay.transform,director,channel,characterPreview);
+            sheet=overlay.AddComponent<CampaignCharacterSheet>();sheet.Build(overlay.transform,view,channel,characterPreview);
             var rect=RusticHudTheme.Rect(overlay.transform,"ItemComparison",Vector2.one*.5f,Vector2.zero,new Vector2(1160,620));itemPopup=rect.gameObject;var surface=RusticHudTheme.Panel(rect,new Color(.065f,.079f,.067f,1),20);surface.raycastTarget=true;
             ownDetails=ScrollableDetails(rect,"SelectedItem",new Vector2(595,-80));otherDetails=ScrollableDetails(rect,"ComparedItem",new Vector2(25,-80));
             var summary=RusticHudTheme.Rect(rect,"ComparisonSummary",new Vector2(0,1),new Vector2(25,-350),new Vector2(1105,125));summary.gameObject.AddComponent<RectMask2D>();summary.gameObject.AddComponent<Image>().color=Color.clear;RusticHudTheme.Panel(summary,new Color(.08f,.13f,.105f,1),14);
@@ -178,27 +183,28 @@ namespace ForjaDasMares.Networking
         public void CloseInventory(){if(IsOpen)Close();}
         void Show(bool result)
         {
-            if (channel.LocalProfile == null || director.LocalSlot < 0&&!channel.HomeMode) return;
+            if (channel.LocalProfile == null || view.LocalSlot < 0&&!channel.HomeMode) return;
             GetComponent<CampaignSessionMenu>()?.Close();
-            sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);results = result; deliveries=false; expeditionView=false;selected = pendingDiscard = pendingClaim = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); director.SetInputBlocked(true); Refresh();
+            if(view.IsRegional)foreach(var stick in GetComponentsInChildren<TouchMoveStick>(true))stick.Release();
+            sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);results = result; deliveries=false; expeditionView=false;selected = pendingDiscard = pendingClaim = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); view.SetInputBlocked(true); Refresh();
         }
         Button TopRight(Transform parent,string label,float y,UnityEngine.Events.UnityAction action)
         {
             var button=Button(parent,label,Vector2.zero,new Vector2(190,44),action);var rect=(RectTransform)button.transform;
-            if(director.Campaign!=null){rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(30,label=="INVENTÁRIO"?20:75);RusticHudTheme.Skin(button);}
+            if(view.FullLayout){rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(30,label=="INVENTÁRIO"?20:75);RusticHudTheme.Skin(button);}
             else{rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.one;rect.anchoredPosition=new Vector2(-15,y);}return button;
         }
-        void Close() { sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = pendingClaim = null; director.SetInputBlocked(false); }
+        void Close() { sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = pendingClaim = null; view.SetInputBlocked(false); }
         void Update()
         {
             if(inventoryButton!=null)
             {
-                inventoryButton.interactable=director.LocalSlot>=0||channel.HomeMode;
-                if(director.Campaign!=null){var campaignHud=GetComponent<CampaignHud>();inventoryButton.gameObject.SetActive(false);}
-                if(director.Campaign!=null)resultButton.gameObject.SetActive(director.Phase==CoopPhase.Victory||director.Phase==CoopPhase.Defeat);
+                inventoryButton.interactable=view.LocalSlot>=0||channel.HomeMode;
+                if(view.FullLayout&&!view.IsRegional){inventoryButton.gameObject.SetActive(false);}
+                if(view.FullLayout)resultButton.gameObject.SetActive(view.Phase==CoopPhase.Victory||view.Phase==CoopPhase.Defeat);
             }
             if (overlay == null || !overlay.activeSelf) return;
-            if (director.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
+            if (view.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
             if(pendingClaim!=null)
             {
                 if(channel.LocalProfile?.Item(pendingClaim)!=null)
@@ -216,7 +222,7 @@ namespace ForjaDasMares.Networking
         {
             var profile = channel.LocalProfile; if (profile == null) return; lastNotice=channel.Message;revision = channel.Revision;lastHero=ActiveActor.Roster.Selected;management=CanManageNow;FilterItems();
             if(profileSource!=null){profileSource.gameObject.SetActive(channel.HomeMode&&!results);profileSource.GetComponentInChildren<Text>().text=channel.Hub.Description;profileSource.interactable=channel.Hub.HasRemote;}
-            if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"CLASSE: "+RusticHudTheme.ClassNames(channel.Catalog.Hero(ActiveActor.Roster.Current.heroId).affinity).ToUpperInvariant():"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
+            if(classFilter!=null){classFilter.GetComponentInChildren<Text>().text=classOnly?"CLASSE: "+RusticHudTheme.ClassNames(channel.Catalog.Hero(ActiveActor.Roster.Current.heroId).affinity).ToUpperInvariant():"TODAS AS CLASSES";classFilter.gameObject.SetActive(!results);heroChoice.gameObject.SetActive(!results);heroChoice.interactable=(view.IsRegional?channel.CanManageLocal:channel.HomeMode||view.Phase==CoopPhase.Lobby);heroChoice.GetComponentInChildren<Text>().text="HERÓI · "+ActiveActor.Roster.Current.displayName;for(int i=0;i<categoryTabs.Length;i++){categoryTabs[i].gameObject.SetActive(!results);categoryTabs[i].interactable=category!=i-1;}}
             if(CurrentItems!=null)page=Mathf.Clamp(page,0,Mathf.Max(0,(CurrentItems.Count-1)/PageSize));
             RefreshNavigation(profile);
             header.text = results ? "RESULTADO DA PARTIDA" : "PERSONAGEM · NV "+ProgressionStats.Level(profile.experience)+" · "+profile.coins+" OURO";
@@ -312,7 +318,7 @@ namespace ForjaDasMares.Networking
             if(notice!=null)notice.gameObject.SetActive((sheet==null||!sheet.IsOpen)&&(itemPopup==null||!itemPopup.activeSelf));
             if(itemNotice==null||(!itemPopup.activeSelf&&desktopInventory==null))return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
-            if(!channel.HomeMode&&director.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
+            if(!channel.HomeMode&&view.Manager.IsServer&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
             else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
             {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
             if(desktopStatus!=null)desktopStatus.text=string.IsNullOrEmpty(selected)?"":message;
@@ -395,7 +401,7 @@ namespace ForjaDasMares.Networking
                 if(!expeditionView)sourceHint.text="MOCHILA · "+used+"/"+limit+"\nLimite compartilhado entre todas as categorias. Equipados não ocupam espaço.\nSelecione uma peça para comparar com o equipamento atual.";
             }
         }
-        void RefreshInspection(PlayerProfile profile,CoopActor actor,ItemInstance value)
+        void RefreshInspection(PlayerProfile profile,InventoryHeroView actor,ItemInstance value)
         {
             var definition=channel.Catalog.Find(value.definitionId);
             // Resolve again on every profile refresh: a previous selection must never
@@ -444,6 +450,6 @@ namespace ForjaDasMares.Networking
         { var go = new GameObject("Text", typeof(RectTransform), typeof(Text)); go.transform.SetParent(parent, false); var rect = (RectTransform)go.transform; rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0, 1); rect.anchoredPosition = position; rect.sizeDelta = size; var text = go.GetComponent<Text>(); text.font = font; text.fontSize = scale; text.text = value; text.color = Color.white; text.raycastTarget = false; return text; }
         Button Button(Transform parent, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
         { var go = new GameObject(label, typeof(RectTransform), typeof(Image), typeof(Button)); go.transform.SetParent(parent, false); var rect = (RectTransform)go.transform; rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0, 1); rect.anchoredPosition = position; rect.sizeDelta = size; go.GetComponent<Image>().color = new Color(.13f, .3f, .4f); var button = go.GetComponent<Button>(); button.onClick.AddListener(action); var text = Label(go.transform, label, Vector2.zero, size); text.alignment = TextAnchor.MiddleCenter; return button; }
-        void OnDisable() { if (director != null) director.SetInputBlocked(false); }
+        void OnDisable() { regionalInventoryKey?.Disable();regionalCloseKey?.Disable();if(view!=null&&view.IsRegional&&overlay!=null)overlay.SetActive(false);if (view != null) view.SetInputBlocked(false); }
     }
 }

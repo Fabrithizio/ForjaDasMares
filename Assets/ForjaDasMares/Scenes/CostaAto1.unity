@@ -3148,6 +3148,7 @@ GameObject:
   - component: {fileID: 140178806}
   - component: {fileID: 140178805}
   - component: {fileID: 140178807}
+  - component: {fileID: 140178808}
   m_Layer: 0
   m_Name: RegionalWorld
   m_TagString: Untagged
@@ -3201,6 +3202,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalJourney
   world: {fileID: 140178805}
   definition: {fileID: 11400000, guid: 8eef3a49f9704ab43b0dc677ea8ee142, type: 2}
+--- !u!114 &140178808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140178804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f81a800b3763e845a71bf277f31bd65, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalInventory
+  catalog: {fileID: 11400000, guid: cd8c0a63bd87f074381abe8f09ace44a, type: 2}
+  profileDirectory: CampaignProfiles-v1
 --- !u!1 &145750519
 GameObject:
   m_ObjectHideFlags: 0

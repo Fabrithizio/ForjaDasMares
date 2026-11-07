@@ -738,3 +738,5 @@ Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 inst
 06/11/2026 — 0.30.0: revisão visual do kit com UVs e atlas de superfícies 768x512, normais por ângulo e três placas simbólicas (total18 modelos/36FBX). Cidade com praça/caminhos sobre áreas verdes. Índice ArtSource/LEIA-ME.md distingue fontes ativas e base recuperável. 36/36FBX e24/24testes Unity aprovados; buildWindows errors=0. Sem APK ou teste móvel/online. Direção artística continua em revisão; veja REFINAMENTO_CIDADE_0_30_0.md.
 
 06/11/2026 — APK 0.30.0/code53 gerado a pedido: 109.893.581 bytes, Android build Succeeded/errors=0; pacote com.forjadasmares.campaign. Target Windows restaurado. Sem instalação/teste físico nesta entrega. Envio WhatsApp pendente: sessão Web desconectada. Ver Validation/0.30.0/android-build.json.
+
+06/11/2026 — 0.31.0: inventário da campanha integrado ao RPG nas quatro cenas regionais, mesmo catálogo/perfil local e equipamento real. 38/38 PlayMode; Windows Succeeded/errors=0. UI conferida no player; atalhos testados por Input System, teclado físico pendente. Sem APK novo/teste Android ou online real. Ver INVENTARIO_RPG_0_31_0.md.

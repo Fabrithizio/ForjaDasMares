@@ -28,7 +28,8 @@ namespace ForjaDasMares
             visible=source.Visible;previous=source.EquippedWeapon;samples=0;
             var model=visible!=null?visible.GetComponentInChildren<HeroModelView>():null;
             var gear=model!=null?model.PrimarySocket.GetComponentInChildren<EquipmentMeshView>():null;
-            if(gear!=null){holder=gear.transform;var b=gear.GetComponent<MeshFilter>().sharedMesh.bounds;bladeBase=b.center+Vector3.up*b.extents.y*.10f;bladeTip=b.center+Vector3.up*b.extents.y;}
+            var filter=gear!=null?gear.GetComponent<MeshFilter>():null;
+            if(filter!=null&&filter.sharedMesh!=null){holder=gear.transform;var b=filter.sharedMesh.bounds;bladeBase=b.center+Vector3.up*b.extents.y*.10f;bladeTip=b.center+Vector3.up*b.extents.y;}
             else{holder=model!=null?model.PrimarySocket:null;bladeBase=Vector3.zero;bladeTip=Vector3.up*.9f;}
         }
         void LateUpdate()

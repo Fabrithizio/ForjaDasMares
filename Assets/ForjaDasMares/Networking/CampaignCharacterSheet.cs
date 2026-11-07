@@ -5,14 +5,14 @@ namespace ForjaDasMares.Networking
     // Talent presentation follows catalog rules; the host/profile service owns purchases.
     public sealed class CampaignCharacterSheet:MonoBehaviour
     {
-        CoopDirector session;CoopProfileChannel channel;GameObject popup;
+        InventorySessionView session;InventoryProfileView channel;GameObject popup;
         readonly Text[] stats=new Text[6];readonly GameObject[] overview=new GameObject[7];
         Image[] customIcons;HudIcon[] fallbackIcons;Image customDetailIcon;
         Button[] choices;Text[] choiceNames,choiceRanks,choiceDescriptions;RectTransform[] choiceFill;
         Text heading,resources,points,heroSummary,detailTitle,detailRank,description,currentBonus,nextBonus,perPoint,status;
         Button improve,reset;RectTransform xpFill;RawImage portrait,portraitSource;HudIcon detailIcon;RoundedHudGraphic detailFrame;
         bool confirm,pending;int selected,requestRevision,detailSelection=-1;string requestMessage,operationNotice,lastHero;float refresh;
-        CoopActor Actor=>session.Actor(session.LocalSlot>=0?session.LocalSlot:0);
+        InventoryHeroView Actor=>session.Actor(session.LocalSlot>=0?session.LocalSlot:0);
         static readonly Vector2 Top=new Vector2(0,1);
         static Text Label(Transform parent,string name,Vector2 pos,Vector2 size,string value,int font=18)
         {var t=RusticHudTheme.Label(parent,name,Top,pos,size,value,font);t.alignment=TextAnchor.UpperLeft;return t;}
@@ -27,6 +27,8 @@ namespace ForjaDasMares.Networking
         static Color Tint(ItemStat stat)=>stat==ItemStat.Health?new Color(1,.43f,.4f):stat==ItemStat.Defense?new Color(.35f,.7f,1):stat==ItemStat.AttackSpeed?new Color(.35f,.95f,.65f):stat==ItemStat.CriticalChance?new Color(.8f,.5f,1):stat==ItemStat.CooldownReduction?new Color(.35f,.9f,.95f):new Color(1,.7f,.3f);
         static string Purpose(ItemStat stat)=>stat==ItemStat.Health?"Aumenta a vida máxima do herói.":stat==ItemStat.Damage?"Aumenta o dano dos seus ataques.":stat==ItemStat.Defense?"Aumenta a redução do dano recebido.":stat==ItemStat.AttackSpeed?"Permite atacar com maior frequência.":stat==ItemStat.CriticalChance?"Aumenta a chance de causar um acerto crítico.":stat==ItemStat.CooldownReduction?"Reduz a espera para usar habilidades novamente.":"Melhora "+ItemDescriptions.Name(stat)+".";
         public void Build(Transform parent,CoopDirector owner,CoopProfileChannel profiles,RawImage preview=null)
+        {Build(parent,new InventorySessionView(owner),new InventoryProfileView(profiles),preview);}
+        public void Build(Transform parent,InventorySessionView owner,InventoryProfileView profiles,RawImage preview=null)
         {
             session=owner;channel=profiles;portraitSource=preview;
             for(int i=0;i<6;i++)
@@ -137,7 +139,7 @@ namespace ForjaDasMares.Networking
             xpFill.anchorMax=new Vector2(s.level==c.maximumLevel?1:Mathf.Clamp01((float)ProgressionStats.ExperienceInLevel(p.experience,c.maximumLevel)/ProgressionStats.RequiredExperience(s.level)),1);
             if(portraitSource!=null)portrait.texture=portraitSource.texture;
             heroSummary.text="Vida máxima   "+s.maximumHealth+"\nDano   "+s.damage+"\nDefesa   "+(s.defense*100).ToString("0.#")+"%\nCrítico   "+s.criticalDamage+" · "+(s.criticalChance*100).ToString("0.#")+"%\nCadência   "+s.attacksPerSecond.ToString("0.##")+" golpes/s\nMovimento   "+s.speed.ToString("0.#")+" m/s";
-            bool allowed=!(channel.HomeMode&&channel.Hub.UsingRemote)&&(channel.HomeMode||session.GetComponent<CoopProgression>().CanManage(session.LocalSlot));
+            bool allowed=session.IsRegional?channel.CanManageLocal:!(channel.HomeMode&&channel.Hub.UsingRemote)&&(channel.HomeMode||session.GetComponent<CoopProgression>().CanManage(session.LocalSlot));
             for(int i=0;i<choices.Length;i++)
             {
                 var rule=c.talents[i];int rank=HeroTalents.Rank(p,hero.heroId,rule.id);

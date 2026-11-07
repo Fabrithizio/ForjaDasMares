@@ -37,7 +37,7 @@ namespace ForjaDasMares.Networking
             characterRole.transform.SetParent(roleViewport,false);PlaceInventory(characterRole.rectTransform,0,0,295,160);roleScroll.content=characterRole.rectTransform;
             characterSummary=InventoryText(identity,"Summary",20,310,295,140,"",18);characterSummary.alignment=TextAnchor.UpperLeft;
             RusticHudTheme.Button(identity,"OpenFullStats",InventoryTop,new Vector2(20,-465),new Vector2(295,42),"VER TODOS OS STATUS",()=>NavigateProfile(2));
-            changeProfileHero=RusticHudTheme.Button(identity,"ChangeHero",InventoryTop,new Vector2(20,-414),new Vector2(295,38),"TROCAR HERÓI",()=>{director.SelectHero((director.SelectedHero+1)%director.HeroCount);selected=null;Refresh();});
+            changeProfileHero=RusticHudTheme.Button(identity,"ChangeHero",InventoryTop,new Vector2(20,-414),new Vector2(295,38),"TROCAR HERÓI",()=>{view.SelectHero((view.SelectedHero+1)%view.HeroCount);selected=null;Refresh();});
             var portraitStage=InventoryPanel(characterArea.transform,"PortraitStage",420,20,370,510,new Color(.025f,.04f,.035f,1));
             var portrait=RusticHudTheme.Rect(portraitStage,"EquippedHero",InventoryTop,new Vector2(5,-5),new Vector2(360,500));areaPortrait=portrait.gameObject.AddComponent<RawImage>();areaPortrait.raycastTarget=false;
             for(int i=0;i<5;i++)
@@ -156,7 +156,7 @@ namespace ForjaDasMares.Networking
             var profile=channel.LocalProfile;if(profile==null)return;resourceRibbon.gameObject.SetActive(true);ribbonGold.text=profile.coins.ToString("N0")+"  OURO";var hero=ActiveActor.Roster.Current;var catalog=channel.Catalog;var s=ProgressionStats.Calculate(hero,profile,catalog);
             if(activeArea==0)
             {
-                changeProfileHero.interactable=channel.HomeMode||director.Phase==CoopPhase.Lobby;
+                changeProfileHero.interactable=(view.IsRegional?channel.CanManageLocal:channel.HomeMode||view.Phase==CoopPhase.Lobby);
                 int xp=ProgressionStats.ExperienceInLevel(profile.experience,catalog.maximumLevel),required=ProgressionStats.RequiredExperience(s.level);bool maximum=s.level>=catalog.maximumLevel;
                 characterXp.text=maximum?"NÍVEL MÁXIMO":"EXPERIÊNCIA   "+xp+" / "+required;characterXpFill.anchorMax=new Vector2(maximum?1:Mathf.Clamp01((float)xp/required),1);
                 areaPortrait.texture=characterPreview.texture;characterIdentity.text=hero.displayName+"\nNÍVEL "+s.level;
