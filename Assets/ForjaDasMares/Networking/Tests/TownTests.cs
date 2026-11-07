@@ -27,7 +27,8 @@ namespace ForjaDasMares.Networking.Tests
         [UnityTest]public IEnumerator AncientSiteIsReachableAndInspectionDoesNotChangeQuest()
         {
             var site=GameObject.Find("AncientMemorySite");Assert.NotNull(site);
-            Assert.AreEqual(3,site.GetComponentsInChildren<MeshRenderer>().Length);
+            Assert.NotNull(site.transform.Find("SantuarioDaMemoria"));
+            Assert.Greater(site.GetComponentsInChildren<MeshRenderer>().Length,0);
             Assert.AreEqual(0,site.GetComponentsInChildren<Light>().Length);
             Assert.IsNull(site.GetComponentInChildren<Health>());
             var target=GameObject.Find("MemorySiteConsole").GetComponent<WorldClickTarget>();
@@ -36,7 +37,7 @@ namespace ForjaDasMares.Networking.Tests
             var path=new NavMeshPath();Assert.IsTrue(NavMesh.CalculatePath(start.position,end.position,NavMesh.AllAreas,path));Assert.AreEqual(NavMeshPathStatus.PathComplete,path.status);
             world.Hero.GetComponent<PlayerMotor>().Teleport(end.position,Quaternion.identity);yield return null;
             int clues=world.Journey.ClueCount;bool completed=world.Journey.Completed;
-            Assert.IsTrue(target.TryUse(world.Hero.transform));StringAssert.Contains("metal",hub.Notice);
+            Assert.IsTrue(target.TryUse(world.Hero.transform));StringAssert.Contains("runas",hub.Notice);
             Assert.AreEqual(clues,world.Journey.ClueCount);Assert.AreEqual(completed,world.Journey.Completed);
             Assert.IsTrue(target.TryUse(world.Hero.transform));Assert.AreEqual(clues,world.Journey.ClueCount);
         }
