@@ -157,7 +157,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<shopButtons.Length;i++)
                 if(shopButtons[i]!=null)shopButtons[i].interactable=profile.coins>=shopPrices[i]&&used<capacity&&profile.expedition==null;
         }
-        const string IntroSeenKey="Forja.WorldIntro.v1";
+        const string IntroSeenKey="Forja.WorldIntro.v2";
         System.Collections.IEnumerator PlayWorldIntro(RectTransform root)
         {
             if(PlayerPrefs.GetInt(IntroSeenKey)!=0)yield break;
@@ -177,33 +177,53 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Button(overlay,"SkipIntro",new Vector2(1,1),new Vector2(-25,-22),new Vector2(195,48),"PULAR",()=>skipped=true);
             var input=world.Hero.GetComponent<ArenaInput>();
             input.BlockCommands(true);
-            var lines=new[]{
-                "No Refúgio, os caminhos ainda levam para casa.\nDizem que é por causa do santuário.",
-                "Lá fora, a Distorção muda as estradas. Quem passa tempo demais nela pode voltar lembrando de lugares que ninguém mais conhece.",
-                "Quando a névoa baixa, esses lugares aparecem.\nNas pedras, há marcas de alguém que chegou primeiro.",
-                "FORJA DAS MARÉS"
-            };
-            float[] lengths={8,11,10,3};
-            for(int shot=0;shot<lines.Length&&!skipped;shot++)
+            var frame=RusticHudTheme.Rect(overlay,"Video",Vector2.zero,Vector2.zero,Vector2.zero);
+            frame.anchorMax=Vector2.one;
+            frame.offsetMin=frame.offsetMax=Vector2.zero;
+            frame.SetSiblingIndex(0);
+            var screen=frame.gameObject.AddComponent<RawImage>();
+            screen.raycastTarget=false;
+            var aspect=frame.gameObject.AddComponent<AspectRatioFitter>();
+            aspect.aspectMode=AspectRatioFitter.AspectMode.FitInParent;
+            aspect.aspectRatio=16f/9f;
+            var texture=new RenderTexture(1280,720,0);
+            screen.texture=texture;
+            var video=overlay.gameObject.AddComponent<UnityEngine.Video.VideoPlayer>();
+            video.playOnAwake=false;
+            video.source=UnityEngine.Video.VideoSource.Url;
+            video.url=Application.streamingAssetsPath+"/Opening/Forja-das-Mares-Cinematica.mp4";
+            video.renderMode=UnityEngine.Video.VideoRenderMode.RenderTexture;
+            video.targetTexture=texture;
+            video.audioOutputMode=UnityEngine.Video.VideoAudioOutputMode.Direct;
+            bool finished=false,failed=false;
+            video.loopPointReached+=_=>finished=true;
+            video.errorReceived+=(_,message)=>{failed=true;Debug.LogWarning("Abertura: "+message);};
+            video.Prepare();
+            float deadline=Time.realtimeSinceStartup+8;
+            while(!video.isPrepared&&!failed&&!skipped&&Time.realtimeSinceStartup<deadline)
             {
-                caption.text=lines[shot];
-                for(float elapsed=0;elapsed<lengths[shot]&&!skipped;elapsed+=Time.unscaledDeltaTime)
+                if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)skipped=true;
+                yield return null;
+            }
+            if(video.isPrepared&&!failed&&!skipped)
+            {
+                if(artwork!=null)artwork.gameObject.SetActive(false);
+                caption.gameObject.SetActive(false);
+                video.Play();
+                deadline=Time.realtimeSinceStartup+40;
+                while(!finished&&!failed&&!skipped&&Time.realtimeSinceStartup<deadline)
                 {
-                    float progress=elapsed/lengths[shot];
-                    if(artwork!=null)
-                    {
-                        artwork.localScale=Vector3.one*(1.12f+.14f*progress);
-                        artwork.localPosition=new Vector3((shot%2==0?1:-1)*progress*38,0,0);
-                    }
-                    group.alpha=Mathf.Clamp01(Mathf.Min(elapsed/.7f,(lengths[shot]-elapsed)/.7f));
                     if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)skipped=true;
                     yield return null;
                 }
             }
+            video.Stop();
+            video.targetTexture=null;
+            Destroy(texture);
             overlay.gameObject.SetActive(false);
             Destroy(overlay.gameObject);
             input.BlockCommands(false);
-            PlayerPrefs.SetInt(IntroSeenKey,1);
+            if(finished||skipped)PlayerPrefs.SetInt(IntroSeenKey,1);
             PlayerPrefs.Save();
         }
 
