@@ -12,6 +12,19 @@ namespace ForjaDasMares
         [SerializeField] CombatFlowDefinition flow;
         bool wasHeld;float heavyBuffer;float heldTime, heavyCooldown, superBuffer, furyRemaining;
         AbilityDefinition weaponAbility;
+        System.Func<bool> hasRegionalWeapon, hasRegionalSkill;
+        public bool CanUseWeapon=>hasRegionalWeapon?.Invoke()??true;
+        public bool CanUseSkill=>hasRegionalSkill?.Invoke()??true;
+        public bool HeavyMode {get;private set;}
+        public void ConfigureRegionalRules(System.Func<bool> weapon,System.Func<bool> skill)
+        {
+            hasRegionalWeapon=weapon;
+            hasRegionalSkill=skill;
+        }
+        public void ToggleWeaponMode()
+        {
+            if(CanUseWeapon&&flow!=null&&!IsBusy){HeavyMode=!HeavyMode;CancelCharge();}
+        }
         public float FuryRemaining=>furyRemaining;
         public AbilityDefinition Ability=>weaponAbility!=null?weaponAbility:profile!=null?profile.special:null;
         int superHits;
@@ -99,6 +112,8 @@ namespace ForjaDasMares
         bool CanStart => profile != null && health.IsAlive && !health.IsStunned && !active && !motor.IsDodging && !motor.IsCharging;
         public bool TryAttack()
         {
+            if(!CanUseWeapon)return false;
+            if(HeavyMode)return TryHeavy();
             var attacks = equipmentAttacks ?? (profile != null ? profile.attacks : null);
             if (!CanStart || attacks == null || attacks.Length == 0) return false;
             currentAttack = attacks[combo % attacks.Length]; combo++;
@@ -106,13 +121,13 @@ namespace ForjaDasMares
         }
         public bool TryHeavy()
         {
-            if(flow == null || heavyCooldown > 0 || !CanStart || BasicAttack == null) return false;
+            if(!CanUseWeapon || flow == null || heavyCooldown > 0 || !CanStart || BasicAttack == null) return false;
             currentAttack = BasicAttack; Begin(false, Mathf.Max(flow.heavyWindup+.1f,flow.heavyDuration)); heavy = true; AnimationVariant = 3;
             strikeScale *= Mathf.Max(1,flow.heavyMultiplier); heldTime = 0; heavyCooldown = Mathf.Max(.1f,flow.heavyCooldown); motor.LockFacing(flow.heavyWindup); return true;
         }
         public bool TrySuper()
         {
-            if(!CanStart || !SuperReady) return false;
+            if(hasRegionalSkill!=null || !CanStart || !SuperReady) return false;
             if(flow.furyDuration>0)
             {
                 if(furyRemaining>0)return false;
@@ -124,7 +139,7 @@ namespace ForjaDasMares
         }
         public bool TrySpecial()
         {
-            if (!CanStart || specialCooldown > 0 || Ability == null) return false;
+            if (!CanUseSkill || !CanStart || specialCooldown > 0 || Ability == null) return false;
             currentAttack = Ability.hit;
             float extra = Ability.effect == AbilityEffect.ProtectionCharge ? Ability.chargeDuration : 0;
             specialCooldown = Ability.cooldown * cooldownMultiplier;

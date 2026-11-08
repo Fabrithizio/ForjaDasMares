@@ -37,6 +37,17 @@ namespace ForjaDasMares.Networking
         {
             var journey=world.Journey;
             int index=journey.NearestPoint();
+            var inventory=world.GetComponent<RegionalInventory>();
+            if(index>=0&&journey.Definition.points[index].interaction==RegionalInteraction.Artificer&&inventory?.Service!=null)
+            {
+                string heroId=world.Hero.Current.heroId;
+                if(!inventory.Service.Profile.starterGranted.Contains(heroId))
+                {
+                    inventory.Service.GrantStarterWeapon(heroId);
+                    Notice="Daro · "+inventory.Service.Message;
+                    return;
+                }
+            }
             if(!journey.Accepted&&index>=0&&journey.Definition.points[index].interaction==RegionalInteraction.Cartographer)journey.Offer();
             else journey.Interact();
             Notice=journey.Notice;

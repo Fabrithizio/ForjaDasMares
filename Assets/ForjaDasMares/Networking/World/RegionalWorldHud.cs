@@ -39,6 +39,7 @@ namespace ForjaDasMares.Networking
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
             gameObject.AddComponent<RegionalSettingsMenu>().Build(root,world);
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
+            if(town!=null&&System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-runTests")<0)StartCoroutine(PlayWorldIntro(root));
         }
         GameObject journalPanel;
         Text journalText; GameObject mapPanel,mapLegend,desktopLegend; public bool JournalOpen=>journalPanel!=null&&journalPanel.activeSelf;
@@ -156,6 +157,56 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<shopButtons.Length;i++)
                 if(shopButtons[i]!=null)shopButtons[i].interactable=profile.coins>=shopPrices[i]&&used<capacity&&profile.expedition==null;
         }
+        const string IntroSeenKey="Forja.WorldIntro.v1";
+        System.Collections.IEnumerator PlayWorldIntro(RectTransform root)
+        {
+            if(PlayerPrefs.GetInt(IntroSeenKey)!=0)yield break;
+            var overlay=RusticHudTheme.Rect(root,"WorldIntro",Vector2.zero,Vector2.zero,Vector2.zero);
+            overlay.anchorMax=Vector2.one;
+            overlay.offsetMin=overlay.offsetMax=Vector2.zero;
+            overlay.SetAsLastSibling();
+            overlay.gameObject.AddComponent<Image>().color=Color.black;
+            overlay.gameObject.AddComponent<RectMask2D>();
+            MenuArtwork.Fill(overlay,"IntroArt","MenuArt/RoutesBackdrop",Color.white);
+            var artwork=overlay.Find("IntroArt");
+            var group=overlay.gameObject.AddComponent<CanvasGroup>();
+            var caption=RusticHudTheme.Label(overlay,"Story",new Vector2(.5f,0),new Vector2(0,88),new Vector2(840,110),"",25,TextAnchor.MiddleCenter);
+            var shade=caption.gameObject.AddComponent<Outline>();
+            shade.effectColor=Color.black;
+            bool skipped=false;
+            RusticHudTheme.Button(overlay,"SkipIntro",new Vector2(1,1),new Vector2(-25,-22),new Vector2(195,48),"PULAR",()=>skipped=true);
+            var input=world.Hero.GetComponent<ArenaInput>();
+            input.BlockCommands(true);
+            var lines=new[]{
+                "No Refúgio, os caminhos ainda levam para casa.\nDizem que é por causa do santuário.",
+                "Lá fora, a Distorção muda as estradas. Quem passa tempo demais nela pode voltar lembrando de lugares que ninguém mais conhece.",
+                "Quando a névoa baixa, esses lugares aparecem.\nNas pedras, há marcas de alguém que chegou primeiro.",
+                "FORJA DAS MARÉS"
+            };
+            float[] lengths={8,11,10,3};
+            for(int shot=0;shot<lines.Length&&!skipped;shot++)
+            {
+                caption.text=lines[shot];
+                for(float elapsed=0;elapsed<lengths[shot]&&!skipped;elapsed+=Time.unscaledDeltaTime)
+                {
+                    float progress=elapsed/lengths[shot];
+                    if(artwork!=null)
+                    {
+                        artwork.localScale=Vector3.one*(1.12f+.14f*progress);
+                        artwork.localPosition=new Vector3((shot%2==0?1:-1)*progress*38,0,0);
+                    }
+                    group.alpha=Mathf.Clamp01(Mathf.Min(elapsed/.7f,(lengths[shot]-elapsed)/.7f));
+                    if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)skipped=true;
+                    yield return null;
+                }
+            }
+            overlay.gameObject.SetActive(false);
+            Destroy(overlay.gameObject);
+            input.BlockCommands(false);
+            PlayerPrefs.SetInt(IntroSeenKey,1);
+            PlayerPrefs.Save();
+        }
+
         void BuildVitals(RectTransform root)
         {
             var panel=RusticHudTheme.Rect(root,"HeroVitals",Top,new Vector2(18,-16),new Vector2(360,92));RusticHudTheme.Panel(panel,new Color(.025f,.045f,.055f,.94f),20);
@@ -177,10 +228,20 @@ namespace ForjaDasMares.Networking
         void BuildPcActions(RectTransform root)
         {
             var input=world.Hero.GetComponent<ArenaInput>();
-            RoundAction(root,"SpecialAction",new Vector2(-390,20),64,"E",HudSymbol.Rune,input.RequestSpecial);
-            RoundAction(root,"DodgeAction",new Vector2(-310,20),64,"ESPAÇO",HudSymbol.Dodge,input.RequestDodge);
-            RoundAction(root,"SuperAction",new Vector2(-230,20),64,"Q",HudSymbol.Fury,input.RequestSuper);
-            RoundAction(root,"InteractAction",new Vector2(-150,20),64,"F",HudSymbol.Interact,world.Interact);
+            RoundAction(root,"RegionalDodge",new Vector2(-158,20),64,"ESQUIVA",HudSymbol.Dodge,input.RequestDodge);
+            RoundAction(root,"RegionalAttack",new Vector2(-84,20),64,"ATAQUE",HudSymbol.Sword,input.RequestAttack);
+            RoundAction(root,"RegionalInteract",new Vector2(-232,20),64,"USAR",HudSymbol.Interact,world.Interact);
+            BuildSkillBar(root,120);
+        }
+        Button firstSkill,attackMode;
+        void BuildSkillBar(RectTransform root,float height)
+        {
+            var input=world.Hero.GetComponent<ArenaInput>();
+            var combat=world.Hero.GetComponent<HeroCombat>();
+            firstSkill=RoundAction(root,"SkillSlot1",new Vector2(-315,height),64,"1 · E",HudSymbol.Rune,input.RequestSpecial);
+            RoundAction(root,"SkillSlot2",new Vector2(-240,height),64,"2 · VAZIO",HudSymbol.Rune,()=>{}).interactable=false;
+            RoundAction(root,"SkillSlot3",new Vector2(-165,height),64,"3 · VAZIO",HudSymbol.Rune,()=>{}).interactable=false;
+            attackMode=RoundAction(root,"AttackMode",new Vector2(-88,height),68,"NORMAL",HudSymbol.Sword,combat.ToggleWeaponMode);
         }
         void BuildTouchControls(RectTransform root)
         {
@@ -190,9 +251,8 @@ namespace ForjaDasMares.Networking
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
             RoundAction(root,"RegionalAttack",new Vector2(-22,70),112,"ATAQUE",HudSymbol.Sword,input.RequestAttack).gameObject.AddComponent<HoldAttackButton>().Configure(input);
             RoundAction(root,"RegionalDodge",new Vector2(-148,50),78,"ESQUIVA",HudSymbol.Dodge,input.RequestDodge);
-            RoundAction(root,"RegionalSpecial",new Vector2(-26,198),82,"ESPECIAL",HudSymbol.Rune,input.RequestSpecial);
             RoundAction(root,"RegionalInteract",new Vector2(-242,64),74,"USAR",HudSymbol.Interact,world.Interact);
-            RoundAction(root,"RegionalSuper",new Vector2(-136,158),78,"SUPER",HudSymbol.Fury,input.RequestSuper);
+            BuildSkillBar(root,205);
             movementMode.gameObject.SetActive(false);
             controlHint.gameObject.SetActive(false);
             foreach(string name in new[]{"Controls","Scope","MapLegend"}){var label=root.Find(name);if(label!=null)label.gameObject.SetActive(false);}
@@ -202,6 +262,14 @@ namespace ForjaDasMares.Networking
         void OnInteract(InputAction.CallbackContext _){if((journalPanel==null||!journalPanel.activeSelf)&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
+            var combat=world.Hero.GetComponent<HeroCombat>();
+            if(firstSkill!=null)
+            {
+                firstSkill.interactable=combat.CanUseSkill;
+                firstSkill.GetComponentInChildren<Text>().text=combat.CanUseSkill?"1 · E":"1 · VAZIO";
+                attackMode.interactable=combat.CanUseWeapon;
+                attackMode.GetComponentInChildren<Text>().text=combat.HeavyMode?"PESADO":"NORMAL";
+            }
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             movementMode.GetComponentInChildren<Text>().text="CONTROLES · AJUDA";
             controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";

@@ -82,7 +82,7 @@ namespace ForjaDasMares.Networking
                 case RegionalInteraction.Clue:
                     if(!Accepted){Notice="Converse com Nara no refúgio para entender estes rastros.";break;}
                     if((journal.clues&(1<<point.clue))!=0){Notice="Esta pista já está registrada no diário.";break;}
-                    next.clues|=1<<point.clue;if(Commit(next))Notice=point.discovery+(ClueCount>=definition.requiredClues?" Volte a Daro no refúgio.":"");
+                    next.clues|=1<<point.clue;if(Commit(next))Notice=(ClueCount==1?"Você decifrou uma escritura. Habilidade de classe liberada. ":"")+point.discovery+(ClueCount>=definition.requiredClues?" Volte a Daro no refúgio.":"");
                     break;
                 case RegionalInteraction.Artificer:
                     if(Completed){Notice="Daro: o Fragmento de Memória já é seu. A entrada das catacumbas está liberada.";break;}

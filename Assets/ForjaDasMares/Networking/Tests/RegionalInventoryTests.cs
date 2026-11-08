@@ -47,6 +47,24 @@ namespace ForjaDasMares.Networking.Tests
             regionalHud.CloseShop();
         }
 
+        [UnityTest]public IEnumerator NewHeroReceivesFirstWeaponFromDaro()
+        {
+            var hero=inventory.World.Hero;
+            var combat=hero.GetComponent<HeroCombat>();
+            Assert.IsFalse(combat.CanUseWeapon);
+            Assert.IsFalse(combat.TryAttack());
+            Assert.IsFalse(combat.TrySpecial());
+            var daro=UnityEngine.Object.FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None)
+                .Single(target=>target.name.StartsWith("Daro"));
+            hero.GetComponent<PlayerMotor>().Teleport(daro.transform.position+Vector3.back,Quaternion.identity);
+            yield return null;
+            Assert.IsTrue(daro.TryUse(hero.transform));
+            Assert.IsTrue(combat.CanUseWeapon);
+            int count=inventory.Service.Profile.inventory.Count;
+            daro.TryUse(hero.transform);
+            Assert.AreEqual(count,inventory.Service.Profile.inventory.Count);
+        }
+
         ItemInstance AddStaff()
         {
             var staff=inventory.Catalog.equipment.First(d=>d.category==WeaponCategory.Staff&&!d.starter&&d.minimumLevel<=1);

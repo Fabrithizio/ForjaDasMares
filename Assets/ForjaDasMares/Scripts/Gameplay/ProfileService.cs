@@ -9,7 +9,7 @@ namespace ForjaDasMares
         public PlayerProfile Profile { get; private set; }
         public string Message { get; private set; }
         public event Action Changed;
-        public ProfileService(ProgressionCatalog data, ProfileStore persistence)
+        public ProfileService(ProgressionCatalog data, ProfileStore persistence,bool grantStarters=true)
         {
             catalog = data; store = persistence; catalog.Validate();
             Profile = store.Load(catalog, out string notice); Message = notice;
@@ -22,24 +22,26 @@ namespace ForjaDasMares
                     if(System.IO.File.Exists(store.Path+".bak"))System.IO.File.Copy(store.Path+".bak",store.Path+".bak"+suffix);
                 }
                 Profile = new PlayerProfile(); var random = new System.Random(607);
-                foreach (var id in catalog.starterItems) Profile.inventory.Add(LootGenerator.Create(catalog, id, ItemRarity.Common, random));
+                if(grantStarters)foreach (var id in catalog.starterItems) Profile.inventory.Add(LootGenerator.Create(catalog, id, ItemRarity.Common, random));
                 store.Save(Profile, catalog);
             }
             Profile.starterGranted??=new System.Collections.Generic.List<string>();
-            EnsureClassStarters();if(!string.IsNullOrEmpty(notice))Message=notice;
+            if(grantStarters)EnsureClassStarters();if(!string.IsNullOrEmpty(notice))Message=notice;
         }
-        public void EnsureClassStarters()
+        public void EnsureClassStarters()=>GrantStarters(null);
+        public void GrantStarterWeapon(string heroId)=>GrantStarters(heroId);
+        void GrantStarters(string heroId)
         {
             if(catalog.classStarters==null||catalog.classStarters.Length==0)return;
             Profile.starterGranted??=new System.Collections.Generic.List<string>();
-            bool missing=false;foreach(var rule in catalog.classStarters)if(!Profile.starterGranted.Contains(rule.heroId))missing=true;
+            bool missing=false;foreach(var rule in catalog.classStarters)if((heroId==null||heroId==rule.heroId)&&!Profile.starterGranted.Contains(rule.heroId))missing=true;
             if(!missing)return;
             Transaction(next=>
             {
                 next.starterGranted??=new System.Collections.Generic.List<string>();
                 foreach(var rule in catalog.classStarters)
                 {
-                    if(next.starterGranted.Contains(rule.heroId))continue;
+                    if((heroId!=null&&heroId!=rule.heroId)||next.starterGranted.Contains(rule.heroId))continue;
                     if(next.inventory.Count+next.deliveries.Count>=510)continue;
                     var item=LootGenerator.Create(catalog,rule.itemId,ItemRarity.Common,new System.Random(607));
                     bool space=InventoryRules.BagCount(next)<catalog.inventoryCapacity||string.IsNullOrEmpty(next.Loadout(rule.heroId)?.items[0]);

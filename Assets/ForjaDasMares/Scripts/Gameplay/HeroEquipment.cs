@@ -32,6 +32,7 @@ namespace ForjaDasMares
             if(secondaryVisual!=null){offRestPosition=secondaryVisual.transform.localPosition;offRestRotation=secondaryVisual.transform.localRotation;}
         }
         public StatSnapshot Stats { get; private set; }
+        public bool RequireEquippedVisual {get;set;}
         public EquipmentDefinition MainWeapon { get; private set; }
         public void Configure(HeroRoster roster, PlayerMotor player, HeroCombat attacks, MeshRenderer primary, MeshRenderer secondary)
         { heroes = roster; motor = player; combat = attacks; mainVisual = primary; secondaryVisual = secondary; CaptureRestPose(); }
@@ -70,9 +71,9 @@ namespace ForjaDasMares
             foreach (Transform root in heroes.transform) if (root.name.StartsWith("HeroVisual_"))
             {
                 var model=root.GetComponentInChildren<HeroModelView>(true);
-                if(model!=null){model.ShowDefaultWeapon(MainWeapon==null);continue;}
+                if(model!=null){model.ShowDefaultWeapon(!RequireEquippedVisual&&MainWeapon==null);continue;}
                 foreach (Transform part in root)
-                if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(MainWeapon == null);
+                if (part.name == "GreatSword" || part.name == "Bow" || part.name == "Staff" || part.name == "Focus" || part.name == "RuneBlade") part.gameObject.SetActive(!RequireEquippedVisual&&MainWeapon == null);
                 else if (part.name == "Shield") part.gameObject.SetActive(secondary == null);
             }
         }
