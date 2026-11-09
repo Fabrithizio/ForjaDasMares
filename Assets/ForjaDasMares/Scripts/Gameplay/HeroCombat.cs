@@ -11,7 +11,30 @@ namespace ForjaDasMares
         [SerializeField] LayerMask targets, geometry, allies;
         [SerializeField] CombatFlowDefinition flow;
         bool wasHeld;float heavyBuffer;float heldTime, heavyCooldown, superBuffer, furyRemaining;
-        AbilityDefinition weaponAbility;
+        AbilityDefinition weaponAbility, castingAbility;
+        AbilityDefinition[] regionalSkills;
+        System.Func<int> regionalSkillCount;
+        readonly float[] regionalCooldowns = new float[3];
+
+        public void ConfigureRegionalSkills(AbilityDefinition[] skills, System.Func<int> unlocked)
+        {
+            regionalSkills = skills;
+            regionalSkillCount = unlocked;
+        }
+
+        public AbilityDefinition RegionalSkill(int slot) =>
+            regionalSkills != null && slot >= 0 && slot < regionalSkills.Length ? regionalSkills[slot] : null;
+        public bool RegionalSkillUnlocked(int slot) => RegionalSkill(slot) != null && slot < (regionalSkillCount?.Invoke() ?? 0);
+        public float RegionalSkillCooldown(int slot) => RegionalSkill(slot) != null ? regionalCooldowns[slot] : 0;
+
+        public bool TryRegionalSkill(int slot)
+        {
+            if (!RegionalSkillUnlocked(slot) || !CanStart || regionalCooldowns[slot] > 0) return false;
+            var ability = regionalSkills[slot];
+            regionalCooldowns[slot] = ability.cooldown * cooldownMultiplier;
+            StartAbility(ability);
+            return true;
+        }
         System.Func<bool> hasRegionalWeapon, hasRegionalSkill;
         public bool CanUseWeapon=>hasRegionalWeapon?.Invoke()??true;
         public bool CanUseSkill=>hasRegionalSkill?.Invoke()??true;
@@ -75,7 +98,7 @@ namespace ForjaDasMares
         public bool MovementWindowOpen=>!active||NormalizedTime>=ImpactTime+.04f;
         public void CancelCharge(){wasHeld=false;heldTime=heavyBuffer=0;}
         public float NormalizedTime => active ? Mathf.Clamp01(elapsed / length) : 0;
-        public float SpecialCooldownRemaining => specialCooldown;
+        public float SpecialCooldownRemaining => regionalSkills != null ? regionalCooldowns[0] : specialCooldown;
         public HeroDefinition Profile => profile;
         public CombatEffectPool Pool => pool;
         public void Configure(PlayerMotor player, Health owner, Transform strike, CombatEffectPool effects, int targetMask, int wallMask, int allyMask)
@@ -140,11 +163,18 @@ namespace ForjaDasMares
         }
         public bool TrySpecial()
         {
+            if (regionalSkills != null) return TryRegionalSkill(0);
             if (!CanUseSkill || !CanStart || specialCooldown > 0 || Ability == null) return false;
-            currentAttack = Ability.hit;
-            float extra = Ability.effect == AbilityEffect.ProtectionCharge ? Ability.chargeDuration : 0;
             specialCooldown = Ability.cooldown * cooldownMultiplier;
-            Begin(true, currentAttack.windup + currentAttack.recovery + extra); return true;
+            StartAbility(Ability);
+            return true;
+        }
+        void StartAbility(AbilityDefinition ability)
+        {
+            castingAbility = ability;
+            currentAttack = ability.hit;
+            float extra = ability.effect == AbilityEffect.ProtectionCharge ? ability.chargeDuration : 0;
+            Begin(true, currentAttack.windup + currentAttack.recovery + extra);
         }
         void Begin(bool ability, float duration)
         {
@@ -163,6 +193,8 @@ namespace ForjaDasMares
         public void Simulate(float deltaTime)
         {
             heavyBuffer=Mathf.Max(0,heavyBuffer-Mathf.Max(0,deltaTime));furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
+            for (int i = 0; i < regionalCooldowns.Length; i++)
+                regionalCooldowns[i] = Mathf.Max(0, regionalCooldowns[i] - Mathf.Max(0, deltaTime));
             specialCooldown = Mathf.Max(0, specialCooldown - Mathf.Max(0, deltaTime));
             heavyCooldown = Mathf.Max(0, heavyCooldown - Mathf.Max(0,deltaTime));
             superBuffer = Mathf.Max(0,superBuffer - Mathf.Max(0,deltaTime));
@@ -181,7 +213,7 @@ namespace ForjaDasMares
             { resolved = true; if (ultimate) ResolveSuper(); else if (special) ResolveSpecial(); else ResolveBasic(); }
             if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / AttackSpeed)
             { secondResolved = true; ResolveBasic(); }
-            if (chargeWindow && OriginClear && elapsed <= currentAttack.windup + Ability.chargeDuration)
+            if (chargeWindow && OriginClear && elapsed <= currentAttack.windup + castingAbility.chargeDuration)
                 resolver.Area(origin.position + facing * 0.4f, 1.4f, facing, 180f, currentAttack, health, targets, geometry, false, strikeScale, strikeCritical);
             if (elapsed >= length) { active = false; chargeWindow = false; }
         }
@@ -219,7 +251,7 @@ namespace ForjaDasMares
         }
         void ResolveSpecial()
         {
-            AbilityDefinition ability = Ability;
+            AbilityDefinition ability = castingAbility;
             if(!OriginClear&&ability.effect!=AbilityEffect.ProtectionCharge)return;
             if(ability.effect==AbilityEffect.WeaponStrike)
             {
@@ -253,6 +285,6 @@ namespace ForjaDasMares
                 pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }
-        public void ResetCombat() {wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
+        public void ResetCombat() {System.Array.Clear(regionalCooldowns,0,regionalCooldowns.Length);wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

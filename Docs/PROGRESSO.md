@@ -757,3 +757,6 @@ Acertos mostram a vida efetivamente perdida. Dano recebido é vermelho e crític
 
 ### Personagem fixo no RPG
 O RPG usa a classe escolhida na criação. Luma dá instruções de treino e o inventário regional deixa de oferecer troca de herói. Tab alterna Normal/Pesado com arma equipada e comandos ativos. As arenas de teste conservam os atalhos próprios.
+
+### Três habilidades iniciais do RPG
+A primeira pista libera alvo único, a segunda libera dano em área e a entrega a Daro libera controle de grupo. O progresso usa o diário já salvo e segue para as Catacumbas. Cada técnica tem recarga própria; teclas 1–3 e botões do HUD executam as ações. Windows compilou e 42 testes Play Mode passaram.

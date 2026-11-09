@@ -35,13 +35,25 @@ namespace ForjaDasMares.Networking
         public int ClueCount {get{int bits=journal?.clues??0;return (bits&1)+((bits>>1)&1)+((bits>>2)&1);}}
         public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nExplore ou entre nas catacumbas ao norte.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Cais (sudoeste), Pedreira (leste) ou Jardim (noroeste): "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
         public void Configure(RegionalWorld region,RegionStoryDefinition story){world=region;definition=story;world.SetJourney(this);}
-        void Start()
+        public int UnlockedSkills => SkillCount(journal);
+        public static int SkillCount(Journal value) => value?.completed == true ? 3 : value?.accepted == true ? Mathf.Min(2, CountClues(value.clues)) : 0;
+        static int CountClues(int bits) => (bits & 1) + ((bits >> 1) & 1) + ((bits >> 2) & 1);
+
+        public static string JournalPath()
         {
             if(testRoot==null)testRoot=Path.Combine(Application.temporaryCachePath,"Act1Tests",Guid.NewGuid().ToString("N"));
             string root=Path.Combine(Application.persistentDataPath,"Act1LocalStory");var args=Environment.GetCommandLineArgs();
             for(int i=0;i<args.Length;i++){if(args[i]=="-runTests")root=testRoot;if(args[i]=="-netSavePath"&&i+1<args.Length)root=Path.Combine(Path.GetFullPath(args[++i]),"Act1LocalStory");}
             if(Array.IndexOf(args,"-runTests")<0&&CampaignHome.LocalAccountFolder!=null)root=Path.Combine(CampaignHome.LocalAccountFolder,"Story");
-            path=Path.Combine(root,"journal-v1.json");journal=ReadJournal(path,definition.questId,definition.requiredClues)??ReadJournal(path+".bak",definition.questId,definition.requiredClues)??new Journal{questId=definition.questId};
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(RegionalInventory.TestDirectory))
+                root = Path.Combine(RegionalInventory.TestDirectory,"Story");
+#endif
+            return Path.Combine(root,"journal-v1.json");
+        }
+        void Start()
+        {
+            path=JournalPath();journal=ReadJournal(path,definition.questId,definition.requiredClues)??ReadJournal(path+".bak",definition.questId,definition.requiredClues)??new Journal{questId=definition.questId};
             Notice=Accepted ? Objective : "Nara espera você junto à tenda do refúgio.";
         }
         public static Journal ReadJournal(string filename,string quest,int requiredClues=2)
@@ -83,12 +95,12 @@ namespace ForjaDasMares.Networking
                 case RegionalInteraction.Clue:
                     if(!Accepted){Notice="Converse com Nara no refúgio para entender estes rastros.";break;}
                     if((journal.clues&(1<<point.clue))!=0){Notice="Esta pista já está registrada no diário.";break;}
-                    next.clues|=1<<point.clue;if(Commit(next))Notice=(ClueCount==1?"Você decifrou uma escritura. Habilidade de classe liberada. ":"")+point.discovery+(ClueCount>=definition.requiredClues?" Volte a Daro no refúgio.":"");
+                    next.clues|=1<<point.clue;if(Commit(next))Notice=(ClueCount==1?"Habilidade 1 liberada · alvo único. ":ClueCount==2&&!Completed?"Habilidade 2 liberada · área. ":"")+point.discovery+(ClueCount>=definition.requiredClues?" Volte a Daro no refúgio.":"");
                     break;
                 case RegionalInteraction.Artificer:
                     if(Completed){Notice="Daro: o Fragmento de Memória já é seu. A entrada das catacumbas está liberada.";break;}
                     if(!Accepted||ClueCount<definition.requiredClues){Notice="Daro: preciso de pistas de pelo menos dois locais para entender a Distorção.";break;}
-                    next.completed=true;if(Commit(next)){Notice="Daro reuniu as pistas e identificou a passagem antiga. Recompensa: 1 Fragmento de Memória. Acesso às catacumbas liberado.";world.Hero.Health.Restore();}
+                    next.completed=true;if(Commit(next)){Notice="Daro decifrou a terceira técnica: controle de grupo. Você recebeu 1 Fragmento de Memória e liberou as Catacumbas.";world.Hero.Health.Restore();}
                     break;
                 case RegionalInteraction.Catacombs:
                     if(!Completed){Notice="A entrada está selada. Conclua a investigação de Nara e Daro.";break;}

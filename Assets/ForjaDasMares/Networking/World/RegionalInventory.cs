@@ -8,6 +8,7 @@ namespace ForjaDasMares.Networking
         [SerializeField] ProgressionCatalog catalog;
         [SerializeField] string profileDirectory="CampaignProfiles-v1";
         RegionalWorld world;HeroEquipment equipment;
+        AbilityDefinition[] starterSkills;
         public RegionalWorld World=>world;
         public ProgressionCatalog Catalog=>catalog;
         public ProfileService Service{get;private set;}
@@ -50,9 +51,59 @@ namespace ForjaDasMares.Networking
             equipment=world.Hero.GetComponent<HeroEquipment>();if(equipment==null)equipment=world.Hero.gameObject.AddComponent<HeroEquipment>();
             equipment.Configure(world.Hero,world.Hero.GetComponent<PlayerMotor>(),world.Hero.GetComponent<HeroCombat>(),Visual("RegionalEquippedMain"),Visual("RegionalEquippedSecondary"));
             world.Hero.GetComponent<HeroCombat>().ConfigureRegionalRules(()=>equipment.MainWeapon!=null,()=>world.Journey!=null&&world.Journey.ClueCount>0);
+            var combat = world.Hero.GetComponent<HeroCombat>();
+            starterSkills = BuildStarterSkills(world.Hero.Current.heroId);
+            int carriedSkills = 0;
+            if (world.Journey == null && world.Definition.regionId == "catacumbas-previa")
+            {
+                string path = RegionalJourney.JournalPath();
+                carriedSkills = RegionalJourney.SkillCount(RegionalJourney.ReadJournal(path,"sino-ato1-v1")
+                    ?? RegionalJourney.ReadJournal(path+".bak","sino-ato1-v1"));
+            }
+            combat.ConfigureRegionalSkills(starterSkills, () => world.Journey?.UnlockedSkills ?? carriedSkills);
             equipment.RequireEquippedVisual=true;
             equipment.enabled=true;equipment.Initialize(Service,catalog);Changed();
         }
+        static AbilityDefinition[] BuildStarterSkills(string hero)
+        {
+            bool ranged = hero == "arcanist" || hero == "ranger";
+            string[] names;
+            Color tint;
+            switch (hero)
+            {
+                case "warrior": names = new[] {"Golpe Fendido","Ruptura de Aço","Brado de Guerra"}; tint = new Color(1,.53f,.22f); break;
+                case "ranger": names = new[] {"Flecha Perfurante","Chuva de Espinhos","Laço de Raízes"}; tint = new Color(.45f,.95f,.45f); break;
+                case "rune-knight": names = new[] {"Estocada Rúnica","Onda do Bastião","Selo de Imobilização"}; tint = new Color(.95f,.78f,.35f); break;
+                default: names = new[] {"Lança Prismática","Pulso Arcano","Prisão de Cristal"}; tint = new Color(.44f,.67f,1); break;
+            }
+
+            var result = new AbilityDefinition[3];
+            for (int i = 0; i < result.Length; i++)
+            {
+                var ability = ScriptableObject.CreateInstance<AbilityDefinition>();
+                var hit = ScriptableObject.CreateInstance<AttackDefinition>();
+                result[i] = ability;
+                ability.displayName = names[i];
+                ability.hit = hit;
+                ability.cooldown = i == 0 ? 4f : i == 1 ? 7f : 10f;
+                ability.radius = i == 1 ? 3.8f : 4.2f;
+                ability.effect = i == 0 ? AbilityEffect.WeaponStrike : AbilityEffect.AreaImpact;
+                hit.shape = i == 0 && ranged ? AttackShape.Projectile : AttackShape.Arc;
+                hit.footprint = i == 0 ? MeleeFootprint.Cone : MeleeFootprint.Circle;
+                hit.maximumTargets = i == 0 ? 1 : 0;
+                hit.damage = i == 0 ? 24 : i == 1 ? 15 : 5;
+                hit.range = ranged ? 10 : 3;
+                hit.arc = i == 0 ? 48 : 360;
+                hit.windup = .16f + .06f * i;
+                hit.recovery = .26f;
+                hit.knockback = i == 1 ? 1f : 0;
+                hit.color = i == 2 ? Color.Lerp(tint,new Color(.55f,.3f,1),.6f) : tint;
+                hit.control = i == 2 ? ControlEffect.Root : ControlEffect.None;
+                hit.controlDuration = i == 2 ? 2.2f : 0;
+            }
+            return result;
+        }
+
         MeshRenderer Visual(string name)
         {
             var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(world.Hero.transform,false);
@@ -78,7 +129,16 @@ namespace ForjaDasMares.Networking
             }
             SetNotice(Service.Message);
         }
-        void OnDestroy(){if(Service!=null)Service.Changed-=Changed;}
+        void OnDestroy()
+        {
+            if(Service!=null)Service.Changed-=Changed;
+            if(starterSkills == null) return;
+            foreach(var skill in starterSkills)
+            {
+                Destroy(skill.hit);
+                Destroy(skill);
+            }
+        }
     }
 }
 

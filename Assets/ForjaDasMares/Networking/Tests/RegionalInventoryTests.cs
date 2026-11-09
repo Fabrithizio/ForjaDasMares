@@ -41,7 +41,7 @@ namespace ForjaDasMares.Networking.Tests
             Assert.AreEqual(5,inventory.Service.Profile.coins);
             Assert.AreEqual(before+1,inventory.Service.Profile.inventory.Count);
             Assert.IsFalse(buy.interactable);
-            var saved=new ProfileService(inventory.Catalog,new ProfileStore(inventory.SavePath));
+            var saved=new ProfileService(inventory.Catalog,new ProfileStore(inventory.SavePath),false);
             Assert.AreEqual(5,saved.Profile.coins);
             Assert.AreEqual(before+1,saved.Profile.inventory.Count);
             regionalHud.CloseShop();

@@ -22,13 +22,30 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTest]public IEnumerator StoryCompletesWithTwoCluesSurvivesDeathReloadAndCannotDuplicateReward()
         {
+            var combat = world.Hero.GetComponent<HeroCombat>();
+            Assert.IsFalse(combat.TryRegionalSkill(0));
             Visit(1);Assert.IsFalse(world.Journey.Completed,"Daro cannot complete an unaccepted quest");
             Visit(0);Assert.IsFalse(world.Journey.Accepted);Assert.IsTrue(world.Journey.AcceptOffer());Assert.IsTrue(world.Journey.Accepted);Visit(3);Assert.AreEqual(1,world.Journey.ClueCount);
+            Assert.IsTrue(combat.RegionalSkillUnlocked(0));
+            Assert.IsFalse(combat.RegionalSkillUnlocked(1));
             Visit(3);Assert.AreEqual(1,world.Journey.ClueCount,"A repeated clue is not another objective");
             world.Hero.Health.ApplyDamage(10000);world.Respawn();Assert.AreEqual(1,world.Journey.ClueCount);
-            Visit(4);Assert.AreEqual(2,world.Journey.ClueCount);Visit(1);Assert.IsTrue(world.Journey.Completed);Assert.AreEqual(1,world.Journey.MemoryFragments);
+            Visit(4);Assert.AreEqual(2,world.Journey.ClueCount);
+            Assert.IsTrue(combat.RegionalSkillUnlocked(1));
+            Assert.IsFalse(combat.RegionalSkillUnlocked(2));
+            Assert.IsTrue(combat.TryRegionalSkill(0));
+            combat.Simulate(.8f);
+            Assert.Greater(combat.RegionalSkillCooldown(0),0);
+            Assert.IsTrue(combat.TryRegionalSkill(1));
+            combat.Simulate(.8f);
+            Visit(1);Assert.IsTrue(world.Journey.Completed);Assert.AreEqual(1,world.Journey.MemoryFragments);
             Visit(1);Assert.AreEqual(1,world.Journey.MemoryFragments);
             yield return SceneManager.LoadSceneAsync("CostaAto1");yield return null;yield return null;world=Object.FindFirstObjectByType<RegionalWorld>();Assert.IsTrue(world.Journey.Completed);Assert.AreEqual(2,world.Journey.ClueCount);Assert.AreEqual(1,world.Journey.MemoryFragments);
+            Assert.AreEqual(3,world.Journey.UnlockedSkills);
+            yield return SceneManager.LoadSceneAsync("CatacumbasDasMares");
+            yield return null;
+            world = Object.FindFirstObjectByType<RegionalWorld>();
+            Assert.IsTrue(world.Hero.GetComponent<HeroCombat>().RegionalSkillUnlocked(2));
         }
         [Test]public void InteractionFromOutsideRadiusDoesNotAdvanceStory()
         {world.Hero.GetComponent<PlayerMotor>().Teleport(new Vector3(40,.1f,-35),Quaternion.identity);Assert.AreEqual(-1,world.Journey.NearestPoint());Assert.IsFalse(world.Journey.Interact());}

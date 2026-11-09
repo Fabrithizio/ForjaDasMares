@@ -8,6 +8,9 @@ namespace ForjaDasMares.Networking
     {
         [SerializeField]RegionalWorld world;
         Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey;
+        readonly InputAction[] skillKeys = new InputAction[3];
+        readonly Button[] skillButtons = new Button[3];
+        readonly Text[] skillLabels = new Text[3];
         public void Configure(RegionalWorld value){world=value;}
         static readonly Vector2 Top=new Vector2(0,1);
         Text Label(Transform parent,string name,Vector2 position,Vector2 size,string text,int font=18)=>RusticHudTheme.Label(parent,name,Top,position,size,text,font);
@@ -50,6 +53,14 @@ namespace ForjaDasMares.Networking
             weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button, "<Keyboard>/tab");
             weaponModeKey.performed += OnWeaponMode;
             weaponModeKey.Enable();
+            for (int i = 0; i < skillKeys.Length; i++)
+            {
+                int slot = i;
+                var action = new InputAction("RpgSkill"+i, InputActionType.Button, "<Keyboard>/"+(i+1));
+                action.performed += _ => CastRegionalSkill(slot);
+                skillKeys[i] = action;
+                action.Enable();
+            }
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
@@ -91,11 +102,15 @@ namespace ForjaDasMares.Networking
             if(journalPanel==null||!journalPanel.activeSelf)return;
             var journey=world.Journey;
             string origin = "\nRefúgio do Último Sino · Nara, perto da tenda.\n";
+            var combat = world.Hero.GetComponent<HeroCombat>();
+            string techniques = "";
+            for (int i = 0; i < journey.UnlockedSkills; i++)
+                if (combat.RegionalSkill(i) is AbilityDefinition skill) techniques += "\n" + (i+1) + " · " + skill.displayName;
             journalText.text = journey.Completed
-                ? "CONCLUÍDAS\n" + journey.Definition.title + origin + "Obtido: 1 Fragmento de Memória. Catacumbas liberadas."
+                ? "CONCLUÍDAS\n" + journey.Definition.title + origin + "Obtido: 1 Fragmento de Memória. Catacumbas liberadas." + techniques
                 : journey.Accepted
                     ? "EM ANDAMENTO\n" + journey.Definition.title + origin + journey.Objective
-                      + "\nRecompensa: 1 Fragmento de Memória e acesso às Catacumbas."
+                      + "\nRecompensa: 1 Fragmento de Memória e acesso às Catacumbas." + techniques
                     : "EM ANDAMENTO\nNenhuma missão aceita. Converse com Nara no Refúgio.\n\nCONCLUÍDAS\nNenhuma missão concluída.";
         }
 
@@ -381,14 +396,18 @@ namespace ForjaDasMares.Networking
             RoundAction(root,"RegionalInteract",new Vector2(-232,20),64,"USAR",HudSymbol.Interact,world.Interact);
             BuildSkillBar(root,120);
         }
-        Button firstSkill,attackMode;
+        Button attackMode;
         void BuildSkillBar(RectTransform root,float height)
         {
             var input=world.Hero.GetComponent<ArenaInput>();
             var combat=world.Hero.GetComponent<HeroCombat>();
-            firstSkill=RoundAction(root,"SkillSlot1",new Vector2(-315,height),64,"1 · E",HudSymbol.Rune,input.RequestSpecial);
-            RoundAction(root,"SkillSlot2",new Vector2(-240,height),64,"2 · VAZIO",HudSymbol.Rune,()=>{}).interactable=false;
-            RoundAction(root,"SkillSlot3",new Vector2(-165,height),64,"3 · VAZIO",HudSymbol.Rune,()=>{}).interactable=false;
+            for (int i = 0; i < skillButtons.Length; i++)
+            {
+                int slot = i;
+                var symbol = i == 0 ? HudSymbol.Target : i == 1 ? HudSymbol.Fury : HudSymbol.Rune;
+                skillButtons[i] = RoundAction(root,"SkillSlot"+(i+1),new Vector2(-315+75*i,height),64,"",symbol,() => CastRegionalSkill(slot));
+                skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
+            }
             attackMode=RoundAction(root,"AttackMode",new Vector2(-88,height),68,"NORMAL",HudSymbol.Sword,combat.ToggleWeaponMode);
         }
         void BuildTouchControls(RectTransform root)
@@ -407,6 +426,14 @@ namespace ForjaDasMares.Networking
             var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
             if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.anchorMin=panel.anchorMax=panel.pivot=Top;panel.sizeDelta=new Vector2(450,124);panel.anchoredPosition=new Vector2(22,-118);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(418,108);}
         }
+        void CastRegionalSkill(int slot)
+        {
+            var input = world.Hero.GetComponent<ArenaInput>();
+            if (input.CombatBlocked) return;
+            var combat = world.Hero.GetComponent<HeroCombat>();
+            if (combat.TryRegionalSkill(slot)) input.Desktop?.StopForAbility();
+        }
+
         void OnWeaponMode(InputAction.CallbackContext _)
         {
             if (!world.Hero.Health.IsAlive || world.Hero.GetComponent<ArenaInput>().CombatBlocked) return;
@@ -417,12 +444,18 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             var combat=world.Hero.GetComponent<HeroCombat>();
-            if(firstSkill!=null)
+            if (attackMode != null)
             {
-                firstSkill.interactable=combat.CanUseSkill;
-                firstSkill.GetComponentInChildren<Text>().text=combat.CanUseSkill?"1 · E":"1 · VAZIO";
-                attackMode.interactable=combat.CanUseWeapon;
-                attackMode.GetComponentInChildren<Text>().text=(combat.HeavyMode?"PESADO":"NORMAL")+(Application.isMobilePlatform?"":" · TAB");
+                attackMode.interactable = combat.CanUseWeapon;
+                attackMode.GetComponentInChildren<Text>().text = (combat.HeavyMode ? "PESADO" : "NORMAL") + (Application.isMobilePlatform ? "" : " · TAB");
+                for (int i = 0; i < skillButtons.Length; i++)
+                {
+                    bool unlocked = combat.RegionalSkillUnlocked(i);
+                    float remaining = combat.RegionalSkillCooldown(i);
+                    skillButtons[i].interactable = unlocked && remaining <= 0 && world.Hero.Health.IsAlive;
+                    string role = i == 0 ? "ALVO" : i == 1 ? "ÁREA" : "CONTROLE";
+                    skillLabels[i].text = !unlocked ? (i+1)+" · VAZIO" : remaining > 0 ? Mathf.CeilToInt(remaining)+"s" : (i+1)+" · "+role;
+                }
             }
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             RefreshArea();
@@ -513,7 +546,7 @@ namespace ForjaDasMares.Networking
             }
         }
 
-        void OnDestroy(){weaponModeKey?.Dispose();Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
+        void OnDestroy(){weaponModeKey?.Dispose();foreach(var key in skillKeys)key?.Dispose();Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }
     public sealed class RegionalMap:MaskableGraphic
     {
