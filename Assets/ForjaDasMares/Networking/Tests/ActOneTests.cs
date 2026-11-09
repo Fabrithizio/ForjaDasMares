@@ -47,6 +47,47 @@ namespace ForjaDasMares.Networking.Tests
             world = Object.FindFirstObjectByType<RegionalWorld>();
             Assert.IsTrue(world.Hero.GetComponent<HeroCombat>().RegionalSkillUnlocked(2));
         }
+        [Test]public void PrismaticShatterConsumesOnlyItsOwnCrystalAndAddsDamageOnce()
+        {
+            var targetObject = new GameObject("Combo target");
+            var otherObject = new GameObject("Other caster");
+            var prison = ScriptableObject.CreateInstance<AttackDefinition>();
+            var lance = ScriptableObject.CreateInstance<AttackDefinition>();
+            try
+            {
+                var target = targetObject.AddComponent<Health>();
+                target.Configure(100,CombatFaction.Enemy);
+                var caster = world.Hero.Health;
+                var other = otherObject.AddComponent<Health>();
+                other.Configure(100,CombatFaction.Player);
+                prison.damage = 5;
+                prison.knockback = 0;
+                prison.control = ControlEffect.Root;
+                prison.controlDuration = 2.2f;
+                prison.prismaticEffect = PrismaticEffect.Imprison;
+                lance.damage = 20;
+                lance.knockback = 0;
+                lance.prismaticEffect = PrismaticEffect.Shatter;
+                Assert.IsTrue(target.ApplyHit(prison,Vector3.forward,caster));
+                Assert.IsTrue(target.IsCrystallized);
+                Assert.IsTrue(target.ApplyHit(lance,Vector3.forward,other));
+                Assert.AreEqual(75,target.Current);
+                Assert.IsTrue(target.IsCrystallized);
+                Assert.IsTrue(target.ApplyHit(lance,Vector3.forward,caster));
+                Assert.AreEqual(45,target.Current);
+                Assert.AreEqual(1,target.ControlMultiplier);
+                Assert.IsTrue(target.ApplyHit(lance,Vector3.forward,caster));
+                Assert.AreEqual(25,target.Current);
+            }
+            finally
+            {
+                Object.Destroy(targetObject);
+                Object.Destroy(otherObject);
+                Object.Destroy(prison);
+                Object.Destroy(lance);
+            }
+        }
+
         [Test]public void InteractionFromOutsideRadiusDoesNotAdvanceStory()
         {world.Hero.GetComponent<PlayerMotor>().Teleport(new Vector3(40,.1f,-35),Quaternion.identity);Assert.AreEqual(-1,world.Journey.NearestPoint());Assert.IsFalse(world.Journey.Interact());}
         [UnityTest]public IEnumerator CampsRespectBudgetAndRefugeIsSafe()

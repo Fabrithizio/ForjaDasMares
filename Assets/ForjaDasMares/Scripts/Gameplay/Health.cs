@@ -14,6 +14,9 @@ namespace ForjaDasMares
         IHitDefense defense;
         float armor, protection, protectionTime, controlTime, stunTime, slow = 1f;
         bool rooted;
+        Health crystalOwner;
+        public static event Action<Health> CrystalShattered, CrystalApplied;
+        public bool IsCrystallized => IsAlive && rooted && controlTime > 0 && crystalOwner != null;
         public int Current => current;
         public int Maximum => maximum;
         public bool IsAlive => current > 0;
@@ -45,9 +48,20 @@ namespace ForjaDasMares
         {
             float build=source!=null?source.GetComponent<CombatBuildEffects>()?.Against(this)??1:1;
             float multiplier = defense != null ? Mathf.Clamp01(defense.DamageMultiplier(direction, source, attack)) : 1;
-            if (!CanReceiveFrom(source) || multiplier <= 0 || !ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build)), critical)) return false;
+            bool shatter = attack.prismaticEffect == PrismaticEffect.Shatter && IsCrystallized && crystalOwner == source;
+            float comboMultiplier = shatter ? 1.5f : 1f;
+            if (!CanReceiveFrom(source) || multiplier <= 0 ||
+                !ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build * comboMultiplier)), critical))
+                return false;
+            if (shatter)
+            {
+                crystalOwner = null;
+                controlTime = 0;
+                CrystalShattered?.Invoke(this);
+                Changed?.Invoke();
+            }
             if (attack.control != ControlEffect.None && attack.controlDuration > 0f)
-            { rooted = attack.control == ControlEffect.Root; slow = Mathf.Clamp(attack.slowMultiplier, 0.05f, 1f); controlTime = attack.controlDuration; Changed?.Invoke(); }
+            { rooted = attack.control == ControlEffect.Root; crystalOwner = rooted && attack.prismaticEffect == PrismaticEffect.Imprison ? source : null; slow = Mathf.Clamp(attack.slowMultiplier, 0.05f, 1f); controlTime = attack.controlDuration; if (IsCrystallized) CrystalApplied?.Invoke(this); Changed?.Invoke(); }
             if (attack.knockback > 0) Impact?.Invoke(direction, attack.knockback);
             if (source != null) source.DealtHit?.Invoke(this);
             return true;
@@ -64,7 +78,7 @@ namespace ForjaDasMares
             Changed?.Invoke();
             return true;
         }
-        public void Restore() { GetComponent<CombatAilments>()?.Clear();current = maximum; protectionTime = controlTime = stunTime = 0f; Changed?.Invoke(); }
+        public void Restore() { GetComponent<CombatAilments>()?.Clear();current = maximum; crystalOwner = null; protectionTime = controlTime = stunTime = 0f; Changed?.Invoke(); }
         public void ApplyAttributes(int hitPoints, float reduction)
         { maximum = Mathf.Max(1, hitPoints); armor = Mathf.Clamp(reduction, 0, .75f); current = Mathf.Min(current, maximum); Changed?.Invoke(); }
         public bool Heal(int amount)
@@ -73,7 +87,7 @@ namespace ForjaDasMares
         {
             if (IsAlive || float.IsNaN(fraction) || float.IsInfinity(fraction) || fraction <= 0) return false;
             current = Mathf.Max(1, Mathf.RoundToInt(maximum * Mathf.Clamp01(fraction)));
-            protectionTime = controlTime = stunTime = 0; Changed?.Invoke(); return true;
+            crystalOwner = null; protectionTime = controlTime = stunTime = 0; Changed?.Invoke(); return true;
         }
         // Presentation-only replicas call this after an authenticated host snapshot.
         public void SetReplicaState(int hitPoints, int capacity)

@@ -100,6 +100,8 @@ namespace ForjaDasMares.Networking
                 hit.color = i == 2 ? Color.Lerp(tint,new Color(.55f,.3f,1),.6f) : tint;
                 hit.control = i == 2 ? ControlEffect.Root : ControlEffect.None;
                 hit.controlDuration = i == 2 ? 2.2f : 0;
+                if (hero == "arcanist")
+                    hit.prismaticEffect = i == 0 ? PrismaticEffect.Shatter : i == 2 ? PrismaticEffect.Imprison : PrismaticEffect.None;
             }
             return result;
         }

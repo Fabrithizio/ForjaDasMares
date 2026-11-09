@@ -4,6 +4,7 @@ namespace ForjaDasMares
 {
     public enum MeleeFootprint { Cone, Line, Circle }
     public enum AttackShape { Arc, Projectile }
+    public enum PrismaticEffect { None, Imprison, Shatter }
     public enum ControlEffect { None, Slow, Root }
     [CreateAssetMenu(menuName = "Forja/Attack")]
     public sealed class AttackDefinition : ScriptableObject
@@ -21,6 +22,7 @@ namespace ForjaDasMares
         [Min(0.02f)] public float projectileRadius = 0.15f;
         [Min(0)] public float splashRadius;
         public ControlEffect control;
+        public PrismaticEffect prismaticEffect;
         [Min(0)] public float controlDuration;
         [Range(0.05f, 1)] public float slowMultiplier = 0.5f;
         public Color color = Color.yellow;

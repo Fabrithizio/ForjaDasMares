@@ -760,3 +760,6 @@ O RPG usa a classe escolhida na criação. Luma dá instruções de treino e o i
 
 ### Três habilidades iniciais do RPG
 A primeira pista libera alvo único, a segunda libera dano em área e a entrega a Daro libera controle de grupo. O progresso usa o diário já salvo e segue para as Catacumbas. Cada técnica tem recarga própria; teclas 1–3 e botões do HUD executam as ações. Windows compilou e 42 testes Play Mode passaram.
+
+### Estilhaço Prismático
+Prisão de Cristal marca os alvos durante a imobilização. A Lança Prismática da mesma Arcanista consome a marca no acerto, libera o alvo e causa 50% de dano adicional antes da defesa. O HUD mostra o estado e o nome do combo. Windows compilou e 31 testes Play Mode passaram.

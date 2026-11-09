@@ -477,6 +477,8 @@ namespace ForjaDasMares.Networking
         sealed class DamagePopup
         {
             public Text Text;
+            public Health Victim;
+            public bool CrystalMarker;
             public Vector3 Position;
             public float Age, Drift;
             public Color Tint;
@@ -506,6 +508,8 @@ namespace ForjaDasMares.Networking
                 damagePopups[i] = new DamagePopup { Text = label, Age = DamageLifetime };
             }
             Health.DamageTaken += ShowDamage;
+            Health.CrystalShattered += ShowShatter;
+            Health.CrystalApplied += ShowCrystal;
         }
 
         void ShowDamage(Health victim, int amount, bool critical)
@@ -515,12 +519,42 @@ namespace ForjaDasMares.Networking
             if (amount <= 0 || damageCamera == null) return;
             var popup = damagePopups[nextPopup];
             nextPopup = (nextPopup + 1) % damagePopups.Length;
+            popup.Victim = victim;
+            popup.CrystalMarker = false;
             popup.Position = victim.transform.position + Vector3.up * (incoming ? 2f : 1.55f);
             popup.Age = 0;
             popup.Drift = (nextPopup % 5 - 2) * 15;
             popup.Tint = incoming ? new Color(1,.32f,.32f) : critical ? new Color(1,.8f,.24f) : RusticHudTheme.Parchment;
+            popup.Text.rectTransform.sizeDelta = new Vector2(165,52);
             popup.Text.fontSize = critical ? 29 : 24;
             popup.Text.text = (incoming ? "−" : "") + amount + (critical ? "  CRÍTICO" : "");
+        }
+
+        void ShowCrystal(Health victim)
+        {
+            if (damageCamera == null) return;
+            foreach (var existing in damagePopups)
+                if (existing.CrystalMarker && existing.Victim == victim && existing.Age < DamageLifetime) return;
+            var popup = damagePopups[nextPopup];
+            nextPopup = (nextPopup + 1) % damagePopups.Length;
+            popup.Victim = victim;
+            popup.CrystalMarker = true;
+            popup.Age = 0;
+            popup.Drift = 0;
+            popup.Tint = new Color(.56f,.9f,1f);
+            popup.Text.fontSize = 17;
+            popup.Text.text = "◆ CRISTALIZADO";
+            popup.Text.rectTransform.sizeDelta = new Vector2(180,36);
+        }
+
+        void ShowShatter(Health victim)
+        {
+            var popup = damagePopups[(nextPopup + damagePopups.Length - 1) % damagePopups.Length];
+            if (popup.Victim != victim || popup.Age != 0) return;
+            popup.Tint = new Color(.56f,.9f,1f);
+            popup.Text.fontSize = 21;
+            popup.Text.text += "\nESTILHAÇO PRISMÁTICO";
+            popup.Text.rectTransform.sizeDelta = new Vector2(270,62);
         }
 
         void UpdateDamageNumbers()
@@ -529,7 +563,17 @@ namespace ForjaDasMares.Networking
             foreach (var popup in damagePopups)
             {
                 if (popup.Age >= DamageLifetime) continue;
-                popup.Age += Time.unscaledDeltaTime;
+                if (popup.CrystalMarker)
+                {
+                    if (popup.Victim == null || !popup.Victim.isActiveAndEnabled || !popup.Victim.IsCrystallized)
+                    {
+                        popup.Age = DamageLifetime;
+                        popup.Text.gameObject.SetActive(false);
+                        continue;
+                    }
+                    popup.Position = popup.Victim.transform.position + Vector3.up * 2.3f;
+                }
+                else popup.Age += Time.unscaledDeltaTime;
                 Vector3 view = damageCamera.WorldToViewportPoint(popup.Position);
                 bool visible = popup.Age < DamageLifetime && view.z > 0 && view.x > 0 && view.x < 1 && view.y > 0 && view.y < 1;
                 popup.Text.gameObject.SetActive(visible);
@@ -546,7 +590,7 @@ namespace ForjaDasMares.Networking
             }
         }
 
-        void OnDestroy(){weaponModeKey?.Dispose();foreach(var key in skillKeys)key?.Dispose();Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
+        void OnDestroy(){weaponModeKey?.Dispose();foreach(var key in skillKeys)key?.Dispose();Health.DamageTaken-=ShowDamage;Health.CrystalShattered-=ShowShatter;Health.CrystalApplied-=ShowCrystal;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }
     public sealed class RegionalMap:MaskableGraphic
     {
