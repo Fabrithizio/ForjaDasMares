@@ -146,6 +146,35 @@ namespace ForjaDasMares
             if(catalog.Hero(heroId)==null)return false;int cost=HeroTalents.ResetCost(Profile,heroId,catalog);if(!confirmed||cost<=0||Profile.coins<cost){Message="Confirme a redistribuição e tenha "+cost+" ouro.";return false;}
             return Transaction(next=>{next.coins-=cost;next.talents.RemoveAll(x=>x.heroId==heroId);},"Pontos devolvidos. Custo: "+cost+" ouro.");
         }
+        public int CollectionRuneLevel => Mathf.Clamp(Profile.collectionRuneLevel,0,3);
+        public bool CollectionRuneEquipped => CollectionRuneLevel > 0 && Profile.collectionRuneEquipped;
+        public int CollectionRuneUpgradeCost => CollectionRuneLevel == 0 ? 0 : CollectionRuneLevel == 1 ? 40 : 90;
+
+        public bool UpgradeCollectionRune()
+        {
+            int level = CollectionRuneLevel, cost = CollectionRuneUpgradeCost;
+            if (level >= 3 || Profile.coins < cost) return false;
+            return Transaction(next =>
+            {
+                next.coins -= cost;
+                next.collectionRuneLevel = level + 1;
+                if (level == 0) next.collectionRuneEquipped = true;
+            }, "Runa de coleta melhorada.");
+        }
+
+        public bool ToggleCollectionRune() => CollectionRuneLevel > 0 &&
+            Transaction(next => next.collectionRuneEquipped = !next.collectionRuneEquipped, "Runa de coleta atualizada.");
+
+        public bool ClaimCatacombCard(int gold, int xp)
+        {
+            if (gold <= 0 || gold > 100 || xp <= 0 || xp > 100) return false;
+            return Transaction(next =>
+            {
+                next.coins = Mathf.Min(100000000,next.coins + gold);
+                next.experience = Mathf.Min(1000000,next.experience + xp);
+            }, "Carta das Catacumbas recebida.");
+        }
+
         public bool CollectRegionalGold(int amount)
         {
             if (amount <= 0 || amount > 1000) return false;

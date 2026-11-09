@@ -114,6 +114,30 @@ namespace ForjaDasMares.Networking.Tests
             Assert.AreEqual(collected,loaded.Profile.coins);
         }
 
+        [UnityTest]public IEnumerator EquippedRuneCollectsFromTheGround()
+        {
+            float deadline = Time.realtimeSinceStartup + 5;
+            while (world.Enemies.ActiveCount == 0 && Time.realtimeSinceStartup < deadline) yield return null;
+            var inventory = world.GetComponent<RegionalInventory>();
+            var service = inventory.Service;
+            Assert.IsTrue(service.UpgradeCollectionRune());
+            Assert.IsTrue(service.CollectionRuneEquipped);
+            world.Enemies.Actors.First(actor => actor.IsAlive).Health.ApplyDamage(100000);
+            yield return null;
+            var pile = GameObject.Find("Ouro no chão");
+            int previous = service.Profile.coins;
+            world.Hero.GetComponent<PlayerMotor>().Teleport(pile.transform.position+Vector3.back*1.5f,Quaternion.identity);
+            yield return null;
+            Assert.AreEqual(previous,service.Profile.coins);
+            world.Hero.GetComponent<PlayerMotor>().Teleport(pile.transform.position,Quaternion.identity);
+            yield return null;
+            Assert.Greater(service.Profile.coins,previous);
+            Assert.IsTrue(service.ToggleCollectionRune());
+            var loaded = new ProfileService(inventory.Catalog,new ProfileStore(inventory.SavePath),false);
+            Assert.AreEqual(1,loaded.CollectionRuneLevel);
+            Assert.IsFalse(loaded.CollectionRuneEquipped);
+        }
+
         [Test]public void NewTreeAndTwoProvisionalNpcsExistAndPropsUseThreeLods()
         {Assert.IsNotNull(GameObject.Find("Nara · Cartógrafa (provisório)"));Assert.IsNotNull(GameObject.Find("Daro · Artífice (provisório)"));var groups=Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None);Assert.IsTrue(groups.Any(g=>g.name.StartsWith("Gravewood")));foreach(var g in groups){Assert.That(g.GetLODs().Length,Is.InRange(2,3));foreach(var lod in g.GetLODs())Assert.IsTrue(lod.renderers.Length>0);}}
         [Test]public void MaterialsKeepBaseColorWhiteAndColorDataLinear()

@@ -29,6 +29,8 @@ namespace ForjaDasMares
     {
         public int version = 2, experience, coins;
         public uint campaignCleared;
+        public int collectionRuneLevel;
+        public bool collectionRuneEquipped;
         public List<string> starterGranted=new List<string>();
         public List<ItemInstance> inventory = new List<ItemInstance>();
         public List<ItemInstance> deliveries = new List<ItemInstance>();

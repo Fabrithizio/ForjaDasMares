@@ -21,6 +21,8 @@ namespace ForjaDasMares.Networking
             var root=RusticHudTheme.Rect(transform,"RegionSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);root.anchorMax=Vector2.one;root.offsetMin=root.offsetMax=Vector2.zero;
             town=world.GetComponent<TownHub>();BuildVitals(root);if(town!=null)BuildShop(root);if(world.Journey!=null)BuildJournal(root);
             BuildStoryPanels(root);
+            world.Hud = this;
+            BuildCatacombPanels(root);
             BuildDamageNumbers(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
@@ -205,11 +207,82 @@ namespace ForjaDasMares.Networking
 
         public bool CloseStoryModal()
         {
-            var panel = storyModal != null && storyModal.activeSelf ? storyModal : expeditionModal;
+            var panel = instanceModal != null && instanceModal.activeSelf ? instanceModal : storyModal != null && storyModal.activeSelf ? storyModal : expeditionModal;
             if (panel == null || !panel.activeSelf) return false;
             panel.SetActive(false);
             world.Hero.GetComponent<ArenaInput>().BlockCommands(false);
             return true;
+        }
+
+        GameObject instanceModal;
+        Button enterInstance, leaveInstance;
+        readonly Button[] rewardCards = new Button[3];
+        Text instanceInfo;
+        int selectedCard = -1;
+
+        void BuildCatacombPanels(RectTransform root)
+        {
+            if (world.IsCatacombInstance)
+            {
+                var panel = BuildModal(root,"Cartas das Catacumbas",out instanceModal);
+                instanceInfo = Label(panel,"Reward",new Vector2(28,-76),new Vector2(584,65),"",21);
+                for (int i = 0; i < rewardCards.Length; i++)
+                {
+                    int card = i;
+                    rewardCards[i] = RusticHudTheme.Button(panel,"Card"+i,Top,new Vector2(30+i*197,-144),
+                        new Vector2(185,74),"◆  CARTA "+(i+1),() =>
+                        {
+                            if (world.ClaimCatacombCard(card)) selectedCard = card;
+                            else instanceInfo.text = "Não foi possível guardar o prêmio. Tente novamente.";
+                            if (selectedCard >= 0) RefreshCatacombCards();
+                        });
+                }
+                RusticHudTheme.Button(panel,"CloseCards",Top,new Vector2(30,-235),new Vector2(235,48),"FECHAR",() => CloseStoryModal());
+                leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(300,-235),new Vector2(310,48),"VOLTAR À COSTA",world.LeaveCatacombInstance);
+            }
+            else if (world.Definition.regionId == "costa-ato1")
+            {
+                var panel = BuildModal(root,"Catacumbas das Marés",out instanceModal);
+                instanceInfo = Label(panel,"Rewards",new Vector2(28,-70),new Vector2(584,153),"",20);
+                RusticHudTheme.Button(panel,"CancelInstance",Top,new Vector2(28,-232),new Vector2(235,48),"VOLTAR",() => CloseStoryModal());
+                enterInstance = RusticHudTheme.Button(panel,"EnterInstance",Top,new Vector2(295,-232),new Vector2(315,48),"ENTRAR SOLO",world.EnterCatacombInstance);
+            }
+            if (instanceModal != null) instanceModal.SetActive(false);
+        }
+
+        public void OpenCatacombEntrance()
+        {
+            if (enterInstance == null || !OpenModal(instanceModal)) return;
+            enterInstance.interactable = world.Journey?.Completed == true;
+            string text = "Instância solo · derrote as três patrulhas.\nEscolha uma carta no final. Prêmios possíveis:";
+            foreach (var reward in RegionalWorld.CatacombRewards)
+                text += "\n" + reward.gold + " ouro  ·  " + reward.xp + " XP";
+            if (!enterInstance.interactable) text += "\nConclua a investigação de Nara e Daro para entrar.";
+            instanceInfo.text = text;
+        }
+
+        public void OpenCatacombCards()
+        {
+            if (leaveInstance == null || !OpenModal(instanceModal)) return;
+            RefreshCatacombCards();
+        }
+
+        void RefreshCatacombCards()
+        {
+            bool revealed = world.RevealedCard >= 0;
+            instanceInfo.text = revealed ? "Prêmio salvo no seu perfil." : "Patrulhas derrotadas. Escolha uma das três cartas.";
+            leaveInstance.interactable = revealed;
+            for (int i = 0; i < rewardCards.Length; i++)
+            {
+                rewardCards[i].interactable = !revealed;
+                var label = rewardCards[i].GetComponentInChildren<Text>();
+                if (revealed && i == selectedCard)
+                {
+                    var reward = RegionalWorld.CatacombRewards[world.RevealedCard];
+                    label.text = reward.gold + " OURO\n" + reward.xp + " XP";
+                }
+                else label.text = revealed ? "◆" : "◆  CARTA " + (i+1);
+            }
         }
 
         void RefreshArea()

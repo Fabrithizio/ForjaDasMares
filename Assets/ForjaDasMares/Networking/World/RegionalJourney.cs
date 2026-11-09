@@ -11,7 +11,7 @@ namespace ForjaDasMares.Networking
         {public int version=1;public string questId;public bool accepted,completed;public int clues;}
         [SerializeField]RegionalWorld world;
         [SerializeField]RegionStoryDefinition definition;
-        Journal journal;string path;bool travelling;
+        Journal journal;string path;
         static string testRoot;
         public string Notice {get;private set;}
         public RegionStoryDefinition Definition=>definition;
@@ -84,7 +84,7 @@ namespace ForjaDasMares.Networking
         public string Hint {get{int i=NearestPoint();return i>=0?"F · "+definition.points[i].label:"";}}
         public bool Interact()
         {
-            int index=NearestPoint();if(index<0||travelling||!world.Hero.Health.IsAlive)return false;
+            int index=NearestPoint();if(index<0||!world.Hero.Health.IsAlive)return false;
             var point=definition.points[index];var next=JsonUtility.FromJson<Journal>(JsonUtility.ToJson(journal));
             switch(point.interaction)
             {
@@ -104,7 +104,7 @@ namespace ForjaDasMares.Networking
                     break;
                 case RegionalInteraction.Catacombs:
                     if(!Completed){Notice="A entrada está selada. Conclua a investigação de Nara e Daro.";break;}
-                    travelling=true;world.Hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync("CatacumbasDasMares");break;
+                    world.Hud?.OpenCatacombEntrance();break;
             }
             return true;
         }
