@@ -160,7 +160,7 @@ namespace ForjaDasMares.Networking
         const string IntroSeenKey="Forja.WorldIntro.v3";
         System.Collections.IEnumerator PlayWorldIntro(RectTransform root)
         {
-            if(PlayerPrefs.GetInt(IntroSeenKey)!=0)yield break;
+            if(PlayerPrefs.GetInt(IntroSeenKey+CampaignHome.LocalAccountId)!=0)yield break;
             var overlay=RusticHudTheme.Rect(root,"WorldIntro",Vector2.zero,Vector2.zero,Vector2.zero);
             overlay.anchorMax=Vector2.one;
             overlay.offsetMin=overlay.offsetMax=Vector2.zero;
@@ -225,7 +225,7 @@ namespace ForjaDasMares.Networking
             overlay.gameObject.SetActive(false);
             Destroy(overlay.gameObject);
             input.BlockCommands(false);
-            if(finished||skipped)PlayerPrefs.SetInt(IntroSeenKey,1);
+            if(finished||skipped)PlayerPrefs.SetInt(IntroSeenKey+CampaignHome.LocalAccountId,1);
             PlayerPrefs.Save();
         }
 

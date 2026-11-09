@@ -11,7 +11,7 @@ namespace ForjaDasMares.Networking
         [Serializable] public sealed class Invitations { public List<Invitation> entries=new List<Invitation>(); }
         internal static bool EnterExpeditionRoutes; const string InviteKey="CampaignInvitations-v1",VolumeKey="CampaignMasterVolume";
         Invitations saved=new Invitations();CoopDirector director;CoopCloud cloud;Action play;
-        GameObject main,friends,options,confirm,creation;Text notice;InputField alias,code;Button[] entries=new Button[6];
+        GameObject main,friends,options,confirm,creation,account;Text notice;InputField alias,code;Button[] entries=new Button[6];
         public void Build(RectTransform parent,CoopDirector owner,Action campaign,Action profile)
         {
             director=owner;cloud=owner.GetComponent<CoopCloud>();play=campaign;
@@ -24,12 +24,14 @@ namespace ForjaDasMares.Networking
             Label(main,"O MUNDO ALÉM DO REFÚGIO",68,220,550,38,21).color=RusticHudTheme.Gold;
             Label(main,"Comece sua jornada no Refúgio.",68,264,550,40,19);
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
-            Button(main,"ActOne",65,330,470,string.IsNullOrEmpty(CharacterName)?"JOGAR RPG":"CONTINUAR RPG",()=>{if(string.IsNullOrEmpty(CharacterName))Show(creation);else EnterRpg();});
+            Button(main,"ActOne",65,330,470,string.IsNullOrEmpty(CharacterName)?"JOGAR RPG":"CONTINUAR RPG",()=>{if(string.IsNullOrEmpty(LocalAccountId))Show(account);else if(string.IsNullOrEmpty(CharacterName))Show(creation);else EnterRpg();});
             BuildCharacterCreation(parent);
+            BuildAccountCreation(parent);
+            Button(main,"NewLocalAccount",65,620,470,"CRIAR OUTRO PERFIL LOCAL",()=>Show(account));
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
             Button(main,"Quit",310,549,225,"SAIR",()=>Show(confirm));
-            Label(main,"A jornada começa na cidade segura.",68,625,630,60,17);
+
             var badge=RusticHudTheme.Rect(main.transform,"VersionCard",new Vector2(1,0),new Vector2(-40,40),new Vector2(310,65));RusticHudTheme.Panel(badge,new Color(.025f,.05f,.055f,.85f),16);
             RusticHudTheme.Label(badge,"Version",Vector2.one*.5f,Vector2.zero,new Vector2(280,60),"Versão "+Application.version,17,TextAnchor.MiddleCenter);
             Label(friends,"AMIGOS E CONVITES",40,30,1100,65,32);
@@ -66,11 +68,35 @@ namespace ForjaDasMares.Networking
             Button button=null;button=Button(page,name,x,y,width,label+": "+Mathf.RoundToInt(CampaignSoundscape.Volume(key)*100)+"% · AJUSTAR",()=>{float value=CampaignSoundscape.CycleVolume(key);button.GetComponentInChildren<Text>().text=label+": "+Mathf.RoundToInt(value*100)+"% · AJUSTAR";});
         }
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat(VolumeKey,AudioListener.volume);PlayerPrefs.Save();if(volume!=null)volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
-        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(creation!=null){creation.SetActive(page==creation);if(page==creation){var roster=director.Actor(0)?.Roster;if(roster!=null)creation.GetComponentInChildren<EquipmentPaperDoll>().Refresh(roster.GetComponent<HeroPresentation>(),new PlayerProfile(),roster.Current.heroId);}}if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
+        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(account!=null)account.SetActive(page==account);if(creation!=null){creation.SetActive(page==creation);if(page==creation){var roster=director.Actor(0)?.Roster;if(roster!=null)creation.GetComponentInChildren<EquipmentPaperDoll>().Refresh(roster.GetComponent<HeroPresentation>(),new PlayerProfile(),roster.Current.heroId);}}if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
+        public static string LocalAccountId=>PlayerPrefs.GetString("Forja.LocalAccount.Id","");
+        public static string LocalAccountFolder=>Guid.TryParseExact(LocalAccountId,"N",out _)
+            ?System.IO.Path.Combine(Application.persistentDataPath,"RpgAccounts",LocalAccountId):null;
+        void BuildAccountCreation(Transform parent)
+        {
+            account=Page(parent,"CreateLocalAccount");
+            Label(account,"CRIAR PERFIL LOCAL",110,105,950,65,38).color=RusticHudTheme.Gold;
+            Label(account,"Sua aventura começa com um perfil salvo neste aparelho.",110,185,950,48,23);
+            var login=Field(account,"AccountName",110,260,620,"Nome do perfil",24);
+            var error=Label(account,"",110,340,950,52,20);
+            Button(account,"BackFromAccount",110,470,220,"VOLTAR",()=>Show(main));
+            Button(account,"ConfirmAccount",360,470,390,"CRIAR PERFIL",()=>
+            {
+                string name=login.text.Trim();
+                if(name.Length<2){error.text="Digite um nome com pelo menos dois caracteres.";return;}
+                string id=Guid.NewGuid().ToString("N");
+                PlayerPrefs.SetString("Forja.LocalAccount."+id+".Name",name);
+                PlayerPrefs.SetString("Forja.LocalAccount.Id",id);
+                PlayerPrefs.Save();
+                Show(creation);
+            });
+            account.SetActive(false);
+        }
         static string CharacterKey
         {
             get
             {
+                if(LocalAccountFolder!=null)return "Forja.RpgCharacter."+LocalAccountId;
                 var args=Environment.GetCommandLineArgs();
                 int i=Array.IndexOf(args,"-netIdentity");
                 return i>=0&&i+1<args.Length&&Guid.TryParse(args[i+1],out var id)
@@ -93,8 +119,8 @@ namespace ForjaDasMares.Networking
             Label(creation,"CRIAR PERSONAGEM",65,55,690,64,38).color=RusticHudTheme.Gold;
             Label(creation,"Escolha um nome e como quer jogar.",65,125,680,45,20);
             var nameInput=Field(creation,"CharacterName",65,180,620,"Nome do personagem",24);
-            var selection=Label(creation,"",65,420,650,95,23);
-            var error=Label(creation,"",65,515,660,50,18);
+            var selection=Label(creation,"",65,468,650,53,19);
+            var error=Label(creation,"",65,526,660,44,18);
             var frame=RusticHudTheme.Rect(creation.transform,"CharacterPreview",new Vector2(0,1),new Vector2(785,-90),new Vector2(360,480));
             var image=frame.gameObject.AddComponent<RawImage>();
             var preview=frame.gameObject.AddComponent<EquipmentPaperDoll>();
@@ -111,10 +137,18 @@ namespace ForjaDasMares.Networking
                 var roster=director.Actor(0)?.Roster;
                 if(roster!=null)preview.Refresh(roster.GetComponent<HeroPresentation>(),empty,roster.Current.heroId);
             }
+            var cards=Resources.Load<Texture2D>("MenuArt/ClassCards");
+            float[] left={.045f,.107f,.171f,.234f};
             for(int i=0;i<names.Length;i++)
             {
                 int index=i;
-                Button(creation,"Class"+i,65+(i%2)*320,265+(i/2)*75,305,names[i],()=>Choose(index));
+                float x=65+i*165;
+                var card=RusticHudTheme.Rect(creation.transform,"ClassPortrait"+i,new Vector2(0,1),new Vector2(x,-253),new Vector2(150,138));
+                var portrait=card.gameObject.AddComponent<RawImage>();
+                portrait.texture=cards;
+                portrait.uvRect=new Rect(left[i],.686f,.057f,.147f);
+                portrait.raycastTarget=false;
+                Button(creation,"Class"+i,x,394,150,names[i],()=>Choose(index)).GetComponentInChildren<Text>().fontSize=16;
             }
             Button(creation,"BackFromCreation",65,595,225,"VOLTAR",()=>Show(main));
             Button(creation,"ConfirmCharacter",750,595,420,"CRIAR E ENTRAR",()=>

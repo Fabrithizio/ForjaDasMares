@@ -40,6 +40,7 @@ namespace ForjaDasMares.Networking
             if(testRoot==null)testRoot=Path.Combine(Application.temporaryCachePath,"Act1Tests",Guid.NewGuid().ToString("N"));
             string root=Path.Combine(Application.persistentDataPath,"Act1LocalStory");var args=Environment.GetCommandLineArgs();
             for(int i=0;i<args.Length;i++){if(args[i]=="-runTests")root=testRoot;if(args[i]=="-netSavePath"&&i+1<args.Length)root=Path.Combine(Path.GetFullPath(args[++i]),"Act1LocalStory");}
+            if(Array.IndexOf(args,"-runTests")<0&&CampaignHome.LocalAccountFolder!=null)root=Path.Combine(CampaignHome.LocalAccountFolder,"Story");
             path=Path.Combine(root,"journal-v1.json");journal=ReadJournal(path,definition.questId,definition.requiredClues)??ReadJournal(path+".bak",definition.questId,definition.requiredClues)??new Journal{questId=definition.questId};
             Notice=Completed?"Bem-vindo de volta. A investigação está registrada no diário.":"Nara espera você junto à tenda do refúgio.";
         }

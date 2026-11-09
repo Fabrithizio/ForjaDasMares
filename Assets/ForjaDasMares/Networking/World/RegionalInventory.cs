@@ -44,6 +44,7 @@ namespace ForjaDasMares.Networking
             if(!string.IsNullOrEmpty(TestDirectory)){directory=TestDirectory;identity="11111111111111111111111111111111";}
 #endif
             for(int i=0;i<args.Length-1;i++){if(args[i]=="-netSavePath")directory=Path.GetFullPath(args[++i]);else if(args[i]=="-netIdentity")identity=args[++i];}
+            if(!tests&&CampaignHome.LocalAccountFolder!=null){directory=CampaignHome.LocalAccountFolder;identity=CampaignHome.LocalAccountId;}
             if(!Guid.TryParseExact(identity,"N",out _)){identity=Guid.NewGuid().ToString("N");if(!tests){PlayerPrefs.SetString("CoopParticipantIdentity",identity);PlayerPrefs.Save();}}
             SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath),false);Service.Changed+=Changed;Notice=Service.Message??"";
             equipment=world.Hero.GetComponent<HeroEquipment>();if(equipment==null)equipment=world.Hero.gameObject.AddComponent<HeroEquipment>();
