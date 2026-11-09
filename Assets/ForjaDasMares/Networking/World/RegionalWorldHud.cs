@@ -157,7 +157,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<shopButtons.Length;i++)
                 if(shopButtons[i]!=null)shopButtons[i].interactable=profile.coins>=shopPrices[i]&&used<capacity&&profile.expedition==null;
         }
-        const string IntroSeenKey="Forja.WorldIntro.v2";
+        const string IntroSeenKey="Forja.WorldIntro.v3";
         System.Collections.IEnumerator PlayWorldIntro(RectTransform root)
         {
             if(PlayerPrefs.GetInt(IntroSeenKey)!=0)yield break;
@@ -208,11 +208,13 @@ namespace ForjaDasMares.Networking
             if(video.isPrepared&&!failed&&!skipped)
             {
                 if(artwork!=null)artwork.gameObject.SetActive(false);
-                caption.gameObject.SetActive(false);
+                caption.transform.SetAsLastSibling();
                 video.Play();
                 deadline=Time.realtimeSinceStartup+40;
                 while(!finished&&!failed&&!skipped&&Time.realtimeSinceStartup<deadline)
                 {
+                    double t=video.time;
+                    caption.text=t<8?"No Refúgio, os caminhos ainda levam para casa. Dizem que é por causa do santuário.":t<19?"Lá fora, a Distorção muda as estradas e as lembranças de quem passa pela névoa.":t<29?"Quando a névoa baixa, ruínas reaparecem. Nas pedras, há marcas de alguém que chegou primeiro.":"";
                     if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)skipped=true;
                     yield return null;
                 }
