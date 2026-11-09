@@ -3,6 +3,8 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 namespace ForjaDasMares.Networking.Tests
@@ -44,8 +46,44 @@ namespace ForjaDasMares.Networking.Tests
         [Test]public void InteractionApproachIgnoresVisualScale(){var target=GameObject.Find("RestFountain").GetComponent<WorldClickTarget>();Assert.Less(Vector3.Distance(target.Approach,target.transform.position),3);}
         [Test]public void FourArrivalPointsAreWalkableAndUnobstructed()
         {Assert.AreEqual(4,hub.ArrivalPoints.Length);foreach(var point in hub.ArrivalPoints){Assert.IsTrue(NavMesh.SamplePosition(point,out _,1,NavMesh.AllAreas));Assert.IsFalse(Physics.CheckCapsule(point+Vector3.up*.5f,point+Vector3.up*1.3f,.3f,1<<9));}}
-        [Test]public void RestAndMentorPerformRealActions()
-        {world.Hero.Health.ApplyDamage(10);hub.Rest();Assert.AreEqual(world.Hero.Health.Maximum,world.Hero.Health.Current);int old=world.Hero.Selected;hub.Mentor();Assert.AreNotEqual(old,world.Hero.Selected);}
+        [Test]public void RestAndMentorKeepTheCreatedHero()
+        {world.Hero.Health.ApplyDamage(10);hub.Rest();Assert.AreEqual(world.Hero.Health.Maximum,world.Hero.Health.Current);int old=world.Hero.Selected;hub.Mentor();Assert.AreEqual(old,world.Hero.Selected);Assert.That(hub.Notice,Does.Contain("Tab"));}
+        [UnityTest]public IEnumerator TabTogglesAttackModeWithoutChangingHero()
+        {
+            var background = InputSystem.settings.backgroundBehavior;
+            var editorInput = InputSystem.settings.editorInputBehaviorInPlayMode;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            InputSystem.EnableDevice(keyboard);
+            try
+            {
+                var hero = world.Hero;
+                var combat = hero.GetComponent<HeroCombat>();
+                combat.ConfigureRegionalRules(() => true, () => false);
+                int selected = hero.Selected;
+                bool initial = combat.HeavyMode;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Tab));
+                InputSystem.Update();
+                yield return null;
+                Assert.AreNotEqual(initial, combat.HeavyMode);
+                Assert.AreEqual(selected, hero.Selected);
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                InputSystem.Update();
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Tab));
+                InputSystem.Update();
+                yield return null;
+                Assert.AreEqual(initial, combat.HeavyMode);
+                Assert.AreEqual(selected, hero.Selected);
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(keyboard);
+                InputSystem.settings.backgroundBehavior = background;
+                InputSystem.settings.editorInputBehaviorInPlayMode = editorInput;
+            }
+        }
+
         [Test]public void ImportedTentAndBrazierHaveRealSizedCollisions()
         {foreach(string name in new[]{"RefugeTent","CoalBrazier"}){var group=Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None).First(g=>g.name.StartsWith(name));var box=group.GetComponent<BoxCollider>();Assert.NotNull(box);var render=group.GetLODs()[0].renderers[0];Assert.Greater(box.bounds.size.x,render.bounds.size.x*.5f);Assert.Greater(box.bounds.size.z,render.bounds.size.z*.5f);}}
         [UnityTest]public IEnumerator ArrivalIsTraversableWithoutFallingOrEnteringProps()

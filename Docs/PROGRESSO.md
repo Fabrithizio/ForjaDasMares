@@ -754,3 +754,6 @@ Nara apresenta a investigação em três falas com aceitação no diálogo. Miss
 
 ### Feedback de combate e HUD regional
 Acertos mostram a vida efetivamente perdida. Dano recebido é vermelho e crítico é dourado com rótulo. Projéteis e zonas guardam o crítico do golpe original. O RPG usa ícones de configurações, missões e mochila, além de um acompanhamento recolhível. A saída para o menu fica em Configurações.
+
+### Personagem fixo no RPG
+O RPG usa a classe escolhida na criação. Luma dá instruções de treino e o inventário regional deixa de oferecer troca de herói. Tab alterna Normal/Pesado com arma equipada e comandos ativos. As arenas de teste conservam os atalhos próprios.

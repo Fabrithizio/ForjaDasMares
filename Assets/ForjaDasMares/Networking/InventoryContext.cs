@@ -38,7 +38,7 @@ namespace ForjaDasMares.Networking
             var actor=online.Actor(slot);if(actor==null)return null;
             if(actors[slot]==null||!actors[slot].Matches(actor))actors[slot]=new InventoryHeroView(actor);return actors[slot];
         }
-        public void SelectHero(int hero){if(IsRegional)regional.SelectHero(hero);else online.SelectHero(hero);}
+        public void SelectHero(int hero){if(!IsRegional)online.SelectHero(hero);}
         public void SetInputBlocked(bool value)
         {
             if(!IsRegional){if(online!=null)online.SetInputBlocked(value);return;}

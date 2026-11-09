@@ -156,7 +156,8 @@ namespace ForjaDasMares.Networking
             var profile=channel.LocalProfile;if(profile==null)return;resourceRibbon.gameObject.SetActive(true);ribbonGold.text=profile.coins.ToString("N0")+"  OURO";var hero=ActiveActor.Roster.Current;var catalog=channel.Catalog;var s=ProgressionStats.Calculate(hero,profile,catalog);
             if(activeArea==0)
             {
-                changeProfileHero.interactable=(view.IsRegional?channel.CanManageLocal:channel.HomeMode||view.Phase==CoopPhase.Lobby);
+                changeProfileHero.gameObject.SetActive(!view.IsRegional);
+                changeProfileHero.interactable=!view.IsRegional&&(channel.HomeMode||view.Phase==CoopPhase.Lobby);
                 int xp=ProgressionStats.ExperienceInLevel(profile.experience,catalog.maximumLevel),required=ProgressionStats.RequiredExperience(s.level);bool maximum=s.level>=catalog.maximumLevel;
                 characterXp.text=maximum?"NÍVEL MÁXIMO":"EXPERIÊNCIA   "+xp+" / "+required;characterXpFill.anchorMax=new Vector2(maximum?1:Mathf.Clamp01((float)xp/required),1);
                 areaPortrait.texture=characterPreview.texture;characterIdentity.text=hero.displayName+"\nNÍVEL "+s.level;

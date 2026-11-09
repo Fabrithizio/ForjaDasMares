@@ -7,7 +7,7 @@ namespace ForjaDasMares.Networking
     [DefaultExecutionOrder(260)]public sealed class RegionalWorldHud:MonoBehaviour
     {
         [SerializeField]RegionalWorld world;
-        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact;
+        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey;
         public void Configure(RegionalWorld value){world=value;}
         static readonly Vector2 Top=new Vector2(0,1);
         Text Label(Transform parent,string name,Vector2 position,Vector2 size,string text,int font=18)=>RusticHudTheme.Label(parent,name,Top,position,size,text,font);
@@ -47,6 +47,9 @@ namespace ForjaDasMares.Networking
             death=RusticHudTheme.Rect(root,"Death",Vector2.one*.5f,Vector2.zero,new Vector2(450,180)).gameObject;RusticHudTheme.Panel((RectTransform)death.transform,RusticHudTheme.Ink,20);
             Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. Retorne ao refúgio.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
             interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
+            weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button, "<Keyboard>/tab");
+            weaponModeKey.performed += OnWeaponMode;
+            weaponModeKey.Enable();
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
@@ -404,6 +407,12 @@ namespace ForjaDasMares.Networking
             var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
             if(storyNotice!=null){var panel=(RectTransform)storyNotice.transform.parent;panel.anchorMin=panel.anchorMax=panel.pivot=Top;panel.sizeDelta=new Vector2(450,124);panel.anchoredPosition=new Vector2(22,-118);((RectTransform)storyNotice.transform).sizeDelta=new Vector2(418,108);}
         }
+        void OnWeaponMode(InputAction.CallbackContext _)
+        {
+            if (!world.Hero.Health.IsAlive || world.Hero.GetComponent<ArenaInput>().CombatBlocked) return;
+            world.Hero.GetComponent<HeroCombat>().ToggleWeaponMode();
+        }
+
         void OnInteract(InputAction.CallbackContext _){if((journalPanel==null||!journalPanel.activeSelf)&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
@@ -413,7 +422,7 @@ namespace ForjaDasMares.Networking
                 firstSkill.interactable=combat.CanUseSkill;
                 firstSkill.GetComponentInChildren<Text>().text=combat.CanUseSkill?"1 · E":"1 · VAZIO";
                 attackMode.interactable=combat.CanUseWeapon;
-                attackMode.GetComponentInChildren<Text>().text=combat.HeavyMode?"PESADO":"NORMAL";
+                attackMode.GetComponentInChildren<Text>().text=(combat.HeavyMode?"PESADO":"NORMAL")+(Application.isMobilePlatform?"":" · TAB");
             }
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             RefreshArea();
@@ -504,7 +513,7 @@ namespace ForjaDasMares.Networking
             }
         }
 
-        void OnDestroy(){Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
+        void OnDestroy(){weaponModeKey?.Dispose();Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }
     public sealed class RegionalMap:MaskableGraphic
     {

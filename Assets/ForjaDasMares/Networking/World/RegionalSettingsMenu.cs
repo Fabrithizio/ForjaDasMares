@@ -31,7 +31,7 @@ namespace ForjaDasMares.Networking
             quality=qualityButton.GetComponentInChildren<Text>();
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToCampaign);
-            Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · E: habilidade · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
+            Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · Tab: modo de ataque · E: habilidade · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
             escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
         }
         void ChangeVolume(int i,float step)

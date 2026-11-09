@@ -64,7 +64,7 @@ namespace ForjaDasMares.Networking
             if(hud!=null)hud.OpenShop();
         }
         public void Rest(){world.Hero.Health.Restore();Notice="Fonte das Marés: vida restaurada.";}
-        public void Mentor(){world.Hero.Select((world.Hero.Selected+1)%world.Hero.Count);Notice="Instrutora: agora você está com "+world.Hero.Current.displayName+". Experimente a área de treino.";}
+        public void Mentor() => Speak("Luma: equipe sua arma e experimente os ataques no alvo de treino. Tab alterna entre Normal e Pesado.");
         public void Explore()=>BeginTravel("CostaAto1");
         public void OpenExpeditions()=>FindFirstObjectByType<RegionalWorldHud>()?.OpenExpeditionPanel();
         public void ConfirmExpeditions(){if(travelling||!world.Hero.Health.IsAlive)return;CampaignHome.EnterExpeditionRoutes=true;BeginTravel("CampaignCoop");}

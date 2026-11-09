@@ -61,8 +61,6 @@ namespace ForjaDasMares.Networking
         }
         void Changed(){Revision++;}
         public void SetNotice(string value){Notice=value;Revision++;}
-        public void SelectHero(int index)
-        {if(!CanManage){SetNotice(BlockReason);return;}world.Hero.GetComponent<ArenaInput>().Desktop?.Cancel();world.Hero.Select(Mathf.Clamp(index,0,world.Hero.Count-1));equipment.Refresh();Revision++;}
         public void Request(CoopInventoryAction action,string item,EquipmentSlot slot,bool confirmed,int talent)
         {
             if(!CanManage){SetNotice(BlockReason);return;}
