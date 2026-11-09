@@ -39,6 +39,16 @@ namespace ForjaDasMares
         int AttackHash(int variant,bool upper,bool skill)
         {
             int group=weaponCategory==WeaponCategory.Axe?1:weaponCategory==WeaponCategory.Hammer?2:weaponCategory==WeaponCategory.Staff?3:weaponCategory==WeaponCategory.Grimoire?4:weaponCategory==WeaponCategory.MagicWeapon?5:0;
+            if (skill && variant >= 5)
+            {
+                int casterGroup = group >= 3 ? group : 3;
+                if (variant != 7)
+                {
+                    int cast = (upper ? WeaponUpper : WeaponBase)[casterGroup][variant == 5 ? 0 : 3];
+                    if (animator.HasState(upper ? 1 : 0,cast)) return cast;
+                }
+                return upper ? UpperStates[3] : BaseStates[3];
+            }
             // Caster specials have their own two-handed ritual, not the basic third shot.
             if(skill&&group>=3)return upper?UpperStates[3]:BaseStates[3];
             int index=skill?2:Mathf.Clamp(variant,0,3);int hash=(upper?WeaponUpper:WeaponBase)[group][index];
@@ -87,7 +97,7 @@ namespace ForjaDasMares
             float split=Mathf.Clamp(impact,.05f,.9f),time=Mathf.Clamp01(normalizedAttack);
             animator.SetFloat(ActionTime,action?(time<=split?time/split*contact:Mathf.Lerp(contact,1,(time-split)/(1-split))):time);
             bool masked=LocomotionActive&&(action||state==HeroState.Hit||state==HeroState.Victory)&&animator.layerCount>1;
-            int target=LocomotionActive?(running?Run:BaseStates[1]):action&&variant!=4?AttackHash(variantIndex,false,state==HeroState.Skill):attackVariant?BaseAttacks[variantIndex]:BaseStates[(int)state];
+            int target=LocomotionActive?(running?Run:BaseStates[1]):action&&variant!=4?AttackHash(variant,false,state==HeroState.Skill):attackVariant?BaseAttacks[variantIndex]:BaseStates[(int)state];
             if(!LocomotionActive&&state==HeroState.Walk)target=BaseStates[0];
             if(lastState!=target||!masked&&action&&lastVersion!=version)
             {

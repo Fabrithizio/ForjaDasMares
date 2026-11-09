@@ -175,6 +175,8 @@ namespace ForjaDasMares
             currentAttack = ability.hit;
             float extra = ability.effect == AbilityEffect.ProtectionCharge ? ability.chargeDuration : 0;
             Begin(true, currentAttack.windup + currentAttack.recovery + extra);
+            if (currentAttack.prismaticEffect != PrismaticEffect.None)
+                AnimationVariant = currentAttack.prismaticEffect == PrismaticEffect.Shatter ? 5 : currentAttack.prismaticEffect == PrismaticEffect.Pulse ? 6 : 7;
         }
         void Begin(bool ability, float duration)
         {
@@ -282,7 +284,9 @@ namespace ForjaDasMares
             else
             {
                 resolver.Area(origin.position, ability.radius, facing, 360f, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
-                pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
+                if (currentAttack.prismaticEffect == PrismaticEffect.Pulse || currentAttack.prismaticEffect == PrismaticEffect.Imprison)
+                    pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, currentAttack.prismaticEffect == PrismaticEffect.Pulse ? 1 : 2);
+                else pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }
         public void ResetCombat() {System.Array.Clear(regionalCooldowns,0,regionalCooldowns.Length);wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }

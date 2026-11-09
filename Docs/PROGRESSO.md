@@ -763,3 +763,6 @@ A primeira pista libera alvo único, a segunda libera dano em área e a entrega 
 
 ### Estilhaço Prismático
 Prisão de Cristal marca os alvos durante a imobilização. A Lança Prismática da mesma Arcanista consome a marca no acerto, libera o alvo e causa 50% de dano adicional antes da defesa. O HUD mostra o estado e o nome do combo. Windows compilou e 31 testes Play Mode passaram.
+
+### Efeitos e conjuração da Arcanista
+Lança, Pulso e Prisão usam malhas facetadas e uma textura procedural de veios. O Pulso se expande no chão, a Prisão ergue cristais e a Lança produz fragmentos no impacto. O conjunto reaproveita malhas, material, textura e oito objetos de efeito. As conjurações escolhem gestos existentes por habilidade e mantêm o tempo do acerto. Windows compilou; 31 testes Play Mode passaram. A leitura visual em combate e o desempenho no Android ainda precisam de teste manual.

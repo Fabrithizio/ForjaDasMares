@@ -7,6 +7,7 @@ namespace ForjaDasMares
         readonly RaycastHit[] hits = new RaycastHit[24];
         readonly DamageResolver resolver = new DamageResolver();
         MaterialPropertyBlock properties;
+        CombatEffectPool effectPool;
         AttackDefinition attack;
         Health owner;
         Vector3 direction;
@@ -29,7 +30,9 @@ namespace ForjaDasMares
             transform.localScale = Vector3.one * (data.projectileRadius * 2f);
             properties.SetColor("_BaseColor", data.color); GetComponent<Renderer>().SetPropertyBlock(properties);
             gameObject.SetActive(true);
-            var effectPool=GetComponentInParent<CombatEffectPool>();var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
+            if (effectPool == null) effectPool = GetComponentInParent<CombatEffectPool>();
+            effectPool?.ShapeProjectile(gameObject,data.prismaticEffect == PrismaticEffect.Shatter);
+            var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
             if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true);}
         }
         void Update()
@@ -51,6 +54,8 @@ namespace ForjaDasMares
                 Health victim = hits[closest].collider.GetComponentInParent<Health>();
                 resolver.Clear();
                 if (victim != null) { resolver.Remember(victim); victim.ApplyHit(attack, direction, owner, damageScale, criticalHit); }
+                if (attack.prismaticEffect == PrismaticEffect.Shatter)
+                    effectPool?.PrismBurst(transform.position, .55f, 0);
                 if (attack.splashRadius > 0) resolver.Area(transform.position, attack.splashRadius, direction, 360f, attack, owner, targets, geometry, false, damageScale, criticalHit);
                 gameObject.SetActive(false);
             }

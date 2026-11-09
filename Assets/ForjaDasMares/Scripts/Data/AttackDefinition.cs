@@ -4,7 +4,7 @@ namespace ForjaDasMares
 {
     public enum MeleeFootprint { Cone, Line, Circle }
     public enum AttackShape { Arc, Projectile }
-    public enum PrismaticEffect { None, Imprison, Shatter }
+    public enum PrismaticEffect { None, Imprison, Shatter, Pulse }
     public enum ControlEffect { None, Slow, Root }
     [CreateAssetMenu(menuName = "Forja/Attack")]
     public sealed class AttackDefinition : ScriptableObject

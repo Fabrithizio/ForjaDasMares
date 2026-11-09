@@ -11,6 +11,28 @@ namespace ForjaDasMares
         [SerializeField] Mesh projectileMesh, zoneMesh;
         [SerializeField, Min(1)] int projectileCapacity = 32, zoneCapacity = 12;
         CombatProjectile[] projectiles;
+        PrismaticSpellVisuals prism;
+        public void ShapeProjectile(GameObject shot, bool prismatic)
+        {
+            var mesh = shot.GetComponent<MeshFilter>();
+            var renderer = shot.GetComponent<MeshRenderer>();
+            if (prismatic) Prism().ShapeLance(mesh,renderer);
+            else if (mesh.sharedMesh != projectileMesh)
+            {
+                mesh.sharedMesh = projectileMesh;
+                renderer.sharedMaterial = material;
+            }
+        }
+        public void PrismBurst(Vector3 position,float radius,int kind) => Prism().Burst(position,radius,kind);
+        PrismaticSpellVisuals Prism()
+        {
+            if (prism == null)
+            {
+                prism = gameObject.AddComponent<PrismaticSpellVisuals>();
+                prism.Prepare(material);
+            }
+            return prism;
+        }
         CombatZone[] zones;
         public CombatProjectile[] Projectiles => projectiles;
         public CombatZone[] Zones => zones;

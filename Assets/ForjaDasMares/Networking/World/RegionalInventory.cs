@@ -101,7 +101,7 @@ namespace ForjaDasMares.Networking
                 hit.control = i == 2 ? ControlEffect.Root : ControlEffect.None;
                 hit.controlDuration = i == 2 ? 2.2f : 0;
                 if (hero == "arcanist")
-                    hit.prismaticEffect = i == 0 ? PrismaticEffect.Shatter : i == 2 ? PrismaticEffect.Imprison : PrismaticEffect.None;
+                    hit.prismaticEffect = i == 0 ? PrismaticEffect.Shatter : i == 2 ? PrismaticEffect.Imprison : PrismaticEffect.Pulse;
             }
             return result;
         }
