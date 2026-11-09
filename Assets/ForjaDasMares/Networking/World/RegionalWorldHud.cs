@@ -295,7 +295,7 @@ namespace ForjaDasMares.Networking
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             movementMode.GetComponentInChildren<Text>().text="CONTROLES · AJUDA";
             controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";
-            var hero=world.Hero;life.text=hero.Current.displayName;
+            var hero=world.Hero;life.text=string.IsNullOrEmpty(CampaignHome.CharacterName)?hero.Current.displayName:CampaignHome.CharacterName+" · "+hero.Current.displayName;
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);

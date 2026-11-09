@@ -11,7 +11,7 @@ namespace ForjaDasMares.Networking
         [Serializable] public sealed class Invitations { public List<Invitation> entries=new List<Invitation>(); }
         internal static bool EnterExpeditionRoutes; const string InviteKey="CampaignInvitations-v1",VolumeKey="CampaignMasterVolume";
         Invitations saved=new Invitations();CoopDirector director;CoopCloud cloud;Action play;
-        GameObject main,friends,options,confirm;Text notice;InputField alias,code;Button[] entries=new Button[6];
+        GameObject main,friends,options,confirm,creation;Text notice;InputField alias,code;Button[] entries=new Button[6];
         public void Build(RectTransform parent,CoopDirector owner,Action campaign,Action profile)
         {
             director=owner;cloud=owner.GetComponent<CoopCloud>();play=campaign;
@@ -24,7 +24,8 @@ namespace ForjaDasMares.Networking
             Label(main,"O MUNDO ALÉM DO REFÚGIO",68,220,550,38,21).color=RusticHudTheme.Gold;
             Label(main,"Comece sua jornada no Refúgio.",68,264,550,40,19);
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
-            Button(main,"ActOne",65,330,470,"JOGAR RPG",()=>{director.Close();var oldHud=GetComponentInParent<CoopHud>();if(oldHud!=null)oldHud.gameObject.SetActive(false);if(director.Manager!=null)UnityEngine.Object.Destroy(director.Manager.gameObject);UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");});
+            Button(main,"ActOne",65,330,470,string.IsNullOrEmpty(CharacterName)?"JOGAR RPG":"CONTINUAR RPG",()=>{if(string.IsNullOrEmpty(CharacterName))Show(creation);else EnterRpg();});
+            BuildCharacterCreation(parent);
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
             Button(main,"Quit",310,549,225,"SAIR",()=>Show(confirm));
@@ -65,7 +66,71 @@ namespace ForjaDasMares.Networking
             Button button=null;button=Button(page,name,x,y,width,label+": "+Mathf.RoundToInt(CampaignSoundscape.Volume(key)*100)+"% · AJUSTAR",()=>{float value=CampaignSoundscape.CycleVolume(key);button.GetComponentInChildren<Text>().text=label+": "+Mathf.RoundToInt(value*100)+"% · AJUSTAR";});
         }
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat(VolumeKey,AudioListener.volume);PlayerPrefs.Save();if(volume!=null)volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
-        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
+        void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(creation!=null){creation.SetActive(page==creation);if(page==creation){var roster=director.Actor(0)?.Roster;if(roster!=null)creation.GetComponentInChildren<EquipmentPaperDoll>().Refresh(roster.GetComponent<HeroPresentation>(),new PlayerProfile(),roster.Current.heroId);}}if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
+        static string CharacterKey
+        {
+            get
+            {
+                var args=Environment.GetCommandLineArgs();
+                int i=Array.IndexOf(args,"-netIdentity");
+                return i>=0&&i+1<args.Length&&Guid.TryParse(args[i+1],out var id)
+                    ?"Forja.RpgCharacter."+id.ToString("N"):"Forja.RpgCharacter";
+            }
+        }
+        public static string CharacterName=>PlayerPrefs.GetString(CharacterKey+".Name","");
+        public static int CharacterClass=>PlayerPrefs.GetInt(CharacterKey+".Class",2);
+        void EnterRpg()
+        {
+            director.Close();
+            var oldHud=GetComponentInParent<CoopHud>();
+            if(oldHud!=null)oldHud.gameObject.SetActive(false);
+            if(director.Manager!=null)Destroy(director.Manager.gameObject);
+            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");
+        }
+        void BuildCharacterCreation(Transform parent)
+        {
+            creation=Page(parent,"CreateCharacter");
+            Label(creation,"CRIAR PERSONAGEM",65,55,690,64,38).color=RusticHudTheme.Gold;
+            Label(creation,"Escolha um nome e como quer jogar.",65,125,680,45,20);
+            var nameInput=Field(creation,"CharacterName",65,180,620,"Nome do personagem",24);
+            var selection=Label(creation,"",65,420,650,95,23);
+            var error=Label(creation,"",65,515,660,50,18);
+            var frame=RusticHudTheme.Rect(creation.transform,"CharacterPreview",new Vector2(0,1),new Vector2(785,-90),new Vector2(360,480));
+            var image=frame.gameObject.AddComponent<RawImage>();
+            var preview=frame.gameObject.AddComponent<EquipmentPaperDoll>();
+            preview.Configure(image);
+            var empty=new PlayerProfile();
+            string[] names={"Guerreiro","Patrulheiro","Arcanista","Cavaleiro Rúnico"};
+            string[] roles={"Combate próximo com golpes de impacto.","Mobilidade e ataques à distância.","Magia de alcance e controle.","Resistência e proteção na linha de frente."};
+            int chosen=Mathf.Clamp(CharacterClass,0,names.Length-1);
+            void Choose(int index)
+            {
+                chosen=index;
+                director.SelectHero(index);
+                selection.text=names[index]+"\n"+roles[index];
+                var roster=director.Actor(0)?.Roster;
+                if(roster!=null)preview.Refresh(roster.GetComponent<HeroPresentation>(),empty,roster.Current.heroId);
+            }
+            for(int i=0;i<names.Length;i++)
+            {
+                int index=i;
+                Button(creation,"Class"+i,65+(i%2)*320,265+(i/2)*75,305,names[i],()=>Choose(index));
+            }
+            Button(creation,"BackFromCreation",65,595,225,"VOLTAR",()=>Show(main));
+            Button(creation,"ConfirmCharacter",750,595,420,"CRIAR E ENTRAR",()=>
+            {
+                string name=nameInput.text.Trim();
+                if(name.Length<2){error.text="Digite um nome com pelo menos duas letras ou caracteres.";return;}
+                foreach(char c in name)
+                    if(!char.IsLetterOrDigit(c)&&c!=' '&&c!='-'&&c!='\''){error.text="Use letras, números, espaços, hífen ou apóstrofo.";return;}
+                PlayerPrefs.SetInt(CharacterKey+".Class",chosen);
+                PlayerPrefs.SetString(CharacterKey+".Name",name);
+                PlayerPrefs.Save();
+                EnterRpg();
+            });
+            Choose(chosen);
+            creation.SetActive(false);
+        }
         void Save()
         {
             string name=alias.text.Trim(),invite=code.text.Trim().ToUpperInvariant();
