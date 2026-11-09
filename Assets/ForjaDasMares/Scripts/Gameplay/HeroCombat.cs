@@ -56,6 +56,7 @@ namespace ForjaDasMares
         int combo;
         bool active, special, resolved, chargeWindow;
         AttackDefinition[] equipmentAttacks;
+        bool strikeCritical;
         float criticalMultiplier=1.5f;
         public int GeometryMask=>geometry.value;
         public int TargetMask=>targets.value;
@@ -154,7 +155,8 @@ namespace ForjaDasMares
             facing = desired.sqrMagnitude > .0001f ? desired.normalized : transform.forward;
             facing.y = 0; facing.Normalize();
             transform.rotation = Quaternion.LookRotation(facing);
-            strikeScale = (GetComponent<CombatBuildEffects>()?.ConsumeCounter()??1)*ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,Random.value<criticalChance,criticalMultiplier);
+            strikeCritical = Random.value < criticalChance;
+            strikeScale = (GetComponent<CombatBuildEffects>()?.ConsumeCounter()??1)*ProgressionStats.StrikeMultiplier(damageMultiplier,elementalDamage,strikeCritical,criticalMultiplier);
             secondResolved = echoResolved = false; // A cast keeps its pose aligned with the committed shot while movement stays free.
             motor.LockFacing(currentAttack.windup / (ability ? 1 : AttackSpeed)); resolver.Clear();
         }
@@ -180,7 +182,7 @@ namespace ForjaDasMares
             if (!special && !heavy && twinStrike && !secondResolved && elapsed >= windup + .08f / AttackSpeed)
             { secondResolved = true; ResolveBasic(); }
             if (chargeWindow && OriginClear && elapsed <= currentAttack.windup + Ability.chargeDuration)
-                resolver.Area(origin.position + facing * 0.4f, 1.4f, facing, 180f, currentAttack, health, targets, geometry, false, strikeScale);
+                resolver.Area(origin.position + facing * 0.4f, 1.4f, facing, 180f, currentAttack, health, targets, geometry, false, strikeScale, strikeCritical);
             if (elapsed >= length) { active = false; chargeWindow = false; }
         }
         void ResolveBasic()
@@ -191,12 +193,12 @@ namespace ForjaDasMares
                 Vector3 start = origin.position + facing * 0.05f;
                 if (!Physics.Linecast(origin.position, start, geometry))
                     for (int i = 0; i < Mathf.Clamp(currentAttack.projectileCount, 1, 5); i++)
-                    { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, Quaternion.Euler(0, angle, 0) * facing, currentAttack, health, targets, geometry, strikeScale); }
+                    { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, Quaternion.Euler(0, angle, 0) * facing, currentAttack, health, targets, geometry, strikeScale, strikeCritical); }
             }
-            else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale);
+            else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
             if(heavy&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
             if (legendaryEcho != null && combo % 3 == 0 && !echoResolved)
-            { echoResolved = true; resolver.Area(origin.position, legendaryEcho.range, facing, 360, legendaryEcho, health, targets, geometry, true, strikeScale); }
+            { echoResolved = true; resolver.Area(origin.position, legendaryEcho.range, facing, 360, legendaryEcho, health, targets, geometry, true, strikeScale, strikeCritical); }
         }
         void ResolveSuper()
         {
@@ -204,9 +206,9 @@ namespace ForjaDasMares
             if(currentAttack.shape==AttackShape.Projectile)
             {
                 for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)
-                {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;pool.Shoot(origin.position+facing*.05f,Quaternion.Euler(0,angle,0)*facing,currentAttack,health,targets,geometry,strikeScale);}
+                {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;pool.Shoot(origin.position+facing*.05f,Quaternion.Euler(0,angle,0)*facing,currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
             }
-            else resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true,strikeScale);
+            else resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
             if(flow.superProtection>0)
             {
                 health.Protect(flow.superProtection,flow.protectionDuration);
@@ -222,14 +224,14 @@ namespace ForjaDasMares
             if(ability.effect==AbilityEffect.WeaponStrike)
             {
                 if(currentAttack.shape==AttackShape.Projectile)
-                {for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)pool.Shoot(origin.position,Quaternion.Euler(0,(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread,0)*facing,currentAttack,health,targets,geometry,strikeScale);}
-                else resolver.Area(origin.position,currentAttack.range,facing,currentAttack.arc,currentAttack,health,targets,geometry,true,strikeScale);
+                {for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)pool.Shoot(origin.position,Quaternion.Euler(0,(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread,0)*facing,currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
+                else resolver.Area(origin.position,currentAttack.range,facing,currentAttack.arc,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
             }
             else if (ability.effect == AbilityEffect.Trap)
             {
                 Vector3 point = origin.position + facing * ability.placementDistance;
                 if (Physics.Linecast(origin.position, point, geometry, QueryTriggerInteraction.Ignore) || Physics.CheckSphere(point, 0.2f, geometry, QueryTriggerInteraction.Ignore)) return;
-                pool.PlaceZone(point, ability.radius, ability.trapLifetime, currentAttack, health, targets, geometry, true, strikeScale);
+                pool.PlaceZone(point, ability.radius, ability.trapLifetime, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
             }
             else if (ability.effect == AbilityEffect.ProtectionCharge)
             {
@@ -247,7 +249,7 @@ namespace ForjaDasMares
             }
             else
             {
-                resolver.Area(origin.position, ability.radius, facing, 360f, currentAttack, health, targets, geometry, true, strikeScale);
+                resolver.Area(origin.position, ability.radius, facing, 360f, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
                 pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
             }
         }

@@ -83,8 +83,12 @@ namespace ForjaDasMares.Networking.Tests
         {
             Assert.IsTrue(session.HostDirect("ARS2",7899,false));yield return null;session.StartGame();float deadline=Time.realtimeSinceStartup+5;while(session.Phase!=CoopPhase.Playing&&Time.realtimeSinceStartup<deadline)yield return null;
             var actor=session.Actor(0);var pool=session.Dungeon.Encounter.Enemies;var definition=Enumerable.Range(0,pool.Capacity).Select(pool.DefinitionAt).First(x=>x.kind==EnemyKind.Raider);var enemy=pool.TrySpawn(definition,actor.transform.position+actor.transform.forward*1.5f);Assert.NotNull(enemy);enemy.Brain.enabled=false;enemy.Health.Configure(1000,CombatFaction.Enemy,0);var hit=UnityEngine.Object.Instantiate(actor.Combat.BasicAttack);hit.damage=20;hit.range=3;hit.arc=120;hit.knockback=0;hit.footprint=MeleeFootprint.Cone;
-            try{actor.Combat.ApplyEquipment(new[]{hit},new StatSnapshot{damageMultiplier=1.25f,criticalChance=1,criticalMultiplier=1.75f,attackSpeed=1,cooldownMultiplier=1},1,false);Physics.SyncTransforms();Assert.IsTrue(actor.Combat.TryAttack());actor.Combat.Simulate(hit.windup+.01f);Assert.AreEqual(956,enemy.Health.Current,"20 ×1.25 ×1.75 =44 after rounding");}
-            finally{actor.Combat.ResetCombat();actor.Combat.ApplyEquipment(null,new StatSnapshot{damageMultiplier=1,attackSpeed=1,cooldownMultiplier=1,criticalMultiplier=1.5f},1,false);UnityEngine.Object.Destroy(hit);}
+            int displayedDamage = 0; bool displayedCritical = false;
+            void RecordDamage(Health victim, int amount, bool critical)
+            { if (victim == enemy.Health) { displayedDamage = amount; displayedCritical = critical; } }
+            Health.DamageTaken += RecordDamage;
+            try{actor.Combat.ApplyEquipment(new[]{hit},new StatSnapshot{damageMultiplier=1.25f,criticalChance=1,criticalMultiplier=1.75f,attackSpeed=1,cooldownMultiplier=1},1,false);Physics.SyncTransforms();Assert.IsTrue(actor.Combat.TryAttack());actor.Combat.Simulate(hit.windup+.01f);Assert.AreEqual(956,enemy.Health.Current,"20 ×1.25 ×1.75 =44 after rounding");Assert.AreEqual(44,displayedDamage);Assert.IsTrue(displayedCritical);}
+            finally{Health.DamageTaken -= RecordDamage;actor.Combat.ResetCombat();actor.Combat.ApplyEquipment(null,new StatSnapshot{damageMultiplier=1,attackSpeed=1,cooldownMultiplier=1,criticalMultiplier=1.5f},1,false);UnityEngine.Object.Destroy(hit);}
         }
         [UnityTest]public IEnumerator AttackIndicatorHasNoColliderAndCannotInflictDamage()
         {

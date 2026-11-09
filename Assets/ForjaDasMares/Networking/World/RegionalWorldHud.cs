@@ -18,19 +18,31 @@ namespace ForjaDasMares.Networking
             var root=RusticHudTheme.Rect(transform,"RegionSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);root.anchorMax=Vector2.one;root.offsetMin=root.offsetMax=Vector2.zero;
             town=world.GetComponent<TownHub>();BuildVitals(root);if(town!=null)BuildShop(root);if(world.Journey!=null)BuildJournal(root);
             BuildStoryPanels(root);
+            BuildDamageNumbers(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
-            var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
-            mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,-403),new Vector2(200,42),"Branco: você · verde: refúgio\nDourado: missão · azul: passagem",11).gameObject;
-            RusticHudTheme.Button(root,"ReturnToMenu",new Vector2(1,1),new Vector2(-20,-20),new Vector2(210,42),"VOLTAR AO MENU",world.ReturnToCampaign);
+            var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,world.Journey!=null?-80:-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
+            mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,world.Journey!=null?-258:-403),new Vector2(200,42),"Branco: você · verde: refúgio\nDourado: missão · azul: passagem",11).gameObject;
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
             desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;
             Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).color=RusticHudTheme.Muted;
             if(world.Journey!=null)
             {
-                var dialogue=RusticHudTheme.Rect(root,"StoryNotice",new Vector2(.5f,0),new Vector2(0,82),new Vector2(750,82));dialogue.pivot=new Vector2(.5f,0);
-                RusticHudTheme.Panel(dialogue,new Color(.025f,.05f,.045f,.92f),14);storyNotice=Label(dialogue,"Message",new Vector2(16,-8),new Vector2(718,66),"",16);if(town!=null){dialogue.anchorMin=dialogue.anchorMax=dialogue.pivot=Top;dialogue.anchoredPosition=new Vector2(18,-118);dialogue.sizeDelta=new Vector2(430,116);storyNotice.rectTransform.sizeDelta=new Vector2(398,100);movementMode.gameObject.SetActive(false);controlHint.gameObject.SetActive(false);}
+                var dialogue = RusticHudTheme.Rect(root,"StoryNotice",Top,new Vector2(20,-116),new Vector2(315,126));
+                RusticHudTheme.Panel(dialogue,RusticHudTheme.Ink,14);
+                var heading = Label(dialogue,"StoryTitle",new Vector2(13,-6),new Vector2(237,29),"ACOMPANHAMENTO",13);
+                heading.color = RusticHudTheme.Gold;
+                storyNotice = Label(dialogue,"Message",new Vector2(13,-37),new Vector2(289,77),"",15);
+                RusticHudTheme.Button(dialogue,"ToggleStory",Vector2.one,new Vector2(-7,-4),new Vector2(42,29),"−",() =>
+                {
+                    storyCollapsed = !storyCollapsed;
+                    storyNotice.gameObject.SetActive(!storyCollapsed);
+                    dialogue.sizeDelta = new Vector2(315,storyCollapsed ? 38 : 126);
+                    dialogue.Find("ToggleStory").GetComponentInChildren<Text>().text = storyCollapsed ? "+" : "−";
+                });
+                movementMode.gameObject.SetActive(false);
+                controlHint.gameObject.SetActive(false);
             }
             death=RusticHudTheme.Rect(root,"Death",Vector2.one*.5f,Vector2.zero,new Vector2(450,180)).gameObject;RusticHudTheme.Panel((RectTransform)death.transform,RusticHudTheme.Ink,20);
             Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. Retorne ao refúgio.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
@@ -42,11 +54,12 @@ namespace ForjaDasMares.Networking
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
             if(town!=null&&System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-runTests")<0)StartCoroutine(PlayWorldIntro(root));
         }
+        bool storyCollapsed;
         GameObject journalPanel;
         Text journalText; GameObject mapPanel,mapLegend,desktopLegend; public bool JournalOpen=>journalPanel!=null&&journalPanel.activeSelf;
         void BuildJournal(RectTransform root)
         {
-            RusticHudTheme.Button(root,"OpenJournal",new Vector2(1,1),new Vector2(-420,-20),new Vector2(170,42),"MISSÕES",()=>
+            RusticHudTheme.IconButton(root,"OpenJournal",Vector2.one,new Vector2(-76,-20),HudSymbol.Scroll,()=>
             {
                 if(JournalOpen){CloseJournal();return;} journalPanel.SetActive(true);var input=world.Hero.GetComponent<ArenaInput>();input.BlockCommands(true);world.Hero.GetComponent<PlayerMotor>().StopWalking();
                 journalPanel.transform.SetAsLastSibling();
@@ -95,7 +108,7 @@ namespace ForjaDasMares.Networking
 
         void BuildStoryPanels(RectTransform root)
         {
-            var strip = RusticHudTheme.Rect(root, "AreaBanner", new Vector2(.5f,1), new Vector2(0,-68), new Vector2(370,42));
+            var strip = RusticHudTheme.Rect(root, "AreaBanner", new Vector2(.5f,1), new Vector2(0,-20), new Vector2(370,42));
             strip.pivot = new Vector2(.5f,1);
             RusticHudTheme.Panel(strip, RusticHudTheme.Ink, 12);
             areaName = Label(strip,"CurrentArea",new Vector2(8,-3),new Vector2(354,36),"",20);
@@ -412,11 +425,86 @@ namespace ForjaDasMares.Networking
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);
             objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
-            if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice;}
-            if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(established&&!Application.isMobilePlatform);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(world.Journey.Accepted);RefreshJournal();}
+            if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice ?? world.Journey.Objective;}
+            if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
             if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
         }
-        void OnDestroy(){if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
+        void LateUpdate() => UpdateDamageNumbers();
+
+        const float DamageLifetime = .92f;
+        sealed class DamagePopup
+        {
+            public Text Text;
+            public Vector3 Position;
+            public float Age, Drift;
+            public Color Tint;
+        }
+        DamagePopup[] damagePopups;
+        RectTransform damageLayer;
+        Camera damageCamera;
+        int nextPopup;
+
+        void BuildDamageNumbers(RectTransform root)
+        {
+            damageLayer = RusticHudTheme.Rect(root,"DamageNumbers",Vector2.zero,Vector2.zero,Vector2.zero);
+            damageLayer.anchorMax = Vector2.one;
+            damageLayer.offsetMin = damageLayer.offsetMax = Vector2.zero;
+            damageLayer.SetAsFirstSibling();
+            damageCamera = Camera.main;
+            damagePopups = new DamagePopup[24];
+            for (int i=0;i<damagePopups.Length;i++)
+            {
+                var label = RusticHudTheme.Label(damageLayer,"Damage",Vector2.zero,Vector2.zero,new Vector2(165,52),"",25,TextAnchor.MiddleCenter);
+                label.rectTransform.pivot = Vector2.one * .5f;
+                label.fontStyle = FontStyle.Bold;
+                var outline = label.gameObject.AddComponent<Outline>();
+                outline.effectColor = new Color(0,0,0,.9f);
+                outline.effectDistance = new Vector2(2,-2);
+                label.gameObject.SetActive(false);
+                damagePopups[i] = new DamagePopup { Text = label, Age = DamageLifetime };
+            }
+            Health.DamageTaken += ShowDamage;
+        }
+
+        void ShowDamage(Health victim, int amount, bool critical)
+        {
+            bool incoming = victim == world.Hero.Health;
+            if (!incoming && victim.Faction != CombatFaction.Enemy && victim.Faction != CombatFaction.Training) return;
+            if (amount <= 0 || damageCamera == null) return;
+            var popup = damagePopups[nextPopup];
+            nextPopup = (nextPopup + 1) % damagePopups.Length;
+            popup.Position = victim.transform.position + Vector3.up * (incoming ? 2f : 1.55f);
+            popup.Age = 0;
+            popup.Drift = (nextPopup % 5 - 2) * 15;
+            popup.Tint = incoming ? new Color(1,.32f,.32f) : critical ? new Color(1,.8f,.24f) : RusticHudTheme.Parchment;
+            popup.Text.fontSize = critical ? 29 : 24;
+            popup.Text.text = (incoming ? "−" : "") + amount + (critical ? "  CRÍTICO" : "");
+        }
+
+        void UpdateDamageNumbers()
+        {
+            if (damageCamera == null || damagePopups == null) return;
+            foreach (var popup in damagePopups)
+            {
+                if (popup.Age >= DamageLifetime) continue;
+                popup.Age += Time.unscaledDeltaTime;
+                Vector3 view = damageCamera.WorldToViewportPoint(popup.Position);
+                bool visible = popup.Age < DamageLifetime && view.z > 0 && view.x > 0 && view.x < 1 && view.y > 0 && view.y < 1;
+                popup.Text.gameObject.SetActive(visible);
+                if (!visible) continue;
+                float t = popup.Age / DamageLifetime;
+                var rect = popup.Text.rectTransform;
+                rect.anchoredPosition = Vector2.Scale(new Vector2(view.x,view.y),damageLayer.rect.size)
+                    + new Vector2(popup.Drift * (.65f + t),42f * t);
+                float punch = Mathf.Sin(Mathf.Clamp01(t * 5f) * Mathf.PI) * .28f;
+                rect.localScale = Vector3.one * (1 + punch);
+                Color color = popup.Tint;
+                color.a = 1 - Mathf.InverseLerp(.56f,1,t);
+                popup.Text.color = color;
+            }
+        }
+
+        void OnDestroy(){Health.DamageTaken-=ShowDamage;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }
     public sealed class RegionalMap:MaskableGraphic
     {

@@ -21,6 +21,7 @@ namespace ForjaDasMares
         public bool IsStunned => stunTime > 0;
         public float ProtectionRemaining => protectionTime;
         public CombatFaction Faction => faction;
+        public static event Action<Health, int, bool> DamageTaken;
         public event Action Changed;
         public event Action Damaged;
         public event Action<Vector3, float> Impact;
@@ -40,22 +41,25 @@ namespace ForjaDasMares
         public void Protect(float reduction, float duration)
         { protection = Mathf.Clamp(reduction, 0, 0.8f); protectionTime = Mathf.Max(0, duration); Changed?.Invoke(); }
         public void Push(Vector3 direction,float force){if(IsAlive)Impact?.Invoke(direction,Mathf.Clamp(force,0,5));}
-        public bool ApplyHit(AttackDefinition attack, Vector3 direction, Health source, float damageScale = 1)
+        public bool ApplyHit(AttackDefinition attack, Vector3 direction, Health source, float damageScale = 1, bool critical = false)
         {
             float build=source!=null?source.GetComponent<CombatBuildEffects>()?.Against(this)??1:1;
             float multiplier = defense != null ? Mathf.Clamp01(defense.DamageMultiplier(direction, source, attack)) : 1;
-            if (!CanReceiveFrom(source) || multiplier <= 0 || !ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build)))) return false;
+            if (!CanReceiveFrom(source) || multiplier <= 0 || !ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build)), critical)) return false;
             if (attack.control != ControlEffect.None && attack.controlDuration > 0f)
             { rooted = attack.control == ControlEffect.Root; slow = Mathf.Clamp(attack.slowMultiplier, 0.05f, 1f); controlTime = attack.controlDuration; Changed?.Invoke(); }
             if (attack.knockback > 0) Impact?.Invoke(direction, attack.knockback);
             if (source != null) source.DealtHit?.Invoke(this);
             return true;
         }
-        public bool ApplyDamage(int damage)
+        public bool ApplyDamage(int damage) => ApplyDamage(damage, false);
+        bool ApplyDamage(int damage, bool critical)
         {
             if(damage<=0||current<=0)return false;if(dodgeSource!=null&&dodgeSource.IsInvulnerable){dodgeSource.ConfirmPerfectDodge();return false;}
             int finalDamage = ProgressionStats.MitigatedDamage(damage,armor*(GetComponent<CombatAilments>()?.DefenseScale??1),Mathf.Max(protectionTime>0?protection:0,GetComponent<CombatBuildEffects>()?.Shelter??0));
-            current = Mathf.Max(0, current - finalDamage);
+            int lost = Mathf.Min(current, finalDamage);
+            current -= lost;
+            DamageTaken?.Invoke(this, lost, critical);
             Damaged?.Invoke();
             Changed?.Invoke();
             return true;

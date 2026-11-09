@@ -13,7 +13,7 @@ namespace ForjaDasMares.Networking
         public void Build(RectTransform root,RegionalWorld owner)
         {
             world=owner;
-            RusticHudTheme.Button(root,"RegionalSettingsButton",new Vector2(1,1),new Vector2(-240,-20),new Vector2(170,42),"CONFIGURAÇÕES",Open);
+            RusticHudTheme.IconButton(root,"RegionalSettingsButton",Vector2.one,new Vector2(-20,-20),HudSymbol.Settings,Open);
             var full=RusticHudTheme.Rect(root,"RegionalSettings",Vector2.zero,Vector2.zero,Vector2.zero);full.anchorMax=Vector2.one;full.offsetMin=full.offsetMax=Vector2.zero;
             full.gameObject.AddComponent<Image>().color=new Color(.01f,.02f,.035f,.92f);overlay=full.gameObject;
             var panel=RusticHudTheme.Rect(full,"SettingsPanel",Vector2.one*.5f,Vector2.zero,new Vector2(940,600));RusticHudTheme.Panel(panel,RusticHudTheme.Ink,26);
@@ -30,7 +30,8 @@ namespace ForjaDasMares.Networking
             qualityButton=Button("RegionalGraphics","",30,432,565,()=>{var q=world.GetComponentInChildren<PresentationQuality>();if(q==null&&Camera.main!=null)q=Camera.main.GetComponent<PresentationQuality>();q?.Cycle();Refresh();});
             quality=qualityButton.GetComponentInChildren<Text>();
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
-            Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · E: habilidade · Espaço: esquiva · F: interagir",30,500,880,17).rectTransform.sizeDelta=new Vector2(880,70);
+            Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToCampaign);
+            Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · E: habilidade · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
             escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
         }
         void ChangeVolume(int i,float step)

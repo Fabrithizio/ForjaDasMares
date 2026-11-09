@@ -751,3 +751,6 @@ Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 inst
 
 ### Revisão do início do RPG
 Nara apresenta a investigação em três falas com aceitação no diálogo. Missões exibe objetivo, origem e recompensa do progresso salvo. O HUD identifica a área atual e destaca pistas pendentes no minimapa. Expedições pede confirmação antes de abrir as rotas. R não reinicia o RPG regional; reaparecimento após derrota continua disponível. Bandeira e escada aguardam a revisão do mapa.
+
+### Feedback de combate e HUD regional
+Acertos mostram a vida efetivamente perdida. Dano recebido é vermelho e crítico é dourado com rótulo. Projéteis e zonas guardam o crítico do golpe original. O RPG usa ícones de configurações, missões e mochila, além de um acompanhamento recolhível. A saída para o menu fica em Configurações.

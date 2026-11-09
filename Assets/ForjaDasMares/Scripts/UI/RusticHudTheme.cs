@@ -43,6 +43,13 @@ namespace ForjaDasMares
             var colors=button.colors;colors.normalColor=Color.white;colors.highlightedColor=new Color(1.2f,1.15f,1.05f);colors.pressedColor=new Color(.75f,.78f,.68f);colors.selectedColor=colors.highlightedColor;colors.disabledColor=new Color(.6f,.6f,.6f,.5f);colors.fadeDuration=.1f;button.colors=colors;
             foreach(var text in button.GetComponentsInChildren<Text>(true))text.color=Parchment;
         }
+        public static Button IconButton(Transform parent, string name, Vector2 anchor, Vector2 position, HudSymbol symbol, UnityAction action)
+        {
+            var button = Button(parent, name, anchor, position, new Vector2(48,48), "", action);
+            button.GetComponent<RoundedHudGraphic>().radius = 24;
+            Icon(button.transform, symbol, Vector2.one * .5f, Vector2.zero, 29);
+            return button;
+        }
         public static Button Button(Transform parent,string name,Vector2 anchor,Vector2 position,Vector2 size,string label,UnityAction action)
         {
             var rect=Rect(parent,name,anchor,position,size);var button=rect.gameObject.AddComponent<Button>();Skin(button);

@@ -60,7 +60,9 @@ namespace ForjaDasMares.Networking
             view=regional!=null?new InventorySessionView(regional):new InventorySessionView(director);
             channel = view.Profiles; font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var parent = regionalRoot!=null?regionalRoot:GetComponent<CoopHud>().SafeRoot;
-            inventoryButton=TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
+            inventoryButton = view.IsRegional
+                ? RusticHudTheme.IconButton(parent, "RegionalInventoryButton", Vector2.one, new Vector2(-132,-20), HudSymbol.Bag, OpenInventory)
+                : TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
             resultButton=TopRight(parent, "RESULTADO", -171, () => Show(true));
             overlay = new GameObject("CoopInventory", typeof(RectTransform), typeof(Image)); overlay.transform.SetParent(parent, false);
             var full = (RectTransform)overlay.transform; full.anchorMin = Vector2.zero; full.anchorMax = Vector2.one; full.offsetMin = full.offsetMax = Vector2.zero; overlay.GetComponent<Image>().color = new Color(.025f, .045f, .065f, .98f);
@@ -178,7 +180,7 @@ namespace ForjaDasMares.Networking
             Refresh();OpenItem();
         }
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
-        public void OpenInventory(){if(view!=null&&view.IsRegional){GetComponent<RegionalWorldHud>()?.CloseShop();GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<RegionalSettingsMenu>()?.Close();}activeArea=1;Show(false);}
+        public void OpenInventory(){if(view!=null&&view.IsRegional){GetComponent<RegionalWorldHud>()?.CloseStoryModal();GetComponent<RegionalWorldHud>()?.CloseShop();GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<RegionalSettingsMenu>()?.Close();}activeArea=1;Show(false);}
         public void OpenCharacter(){Show(false);NavigateProfile(0);}
         public void CloseInventory(){if(IsOpen)Close();}
         void Show(bool result)

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass, Coin }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass, Coin, Settings, Scroll }
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class HudIcon : MaskableGraphic
     {
@@ -61,6 +61,24 @@ namespace ForjaDasMares
                 case HudSymbol.Hero:
                     Line(vh,new Vector2(-10,8),new Vector2(0,13));Line(vh,new Vector2(0,13),new Vector2(10,8));Line(vh,new Vector2(10,8),new Vector2(8,-8));
                     Line(vh,new Vector2(8,-8),new Vector2(0,-13));Line(vh,new Vector2(0,-13),new Vector2(-8,-8));Line(vh,new Vector2(-8,-8),new Vector2(-10,8));Line(vh,new Vector2(-6,2),new Vector2(6,2));Line(vh,new Vector2(0,2),new Vector2(0,-7));break;
+                case HudSymbol.Settings:
+                    Ring(vh,10); Ring(vh,4);
+                    for(int i=0;i<8;i++)
+                    {
+                        float angle=i*Mathf.PI/4;
+                        var axis=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));
+                        Line(vh,axis*10,axis*14,3);
+                    }
+                    break;
+                case HudSymbol.Scroll:
+                    Line(vh,new Vector2(-10,11),new Vector2(10,11));
+                    Line(vh,new Vector2(-10,11),new Vector2(-10,-8));
+                    Line(vh,new Vector2(10,11),new Vector2(10,-8));
+                    Line(vh,new Vector2(-10,-8),new Vector2(10,-8));
+                    Line(vh,new Vector2(-12,-12),new Vector2(12,-12));
+                    Line(vh,new Vector2(-5,5),new Vector2(5,5));
+                    Line(vh,new Vector2(-5,0),new Vector2(5,0));
+                    break;
                 case HudSymbol.Menu:
                     for(int i=-1;i<=1;i++)Line(vh,new Vector2(-10,i*7),new Vector2(10,i*7),2.8f);break;
                 case HudSymbol.Interact:
