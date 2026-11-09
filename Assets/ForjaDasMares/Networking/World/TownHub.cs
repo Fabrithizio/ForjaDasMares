@@ -8,7 +8,8 @@ namespace ForjaDasMares.Networking
     {
         [SerializeField]RegionalWorld world;
         [SerializeField]Vector3[] arrivalPoints;
-        public string Notice {get;private set;}="Fale com Nara para conhecer o Refúgio. Clique nela ou use F quando estiver perto.";
+        public string Notice {get;private set;}
+        public string CurrentNotice => Notice ?? (world.Journey?.Accepted == true ? world.Journey.Objective : "Fale com Nara perto da tenda. Clique nela ou use F.");
         public Vector3[] ArrivalPoints=>arrivalPoints;
         WorldClickTarget[] targets;
         bool travelling;
@@ -48,7 +49,7 @@ namespace ForjaDasMares.Networking
                     return;
                 }
             }
-            if(!journey.Accepted&&index>=0&&journey.Definition.points[index].interaction==RegionalInteraction.Cartographer)journey.Offer();
+            if(!journey.Accepted&&index>=0&&journey.Definition.points[index].interaction==RegionalInteraction.Cartographer){ journey.Offer(); FindFirstObjectByType<RegionalWorldHud>()?.OpenStoryDialogue(); return; }
             else journey.Interact();
             Notice=journey.Notice;
         }
@@ -65,7 +66,8 @@ namespace ForjaDasMares.Networking
         public void Rest(){world.Hero.Health.Restore();Notice="Fonte das Marés: vida restaurada.";}
         public void Mentor(){world.Hero.Select((world.Hero.Selected+1)%world.Hero.Count);Notice="Instrutora: agora você está com "+world.Hero.Current.displayName+". Experimente a área de treino.";}
         public void Explore()=>BeginTravel("CostaAto1");
-        public void OpenExpeditions(){if(travelling||!world.Hero.Health.IsAlive)return;CampaignHome.EnterExpeditionRoutes=true;BeginTravel("CampaignCoop");}
+        public void OpenExpeditions()=>FindFirstObjectByType<RegionalWorldHud>()?.OpenExpeditionPanel();
+        public void ConfirmExpeditions(){if(travelling||!world.Hero.Health.IsAlive)return;CampaignHome.EnterExpeditionRoutes=true;BeginTravel("CampaignCoop");}
         void BeginTravel(string scene)
         {
             if(travelling || world==null || !world.Hero.Health.IsAlive) return;

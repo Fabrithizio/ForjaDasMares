@@ -19,21 +19,21 @@ namespace ForjaDasMares.Networking
         public void Offer()
         {
             Offered=true;
-            Notice="Nara: a cidade está protegida pelo santuário. Lá fora, a Distorção muda os caminhos e afeta quem fica exposto. Abra Missões para aceitar a investigação. Nem toda descoberta aparece no diário: observe marcas e lugares fora do caminho.";
         }
         public bool AcceptOffer()
         {
             if(!Offered||Accepted||journal==null)return false;
             if(!Commit(new Journal{questId=definition.questId,accepted=true,clues=journal.clues}))return false;
             Offered=false;
-            Notice="Investigação aceita. Procure duas pistas no cais, na pedreira ou no jardim e leve-as a Daro.";
+            Notice="Investigação aceita. Siga pela estrada sul. Procure duas pistas no cais, na pedreira ou no jardim e leve-as a Daro.";
             return true;
         }
+        public bool HasClue(int index) => journal != null && (journal.clues & (1 << index)) != 0;
         public bool Accepted=>journal!=null&&journal.accepted;
         public bool Completed=>journal!=null&&journal.completed;
         public int MemoryFragments=>Completed?1:0;
         public int ClueCount {get{int bits=journal?.clues??0;return (bits&1)+((bits>>1)&1)+((bits>>2)&1);}}
-        public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nExplore ou entre nas catacumbas ao norte.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Investigue cais, pedreira ou jardim: "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
+        public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nExplore ou entre nas catacumbas ao norte.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Cais (sudoeste), Pedreira (leste) ou Jardim (noroeste): "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
         public void Configure(RegionalWorld region,RegionStoryDefinition story){world=region;definition=story;world.SetJourney(this);}
         void Start()
         {
@@ -42,7 +42,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<args.Length;i++){if(args[i]=="-runTests")root=testRoot;if(args[i]=="-netSavePath"&&i+1<args.Length)root=Path.Combine(Path.GetFullPath(args[++i]),"Act1LocalStory");}
             if(Array.IndexOf(args,"-runTests")<0&&CampaignHome.LocalAccountFolder!=null)root=Path.Combine(CampaignHome.LocalAccountFolder,"Story");
             path=Path.Combine(root,"journal-v1.json");journal=ReadJournal(path,definition.questId,definition.requiredClues)??ReadJournal(path+".bak",definition.questId,definition.requiredClues)??new Journal{questId=definition.questId};
-            Notice=Completed?"Bem-vindo de volta. A investigação está registrada no diário.":"Nara espera você junto à tenda do refúgio.";
+            Notice=Accepted ? Objective : "Nara espera você junto à tenda do refúgio.";
         }
         public static Journal ReadJournal(string filename,string quest,int requiredClues=2)
         {
@@ -77,7 +77,7 @@ namespace ForjaDasMares.Networking
             switch(point.interaction)
             {
                 case RegionalInteraction.Cartographer:
-                    if(!Accepted){next.accepted=true;if(Commit(next))Notice="Nara: a expedição passou pelo cais, pedreira e jardim. Procure pistas em dois desses lugares e leve-as a Daro.";}
+                    if(!Accepted){Offer(); FindFirstObjectByType<RegionalWorldHud>()?.OpenStoryDialogue();}
                     else Notice=Completed?"Nara: as pistas apontam para as catacumbas. Podemos investigar a Âncora.":"Nara: siga os caminhos sinalizados. Você escolhe por onde começar.";
                     break;
                 case RegionalInteraction.Clue:

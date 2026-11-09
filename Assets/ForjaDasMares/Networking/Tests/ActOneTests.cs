@@ -23,7 +23,7 @@ namespace ForjaDasMares.Networking.Tests
         [UnityTest]public IEnumerator StoryCompletesWithTwoCluesSurvivesDeathReloadAndCannotDuplicateReward()
         {
             Visit(1);Assert.IsFalse(world.Journey.Completed,"Daro cannot complete an unaccepted quest");
-            Visit(0);Assert.IsTrue(world.Journey.Accepted);Visit(3);Assert.AreEqual(1,world.Journey.ClueCount);
+            Visit(0);Assert.IsFalse(world.Journey.Accepted);Assert.IsTrue(world.Journey.AcceptOffer());Assert.IsTrue(world.Journey.Accepted);Visit(3);Assert.AreEqual(1,world.Journey.ClueCount);
             Visit(3);Assert.AreEqual(1,world.Journey.ClueCount,"A repeated clue is not another objective");
             world.Hero.Health.ApplyDamage(10000);world.Respawn();Assert.AreEqual(1,world.Journey.ClueCount);
             Visit(4);Assert.AreEqual(2,world.Journey.ClueCount);Visit(1);Assert.IsTrue(world.Journey.Completed);Assert.AreEqual(1,world.Journey.MemoryFragments);

@@ -49,7 +49,7 @@ namespace ForjaDasMares.Networking
         {
             if(residents==null||travelling)return;
             var commands=(IHeroCommands)hero.GetComponent<PlayerMotor>().Commands;
-            if(commands.TakeReset())Respawn();int slot=commands.TakeHeroSlot();if(commands.TakeNextHero())slot=(hero.Selected+1)%hero.Count;if(slot>=0&&RefugeDistance<10)hero.Select(slot);
+            commands.TakeReset();int slot=commands.TakeHeroSlot();if(commands.TakeNextHero())slot=(hero.Selected+1)%hero.Count;if(slot>=0&&RefugeDistance<10)hero.Select(slot);
             if(!hero.Health.IsAlive)return;
             if(hero.transform.position.y< -5)Respawn();
             poll-=Time.deltaTime;if(poll>0)return;float elapsed=.25f-poll;poll=.25f;

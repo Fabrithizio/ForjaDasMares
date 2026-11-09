@@ -748,3 +748,6 @@ Licença resolvida pelo titular. Migração de 36 prefabs com dois LODs, 87 inst
 0.33.0 — Refúgio 76 × 104, Jardim Norte navegável, visual futurista desativado, fonte separada do braseiro, grama mais leve e sombras de folhagem reduzidas. 29/29 PlayMode, Windows sem erros; sem APK. Ver JARDIM_NORTE_0_33_0.md.
 
 0.34.0 — Estrutura de memória futurista substituída por santuário, 42 árvores assentadas, pira afastada da fonte, pavimento suavizado e cor da cidade ajustada. 29/29 PlayMode; Windows sem erros. Sem APK. Ver PRACA_0_34_0.md.
+
+### Revisão do início do RPG
+Nara apresenta a investigação em três falas com aceitação no diálogo. Missões exibe objetivo, origem e recompensa do progresso salvo. O HUD identifica a área atual e destaca pistas pendentes no minimapa. Expedições pede confirmação antes de abrir as rotas. R não reinicia o RPG regional; reaparecimento após derrota continua disponível. Bandeira e escada aguardam a revisão do mapa.
