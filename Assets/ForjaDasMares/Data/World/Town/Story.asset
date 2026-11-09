@@ -24,7 +24,7 @@ MonoBehaviour:
     discovery: 
   - label: Conversar com Daro
     interaction: 1
-    position: {x: 10, y: 0.08, z: -4}
+    position: {x: 7, y: 0.08, z: -7}
     clue: 0
     discovery: 
   - label: "Examinar di\xE1rio da expedi\xE7\xE3o"

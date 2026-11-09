@@ -56,9 +56,12 @@ namespace ForjaDasMares.Networking.Tests
         [UnityTest] public IEnumerator ExpeditionCourtInsideTownOpensTheExistingFunctionalLobby()
         {
             var board=System.Array.Find(Object.FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None),t=>t.Label.StartsWith("Expedições"));
-            Assert.NotNull(board);Assert.Less(Mathf.Abs(board.transform.position.x),35);Assert.Less(Mathf.Abs(board.transform.position.z),35);
+            Assert.NotNull(board);Assert.Less(Vector3.Distance(board.transform.position,world.Definition.refuge),10);
             world.Hero.GetComponent<ArenaInput>().Desktop.Cancel();world.Hero.GetComponent<PlayerMotor>().Teleport(board.Approach,Quaternion.identity);yield return null;
             Assert.IsTrue(board.TryUse(world.Hero.transform));
+            var routes = GameObject.Find("ViewRoutes");
+            Assert.NotNull(routes);
+            routes.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             float deadline=Time.realtimeSinceStartup+8;
             while(SceneManager.GetActiveScene().name!="CampaignCoop"&&Time.realtimeSinceStartup<deadline)yield return null;
             yield return null;Assert.AreEqual("CampaignCoop",SceneManager.GetActiveScene().name);Assert.NotNull(Object.FindFirstObjectByType<CampaignRun>());

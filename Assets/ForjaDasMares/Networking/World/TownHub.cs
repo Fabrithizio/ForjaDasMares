@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 namespace ForjaDasMares.Networking
 {
+    [DefaultExecutionOrder(230)]
     public sealed class TownHub:MonoBehaviour
     {
         [SerializeField]RegionalWorld world;
@@ -16,7 +17,18 @@ namespace ForjaDasMares.Networking
         public bool IsTravelling=>travelling;
         public void Configure(RegionalWorld region,Vector3[] spawn){world=region;arrivalPoints=spawn;}
         public void Speak(string message)=>Notice=message;
-        void Start()=>targets=FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None);
+        void Start()
+        {
+            targets = FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None);
+            foreach (var target in targets)
+            {
+                if (!target.Label.StartsWith("Expedições")) continue;
+                var position = world.Definition.refuge + new Vector3(-7,0,3);
+                if (UnityEngine.AI.NavMesh.SamplePosition(position,out var hit,2,UnityEngine.AI.NavMesh.AllAreas))
+                    target.transform.position = hit.position;
+                break;
+            }
+        }
         public WorldClickTarget NearestInteraction
         {
             get

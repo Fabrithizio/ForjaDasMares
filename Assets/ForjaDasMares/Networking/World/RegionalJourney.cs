@@ -33,7 +33,7 @@ namespace ForjaDasMares.Networking
         public bool Completed=>journal!=null&&journal.completed;
         public int MemoryFragments=>Completed?1:0;
         public int ClueCount {get{int bits=journal?.clues??0;return (bits&1)+((bits>>1)&1)+((bits>>2)&1);}}
-        public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nExplore ou entre nas catacumbas ao norte.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Cais (sudoeste), Pedreira (leste) ou Jardim (noroeste): "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
+        public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nProcure o altar das Catacumbas na praça do Refúgio.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Cais (sudoeste), Pedreira (leste) ou Jardim (noroeste): "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
         public void Configure(RegionalWorld region,RegionStoryDefinition story){world=region;definition=story;world.SetJourney(this);}
         public int UnlockedSkills => SkillCount(journal);
         public static int SkillCount(Journal value) => value?.completed == true ? 3 : value?.accepted == true ? Mathf.Min(2, CountClues(value.clues)) : 0;
@@ -103,8 +103,8 @@ namespace ForjaDasMares.Networking
                     next.completed=true;if(Commit(next)){Notice="Daro decifrou a terceira técnica: controle de grupo. Você recebeu 1 Fragmento de Memória e liberou as Catacumbas.";world.Hero.Health.Restore();}
                     break;
                 case RegionalInteraction.Catacombs:
-                    if(!Completed){Notice="A entrada está selada. Conclua a investigação de Nara e Daro.";break;}
-                    world.Hud?.OpenCatacombEntrance();break;
+                    Notice="O acesso às Catacumbas fica no altar da praça do Refúgio.";
+                    break;
             }
             return true;
         }

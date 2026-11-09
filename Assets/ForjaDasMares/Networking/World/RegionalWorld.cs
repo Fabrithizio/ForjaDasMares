@@ -60,8 +60,11 @@ namespace ForjaDasMares.Networking
             hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.SetFocusBounds(definition.bounds,true);follow.Snap();
             residents=new EnemyActor[definition.camps.Length][];timers=new float[residents.Length][];firstKills=new int[residents.Length];cleared=new bool[residents.Length];firstDefeated=new bool[residents.Length][];
             for(int i=0;i<residents.Length;i++){residents[i]=new EnemyActor[definition.camps[i].enemies.Length];timers[i]=new float[residents[i].Length];firstDefeated[i]=new bool[residents[i].Length];}
-            if (Journey != null && definition.regionId == "costa-ato1")
-                BuildCatacombAltar();
+            if (town != null && Journey != null)
+            {
+                catacombAltar = BuildPlazaStation("Altar das Catacumbas",new Vector3(5,0,-4),() => Hud?.OpenCatacombEntrance());
+                runeStation = BuildPlazaStation("Runa de Coleta",new Vector3(-5,0,-4),() => Hud?.OpenRuneSettings());
+            }
             if (IsCatacombInstance)
             {
                 if (UnityEngine.Random.value < .20f) cardOrder[cardOrder.Length-1] = RuneCard;
@@ -183,7 +186,7 @@ namespace ForjaDasMares.Networking
             if (!Physics.Raycast(camera.ScreenPointToRay(screenPosition),out var hit,150,
                 (1<<0)|(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
             var target = hit.collider.GetComponentInParent<WorldClickTarget>();
-            if (target == null || (target != catacombAltar && Array.IndexOf(goldPiles,target) < 0)) return false;
+            if (target == null || (target != catacombAltar && target != runeStation && Array.IndexOf(goldPiles,target) < 0)) return false;
             return target.TryUse(hero.transform);
         }
 
@@ -218,7 +221,6 @@ namespace ForjaDasMares.Networking
                 return;
             }
             if(NearbyGold()?.TryUse(hero.transform)==true)return;
-            if(catacombAltar?.TryUse(hero.transform)==true)return;
             if(town!=null&&town.TryInteractNearest())return;
             if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
@@ -252,14 +254,16 @@ namespace ForjaDasMares.Networking
             }
         }
 
-        void BuildCatacombAltar()
+        WorldClickTarget BuildPlazaStation(string label, Vector3 offset, Action open)
         {
-            var point = Array.Find(Journey.Definition.points, entry => entry.interaction == RegionalInteraction.Catacombs);
-            var altar = new GameObject("Altar das Catacumbas");
+            var altar = new GameObject(label);
             altar.transform.SetParent(transform,false);
-            altar.transform.position = point.position + Vector3.right * 1.7f;
-            altarMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            altarMaterial.SetColor("_BaseColor",new Color(.26f,.47f,.52f));
+            altar.transform.position = definition.refuge + offset - Vector3.up * definition.refuge.y;
+            if (altarMaterial == null)
+            {
+                altarMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                altarMaterial.SetColor("_BaseColor",new Color(.26f,.47f,.52f));
+            }
             for (int i = 0; i < 3; i++)
             {
                 var stone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -269,15 +273,15 @@ namespace ForjaDasMares.Networking
                 stone.GetComponent<Renderer>().sharedMaterial = altarMaterial;
             }
             var target = altar.AddComponent<WorldClickTarget>();
-            target.Configure("Altar das Catacumbas",3);
+            target.Configure(label,3);
             target.Interacting += actor =>
             {
                 if (actor == hero.transform && hero.Health.IsAlive)
-                    Hud?.OpenCatacombEntrance();
+                    open();
             };
-            catacombAltar = target;
+            return target;
         }
-        WorldClickTarget catacombAltar;
+        WorldClickTarget catacombAltar, runeStation;
 
         public void EnterCatacombInstance()
         {
@@ -350,7 +354,7 @@ namespace ForjaDasMares.Networking
 
         public void LeaveCatacombInstance()
         {
-            if (IsCatacombInstance && CardsRevealed == CatacombPicks) TravelTo("CostaAto1");
+            if (IsCatacombInstance && CardsRevealed == CatacombPicks) TravelTo("RefugioUltimoSino");
         }
 
         public void Respawn(){hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}

@@ -233,9 +233,9 @@ namespace ForjaDasMares.Networking
                         new Vector2(90,95),"◆\n"+(i+1),() => RevealCatacombCard(card));
                 }
                 RusticHudTheme.Button(panel,"CloseCards",Top,new Vector2(30,-235),new Vector2(235,48),"FECHAR",() => CloseStoryModal());
-                leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(300,-235),new Vector2(310,48),"VOLTAR À COSTA",world.LeaveCatacombInstance);
+                leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(300,-235),new Vector2(310,48),"VOLTAR AO REFÚGIO",world.LeaveCatacombInstance);
             }
-            else if (world.Definition.regionId == "costa-ato1")
+            else if (town != null)
             {
                 var panel = BuildModal(root,"Catacumbas das Marés",out instanceModal);
                 instanceInfo = Label(panel,"Rewards",new Vector2(28,-66),new Vector2(584,157),"",20);
@@ -244,6 +244,8 @@ namespace ForjaDasMares.Networking
             }
             if (instanceModal != null) instanceModal.SetActive(false);
         }
+
+        public void OpenRuneSettings() => GetComponent<RegionalSettingsMenu>()?.Open();
 
         public void OpenCatacombEntrance()
         {

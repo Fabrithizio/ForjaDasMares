@@ -43,6 +43,34 @@ namespace ForjaDasMares.Networking.Tests
             Assert.AreEqual(clues,world.Journey.ClueCount);Assert.AreEqual(completed,world.Journey.Completed);
             Assert.IsTrue(target.TryUse(world.Hero.transform));Assert.AreEqual(clues,world.Journey.ClueCount);
         }
+        [UnityTest]public IEnumerator PlazaStationsAreReachableAndOpenTheirPanels()
+        {
+            var motor = world.Hero.GetComponent<PlayerMotor>();
+            var hud = Object.FindFirstObjectByType<RegionalWorldHud>();
+            foreach (string name in new[] { "Altar das Catacumbas","Runa de Coleta" })
+            {
+                var station = GameObject.Find(name).GetComponent<WorldClickTarget>();
+                Assert.Less(Vector3.Distance(station.transform.position,world.Definition.refuge),9);
+                Assert.IsTrue(NavMesh.SamplePosition(station.Approach,out var hit,1,NavMesh.AllAreas));
+                Assert.IsTrue(NavMesh.CalculatePath(world.Definition.refuge,hit.position,NavMesh.AllAreas,new NavMeshPath()));
+                motor.Teleport(hit.position,Quaternion.identity);
+                yield return null;
+                Assert.AreSame(station,hub.NearestInteraction);
+                world.Interact();
+                if (name == "Altar das Catacumbas")
+                {
+                    Assert.IsNotNull(GameObject.Find("EnterInstance"));
+                    Assert.IsTrue(hud.CloseStoryModal());
+                }
+                else
+                {
+                    var settings = hud.GetComponent<RegionalSettingsMenu>();
+                    Assert.IsTrue(settings.IsOpen);
+                    settings.Close();
+                }
+            }
+        }
+
         [Test]public void InteractionApproachIgnoresVisualScale(){var target=GameObject.Find("RestFountain").GetComponent<WorldClickTarget>();Assert.Less(Vector3.Distance(target.Approach,target.transform.position),3);}
         [Test]public void FourArrivalPointsAreWalkableAndUnobstructed()
         {Assert.AreEqual(4,hub.ArrivalPoints.Length);foreach(var point in hub.ArrivalPoints){Assert.IsTrue(NavMesh.SamplePosition(point,out _,1,NavMesh.AllAreas));Assert.IsFalse(Physics.CheckCapsule(point+Vector3.up*.5f,point+Vector3.up*1.3f,.3f,1<<9));}}
