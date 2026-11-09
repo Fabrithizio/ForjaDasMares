@@ -13,6 +13,16 @@ namespace ForjaDasMares.Networking
         readonly Dictionary<EnemyActor,int> ownership=new Dictionary<EnemyActor,int>(24);
         float[][] timers;EnemyActor[][] residents;int[] firstKills;bool[] cleared;bool[][] firstDefeated;bool travelling;float poll;
         TownHub town;
+        RegionalInventory regionalInventory;
+        const int GoldCapacity = 20;
+        readonly WorldClickTarget[] goldPiles = new WorldClickTarget[GoldCapacity];
+        readonly int[] goldAmounts = new int[GoldCapacity];
+        readonly int[] killsSinceDrop = new int[32];
+        int dropSequence, goldCursor;
+        Material goldMaterial;
+        public string GoldNotice { get; private set; }
+        float goldNoticeUntil;
+        public string GoldFeedback => Time.unscaledTime < goldNoticeUntil ? GoldNotice : null;
         public RegionDefinition Definition=>definition;public HeroRoster Hero=>hero;public EnemyPool Enemies=>enemies;
         public RegionalJourney Journey {get;private set;}
         public void SetJourney(RegionalJourney value)=>Journey=value;
@@ -26,6 +36,7 @@ namespace ForjaDasMares.Networking
         {
             if(Journey==null)Journey=GetComponent<RegionalJourney>();
             town=GetComponent<TownHub>();
+            regionalInventory=GetComponent<RegionalInventory>();
             hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
             var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
             follow.UseRpgFraming();hero.Select(Mathf.Clamp(CampaignHome.CharacterClass,0,hero.Count-1));hero.enabled=false;hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);hero.Changed+=HeroChanged;
@@ -42,9 +53,110 @@ namespace ForjaDasMares.Networking
         void EnemyDied(EnemyActor actor)
         {
             if(!ownership.TryGetValue(actor,out int camp))return;ownership.Remove(actor);
+            TryDropGold(camp, actor.transform.position);
             var members=residents[camp];for(int i=0;i<members.Length;i++)if(members[i]==actor){members[i]=null;timers[camp][i]=definition.camps[camp].respawnSeconds;if(!firstDefeated[camp][i]){firstDefeated[camp][i]=true;firstKills[camp]++;}break;}
             if(!cleared[camp]){if(firstKills[camp]>=members.Length){cleared[camp]=true;Changed?.Invoke();}}
         }
+        void TryDropGold(int camp, Vector3 position)
+        {
+            if (regionalInventory?.Service == null) return;
+            // Alternate between two and three kills. The first kill starts a pile.
+            int counter = camp % killsSinceDrop.Length;
+            if (killsSinceDrop[counter] > 0) { killsSinceDrop[counter]--; return; }
+            killsSinceDrop[counter] = 1 + (dropSequence++ & 1);
+            if (UnityEngine.AI.NavMesh.SamplePosition(position,out var walkable,1.5f,UnityEngine.AI.NavMesh.AllAreas))
+                position = walkable.position;
+            int amount = 8 + Mathf.Min(4,camp) * 2;
+            for (int offset = 0; offset < GoldCapacity; offset++)
+            {
+                int slot = (goldCursor + offset) % GoldCapacity;
+                if (goldPiles[slot] != null && goldPiles[slot].gameObject.activeSelf) continue;
+                if (goldPiles[slot] == null) goldPiles[slot] = CreateGoldPile(slot);
+                goldAmounts[slot] = amount;
+                var pile = goldPiles[slot];
+                pile.Configure("Recolher " + amount + " ouro");
+                pile.transform.position = position;
+                pile.gameObject.SetActive(true);
+                goldCursor = (slot + 1) % GoldCapacity;
+                return;
+            }
+            int nearest = 0;
+            for (int i = 1; i < GoldCapacity; i++)
+                if ((goldPiles[i].transform.position-position).sqrMagnitude < (goldPiles[nearest].transform.position-position).sqrMagnitude) nearest = i;
+            goldAmounts[nearest] = Mathf.Min(1000,goldAmounts[nearest] + amount);
+            goldPiles[nearest].Configure("Recolher " + goldAmounts[nearest] + " ouro");
+        }
+
+        WorldClickTarget CreateGoldPile(int slot)
+        {
+            var root = new GameObject("Ouro no chão");
+            root.transform.SetParent(transform,false);
+            var hit = root.AddComponent<BoxCollider>();
+            var heroCollider = hero.GetComponent<CharacterController>();
+            if (heroCollider != null) Physics.IgnoreCollision(hit,heroCollider);
+            hit.center = new Vector3(0,.18f,0);
+            hit.size = new Vector3(.88f,.36f,.88f);
+            var target = root.AddComponent<WorldClickTarget>();
+            target.Interacting += actor => CollectGold(slot,actor);
+            if (goldMaterial == null)
+            {
+                goldMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                goldMaterial.SetColor("_BaseColor",new Color(1f,.65f,.12f));
+                goldMaterial.SetFloat("_Metallic",.42f);
+                goldMaterial.SetFloat("_Smoothness",.72f);
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                var coin = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                coin.transform.SetParent(root.transform,false);
+                coin.transform.localPosition = new Vector3((i%2-.5f)*.30f,.08f+i*.027f,(i/2-.5f)*.28f);
+                coin.transform.localScale = new Vector3(.29f,.04f,.29f);
+                coin.GetComponent<Collider>().enabled = false;
+                var renderer = coin.GetComponent<Renderer>();
+                renderer.sharedMaterial = goldMaterial;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            return target;
+        }
+
+        void CollectGold(int slot, Transform actor)
+        {
+            if (actor != hero.transform || !hero.Health.IsAlive || goldAmounts[slot] <= 0) return;
+            int amount = goldAmounts[slot];
+            goldAmounts[slot] = 0;
+            if (!regionalInventory.Service.CollectRegionalGold(amount))
+            {
+                goldAmounts[slot] = amount;
+                return;
+            }
+            goldPiles[slot].gameObject.SetActive(false);
+            GoldNotice = "+" + amount + " OURO";
+            goldNoticeUntil = Time.unscaledTime + 1.6f;
+        }
+
+        WorldClickTarget NearbyGold()
+        {
+            WorldClickTarget nearest = null;
+            float best = float.MaxValue;
+            foreach (var pile in goldPiles)
+            {
+                if (pile == null || !pile.isActiveAndEnabled || !pile.InRange(hero.transform)) continue;
+                float distance = (pile.transform.position-hero.transform.position).sqrMagnitude;
+                if (distance < best) { nearest = pile; best = distance; }
+            }
+            return nearest;
+        }
+
+        public bool TryTouchGold(Vector2 screenPosition)
+        {
+            var camera = follow.GetComponent<Camera>();
+            if (!Physics.Raycast(camera.ScreenPointToRay(screenPosition),out var hit,150,
+                (1<<0)|(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
+            var target = hit.collider.GetComponentInParent<WorldClickTarget>();
+            if (target == null || Array.IndexOf(goldPiles,target) < 0) return false;
+            return target.TryUse(hero.transform);
+        }
+
         void Update()
         {
             if(residents==null||travelling)return;
@@ -64,10 +176,11 @@ namespace ForjaDasMares.Networking
                 var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){residents[c][i]=actor;ownership[actor]=c;}
             }
         }
-        public string InteractionHint=>RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?"F · Entrar nos desafios":"Investigue os três acampamentos para abrir o portal"):"";
+        public string InteractionHint => NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?"F · Entrar nos desafios":"Investigue os três acampamentos para abrir o portal"):"";
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
+            if(NearbyGold()?.TryUse(hero.transform)==true)return;
             if(town!=null&&town.TryInteractNearest())return;
             if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
@@ -75,6 +188,6 @@ namespace ForjaDasMares.Networking
         }
         public void Respawn(){hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign(){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync("CampaignCoop");}
-        void OnDestroy(){if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
+        void OnDestroy(){if(goldMaterial!=null)Destroy(goldMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }
 }

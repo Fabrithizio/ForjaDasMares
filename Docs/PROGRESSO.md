@@ -766,3 +766,6 @@ Prisão de Cristal marca os alvos durante a imobilização. A Lança Prismática
 
 ### Efeitos e conjuração da Arcanista
 Lança, Pulso e Prisão usam malhas facetadas e uma textura procedural de veios. O Pulso se expande no chão, a Prisão ergue cristais e a Lança produz fragmentos no impacto. O conjunto reaproveita malhas, material, textura e oito objetos de efeito. As conjurações escolhem gestos existentes por habilidade e mantêm o tempo do acerto. Windows compilou; 31 testes Play Mode passaram. A leitura visual em combate e o desempenho no Android ainda precisam de teste manual.
+
+### Ouro recolhível nas regiões do RPG
+A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a cada duas ou três baixas. Pilhas valem de 8 a 16 ouro e são reutilizadas. Clique para aproximar e recolher no PC ou use F de perto. No Android, toque na pilha de perto ou use o botão de interação. A runa fica para a próxima etapa. A coleta, a proteção contra repetição e a persistência passaram no teste regional. Windows compilou; quatro testes da suíte separada de combate com mouse falharam também com DesktopRpgControls sem alterações.

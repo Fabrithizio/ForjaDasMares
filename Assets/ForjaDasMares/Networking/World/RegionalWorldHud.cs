@@ -468,9 +468,22 @@ namespace ForjaDasMares.Networking
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice ?? world.Journey.Objective;}
             if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
+            if(world.GoldFeedback!=null)hint.text=world.GoldFeedback;
             if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
         }
-        void LateUpdate() => UpdateDamageNumbers();
+        void LateUpdate()
+        {
+            UpdateDamageNumbers();
+            if (Application.isMobilePlatform && Touchscreen.current is Touchscreen screen)
+            {
+                var finger = screen.primaryTouch;
+                if (finger.press.wasReleasedThisFrame &&
+                    !world.Hero.GetComponent<ArenaInput>().CombatBlocked &&
+                    (finger.position.ReadValue()-finger.startPosition.ReadValue()).sqrMagnitude < 25*25 &&
+                    (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject(finger.touchId.ReadValue())))
+                    world.TryTouchGold(finger.position.ReadValue());
+            }
+        }
 
         const float DamageLifetime = .92f;
         sealed class DamagePopup

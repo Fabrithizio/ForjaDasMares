@@ -14,7 +14,7 @@ namespace ForjaDasMares
         public string Label=>label;
         public Vector3 Approach=>transform.position+transform.rotation*approachOffset;
         public bool InRange(Transform actor){Vector3 d=actor.position-transform.position;d.y=0;return d.sqrMagnitude<=useDistance*useDistance;}
-        public bool TryUse(Transform actor){if(!InRange(actor))return false;Interacting?.Invoke(actor);used.Invoke();return true;}
+        public bool TryUse(Transform actor){if(!isActiveAndEnabled||actor==null||!InRange(actor))return false;Interacting?.Invoke(actor);used.Invoke();return true;}
         public void Configure(string text,float distance=2.4f){label=text;useDistance=distance;}
     }
 }

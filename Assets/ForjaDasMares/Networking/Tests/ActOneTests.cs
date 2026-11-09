@@ -92,6 +92,28 @@ namespace ForjaDasMares.Networking.Tests
         {world.Hero.GetComponent<PlayerMotor>().Teleport(new Vector3(40,.1f,-35),Quaternion.identity);Assert.AreEqual(-1,world.Journey.NearestPoint());Assert.IsFalse(world.Journey.Interact());}
         [UnityTest]public IEnumerator CampsRespectBudgetAndRefugeIsSafe()
         {yield return new WaitForSeconds(1.3f);Assert.Greater(world.Enemies.ActiveCount,0);Assert.LessOrEqual(world.Enemies.ActiveCount,12);foreach(var e in world.Enemies.Actors.Where(e=>e.IsAlive))Assert.Greater(Vector3.Distance(e.transform.position,world.Definition.refuge),25);}
+        [UnityTest]public IEnumerator EnemyGoldRequiresCollectionAndPersistsOnce()
+        {
+            float deadline = Time.realtimeSinceStartup + 5;
+            while (world.Enemies.ActiveCount == 0 && Time.realtimeSinceStartup < deadline) yield return null;
+            var inventory = world.GetComponent<RegionalInventory>();
+            int previous = inventory.Service.Profile.coins;
+            var enemy = world.Enemies.Actors.First(actor => actor.IsAlive);
+            enemy.Health.ApplyDamage(100000);
+            yield return null;
+            var pile = GameObject.Find("Ouro no chão").GetComponent<WorldClickTarget>();
+            Assert.AreEqual(previous,inventory.Service.Profile.coins);
+            Assert.IsFalse(pile.TryUse(world.Hero.transform));
+            world.Hero.GetComponent<PlayerMotor>().Teleport(pile.transform.position+Vector3.back,Quaternion.identity);
+            Assert.IsTrue(pile.TryUse(world.Hero.transform));
+            int collected = inventory.Service.Profile.coins;
+            Assert.Greater(collected,previous);
+            Assert.IsFalse(pile.TryUse(world.Hero.transform));
+            Assert.AreEqual(collected,inventory.Service.Profile.coins);
+            var loaded = new ProfileService(inventory.Catalog,new ProfileStore(inventory.SavePath),false);
+            Assert.AreEqual(collected,loaded.Profile.coins);
+        }
+
         [Test]public void NewTreeAndTwoProvisionalNpcsExistAndPropsUseThreeLods()
         {Assert.IsNotNull(GameObject.Find("Nara · Cartógrafa (provisório)"));Assert.IsNotNull(GameObject.Find("Daro · Artífice (provisório)"));var groups=Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None);Assert.IsTrue(groups.Any(g=>g.name.StartsWith("Gravewood")));foreach(var g in groups){Assert.That(g.GetLODs().Length,Is.InRange(2,3));foreach(var lod in g.GetLODs())Assert.IsTrue(lod.renderers.Length>0);}}
         [Test]public void MaterialsKeepBaseColorWhiteAndColorDataLinear()

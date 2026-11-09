@@ -146,6 +146,12 @@ namespace ForjaDasMares
             if(catalog.Hero(heroId)==null)return false;int cost=HeroTalents.ResetCost(Profile,heroId,catalog);if(!confirmed||cost<=0||Profile.coins<cost){Message="Confirme a redistribuição e tenha "+cost+" ouro.";return false;}
             return Transaction(next=>{next.coins-=cost;next.talents.RemoveAll(x=>x.heroId==heroId);},"Pontos devolvidos. Custo: "+cost+" ouro.");
         }
+        public bool CollectRegionalGold(int amount)
+        {
+            if (amount <= 0 || amount > 1000) return false;
+            return Transaction(next => next.coins = Mathf.Min(100000000, next.coins + amount), "+" + amount + " ouro coletado.");
+        }
+
         public bool SetOptions(float volume, bool companion, bool largeText) => Transaction(next => next.options = new LocalOptions { volume = Mathf.Clamp01(volume), companionEnabled = companion, largeText = largeText }, "Opções salvas.");
         public bool BeginExpedition(string heroId, string location)
         {
