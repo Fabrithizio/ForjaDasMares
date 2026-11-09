@@ -24,10 +24,18 @@ namespace ForjaDasMares.Networking
         readonly Vector3[] goldOrigins = new Vector3[GoldCapacity];
         Material altarMaterial;
         public bool IsCatacombInstance => definition.regionId == "catacumbas-previa";
-        readonly int[] cardOrder = {0,1,2};
-        public static readonly (int gold,int xp)[] CatacombRewards = {(45,15),(25,45),(35,30)};
-        bool cardClaimed;
-        public int RevealedCard { get; private set; } = -1;
+        public const int CatacombCardCount = 6, CatacombPicks = 2;
+        public const int RuneCard = -1, StoneCard = -2;
+        readonly int[] cardOrder = {15,20,25,30,35,StoneCard};
+        readonly bool[] revealedCards = new bool[CatacombCardCount];
+        bool claimingCard, pendingCards;
+        public int CardsRevealed { get; private set; }
+        public bool IsCardRevealed(int card) => revealedCards[card];
+        public string CardRewardLabel(int card) => revealedCards[card] ? RewardLabel(cardOrder[card]) : "";
+        static string RewardLabel(int reward) => reward == RuneCard ? "Runa de Coleta" :
+            reward == StoneCard ? "Pedra de Têmpera" : reward + " ouro";
+        RegionDefinition testRoom;
+        Material testRoomWallMaterial;
         public string GoldNotice { get; private set; }
         float goldNoticeUntil;
         public string GoldFeedback => Time.unscaledTime < goldNoticeUntil ? GoldNotice : null;
@@ -43,6 +51,7 @@ namespace ForjaDasMares.Networking
         void Start()
         {
             if(Journey==null)Journey=GetComponent<RegionalJourney>();
+            if (IsCatacombInstance) ConfigureCatacombTestRoom();
             town=GetComponent<TownHub>();
             regionalInventory=GetComponent<RegionalInventory>();
             hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
@@ -54,11 +63,15 @@ namespace ForjaDasMares.Networking
             if (Journey != null && definition.regionId == "costa-ato1")
                 BuildCatacombAltar();
             if (IsCatacombInstance)
+            {
+                if (UnityEngine.Random.value < .20f) cardOrder[cardOrder.Length-1] = RuneCard;
+                else if (UnityEngine.Random.value >= .5f) cardOrder[cardOrder.Length-1] = 40;
                 for (int i = cardOrder.Length - 1; i > 0; i--)
                 {
                     int other = UnityEngine.Random.Range(0,i+1);
                     (cardOrder[i],cardOrder[other]) = (cardOrder[other],cardOrder[i]);
                 }
+            }
             enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignMasterVolume",.8f));
             if(soundscape!=null){Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f*CampaignSoundscape.Volume(CampaignSoundscape.MusicKey));Voice("RegionalAmbience",soundscape.menu.ambience,.16f*CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey));}
@@ -69,9 +82,9 @@ namespace ForjaDasMares.Networking
         void EnemyDied(EnemyActor actor)
         {
             if(!ownership.TryGetValue(actor,out int camp))return;ownership.Remove(actor);
-            TryDropGold(camp, actor.transform.position);
+            if (!IsCatacombInstance) TryDropGold(camp, actor.transform.position);
             var members=residents[camp];for(int i=0;i<members.Length;i++)if(members[i]==actor){members[i]=null;timers[camp][i]=definition.camps[camp].respawnSeconds;if(!firstDefeated[camp][i]){firstDefeated[camp][i]=true;firstKills[camp]++;}break;}
-            if(!cleared[camp]){if(firstKills[camp]>=members.Length){cleared[camp]=true;Changed?.Invoke();}}
+            if(!cleared[camp]){if(firstKills[camp]>=members.Length){cleared[camp]=true;if(IsCatacombInstance && PortalReady)pendingCards=true;Changed?.Invoke();}}
         }
         void TryDropGold(int camp, Vector3 position)
         {
@@ -183,6 +196,7 @@ namespace ForjaDasMares.Networking
             commands.TakeNextHero();
             if(!hero.Health.IsAlive)return;
             if(hero.transform.position.y< -5)Respawn();
+            if (pendingCards && Hud?.OpenCatacombCards() == true) pendingCards = false;
             UpdateCollectionRune();
             poll-=Time.deltaTime;if(poll>0)return;float elapsed=.25f-poll;poll=.25f;
             for(int c=0;c<residents.Length;c++)for(int i=0;i<residents[c].Length;i++)
@@ -190,15 +204,15 @@ namespace ForjaDasMares.Networking
                 timers[c][i]=Mathf.Max(0,timers[c][i]-elapsed);
                 if(residents[c][i]!=null||timers[c][i]>0 || (IsCatacombInstance && firstDefeated[c][i]))continue;
                 var data=definition.camps[c];var point=data.spawns[i%data.spawns.Length];float distance=(hero.transform.position-point).sqrMagnitude;
-                if(distance>75*75||distance<8*8)continue;
-                var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){residents[c][i]=actor;ownership[actor]=c;}
+                if(distance>75*75||(!IsCatacombInstance&&distance<8*8))continue;
+                var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){if(IsCatacombInstance){actor.Health.ApplyAttributes(22,0);actor.Health.Restore();actor.Combat.NormalDamageScale=.35f;}residents[c][i]=actor;ownership[actor]=c;}
             }
         }
-        public string InteractionHint => NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
+        public string InteractionHint => IsCatacombInstance && PortalReady ? "F · Abrir cartas" : NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
-            if (IsCatacombInstance && PortalReady && Vector3.Distance(hero.transform.position,definition.portal)<5)
+            if (IsCatacombInstance && PortalReady)
             {
                 Hud?.OpenCatacombCards();
                 return;
@@ -271,31 +285,77 @@ namespace ForjaDasMares.Networking
             TravelTo("CatacumbasDasMares");
         }
 
+        void ConfigureCatacombTestRoom()
+        {
+            var original = definition;
+            testRoom = Instantiate(original);
+            definition = testRoom;
+            var oldCamp = original.camps[0];
+            var center = oldCamp.center;
+            definition.refuge = center + new Vector3(0,.06f,-4);
+            definition.portal = center + new Vector3(0,.06f,5);
+            definition.route = new[] { definition.refuge, center, definition.portal };
+            definition.connections = Array.Empty<RegionConnection>();
+            definition.landmarks = Array.Empty<RegionLandmark>();
+            definition.bounds = new Bounds(center,new Vector3(16,10,15));
+            definition.activeEnemyLimit = 2;
+            definition.camps = new[]
+            {
+                new RegionCampDefinition
+                {
+                    label = oldCamp.label,
+                    center = center,
+                    spawns = new[] { oldCamp.spawns[0],oldCamp.spawns[1] },
+                    enemies = new[] { oldCamp.enemies[0],oldCamp.enemies[1] }
+                }
+            };
+
+            testRoomWallMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            testRoomWallMaterial.SetColor("_BaseColor",new Color(.21f,.29f,.32f));
+            BuildTestRoomWall(center + Vector3.left * 8,new Vector3(.45f,2.1f,15));
+            BuildTestRoomWall(center + Vector3.right * 8,new Vector3(.45f,2.1f,15));
+            BuildTestRoomWall(center + Vector3.forward * 7.5f,new Vector3(16,2.1f,.45f));
+            BuildTestRoomWall(center + Vector3.back * 7.5f,new Vector3(16,2.1f,.45f));
+        }
+
+        void BuildTestRoomWall(Vector3 point, Vector3 size)
+        {
+            var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            wall.name = "Limite da sala de teste";
+            wall.layer = 9;
+            wall.transform.SetParent(transform,false);
+            wall.transform.position = point + Vector3.up * (size.y * .5f);
+            wall.transform.localScale = size;
+            wall.GetComponent<Renderer>().sharedMaterial = testRoomWallMaterial;
+        }
+
         public bool ClaimCatacombCard(int card)
         {
-            if (!IsCatacombInstance || !PortalReady || travelling || cardClaimed || !hero.Health.IsAlive ||
-                Vector3.Distance(hero.transform.position,definition.portal) >= 5 || card < 0 || card >= cardOrder.Length)
+            if (!IsCatacombInstance || !PortalReady || travelling || claimingCard || !hero.Health.IsAlive ||
+                CardsRevealed >= CatacombPicks || card < 0 || card >= cardOrder.Length || revealedCards[card])
                 return false;
-            cardClaimed = true;
-            int index = cardOrder[card];
-            var reward = CatacombRewards[index];
-            if (regionalInventory?.Service?.ClaimCatacombCard(reward.gold,reward.xp) != true)
+            claimingCard = true;
+            int reward = cardOrder[card];
+            if (reward == RuneCard && regionalInventory?.Service?.CollectionRuneLevel > 0) reward = 60;
+            bool saved = regionalInventory?.Service?.ClaimCatacombCard(reward) == true;
+            if (saved)
             {
-                cardClaimed = false;
-                return false;
+                cardOrder[card] = reward;
+                revealedCards[card] = true;
+                CardsRevealed++;
             }
-            RevealedCard = index;
-            return true;
+            claimingCard = false;
+            return saved;
         }
 
         public void LeaveCatacombInstance()
         {
-            if (IsCatacombInstance && RevealedCard >= 0) TravelTo("CostaAto1");
+            if (IsCatacombInstance && CardsRevealed == CatacombPicks) TravelTo("CostaAto1");
         }
 
         public void Respawn(){hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign() => TravelTo("CampaignCoop");
         void TravelTo(string scene){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
-        void OnDestroy(){if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
+        void OnDestroy(){if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }
 }

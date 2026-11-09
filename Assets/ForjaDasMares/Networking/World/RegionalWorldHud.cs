@@ -216,26 +216,21 @@ namespace ForjaDasMares.Networking
 
         GameObject instanceModal;
         Button enterInstance, leaveInstance;
-        readonly Button[] rewardCards = new Button[3];
+        readonly Button[] rewardCards = new Button[RegionalWorld.CatacombCardCount];
         Text instanceInfo;
-        int selectedCard = -1;
+        bool flippingCard;
 
         void BuildCatacombPanels(RectTransform root)
         {
             if (world.IsCatacombInstance)
             {
                 var panel = BuildModal(root,"Cartas das Catacumbas",out instanceModal);
-                instanceInfo = Label(panel,"Reward",new Vector2(28,-76),new Vector2(584,65),"",21);
+                instanceInfo = Label(panel,"Reward",new Vector2(28,-67),new Vector2(584,54),"",21);
                 for (int i = 0; i < rewardCards.Length; i++)
                 {
                     int card = i;
-                    rewardCards[i] = RusticHudTheme.Button(panel,"Card"+i,Top,new Vector2(30+i*197,-144),
-                        new Vector2(185,74),"◆  CARTA "+(i+1),() =>
-                        {
-                            if (world.ClaimCatacombCard(card)) selectedCard = card;
-                            else instanceInfo.text = "Não foi possível guardar o prêmio. Tente novamente.";
-                            if (selectedCard >= 0) RefreshCatacombCards();
-                        });
+                    rewardCards[i] = RusticHudTheme.Button(panel,"Card"+i,Top,new Vector2(28+i*98,-127),
+                        new Vector2(90,95),"◆\n"+(i+1),() => RevealCatacombCard(card));
                 }
                 RusticHudTheme.Button(panel,"CloseCards",Top,new Vector2(30,-235),new Vector2(235,48),"FECHAR",() => CloseStoryModal());
                 leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(300,-235),new Vector2(310,48),"VOLTAR À COSTA",world.LeaveCatacombInstance);
@@ -243,7 +238,7 @@ namespace ForjaDasMares.Networking
             else if (world.Definition.regionId == "costa-ato1")
             {
                 var panel = BuildModal(root,"Catacumbas das Marés",out instanceModal);
-                instanceInfo = Label(panel,"Rewards",new Vector2(28,-70),new Vector2(584,153),"",20);
+                instanceInfo = Label(panel,"Rewards",new Vector2(28,-66),new Vector2(584,157),"",20);
                 RusticHudTheme.Button(panel,"CancelInstance",Top,new Vector2(28,-232),new Vector2(235,48),"VOLTAR",() => CloseStoryModal());
                 enterInstance = RusticHudTheme.Button(panel,"EnterInstance",Top,new Vector2(295,-232),new Vector2(315,48),"ENTRAR SOLO",world.EnterCatacombInstance);
             }
@@ -254,34 +249,66 @@ namespace ForjaDasMares.Networking
         {
             if (enterInstance == null || !OpenModal(instanceModal)) return;
             enterInstance.interactable = world.Journey?.Completed == true;
-            string text = "Instância solo · derrote as três patrulhas.\nEscolha uma carta no final. Prêmios possíveis:";
-            foreach (var reward in RegionalWorld.CatacombRewards)
-                text += "\n" + reward.gold + " ouro  ·  " + reward.xp + " XP";
-            if (!enterInstance.interactable) text += "\nConclua a investigação de Nara e Daro para entrar.";
-            instanceInfo.text = text;
+            instanceInfo.text = "Teste solo · 1 sala, 2 inimigos. Vire 2 de 6 cartas.\n\nOuro · 15 a 40\nPedra de Têmpera · material de fortalecimento\nRuna de Coleta · rara (60 ouro se já possuir)" +
+                (enterInstance.interactable ? "" : "\nConclua a investigação de Nara e Daro para entrar.");
         }
 
-        public void OpenCatacombCards()
+        public bool OpenCatacombCards()
         {
-            if (leaveInstance == null || !OpenModal(instanceModal)) return;
+            if (leaveInstance == null || !OpenModal(instanceModal)) return false;
             RefreshCatacombCards();
+            return true;
+        }
+
+        void RevealCatacombCard(int card)
+        {
+            if (flippingCard || world.IsCardRevealed(card) || world.CardsRevealed >= RegionalWorld.CatacombPicks) return;
+            if (!world.ClaimCatacombCard(card))
+            {
+                instanceInfo.text = "Não foi possível guardar o prêmio. Tente novamente.";
+                return;
+            }
+            StartCoroutine(FlipRewardCard(card));
+        }
+
+        System.Collections.IEnumerator FlipRewardCard(int card)
+        {
+            flippingCard = true;
+            foreach (var button in rewardCards) button.interactable = false;
+            var cardTransform = rewardCards[card].transform;
+            const float duration = .38f;
+            for (float elapsed = 0; elapsed < duration; elapsed += Time.unscaledDeltaTime)
+            {
+                float width = Mathf.Abs(Mathf.Cos(elapsed / duration * Mathf.PI));
+                cardTransform.localScale = new Vector3(Mathf.Max(.03f,width),1,1);
+                if (elapsed >= duration * .5f) ShowRevealedReward(card);
+                yield return null;
+            }
+            cardTransform.localScale = Vector3.one;
+            flippingCard = false;
+            RefreshCatacombCards();
+        }
+
+        void ShowRevealedReward(int card)
+        {
+            var label = rewardCards[card].GetComponentInChildren<Text>();
+            label.text = world.CardRewardLabel(card);
+            label.color = RusticHudTheme.Gold;
         }
 
         void RefreshCatacombCards()
         {
-            bool revealed = world.RevealedCard >= 0;
-            instanceInfo.text = revealed ? "Prêmio salvo no seu perfil." : "Patrulhas derrotadas. Escolha uma das três cartas.";
-            leaveInstance.interactable = revealed;
+            int remaining = RegionalWorld.CatacombPicks - world.CardsRevealed;
+            var service = world.GetComponent<RegionalInventory>()?.Service;
+            instanceInfo.text = (remaining > 0 ? "Cartas restantes: " + remaining : "Prêmios salvos no seu perfil.") +
+                "\nPedras de Têmpera no perfil: " + (service?.Profile.strengtheningStones ?? 0);
+            leaveInstance.interactable = remaining == 0;
             for (int i = 0; i < rewardCards.Length; i++)
             {
-                rewardCards[i].interactable = !revealed;
-                var label = rewardCards[i].GetComponentInChildren<Text>();
-                if (revealed && i == selectedCard)
-                {
-                    var reward = RegionalWorld.CatacombRewards[world.RevealedCard];
-                    label.text = reward.gold + " OURO\n" + reward.xp + " XP";
-                }
-                else label.text = revealed ? "◆" : "◆  CARTA " + (i+1);
+                bool revealed = world.IsCardRevealed(i);
+                rewardCards[i].interactable = remaining > 0 && !revealed && !flippingCard;
+                if (revealed) ShowRevealedReward(i);
+                else rewardCards[i].GetComponentInChildren<Text>().text = "◆\n" + (i+1);
             }
         }
 
@@ -537,7 +564,7 @@ namespace ForjaDasMares.Networking
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);
-            objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?"O portal dos desafios está aberto.":"Derrote a primeira patrulha de cada local.");
+            objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?(world.IsCatacombInstance?"Escolha suas duas cartas.":"O portal dos desafios está aberto."):(world.IsCatacombInstance?"Derrote os dois inimigos da sala.":"Derrote a primeira patrulha de cada local."));
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice ?? world.Journey.Objective;}
             if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}

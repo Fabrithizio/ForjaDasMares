@@ -54,10 +54,10 @@ namespace ForjaDasMares.Networking
         {
             var service = world.GetComponent<RegionalInventory>()?.Service;
             int level = service?.CollectionRuneLevel ?? 0;
-            runeInfo.text = level == 0 ? "Runa de coleta · disponível" : "Runa de coleta · Nv. " + level +
+            runeInfo.text = level == 0 ? "Runa de coleta · prêmio das Catacumbas" : "Runa de coleta · Nv. " + level +
                 (level == 1 ? " · ao passar por cima" : level == 2 ? " · 2,5 m" : " · 4,5 m");
-            runeUpgrade.interactable = service != null && level < 3 && service.Profile.coins >= service.CollectionRuneUpgradeCost;
-            runeUpgrade.GetComponentInChildren<Text>().text = level == 0 ? "ATIVAR GRÁTIS" : level == 3 ? "NÍVEL MÁXIMO" : "MELHORAR · " + service.CollectionRuneUpgradeCost + " OURO";
+            runeUpgrade.interactable = service != null && level > 0 && level < 3 && service.Profile.coins >= service.CollectionRuneUpgradeCost;
+            runeUpgrade.GetComponentInChildren<Text>().text = level == 0 ? "RUNA BLOQUEADA" : level == 3 ? "NÍVEL MÁXIMO" : "MELHORAR · " + service.CollectionRuneUpgradeCost + " OURO";
             runeToggle.interactable = level > 0;
             runeToggle.GetComponentInChildren<Text>().text = service?.CollectionRuneEquipped == true ? "DESEQUIPAR" : "EQUIPAR";
         }

@@ -16,12 +16,13 @@ namespace ForjaDasMares
         int targets, geometry, summonCount;
         float elapsed, windup, recovery, cooldown, scale, radius;
         bool busy, resolved, summoning;
+        public float NormalDamageScale { get; set; } = 1;
         public bool IsBusy => busy;public bool IsRecovering=>busy&&resolved;
         public void SetTarget(Health player) { if (!busy) target = player; }
         public float WarningRemaining => busy && !resolved ? Mathf.Max(0, windup - elapsed) : 0;
         public BossAttackKind? CurrentBossAttack => bossMove != null && busy ? bossMove.kind : (BossAttackKind?)null;
         public void Prepare(EnemyActor owner, Health player, EnemyPool registry, CombatEffectPool shots, TelegraphPool signs, int playerTargets, int walls)
-        { actor = owner; target = player; enemies = registry; projectiles = shots; warnings = signs; targets = playerTargets; geometry = walls; cooldown = 0; summonCount = 0; Cancel(); }
+        { actor = owner; target = player; enemies = registry; projectiles = shots; warnings = signs; targets = playerTargets; geometry = walls; cooldown = 0; summonCount = 0; NormalDamageScale = 1; Cancel(); }
         bool CanStart(float range)
         { return actor.IsAlive && target != null && target.IsAlive && !actor.Health.IsStunned && !busy && cooldown <= 0 && EnemyBrain.PlanarDistance(transform.position, target.transform.position) <= range && !Physics.Linecast(transform.position + Vector3.up, target.transform.position + Vector3.up, geometry, QueryTriggerInteraction.Ignore); }
         void Begin(AttackDefinition hit, float delay, float recover)
@@ -82,7 +83,7 @@ namespace ForjaDasMares
                 for (int i = 0; i < actor.Profile.summonPerCast && summonCount < actor.Profile.summonBudget && enemies.CountOwned(actor) < actor.Profile.maxOwnedSummons; i++)
                     if (enemies.TrySpawn(actor.Profile.summonedEnemy, transform.position + direction * 1.5f + transform.right * i, actor) != null) summonCount++;
             }
-            else if (attack.shape == AttackShape.Projectile) projectiles.Shoot(origin + direction * 0.1f, direction, attack, actor.Health, targets, geometry);
+            else if (attack.shape == AttackShape.Projectile) projectiles.Shoot(origin + direction * 0.1f, direction, attack, actor.Health, targets, geometry, damageScale: NormalDamageScale);
             else resolver.Area(origin, radius, direction, actor.Profile.kind == EnemyKind.Unstable ? 360 : attack.arc, attack, actor.Health, targets, geometry);
             if (actor.Profile.kind == EnemyKind.Unstable) actor.Health.ApplyDamage(actor.Health.Maximum * 4);
         }

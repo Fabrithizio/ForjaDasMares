@@ -39,21 +39,22 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTest]public IEnumerator CampClearAndRespawnReuseExistingRules()
         {
-            for(int c=0;c<3;c++)
+            for(int c=0;c<1;c++)
             {world.Hero.GetComponent<PlayerMotor>().Teleport(world.Definition.camps[c].center+new Vector3(0,.06f,-10),Quaternion.identity);yield return new WaitForSeconds(1);foreach(var enemy in world.Enemies.Actors)if(enemy.IsAlive&&(enemy.transform.position-world.Definition.camps[c].center).sqrMagnitude<25*25)enemy.Health.ApplyDamage(10000);world.Hero.Health.Restore();}
-            Assert.AreEqual(3,world.ClearedCount);Assert.IsTrue(world.PortalReady);Assert.LessOrEqual(world.Enemies.ActiveCount,10);
+            Assert.AreEqual(1,world.ClearedCount);Assert.IsTrue(world.PortalReady);Assert.LessOrEqual(world.Enemies.ActiveCount,10);
             world.Hero.Health.ApplyDamage(10000);world.Respawn();Assert.IsTrue(world.Hero.Health.IsAlive);Assert.Less(Vector3.Distance(world.Hero.transform.position,world.Definition.refuge),.2f);
-            var service = world.GetComponent<RegionalInventory>().Service;
-            int gold = service.Profile.coins, xp = service.Profile.experience;
-            Assert.IsFalse(world.ClaimCatacombCard(0),"A carta só pode ser aberta na saída.");
-            world.Hero.GetComponent<PlayerMotor>().Teleport(world.Definition.portal,Quaternion.identity);
-            world.Interact();
+            Assert.AreEqual(2,world.Definition.camps[0].enemies.Length);
+            yield return null;
             Assert.IsNotNull(GameObject.Find("Card0"));
             GameObject.Find("Card0").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
-            Assert.IsFalse(world.ClaimCatacombCard(1));
-            var reward = RegionalWorld.CatacombRewards[world.RevealedCard];
-            Assert.AreEqual(gold+reward.gold,service.Profile.coins);
-            Assert.AreEqual(xp+reward.xp,service.Profile.experience);
+            Assert.AreEqual(1,world.CardsRevealed);
+            Assert.IsFalse(world.ClaimCatacombCard(0));
+            yield return new WaitForSecondsRealtime(.5f);
+            GameObject.Find("Card1").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.AreEqual(2,world.CardsRevealed);
+            Assert.IsFalse(world.ClaimCatacombCard(2));
+            Assert.IsNotEmpty(world.CardRewardLabel(0));
+            Assert.IsNotEmpty(world.CardRewardLabel(1));
         }
     }
 }

@@ -120,7 +120,7 @@ namespace ForjaDasMares.Networking.Tests
             while (world.Enemies.ActiveCount == 0 && Time.realtimeSinceStartup < deadline) yield return null;
             var inventory = world.GetComponent<RegionalInventory>();
             var service = inventory.Service;
-            Assert.IsTrue(service.UpgradeCollectionRune());
+            Assert.IsTrue(service.ClaimCatacombCard(RegionalWorld.RuneCard));
             Assert.IsTrue(service.CollectionRuneEquipped);
             world.Enemies.Actors.First(actor => actor.IsAlive).Health.ApplyDamage(100000);
             yield return null;

@@ -153,26 +153,32 @@ namespace ForjaDasMares
         public bool UpgradeCollectionRune()
         {
             int level = CollectionRuneLevel, cost = CollectionRuneUpgradeCost;
-            if (level >= 3 || Profile.coins < cost) return false;
+            if (level == 0 || level >= 3 || Profile.coins < cost) return false;
             return Transaction(next =>
             {
                 next.coins -= cost;
                 next.collectionRuneLevel = level + 1;
-                if (level == 0) next.collectionRuneEquipped = true;
             }, "Runa de coleta melhorada.");
         }
 
         public bool ToggleCollectionRune() => CollectionRuneLevel > 0 &&
             Transaction(next => next.collectionRuneEquipped = !next.collectionRuneEquipped, "Runa de coleta atualizada.");
 
-        public bool ClaimCatacombCard(int gold, int xp)
+        public bool ClaimCatacombCard(int reward)
         {
-            if (gold <= 0 || gold > 100 || xp <= 0 || xp > 100) return false;
-            return Transaction(next =>
+            if (reward == -1)
             {
-                next.coins = Mathf.Min(100000000,next.coins + gold);
-                next.experience = Mathf.Min(1000000,next.experience + xp);
-            }, "Carta das Catacumbas recebida.");
+                if (CollectionRuneLevel > 0) return CollectRegionalGold(60);
+                return Transaction(next =>
+                {
+                    next.collectionRuneLevel = 1;
+                    next.collectionRuneEquipped = true;
+                }, "Runa de Coleta recebida e equipada.");
+            }
+            if (reward == -2)
+                return Transaction(next => next.strengtheningStones = Mathf.Clamp(next.strengtheningStones,0,999998) + 1,
+                    "Pedra de Têmpera recebida.");
+            return CollectRegionalGold(reward);
         }
 
         public bool CollectRegionalGold(int amount)
