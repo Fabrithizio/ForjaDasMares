@@ -12,7 +12,7 @@ namespace ForjaDasMares.Networking
             regionalInventoryKey.performed+=OnRegionalInventory;regionalCloseKey.performed+=OnRegionalClose;
             regionalInventoryKey.Enable();regionalCloseKey.Enable();
         }
-        void OnRegionalInventory(InputAction.CallbackContext _){if(IsOpen)CloseInventory();else OpenInventory();}
+        void OnRegionalInventory(InputAction.CallbackContext _){if(GetComponent<RegionalWorldHud>()?.IntroOpen==true)return;if(IsOpen)CloseInventory();else OpenInventory();}
         void OnRegionalClose(InputAction.CallbackContext _){if(GetComponent<RegionalSettingsMenu>()==null&&IsOpen)CloseInventory();}
         void OnEnable(){regionalInventoryKey?.Enable();regionalCloseKey?.Enable();}
         void OnDestroy(){regionalInventoryKey?.Dispose();regionalCloseKey?.Dispose();}

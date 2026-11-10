@@ -400,6 +400,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<shopButtons.Length;i++)
                 if(shopButtons[i]!=null)shopButtons[i].interactable=profile.coins>=shopPrices[i]&&used<capacity&&profile.expedition==null;
         }
+        public bool IntroOpen { get; private set; }
         const string IntroSeenKey="Forja.WorldIntro.v3";
         System.Collections.IEnumerator PlayWorldIntro(RectTransform root)
         {
@@ -407,17 +408,29 @@ namespace ForjaDasMares.Networking
             var overlay=RusticHudTheme.Rect(root,"WorldIntro",Vector2.zero,Vector2.zero,Vector2.zero);
             overlay.anchorMax=Vector2.one;
             overlay.offsetMin=overlay.offsetMax=Vector2.zero;
-            overlay.SetAsLastSibling();
+            IntroOpen = true;
+            // Inventory builds its buttons later. Give the introduction its own sorting layer.
+            var introCanvas = overlay.gameObject.AddComponent<Canvas>();
+            introCanvas.overrideSorting = true;
+            introCanvas.sortingOrder = 100;
+            overlay.gameObject.AddComponent<GraphicRaycaster>();
             overlay.gameObject.AddComponent<Image>().color=Color.black;
             overlay.gameObject.AddComponent<RectMask2D>();
             MenuArtwork.Fill(overlay,"IntroArt","MenuArt/RoutesBackdrop",Color.white);
             var artwork=overlay.Find("IntroArt");
-            var group=overlay.gameObject.AddComponent<CanvasGroup>();
-            var caption=RusticHudTheme.Label(overlay,"Story",new Vector2(.5f,0),new Vector2(0,88),new Vector2(840,110),"",25,TextAnchor.MiddleCenter);
+            var controls = RusticHudTheme.Rect(overlay,"IntroSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);
+            var safe = Screen.safeArea;
+            var resolution = new Vector2(Screen.width,Screen.height);
+            controls.anchorMin = new Vector2(safe.xMin / resolution.x,safe.yMin / resolution.y);
+            controls.anchorMax = new Vector2(safe.xMax / resolution.x,safe.yMax / resolution.y);
+            controls.offsetMin = controls.offsetMax = Vector2.zero;
+            var caption=RusticHudTheme.Label(controls,"Story",new Vector2(.5f,0),new Vector2(0,65),new Vector2(0,100),"",25,TextAnchor.MiddleCenter);
+            caption.rectTransform.anchorMin = new Vector2(.08f,0);
+            caption.rectTransform.anchorMax = new Vector2(.92f,0);
             var shade=caption.gameObject.AddComponent<Outline>();
             shade.effectColor=Color.black;
             bool skipped=false;
-            RusticHudTheme.Button(overlay,"SkipIntro",new Vector2(1,1),new Vector2(-25,-22),new Vector2(195,48),"PULAR",()=>skipped=true);
+            RusticHudTheme.Button(controls,"SkipIntro",new Vector2(1,1),new Vector2(-25,-22),new Vector2(195,48),"PULAR",()=>skipped=true);
             var input=world.Hero.GetComponent<ArenaInput>();
             input.BlockCommands(true);
             var frame=RusticHudTheme.Rect(overlay,"Video",Vector2.zero,Vector2.zero,Vector2.zero);
@@ -427,7 +440,7 @@ namespace ForjaDasMares.Networking
             var screen=frame.gameObject.AddComponent<RawImage>();
             screen.raycastTarget=false;
             var aspect=frame.gameObject.AddComponent<AspectRatioFitter>();
-            aspect.aspectMode=AspectRatioFitter.AspectMode.FitInParent;
+            aspect.aspectMode=AspectRatioFitter.AspectMode.EnvelopeParent;
             aspect.aspectRatio=16f/9f;
             var texture=new RenderTexture(1280,720,0);
             screen.texture=texture;
@@ -451,7 +464,7 @@ namespace ForjaDasMares.Networking
             if(video.isPrepared&&!failed&&!skipped)
             {
                 if(artwork!=null)artwork.gameObject.SetActive(false);
-                caption.transform.SetAsLastSibling();
+                if (video.width > 0 && video.height > 0) aspect.aspectRatio = (float)video.width / video.height;
                 video.Play();
                 deadline=Time.realtimeSinceStartup+40;
                 while(!finished&&!failed&&!skipped&&Time.realtimeSinceStartup<deadline)
@@ -467,6 +480,7 @@ namespace ForjaDasMares.Networking
             Destroy(texture);
             overlay.gameObject.SetActive(false);
             Destroy(overlay.gameObject);
+            IntroOpen = false;
             input.BlockCommands(false);
             if(finished||skipped)PlayerPrefs.SetInt(IntroSeenKey+CampaignHome.LocalAccountId,1);
             PlayerPrefs.Save();

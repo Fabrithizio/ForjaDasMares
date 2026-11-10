@@ -43,7 +43,7 @@ namespace ForjaDasMares.Networking
                 world.GetComponent<RegionalInventory>()?.Service?.ToggleCollectionRune();
                 Refresh();
             });
-            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
+            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud?.IntroOpen==true)return;if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
         }
         void ChangeVolume(int i,float step)
         {
