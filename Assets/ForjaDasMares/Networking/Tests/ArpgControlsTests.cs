@@ -24,6 +24,44 @@ namespace ForjaDasMares.Networking.Tests
         }
         [UnityTearDown]public IEnumerator Close()
         {if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(hadMode)PlayerPrefs.SetInt(DesktopRpgControls.ModeKey,priorMode);else PlayerPrefs.DeleteKey(DesktopRpgControls.ModeKey);InputSystem.settings.backgroundBehavior=oldBackground;InputSystem.settings.editorInputBehaviorInPlayMode=oldEditorInput;yield return null;}
+        [UnityTest]public IEnumerator GroundClickDuringWindupDoesNotRedirectMouseShot()
+        {
+            var hero = world.Hero;
+            var combat = hero.GetComponent<HeroCombat>();
+            combat.ConfigureRegionalRules(() => true,() => false);
+            var attack = combat.BasicAttack;
+            Assert.AreEqual(AttackShape.Projectile,attack.shape);
+            Vector3 start = hero.transform.position;
+            var victim = world.Enemies.TrySpawn(world.Definition.camps[0].enemies[0],start+Vector3.forward*5);
+            Assert.NotNull(victim);
+            victim.Brain.enabled = false;
+            victim.Health.Restore();
+            Vector3 direction = (victim.transform.position-start);
+            direction.y = 0;
+            Vector3 cursor = victim.transform.position+Vector3.up*.65f;
+            int version = combat.ActionVersion;
+            Point(cursor,true);
+            float deadline = Time.time+1;
+            while (combat.ActionVersion == version && Time.time < deadline) yield return null;
+            Assert.Greater(combat.ActionVersion,version);
+            Vector3 walkPoint = start+Vector3.left*5;
+            Point(walkPoint,false);
+            Point(walkPoint,true);
+            yield return null;
+            Point(walkPoint,false);
+            CombatProjectile shot = null;
+            deadline = Time.time+1;
+            while (shot == null && Time.time < deadline)
+            {
+                shot = combat.Pool.Projectiles.FirstOrDefault(p => p.OwnedBy(hero.Health));
+                yield return null;
+            }
+            Assert.NotNull(shot);
+            Assert.Greater(Vector3.Dot(shot.transform.forward,direction.normalized),.98f);
+            yield return new WaitForSeconds(.8f);
+            Assert.Greater(Vector3.Dot(hero.transform.position-start,Vector3.left),.5f);
+        }
+
         [UnityTest]public IEnumerator HeldFireChangesDirectionAndReleasedShotDoesNotCurve()
         {
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.LeftShift));InputSystem.Update();yield return null;
