@@ -7,7 +7,8 @@ namespace ForjaDasMares.Networking
     [DefaultExecutionOrder(260)]public sealed class RegionalWorldHud:MonoBehaviour
     {
         [SerializeField]RegionalWorld world;
-        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey;
+        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey, mountKey;
+        Text mountCaption;
         readonly InputAction[] skillKeys = new InputAction[3];
         readonly Button[] skillButtons = new Button[3];
         readonly Text[] skillLabels = new Text[3];
@@ -66,6 +67,14 @@ namespace ForjaDasMares.Networking
             }
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
+            if (!world.IsCatacombInstance)
+            {
+                var mountButton = RusticHudTheme.Button(root,"MountToggle",Vector2.one,new Vector2(-190,-20),new Vector2(112,48),"",world.ToggleMount);
+                mountCaption = mountButton.GetComponentInChildren<Text>();
+                mountKey = new InputAction("Mount",InputActionType.Button,"<Keyboard>/m");
+                mountKey.performed += _ => world.ToggleMount();
+                mountKey.Enable();
+            }
             gameObject.AddComponent<CampaignPerformanceHud>().BuildRegional(root,world);
             gameObject.AddComponent<RegionalSettingsMenu>().Build(root,world);
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
@@ -559,6 +568,7 @@ namespace ForjaDasMares.Networking
         void OnInteract(InputAction.CallbackContext _){if((journalPanel==null||!journalPanel.activeSelf)&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
+            if (mountCaption != null) mountCaption.text = (world.IsMounted ? "DESCER" : "MONTAR") + (Application.isMobilePlatform ? "" : " · M");
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)
             {
@@ -751,7 +761,7 @@ namespace ForjaDasMares.Networking
             }
         }
 
-        void OnDestroy(){weaponModeKey?.Dispose();foreach(var key in skillKeys)key?.Dispose();Health.DamageTaken-=ShowDamage;Health.CrystalShattered-=ShowShatter;Health.CrystalApplied-=ShowCrystal;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
+        void OnDestroy(){mountKey?.Dispose();weaponModeKey?.Dispose();foreach(var key in skillKeys)key?.Dispose();Health.DamageTaken-=ShowDamage;Health.CrystalShattered-=ShowShatter;Health.CrystalApplied-=ShowCrystal;if(interact!=null){interact.performed-=OnInteract;interact.Dispose();}if(world!=null&&world.Hero!=null)world.Hero.GetComponent<ArenaInput>().PointerBlocked=null;}
     }
     public sealed class RegionalMap:MaskableGraphic
     {

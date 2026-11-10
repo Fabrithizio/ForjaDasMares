@@ -13,6 +13,58 @@ namespace ForjaDasMares.Networking
         readonly Dictionary<EnemyActor,int> ownership=new Dictionary<EnemyActor,int>(24);
         float[][] timers;EnemyActor[][] residents;int[] firstKills;bool[] cleared;bool[][] firstDefeated;bool travelling;float poll;
         TownHub town;
+        PlayerMotor travelMotor;
+        HeroCombat travelCombat;
+        GameObject mount;
+        Material mountMetal, mountCrystal;
+        int mountedAction;
+        public bool IsMounted => mount != null && mount.activeSelf;
+
+        public void ToggleMount()
+        {
+            if (travelling || !hero.Health.IsAlive || hero.GetComponent<ArenaInput>().CombatBlocked) return;
+            if (IsMounted) { Dismount(); return; }
+            if (IsCatacombInstance || travelCombat.IsBusy || travelMotor.IsDodging || enemies.ThreatNear(hero.transform.position,9)) return;
+            if (mount == null) BuildMount();
+            mountedAction = travelCombat.ActionVersion;
+            mount.SetActive(true);
+            travelMotor.TravelSpeedMultiplier = 1.8f;
+        }
+
+        public void Dismount()
+        {
+            if (mount != null) mount.SetActive(false);
+            if (travelMotor != null) travelMotor.TravelSpeedMultiplier = 1f;
+        }
+
+        void BuildMount()
+        {
+            mount = new GameObject("Prancha Rúnica");
+            mount.transform.SetParent(hero.transform,false);
+            mountMetal = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            mountMetal.SetColor("_BaseColor",new Color(.16f,.26f,.31f));
+            mountCrystal = new Material(mountMetal);
+            mountCrystal.SetColor("_BaseColor",new Color(.15f,.75f,.86f));
+            mountCrystal.EnableKeyword("_EMISSION");
+            mountCrystal.SetColor("_EmissionColor",new Color(.04f,.36f,.44f));
+
+            AddMountPiece(PrimitiveType.Sphere,new Vector3(0,.07f,0),new Vector3(.92f,.14f,1.65f),mountMetal,0);
+            AddMountPiece(PrimitiveType.Sphere,new Vector3(0,.08f,.64f),new Vector3(.37f,.16f,.59f),mountCrystal,0);
+            AddMountPiece(PrimitiveType.Cube,new Vector3(-.42f,.045f,-.08f),new Vector3(.17f,.09f,.91f),mountCrystal,-13);
+            AddMountPiece(PrimitiveType.Cube,new Vector3(.42f,.045f,-.08f),new Vector3(.17f,.09f,.91f),mountCrystal,13);
+        }
+
+        void AddMountPiece(PrimitiveType shape,Vector3 position,Vector3 scale,Material surface,float yaw)
+        {
+            var piece = GameObject.CreatePrimitive(shape);
+            piece.layer = 2;
+            piece.GetComponent<Collider>().enabled = false;
+            piece.transform.SetParent(mount.transform,false);
+            piece.transform.localPosition = position;
+            piece.transform.localRotation = Quaternion.Euler(0,yaw,0);
+            piece.transform.localScale = scale;
+            piece.GetComponent<Renderer>().sharedMaterial = surface;
+        }
         internal RegionalWorldHud Hud { get; set; }
         RegionalInventory regionalInventory;
         const int GoldCapacity = 20;
@@ -53,6 +105,9 @@ namespace ForjaDasMares.Networking
             if(Journey==null)Journey=GetComponent<RegionalJourney>();
             if (IsCatacombInstance) ConfigureCatacombTestRoom();
             town=GetComponent<TownHub>();
+            travelMotor = hero.GetComponent<PlayerMotor>();
+            travelCombat = hero.GetComponent<HeroCombat>();
+            hero.Health.Damaged += Dismount;
             regionalInventory=GetComponent<RegionalInventory>();
             hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
             var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
@@ -195,6 +250,7 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             if(residents==null||travelling)return;
+            if (IsMounted && (travelCombat.ActionVersion != mountedAction || travelMotor.IsDodging || !hero.Health.IsAlive)) Dismount();
             var commands=(IHeroCommands)hero.GetComponent<PlayerMotor>().Commands;
             commands.TakeReset();
             commands.TakeHeroSlot();
@@ -359,9 +415,9 @@ namespace ForjaDasMares.Networking
             if (IsCatacombInstance && CardsRevealed == CatacombPicks) TravelTo("RefugioUltimoSino");
         }
 
-        public void Respawn(){hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
+        public void Respawn(){Dismount();hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign() => TravelTo("CampaignCoop");
         void TravelTo(string scene){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
-        void OnDestroy(){if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
+        void OnDestroy(){if(hero!=null&&hero.Health!=null)hero.Health.Damaged-=Dismount;if(mountMetal!=null)Destroy(mountMetal);if(mountCrystal!=null)Destroy(mountCrystal);if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }
 }

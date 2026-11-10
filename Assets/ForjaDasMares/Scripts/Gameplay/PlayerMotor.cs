@@ -34,6 +34,7 @@ namespace ForjaDasMares
 
         public int FallRecoveries { get; private set; }
         public float Speed => speed;
+        public float TravelSpeedMultiplier { get; set; } = 1f;
         public bool IsDodging => dodgeRemaining > 0f && !charge;
         public float DodgeProgress => IsDodging ? Mathf.Clamp01(1-dodgeRemaining/Mathf.Max(.05f,dodgeDuration)) : 0;
         public bool IsCharging => dodgeRemaining > 0f && charge;
@@ -107,7 +108,7 @@ namespace ForjaDasMares
             cooldownRemaining = Mathf.Max(0f, cooldownRemaining - deltaTime);
             facingLock = Mathf.Max(0, facingLock - deltaTime);
             if (health != null && !health.IsAlive) { move = Vector2.zero; velocity = Vector3.zero; dodgeRemaining = 0; }
-            Vector3 desired = WorldDirection(Vector2.ClampMagnitude(move, 1f)) * speed * (health != null ? health.ControlMultiplier : 1f);
+            Vector3 desired = WorldDirection(Vector2.ClampMagnitude(move, 1f)) * (speed * TravelSpeedMultiplier) * (health != null ? health.ControlMultiplier : 1f);
             float rate = move.sqrMagnitude > 0.0001f ? acceleration : deceleration;
             velocity = Vector3.MoveTowards(velocity, desired, rate * deltaTime);
             float dashTime = Mathf.Min(deltaTime, dodgeRemaining);
