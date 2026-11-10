@@ -26,7 +26,7 @@ namespace ForjaDasMares
         [SerializeField,Range(30,60)]float rpgFieldOfView=42;
         [SerializeField,Range(.5f,1)]float minimumZoom=.75f;
         [SerializeField,Range(1,2)]float maximumZoom=1.35f;
-        [SerializeField, Range(1f, 1.5f)] float fullscreenRpgDistance = 1.18f;
+        [SerializeField, Range(1f, 1.5f)] float fullscreenRpgDistance = 1.2744f;
         bool rpgFraming;
         float zoom=1,desiredZoom=1;UnityEngine.InputSystem.InputAction wheel;
         public void UseRpgFraming(){rpgFraming=true;offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}

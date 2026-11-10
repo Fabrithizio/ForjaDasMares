@@ -779,3 +779,8 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 - RegionalSettingsMenu, PresentationQuality e ArenaCamera: resolução nativa em tela cheia, SMAA alto e câmera RPG 18% mais distante (ajustável).
 - CoopInventoryHud.Areas e ItemDescriptions: resumo equipado com ícone, raridade e seções de leitura, reutilizando os dados reais.
 - Build StandaloneWindows64 concluída sem erros. Conferir nitidez em F11 e leitura ao passar o mouse no equipamento em uma sessão visual.
+
+## Refúgio e enquadramento - 10/11/2026
+- ArenaCamera: distância em tela cheia multiplicada por 1,08 sobre a versão anterior.
+- CityMeadow e TownGardenExpansion: tom do gramado suavizado com a textura existente.
+- Build Windows concluída. Revisão dos bancos, caminhos e medição comparativa de desempenho pendentes.

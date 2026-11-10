@@ -46,7 +46,7 @@ namespace ForjaDasMares.Networking.Editor
                 extension.transform.position=new Vector3(wall.position.x,wall.position.y,50);
                 extension.transform.localScale=new Vector3(1,1,28f/73);
             }
-            var meadow=floor.GetComponent<Renderer>().sharedMaterial;meadow.SetColor("_BaseColor",new Color(.61f,.73f,.59f));meadow.mainTextureScale=new Vector2(16,22);EditorUtility.SetDirty(meadow);
+            var meadow=floor.GetComponent<Renderer>().sharedMaterial;meadow.SetColor("_BaseColor",new Color(.71f,.66f,.65f));meadow.mainTextureScale=new Vector2(16,22);EditorUtility.SetDirty(meadow);
             var importer=(TextureImporter)AssetImporter.GetAtPath("Assets/ForjaDasMares/Art/World/Coast/GrassFantasy032.png");
             importer.maxTextureSize=256;importer.anisoLevel=1;importer.filterMode=FilterMode.Bilinear;importer.SaveAndReimport();
             var paving=GameObject.Find("CityPaths").GetComponent<Renderer>().sharedMaterial;
