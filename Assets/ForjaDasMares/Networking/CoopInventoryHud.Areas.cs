@@ -23,6 +23,8 @@ namespace ForjaDasMares.Networking
         Text runeDetails, runeFeedback, equipmentTooltip, equipmentTitle, equipmentMeta;
         HudIcon equipmentTooltipIcon;
         Button runeEquip, runeImprove;
+        Text runeStorageCount, runeSlotCount, runeStoredLabel, runeSlotLabel;
+        HudIcon runeStoredIcon, runeSlotIcon;
         float equipmentPress;
         int NavigationCount => view.IsRegional ? 5 : 4;
         int NavigationArea(int index) => index == 4 ? 5 : index;
@@ -113,15 +115,39 @@ namespace ForjaDasMares.Networking
             var panel = InventoryPanel(overlay.transform,"RunesPage",18,82,1242,554,new Color(.025f,.055f,.045f,.98f));
             runeArea = panel.gameObject;
             if (panel.TryGetComponent<Graphic>(out var background)) background.raycastTarget = true;
-            InventoryText(panel,"Title",42,28,1050,50,"RUNAS · COLETA",27).color = RusticHudTheme.Gold;
-            RusticHudTheme.Icon(panel,HudSymbol.Rune,InventoryTop,new Vector2(58,-111),95);
-            runeDetails = InventoryText(panel,"RuneDetails",194,102,980,184,"",24);
+            InventoryText(panel,"Title",42,28,750,50,"RUNAS",27).color = RusticHudTheme.Gold;
+
+            var storage = InventoryPanel(panel,"RuneStorage",42,98,290,326,new Color(.04f,.09f,.09f,1));
+            InventoryText(storage,"Title",20,18,250,32,"COLEÇÃO",20).color = RusticHudTheme.Gold;
+            runeStorageCount = InventoryText(storage,"Capacity",20,54,250,30,"",16);
+            var storedTile = InventoryPanel(storage,"StoredRune",65,97,160,144,new Color(.07f,.17f,.18f,1));
+            runeStoredIcon = BuildCollectionRuneIcon(storedTile);
+            runeStoredLabel = InventoryText(storage,"State",20,255,250,48,"",17);
+            runeStoredLabel.alignment = TextAnchor.MiddleCenter;
+
+            var socket = InventoryPanel(panel,"RuneSocket",352,98,290,326,new Color(.04f,.09f,.09f,1));
+            InventoryText(socket,"Title",20,18,250,32,"ENCAIXE ATIVO",20).color = RusticHudTheme.Gold;
+            runeSlotCount = InventoryText(socket,"Capacity",20,54,250,30,"",16);
+            var slotTile = InventoryPanel(socket,"EquippedRune",65,97,160,144,new Color(.07f,.17f,.18f,1));
+            runeSlotIcon = BuildCollectionRuneIcon(slotTile);
+            runeSlotLabel = InventoryText(socket,"State",20,255,250,48,"",17);
+            runeSlotLabel.alignment = TextAnchor.MiddleCenter;
+
+            var details = InventoryPanel(panel,"RuneInfo",662,98,538,326,new Color(.04f,.09f,.09f,1));
+            InventoryText(details,"Title",22,17,494,42,"RUNA DE COLETA",24).color = RusticHudTheme.Gold;
+            runeDetails = InventoryText(details,"RuneDetails",22,68,494,120,"",21);
             runeDetails.alignment = TextAnchor.UpperLeft;
-            runeEquip = RusticHudTheme.Button(panel,"EquipRune",InventoryTop,new Vector2(194,-316),new Vector2(360,52),"",() => ChangeRune(false));
-            runeImprove = RusticHudTheme.Button(panel,"ImproveRune",InventoryTop,new Vector2(581,-316),new Vector2(410,52),"",() => ChangeRune(true));
-            runeFeedback = InventoryText(panel,"RuneFeedback",194,396,980,60,"",18);
+            runeEquip = RusticHudTheme.Button(details,"EquipRune",InventoryTop,new Vector2(22,-204),new Vector2(494,46),"",() => ChangeRune(false));
+            runeImprove = RusticHudTheme.Button(details,"ImproveRune",InventoryTop,new Vector2(22,-262),new Vector2(494,46),"",() => ChangeRune(true));
+            runeFeedback = InventoryText(panel,"RuneFeedback",42,446,1158,52,"",18);
             runeArea.SetActive(false);
             if (touchLayout) RusticHudTheme.Button(panel,"CloseRunes",InventoryTop,new Vector2(960,-28),new Vector2(230,48),"VOLTAR À MOCHILA",() => runeArea.SetActive(false));
+        }
+
+        static HudIcon BuildCollectionRuneIcon(RectTransform tile)
+        {
+            RusticHudTheme.Icon(tile,HudSymbol.Artifact,InventoryTop,new Vector2(31,-23),98);
+            return RusticHudTheme.Icon(tile,HudSymbol.Coin,InventoryTop,new Vector2(60,-52),40);
         }
 
         void ChangeRune(bool upgrade)
@@ -138,6 +164,13 @@ namespace ForjaDasMares.Networking
             var service = regional?.Service;
             int level = service?.CollectionRuneLevel ?? 0;
             bool equipped = service?.CollectionRuneEquipped == true;
+            bool stored = level > 0 && !equipped;
+            runeStorageCount.text = (stored ? "1" : "0") + " / 1 guardada";
+            runeSlotCount.text = (equipped ? "1" : "0") + " / 1 equipada";
+            runeStoredIcon.gameObject.SetActive(stored);
+            runeSlotIcon.gameObject.SetActive(equipped);
+            runeStoredLabel.text = stored ? "Coleta · Nv. " + level : "Espaço livre";
+            runeSlotLabel.text = equipped ? "Coleta · Nv. " + level : "Encaixe vazio";
             string effect = level == 1 ? "Recolhe ouro ao passar sobre a pilha." :
                 level == 2 ? "Atrai ouro em até 2,5 m." : "Atrai ouro em até 4,5 m.";
             runeDetails.text = level == 0 ? "Runa de Coleta · ainda não obtida\nPode aparecer nas cartas das Catacumbas." :

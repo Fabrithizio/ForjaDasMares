@@ -784,3 +784,7 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 - ArenaCamera: distância em tela cheia multiplicada por 1,08 sobre a versão anterior.
 - CityMeadow e TownGardenExpansion: tom do gramado suavizado com a textura existente.
 - Build Windows concluída. Revisão dos bancos, caminhos e medição comparativa de desempenho pendentes.
+
+## Runas na mochila - 10/11/2026
+- Aba Runas com coleção e um encaixe ativo. A Runa de Coleta usa um ícone de cristal e moeda que acompanha o estado salvo. A capacidade atual reflete a única runa implementada.
+- Teste manual: abrir Runas, equipar, desequipar e conferir ícone, ocupação, nível e custo de melhoria.
