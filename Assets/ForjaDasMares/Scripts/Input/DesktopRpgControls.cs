@@ -20,6 +20,7 @@ namespace ForjaDasMares
         public bool EffectiveMouseMode=>!Application.isMobilePlatform&&MouseMode&&input!=null&&input.HasPointer;
         public bool StandStill=>stationary!=null&&stationary.enabled&&stationary.IsPressed();
         public bool CanAttack{get;private set;}=true;
+        public WorldClickTarget HoveredInteraction { get; private set; }
         public Health SelectionTarget{get;private set;}
         public bool SelectionAttacking=>target!=null&&target==SelectionTarget&&input!=null&&input.MouseAttackHeld&&CanAttack;
         public Vector2 Movement{get;private set;}
@@ -35,7 +36,7 @@ namespace ForjaDasMares
         void OnDisable(){stationary?.Disable();Cancel();}
         void OnDestroy(){stationary?.Dispose();}
         public void PressMouse(){pressed=true;}
-        public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
+        public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;HoveredInteraction=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
         public Vector3 AimDirection
         {
             get
@@ -62,6 +63,7 @@ namespace ForjaDasMares
         }
         void Update()
         {
+            HoveredInteraction = null;
             CanAttack=false;Movement=input!=null?input.RawMove:Vector2.zero;
             if(input==null||motor==null||!input.isActiveAndEnabled||input.CombatBlocked){Cancel();return;}
             if(health!=null&&!health.IsAlive){Cancel();CanAttack=false;return;}
@@ -77,8 +79,14 @@ namespace ForjaDasMares
             if(ui){Cancel();Movement=input.RawMove;return;}
             bool pointer=TryPointer(out var point,out var hovered);
             SelectionTarget=hovered;
-            WorldClickTarget clicked=null;
-            if(pressed&&camera!=null&&Physics.Raycast(camera.ScreenPointToRay(input.PointerPosition),out var clickHit,500,(1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),QueryTriggerInteraction.Ignore))clicked=clickHit.collider.GetComponentInParent<WorldClickTarget>();
+            if (camera != null && Physics.Raycast(camera.ScreenPointToRay(input.PointerPosition),out var clickHit,500,
+                (1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),QueryTriggerInteraction.Ignore))
+            {
+                var candidate = clickHit.collider.GetComponentInParent<WorldClickTarget>();
+                if (candidate != null && candidate.isActiveAndEnabled) HoveredInteraction = candidate;
+            }
+            WorldClickTarget clicked = pressed ? HoveredInteraction : null;
+            if (HoveredInteraction != null) hovered = SelectionTarget = null;
             bool groundPress=pressed&&pointer&&hovered==null&&!StandStill;
             if(groundPress){queuedCast=combat!=null&&!combat.MovementWindowOpen;queuedAim=target!=null?Flat(target.transform.position-motor.transform.position):motor.transform.forward;interactionGesture=clicked!=null;interaction=clicked;destination=clicked!=null?clicked.Approach:point;navigating=true;replan=0;count=corner=0;attackGesture=attackRecovery=false;target=null;combat?.CancelCharge();pressed=false;}
             if(interactionGesture&&!input.MouseAttackHeld)interactionGesture=false;

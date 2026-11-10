@@ -24,6 +24,7 @@ namespace ForjaDasMares.Networking
             world.Hud = this;
             BuildCatacombPanels(root);
             BuildDamageNumbers(root);
+            if (!Application.isMobilePlatform) BuildHoverLabel(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
@@ -590,6 +591,7 @@ namespace ForjaDasMares.Networking
         void LateUpdate()
         {
             UpdateDamageNumbers();
+            UpdateHoverLabel();
             if (Application.isMobilePlatform && Touchscreen.current is Touchscreen screen)
             {
                 var finger = screen.primaryTouch;
@@ -599,6 +601,37 @@ namespace ForjaDasMares.Networking
                     (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject(finger.touchId.ReadValue())))
                     world.TryTouchGold(finger.position.ReadValue());
             }
+        }
+
+        RectTransform hoverRoot, hoverBox;
+        Text hoverText;
+        void BuildHoverLabel(RectTransform root)
+        {
+            hoverRoot = root;
+            hoverBox = RusticHudTheme.Rect(root,"HoveredWorldItem",Vector2.one*.5f,Vector2.zero,new Vector2(240,38));
+            RusticHudTheme.Panel(hoverBox,RusticHudTheme.Ink,12);
+            hoverText = RusticHudTheme.Label(hoverBox,"Name",Vector2.one*.5f,Vector2.zero,new Vector2(222,34),"",17,TextAnchor.MiddleCenter);
+            hoverText.color = RusticHudTheme.Gold;
+            hoverBox.gameObject.SetActive(false);
+        }
+
+        void UpdateHoverLabel()
+        {
+            if (hoverBox == null) return;
+            var input = world.Hero.GetComponent<ArenaInput>();
+            var target = input.Desktop?.HoveredInteraction;
+            var enemy = input.Desktop?.SelectionTarget;
+            string title = target != null && target.isActiveAndEnabled ? target.HoverLabel ?? target.Label :
+                enemy != null && enemy.IsAlive ? enemy.GetComponent<EnemyActor>()?.Profile?.displayName : null;
+            bool visible = !input.CombatBlocked && !string.IsNullOrEmpty(title);
+            hoverBox.gameObject.SetActive(visible);
+            if (!visible) return;
+            hoverText.text = title;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(hoverRoot,input.PointerPosition,null,out var cursor);
+            var bounds = hoverRoot.rect;
+            hoverBox.anchoredPosition = new Vector2(
+                Mathf.Clamp(cursor.x,bounds.xMin+124,bounds.xMax-124)-bounds.center.x,
+                Mathf.Clamp(cursor.y+37,bounds.yMin+23,bounds.yMax-23)-bounds.center.y);
         }
 
         const float DamageLifetime = .92f;

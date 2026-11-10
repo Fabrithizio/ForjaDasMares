@@ -12,6 +12,7 @@ namespace ForjaDasMares
         public UnityEvent Used=>used;
         public event System.Action<Transform> Interacting;
         public string Label=>label;
+        public string HoverLabel { get; set; }
         public Vector3 Approach=>transform.position+transform.rotation*approachOffset;
         public bool InRange(Transform actor){Vector3 d=actor.position-transform.position;d.y=0;return d.sqrMagnitude<=useDistance*useDistance;}
         public bool TryUse(Transform actor){if(!isActiveAndEnabled||actor==null||!InRange(actor))return false;Interacting?.Invoke(actor);used.Invoke();return true;}

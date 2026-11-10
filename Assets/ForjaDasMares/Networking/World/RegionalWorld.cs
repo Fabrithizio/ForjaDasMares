@@ -107,6 +107,7 @@ namespace ForjaDasMares.Networking
                 goldAmounts[slot] = amount;
                 var pile = goldPiles[slot];
                 pile.Configure("Recolher " + amount + " ouro");
+                pile.HoverLabel = amount + " ouro";
                 goldOrigins[slot] = position;
                 pile.transform.position = position;
                 pile.gameObject.SetActive(true);
@@ -118,6 +119,7 @@ namespace ForjaDasMares.Networking
                 if ((goldPiles[i].transform.position-position).sqrMagnitude < (goldPiles[nearest].transform.position-position).sqrMagnitude) nearest = i;
             goldAmounts[nearest] = Mathf.Min(1000,goldAmounts[nearest] + amount);
             goldPiles[nearest].Configure("Recolher " + goldAmounts[nearest] + " ouro");
+            goldPiles[nearest].HoverLabel = goldAmounts[nearest] + " ouro";
         }
 
         WorldClickTarget CreateGoldPile(int slot)
