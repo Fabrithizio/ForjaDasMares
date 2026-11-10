@@ -28,7 +28,7 @@ namespace ForjaDasMares
         public void Simulate(float delta)
         {
             if(replica)return;if(health==null||!health.IsAlive){Clear();return;}delta=Mathf.Max(0,delta);tick+=delta;
-            int ticks=Mathf.Min(6,Mathf.FloorToInt(tick/.5f));tick-=ticks*.5f;for(int i=0;i<ticks;i++){if(bleed>i*.5f&&CanTick(bleedSource))health.ApplyDamage(bleedDamage);if(burn>i*.5f&&CanTick(burnSource)&&health.IsAlive)health.ApplyDamage(burnDamage);}
+            int ticks=Mathf.Min(6,Mathf.FloorToInt(tick/.5f));tick-=ticks*.5f;for(int i=0;i<ticks;i++){if(bleed>i*.5f&&CanTick(bleedSource))health.ApplyPeriodicDamage(bleedDamage,"SANGRAMENTO");if(burn>i*.5f&&CanTick(burnSource)&&health.IsAlive)health.ApplyPeriodicDamage(burnDamage,"QUEIMA");}
             bleed=Mathf.Max(0,bleed-delta);burn=Mathf.Max(0,burn-delta);fracture=Mathf.Max(0,fracture-delta);
         }
     }

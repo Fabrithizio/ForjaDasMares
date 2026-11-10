@@ -255,7 +255,7 @@ namespace ForjaDasMares.Networking
             if (instanceModal != null) instanceModal.SetActive(false);
         }
 
-        public void OpenRuneSettings() => GetComponent<RegionalSettingsMenu>()?.Open();
+        public void OpenRuneSettings() => GetComponent<CoopInventoryHud>()?.OpenRunes();
 
         public void OpenCatacombEntrance()
         {
@@ -696,9 +696,10 @@ namespace ForjaDasMares.Networking
             popup.Age = 0;
             popup.Drift = (nextPopup % 5 - 2) * 15;
             popup.Tint = incoming ? new Color(1,.32f,.32f) : critical ? new Color(1,.8f,.24f) : RusticHudTheme.Parchment;
-            popup.Text.rectTransform.sizeDelta = new Vector2(165,52);
-            popup.Text.fontSize = critical ? 29 : 24;
-            popup.Text.text = (incoming ? "−" : "") + amount + (critical ? "  CRÍTICO" : "");
+            bool periodic = victim.PeriodicDamageLabel != null;
+            popup.Text.rectTransform.sizeDelta = new Vector2(periodic ? 225 : 165,52);
+            popup.Text.fontSize = critical ? 29 : periodic ? 17 : 24;
+            popup.Text.text = (incoming ? "−" : "") + amount + (critical ? "  CRÍTICO" : victim.PeriodicDamageLabel != null ? "  " + victim.PeriodicDamageLabel : "");
         }
 
         void ShowCrystal(Health victim)

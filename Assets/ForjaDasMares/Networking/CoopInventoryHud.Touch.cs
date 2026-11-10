@@ -30,7 +30,21 @@ namespace ForjaDasMares.Networking
             PlaceInventory(previous,30,635,120,36,13);PlaceInventory(next,410,635,120,36,13);PlaceInventory(pageLabel.rectTransform,155,635,250,36);
             PlaceInventory(sourceHint.rectTransform,580,586,600,65);sourceHint.fontSize=15;
             PlaceInventory(claimAll,580,640,600,34,14);
+            BuildEquipmentTooltip(parent);
+            if (view.IsRegional)
+            {
+                RusticHudTheme.Button(parent,"TouchRunes",InventoryTop,new Vector2(545,-24),new Vector2(152,42),"RUNAS",OpenTouchRunes);
+                BuildRuneArea();
+            }
             PlaceInventory(emptyHint.rectTransform,30,180,500,135);PlaceInventory(clearFilters,30,335,500,44,16);
+        }
+        void OpenTouchRunes()
+        {
+            if (runeArea == null) return;
+            HideEquipmentTooltip();
+            runeArea.transform.SetAsLastSibling();
+            runeArea.SetActive(true);
+            RefreshRunes();
         }
         void RefreshTouchInventory(PlayerProfile p)
         {

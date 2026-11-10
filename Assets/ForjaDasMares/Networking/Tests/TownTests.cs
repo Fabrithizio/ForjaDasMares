@@ -64,9 +64,10 @@ namespace ForjaDasMares.Networking.Tests
                 }
                 else
                 {
-                    var settings = hud.GetComponent<RegionalSettingsMenu>();
-                    Assert.IsTrue(settings.IsOpen);
-                    settings.Close();
+                    var inventory = hud.GetComponent<CoopInventoryHud>();
+                    Assert.IsTrue(inventory.IsOpen);
+                    Assert.AreEqual(5,inventory.ProfileArea);
+                    inventory.CloseInventory();
                 }
             }
         }

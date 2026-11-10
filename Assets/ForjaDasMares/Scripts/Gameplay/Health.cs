@@ -66,6 +66,13 @@ namespace ForjaDasMares
             if (source != null) source.DealtHit?.Invoke(this);
             return true;
         }
+        public string PeriodicDamageLabel { get; private set; }
+        public void ApplyPeriodicDamage(int damage, string label)
+        {
+            PeriodicDamageLabel = label;
+            try { ApplyDamage(damage); }
+            finally { PeriodicDamageLabel = null; }
+        }
         public bool ApplyDamage(int damage) => ApplyDamage(damage, false);
         bool ApplyDamage(int damage, bool critical)
         {

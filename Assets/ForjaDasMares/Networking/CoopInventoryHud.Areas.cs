@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 namespace ForjaDasMares.Networking
 {
     public sealed partial class CoopInventoryHud
     {
         readonly List<GameObject> bagNodes=new List<GameObject>();
         RectTransform areaNavigation;GameObject characterArea,statusArea,resourceArea;
-        readonly Button[] areaButtons=new Button[4];readonly Image[] areaEquipmentIcons=new Image[5];
+        readonly Button[] areaButtons=new Button[5];readonly Image[] areaEquipmentIcons=new Image[5];
         readonly Text[] areaEquipmentNames=new Text[5];readonly HudIcon[] areaEmptySlots=new HudIcon[5];
         Button changeProfileHero,resourceScopeButton;Text characterXp;RectTransform characterXpFill;
         Text areaHeading,characterIdentity,characterRole,characterSummary,resourceGold,resourceSummary,statusDescription;
@@ -17,7 +18,14 @@ namespace ForjaDasMares.Networking
         int activeArea=1,statCategory;RawImage areaPortrait;
         public int ProfileArea=>activeArea;
         void LateUpdate(){if(areaNavigation!=null&&IsOpen&&!results&&activeArea==3&&!sheet.IsOpen)NavigateProfile(0);}
-        static readonly string[] AreaLabels={"PERSONAGEM","MOCHILA","STATUS","TALENTOS","RECURSOS"};
+        static readonly string[] AreaLabels={"PERSONAGEM","MOCHILA","STATUS","TALENTOS","RECURSOS","RUNAS"};
+        GameObject runeArea;
+        Text runeDetails, runeFeedback, equipmentTooltip;
+        Button runeEquip, runeImprove;
+        float equipmentPress;
+        int NavigationCount => view.IsRegional ? 5 : 4;
+        int NavigationArea(int index) => index == 4 ? 5 : index;
+
         void BuildProfileAreas()
         {
             foreach(Transform child in overlay.transform)bagNodes.Add(child.gameObject);
@@ -44,9 +52,11 @@ namespace ForjaDasMares.Networking
             {
                 int slot=i;var b=RusticHudTheme.Button(characterArea.transform,"InspectSlot_"+i,InventoryTop,new Vector2(860,-20-i*103),new Vector2(350,92),"",()=>{NavigateProfile(1);SelectEquipped(slot);});
                 b.GetComponentInChildren<Text>().gameObject.SetActive(false);
+                BindEquippedTooltip(b,slot);
                 var icon=RusticHudTheme.Rect(b.transform,"Item",InventoryTop,new Vector2(12,-10),new Vector2(68,68));areaEmptySlots[i]=RusticHudTheme.Icon(b.transform,SlotSymbol((EquipmentSlot)i),InventoryTop,new Vector2(24,-22),44);areaEmptySlots[i].color=new Color(.5f,.6f,.55f,.5f);areaEquipmentIcons[i]=icon.gameObject.AddComponent<Image>();areaEquipmentIcons[i].preserveAspect=true;areaEquipmentIcons[i].raycastTarget=false;
                 areaEquipmentNames[i]=InventoryText(b.transform,"Identity",94,12,244,68,"",16);
             }
+            BuildEquipmentTooltip(characterArea.transform);
             statusArea=InventoryPanel(overlay.transform,"StatusPage",18,82,1242,566,new Color(.02f,.05f,.045f,.98f)).gameObject;
             string[] tabs={"COMBATE","SOBREVIVÊNCIA","MOBILIDADE E HABILIDADES"};
             for(int i=0;i<3;i++){int pick=i;statTabs[i]=RusticHudTheme.Button(statusArea.transform,"StatusTab_"+i,InventoryTop,new Vector2(20+i*402,-18),new Vector2(390,42),tabs[i],()=>{statCategory=pick;RefreshProfileAreas();});}
@@ -75,13 +85,123 @@ namespace ForjaDasMares.Networking
             InventoryText(resourceArea.transform,"Scope",32,330,1160,92,"O perfil deste aparelho e o perfil de uma sala podem ter saldos diferentes.\nAqui aparecem somente os recursos já existentes no perfil selecionado.\nItens equipados não ocupam espaço na mochila.",18);
             RusticHudTheme.Button(resourceArea.transform,"OpenDeliveries",InventoryTop,new Vector2(32,-450),new Vector2(550,52),"ABRIR ENTREGAS",()=>{NavigateProfile(1);SelectSource(2);});
             RusticHudTheme.Button(resourceArea.transform,"OpenBag",InventoryTop,new Vector2(610,-450),new Vector2(550,52),"ORGANIZAR MOCHILA",()=>NavigateProfile(1));
+            if (view.IsRegional) BuildRuneArea();
             areaNavigation=InventoryPanel(overlay.transform,"ProfileBottomNavigation",18,646,1242,48,new Color(.025f,.055f,.045f,1));
-            for(int i=0;i<4;i++){int pick=i;areaButtons[i]=RusticHudTheme.Button(areaNavigation,"ProfileArea_"+i,InventoryTop,new Vector2(8+i*307,-5),new Vector2(299,38),AreaLabels[i],()=>NavigateProfile(pick));}
+            float tabWidth = 1228f / NavigationCount;
+            for (int i = 0; i < NavigationCount; i++)
+            {
+                int area = NavigationArea(i);
+                areaButtons[i] = RusticHudTheme.Button(areaNavigation,"ProfileArea_"+area,InventoryTop,
+                    new Vector2(8+i*tabWidth,-5),new Vector2(tabWidth-8,38),AreaLabels[area],() => NavigateProfile(area));
+            }
             HudSymbol[] symbols={HudSymbol.Hero,HudSymbol.Bag,HudSymbol.Shield,HudSymbol.Rune,HudSymbol.Artifact};
-            for(int i=0;i<4;i++){RusticHudTheme.Icon(areaButtons[i].transform,symbols[i],InventoryTop,new Vector2(14,-8),22);var label=areaButtons[i].GetComponentInChildren<Text>();label.rectTransform.anchoredPosition=new Vector2(16,0);label.rectTransform.sizeDelta=new Vector2(190,36);label.fontSize=15;}
+            for(int i=0;i<NavigationCount;i++){RusticHudTheme.Icon(areaButtons[i].transform,i==4?HudSymbol.Rune:symbols[i],InventoryTop,new Vector2(14,-8),22);var label=areaButtons[i].GetComponentInChildren<Text>();label.rectTransform.anchoredPosition=new Vector2(16,0);label.rectTransform.sizeDelta=new Vector2(190,36);label.fontSize=15;}
             BuildReferenceLayout();
             characterArea.SetActive(false);statusArea.SetActive(false);resourceArea.SetActive(false);
         }
+        public void OpenRunes()
+        {
+            if (view?.IsRegional != true) return;
+            OpenInventory();
+            if (touchLayout) OpenTouchRunes();
+            else NavigateProfile(5);
+        }
+
+        void BuildRuneArea()
+        {
+            var panel = InventoryPanel(overlay.transform,"RunesPage",18,82,1242,554,new Color(.025f,.055f,.045f,.98f));
+            runeArea = panel.gameObject;
+            if (panel.TryGetComponent<Graphic>(out var background)) background.raycastTarget = true;
+            InventoryText(panel,"Title",42,28,1050,50,"RUNAS · COLETA",27).color = RusticHudTheme.Gold;
+            RusticHudTheme.Icon(panel,HudSymbol.Rune,InventoryTop,new Vector2(58,-111),95);
+            runeDetails = InventoryText(panel,"RuneDetails",194,102,980,184,"",24);
+            runeDetails.alignment = TextAnchor.UpperLeft;
+            runeEquip = RusticHudTheme.Button(panel,"EquipRune",InventoryTop,new Vector2(194,-316),new Vector2(360,52),"",() => ChangeRune(false));
+            runeImprove = RusticHudTheme.Button(panel,"ImproveRune",InventoryTop,new Vector2(581,-316),new Vector2(410,52),"",() => ChangeRune(true));
+            runeFeedback = InventoryText(panel,"RuneFeedback",194,396,980,60,"",18);
+            runeArea.SetActive(false);
+            if (touchLayout) RusticHudTheme.Button(panel,"CloseRunes",InventoryTop,new Vector2(960,-28),new Vector2(230,48),"VOLTAR À MOCHILA",() => runeArea.SetActive(false));
+        }
+
+        void ChangeRune(bool upgrade)
+        {
+            var service = regional?.Service;
+            if (service == null) return;
+            bool saved = upgrade ? service.UpgradeCollectionRune() : service.ToggleCollectionRune();
+            runeFeedback.text = saved ? service.Message : "A mudança não foi aplicada. Confira seu saldo e tente novamente.";
+            RefreshRunes();
+        }
+
+        void RefreshRunes()
+        {
+            var service = regional?.Service;
+            int level = service?.CollectionRuneLevel ?? 0;
+            bool equipped = service?.CollectionRuneEquipped == true;
+            string effect = level == 1 ? "Recolhe ouro ao passar sobre a pilha." :
+                level == 2 ? "Atrai ouro em até 2,5 m." : "Atrai ouro em até 4,5 m.";
+            runeDetails.text = level == 0 ? "Runa de Coleta · ainda não obtida\nPode aparecer nas cartas das Catacumbas." :
+                "Runa de Coleta · nível " + level + (equipped ? " · equipada" : " · guardada") + "\n" + effect +
+                "\nSaldo: " + service.Profile.coins + " ouro";
+            runeEquip.interactable = level > 0;
+            runeEquip.GetComponentInChildren<Text>().text = equipped ? "DESEQUIPAR" : "EQUIPAR";
+            runeImprove.interactable = level > 0 && level < 3 && service.Profile.coins >= service.CollectionRuneUpgradeCost;
+            runeImprove.GetComponentInChildren<Text>().text = level == 0 ? "RUNA BLOQUEADA" : level == 3 ?
+                "NÍVEL MÁXIMO" : "MELHORAR · " + service.CollectionRuneUpgradeCost + " OURO";
+        }
+
+        void BuildEquipmentTooltip(Transform parent)
+        {
+            var panel = InventoryPanel(parent,"EquippedTooltip",387,48,445,440,RusticHudTheme.Ink);
+            equipmentTooltip = InventoryText(panel,"ItemDetails",19,12,407,415,"",16);
+            equipmentTooltip.alignment = TextAnchor.UpperLeft;
+            foreach (var graphic in panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+            panel.gameObject.SetActive(false);
+        }
+
+        void BindEquippedTooltip(Button button, int slot)
+        {
+            var events = button.gameObject.AddComponent<EventTrigger>();
+            void Add(EventTriggerType type, System.Action<BaseEventData> action)
+            {
+                var entry = new EventTrigger.Entry { eventID = type };
+                entry.callback.AddListener(data => action(data));
+                events.triggers.Add(entry);
+            }
+            Add(EventTriggerType.PointerEnter,_ => { if (!Application.isMobilePlatform) ShowEquipmentTooltip(slot); });
+            Add(EventTriggerType.PointerExit,_ => HideEquipmentTooltip());
+            Add(EventTriggerType.PointerDown,_ =>
+            {
+                if (!Application.isMobilePlatform) return;
+                equipmentPress = Time.unscaledTime;
+                ShowEquipmentTooltip(slot);
+            });
+            Add(EventTriggerType.PointerUp,data =>
+            {
+                if (!Application.isMobilePlatform) return;
+                if (data is PointerEventData pointer && Time.unscaledTime-equipmentPress >= .3f)
+                    pointer.eligibleForClick = false;
+                HideEquipmentTooltip();
+            });
+        }
+
+        void ShowEquipmentTooltip(int slot)
+        {
+            if (equipmentTooltip == null) return;
+            var profile = channel.LocalProfile;
+            var hero = ActiveActor?.Roster?.Current;
+            var loadout = hero == null ? null : profile?.Loadout(hero.heroId);
+            var item = loadout == null ? null : profile.Item(loadout.items[slot]);
+            equipmentTooltip.text = item == null ? RusticHudTheme.SlotName((EquipmentSlot)slot) + "\nEspaço vazio" :
+                ItemDescriptions.Describe(channel.Catalog,item);
+            equipmentTooltip.transform.parent.SetAsLastSibling();
+            equipmentTooltip.transform.parent.gameObject.SetActive(true);
+        }
+
+        void HideEquipmentTooltip()
+        {
+            if (equipmentTooltip != null) equipmentTooltip.transform.parent.gameObject.SetActive(false);
+        }
+
         static HudSymbol StatSymbol(string name)
         {
             string text=name.ToLowerInvariant();return text.Contains("vida")||text.Contains("regenera")?HudSymbol.Heart:text.Contains("defesa")||text.Contains("redução de dano")||text.Contains("bloqueio")?HudSymbol.Shield:text.Contains("crític")?HudSymbol.Target:text.Contains("recarga")?HudSymbol.Hourglass:text.Contains("movimento")||text.Contains("esquiva")||text.Contains("cadência")||text.Contains("velocidade")?HudSymbol.Dodge:text.Contains("elemental")?HudSymbol.Rune:HudSymbol.Sword;
@@ -118,7 +238,7 @@ namespace ForjaDasMares.Networking
         }
         public void NavigateProfile(int area)
         {
-            if(areaNavigation==null)return;activeArea=Mathf.Clamp(area,0,4);sheet.Hide();itemPopup.SetActive(false);
+            if(areaNavigation==null)return;activeArea=Mathf.Clamp(area,0,view.IsRegional?5:4);if(equipmentTooltip!=null)equipmentTooltip.transform.parent.gameObject.SetActive(false);sheet.Hide();itemPopup.SetActive(false);
             Refresh();if(activeArea==3){sheet.OpenTalents();var talents=overlay.transform.Find("CharacterTalents");talents.localScale=Vector3.one*.84f;((RectTransform)talents).anchoredPosition=new Vector2(0,18);}
         }
         void RefreshProfileAreas()
@@ -133,13 +253,14 @@ namespace ForjaDasMares.Networking
                 if(!bag)node.SetActive(false);
             }
             areaNavigation.gameObject.SetActive(normal);areaHeading.gameObject.SetActive(normal);
-            if(!normal){characterArea.SetActive(false);statusArea.SetActive(false);resourceArea.SetActive(false);return;}
+            if(!normal){characterArea.SetActive(false);statusArea.SetActive(false);resourceArea.SetActive(false);if(runeArea!=null)runeArea.SetActive(false);return;}
             foreach(string name in new[]{"Brand","CharacterColumn","HeroName","HeroPreview","LevelBadge","GoldWallet","ExperienceTrack","ExperienceValue","InventoryNavigation"}){var n=overlay.transform.Find(name);if(n!=null)n.gameObject.SetActive(name=="Brand");}
             profileSource.gameObject.SetActive(false);
             heroChoice.gameObject.SetActive(false);foreach(var slot in equipmentSlots)slot.gameObject.SetActive(false);sheet.SetSummaryVisible(false);
             areaHeading.text=AreaLabels[activeArea]+(activeArea==1?" · ITENS E EQUIPAMENTOS":activeArea==2?" · FICHA DETALHADA":"");
             characterArea.SetActive(activeArea==0);statusArea.SetActive(activeArea==2);resourceArea.SetActive(activeArea==4);
-            for(int i=0;i<4;i++){var frame=areaButtons[i].GetComponent<RoundedHudGraphic>();frame.borderColor=i==activeArea?RusticHudTheme.Gold:RusticHudTheme.Copper;frame.border=i==activeArea?3:1;frame.SetVerticesDirty();}
+            if(runeArea!=null){runeArea.SetActive(activeArea==5);if(activeArea==5)RefreshRunes();}
+            for(int i=0;i<NavigationCount;i++){var frame=areaButtons[i].GetComponent<RoundedHudGraphic>();frame.borderColor=NavigationArea(i)==activeArea?RusticHudTheme.Gold:RusticHudTheme.Copper;frame.border=NavigationArea(i)==activeArea?3:1;frame.SetVerticesDirty();}
             if(bag)
             {
                 PlaceInventory(desktopDetails,804,82,456,560);

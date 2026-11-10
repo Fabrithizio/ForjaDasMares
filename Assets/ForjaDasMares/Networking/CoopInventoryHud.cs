@@ -124,6 +124,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<5;i++)
             {
                 int slot=i;equipmentSlots[i]=Button(overlay.transform,"EquipmentSlot_"+i,points[i],new Vector2(175,100),()=>SelectEquipped(slot));RusticHudTheme.Skin(equipmentSlots[i]);
+                BindEquippedTooltip(equipmentSlots[i],slot);
                 var text=equipmentSlots[i].GetComponentInChildren<Text>();((RectTransform)text.transform).sizeDelta=new Vector2(175,22);((RectTransform)text.transform).anchoredPosition=new Vector2(0,-76);text.fontSize=12;text.text="";
                 var iconRect=RusticHudTheme.Rect(equipmentSlots[i].transform,"EquippedItemIcon",Vector2.one*.5f,new Vector2(0,8),new Vector2(64,64));equippedIcons[i]=iconRect.gameObject.AddComponent<Image>();equippedIcons[i].preserveAspect=true;equippedIcons[i].raycastTarget=false;
                 var silhouette=RusticHudTheme.Rect(equipmentSlots[i].transform,"EmptySlot",Vector2.one*.5f,new Vector2(0,8),new Vector2(50,50));emptySlots[i]=silhouette.gameObject.AddComponent<HudIcon>();emptySlots[i].symbol=i==0?HudSymbol.Sword:i==1?HudSymbol.Shield:i==2?HudSymbol.Armor:i==3?HudSymbol.Accessory:HudSymbol.Artifact;emptySlots[i].color=new Color(.5f,.53f,.47f,.5f);emptySlots[i].raycastTarget=false;
@@ -196,7 +197,7 @@ namespace ForjaDasMares.Networking
             if(view.FullLayout){rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(30,label=="INVENTÁRIO"?20:75);RusticHudTheme.Skin(button);}
             else{rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.one;rect.anchoredPosition=new Vector2(-15,y);}return button;
         }
-        void Close() { sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = pendingClaim = null; view.SetInputBlocked(false); }
+        void Close() { HideEquipmentTooltip(); if(runeArea!=null)runeArea.SetActive(false); sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);overlay.SetActive(false); pendingDiscard = pendingClaim = null; view.SetInputBlocked(false); }
         void Update()
         {
             if(inventoryButton!=null)

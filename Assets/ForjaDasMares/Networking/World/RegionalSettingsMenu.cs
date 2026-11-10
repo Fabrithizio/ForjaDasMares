@@ -6,7 +6,7 @@ namespace ForjaDasMares.Networking
     // Local settings overlay. Never changes timeScale or freezes other players.
     public sealed class RegionalSettingsMenu:MonoBehaviour
     {
-        RegionalWorld world;GameObject overlay;InputAction escape;bool requested,closeInventory;Text[] values=new Text[4];Text quality;Button qualityButton, runeUpgrade, runeToggle; Text runeInfo;
+        RegionalWorld world;GameObject overlay;InputAction escape, fullscreenKey;bool requested,closeInventory;Text[] values=new Text[4];Text quality;Button qualityButton;
         readonly string[] keys={"CampaignMasterVolume",CampaignSoundscape.MusicKey,CampaignSoundscape.AmbienceKey,"CampaignEffectsVolume"};
         readonly string[] names={"GERAL","MÚSICA","AMBIENTE","EFEITOS"};
         public bool IsOpen=>overlay!=null&&overlay.activeSelf;
@@ -32,39 +32,28 @@ namespace ForjaDasMares.Networking
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToCampaign);
             Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · Tab: modo de ataque · 1 / 2 / 3: habilidades · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
-            runeInfo = Label("Rune","",30,586,350,17);
-            runeUpgrade = Button("RuneUpgrade","",390,585,260,() =>
+            if (!Application.isMobilePlatform)
             {
-                world.GetComponent<RegionalInventory>()?.Service?.UpgradeCollectionRune();
-                Refresh();
-            });
-            runeToggle = Button("RuneToggle","",670,585,240,() =>
-            {
-                world.GetComponent<RegionalInventory>()?.Service?.ToggleCollectionRune();
-                Refresh();
-            });
+                Button("Fullscreen","TELA CHEIA / JANELA · F11",30,585,440,ToggleFullscreen);
+                fullscreenKey = new InputAction("RegionalFullscreen",InputActionType.Button,"<Keyboard>/f11");
+                fullscreenKey.performed += _ => ToggleFullscreen();
+                fullscreenKey.Enable();
+            }
             escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud?.IntroOpen==true)return;if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
         }
         void ChangeVolume(int i,float step)
         {
             float value=Mathf.Clamp01(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)+step);PlayerPrefs.SetFloat(keys[i],value);PlayerPrefs.Save();if(i==0)AudioListener.volume=value;Refresh();
         }
-        void Refresh(){for(int i=0;i<4;i++)values[i].text=Mathf.RoundToInt(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)*100)+"%";quality.text="GRÁFICOS · "+PresentationQuality.ModeName(PresentationQuality.Selected);RefreshRune();}
-        void RefreshRune()
+        void Refresh(){for(int i=0;i<4;i++)values[i].text=Mathf.RoundToInt(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)*100)+"%";quality.text="GRÁFICOS · "+PresentationQuality.ModeName(PresentationQuality.Selected);}
+        static void ToggleFullscreen()
         {
-            var service = world.GetComponent<RegionalInventory>()?.Service;
-            int level = service?.CollectionRuneLevel ?? 0;
-            runeInfo.text = level == 0 ? "Runa de coleta · prêmio das Catacumbas" : "Runa de coleta · Nv. " + level +
-                (level == 1 ? " · ao passar por cima" : level == 2 ? " · 2,5 m" : " · 4,5 m");
-            runeUpgrade.interactable = service != null && level > 0 && level < 3 && service.Profile.coins >= service.CollectionRuneUpgradeCost;
-            runeUpgrade.GetComponentInChildren<Text>().text = level == 0 ? "RUNA BLOQUEADA" : level == 3 ? "NÍVEL MÁXIMO" : "MELHORAR · " + service.CollectionRuneUpgradeCost + " OURO";
-            runeToggle.interactable = level > 0;
-            runeToggle.GetComponentInChildren<Text>().text = service?.CollectionRuneEquipped == true ? "DESEQUIPAR" : "EQUIPAR";
+            Screen.fullScreenMode = Screen.fullScreen ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
         }
         public void Open(){if(overlay==null)return;GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<CoopInventoryHud>()?.CloseInventory();overlay.SetActive(true);overlay.transform.SetAsLastSibling();SetBlocked(true);Refresh();}
         public void Close(){if(overlay==null)return;overlay.SetActive(false);SetBlocked(false);}
         void SetBlocked(bool blocked){if(world==null||world.Hero==null)return;world.Hero.GetComponent<ArenaInput>().BlockCommands(blocked);world.Hero.GetComponent<PlayerMotor>().StopWalking();}
         void Update(){if(!requested)return;requested=false;if(closeInventory){closeInventory=false;GetComponent<CoopInventoryHud>()?.CloseInventory();return;}if(IsOpen)Close();else if(GetComponent<CoopInventoryHud>()?.IsOpen!=true)Open();}
-        void OnDestroy(){escape?.Dispose();if(IsOpen)SetBlocked(false);}
+        void OnDestroy(){fullscreenKey?.Dispose();escape?.Dispose();if(IsOpen)SetBlocked(false);}
     }
 }
