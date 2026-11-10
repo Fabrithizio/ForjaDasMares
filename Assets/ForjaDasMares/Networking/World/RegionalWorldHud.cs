@@ -228,22 +228,24 @@ namespace ForjaDasMares.Networking
         Button enterInstance, leaveInstance;
         readonly Button[] rewardCards = new Button[RegionalWorld.CatacombCardCount];
         Text instanceInfo;
-        bool flippingCard;
+        bool flippingCard, cardCountdownStarted;
+        const float CardChoiceSeconds = 5f;
 
         void BuildCatacombPanels(RectTransform root)
         {
             if (world.IsCatacombInstance)
             {
                 var panel = BuildModal(root,"Cartas das Catacumbas",out instanceModal);
-                instanceInfo = Label(panel,"Reward",new Vector2(28,-67),new Vector2(584,54),"",21);
+                panel.sizeDelta = new Vector2(910,550);
+                instanceInfo = Label(panel,"Reward",new Vector2(28,-66),new Vector2(854,45),"",20);
                 for (int i = 0; i < rewardCards.Length; i++)
                 {
                     int card = i;
-                    rewardCards[i] = RusticHudTheme.Button(panel,"Card"+i,Top,new Vector2(28+i*98,-127),
-                        new Vector2(90,95),"◆\n"+(i+1),() => RevealCatacombCard(card));
+                    rewardCards[i] = RusticHudTheme.Button(panel,"Card"+i,Top,new Vector2(28+(i%8)*107,-123-(i/8)*87),
+                        new Vector2(99,78),"◆\n"+(i+1),() => SelectCatacombCard(card));
                 }
-                RusticHudTheme.Button(panel,"CloseCards",Top,new Vector2(30,-235),new Vector2(235,48),"FECHAR",() => CloseStoryModal());
-                leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(300,-235),new Vector2(310,48),"VOLTAR AO REFÚGIO",world.LeaveCatacombInstance);
+                RusticHudTheme.Button(panel,"CloseCards",Top,new Vector2(28,-482),new Vector2(235,48),"FECHAR",() => CloseStoryModal());
+                leaveInstance = RusticHudTheme.Button(panel,"LeaveInstance",Top,new Vector2(572,-482),new Vector2(310,48),"VOLTAR AO REFÚGIO",world.LeaveCatacombInstance);
             }
             else if (town != null)
             {
@@ -255,13 +257,11 @@ namespace ForjaDasMares.Networking
             if (instanceModal != null) instanceModal.SetActive(false);
         }
 
-        public void OpenRuneSettings() => GetComponent<CoopInventoryHud>()?.OpenRunes();
-
         public void OpenCatacombEntrance()
         {
             if (enterInstance == null || !OpenModal(instanceModal)) return;
             enterInstance.interactable = world.Journey?.Completed == true;
-            instanceInfo.text = "Teste solo · 1 sala, 2 inimigos. Vire 2 de 6 cartas.\n\nOuro · 15 a 40\nPedra de Têmpera · material de fortalecimento\nRuna de Coleta · rara (60 ouro se já possuir)" +
+            instanceInfo.text = "Teste solo · 1 sala, 2 inimigos. Escolha 2 de 32 cartas em 5 s.\n\nOuro · 15 a 40\nPedra de Têmpera · material de fortalecimento\nRuna de Coleta · rara (60 ouro se já possuir)" +
                 (enterInstance.interactable ? "" : "\nConclua a investigação de Nara e Daro para entrar.");
         }
 
@@ -269,58 +269,86 @@ namespace ForjaDasMares.Networking
         {
             if (leaveInstance == null || !OpenModal(instanceModal)) return false;
             RefreshCatacombCards();
+            if (!cardCountdownStarted && !world.CardsFinalized)
+            {
+                cardCountdownStarted = true;
+                StartCoroutine(RunCardCountdown());
+            }
             return true;
         }
 
-        void RevealCatacombCard(int card)
+        void SelectCatacombCard(int card)
         {
-            if (flippingCard || world.IsCardRevealed(card) || world.CardsRevealed >= RegionalWorld.CatacombPicks) return;
-            if (!world.ClaimCatacombCard(card))
-            {
-                instanceInfo.text = "Não foi possível guardar o prêmio. Tente novamente.";
-                return;
-            }
-            StartCoroutine(FlipRewardCard(card));
+            if (!flippingCard && world.ClaimCatacombCard(card)) RefreshCatacombCards();
         }
 
-        System.Collections.IEnumerator FlipRewardCard(int card)
+        System.Collections.IEnumerator RunCardCountdown()
         {
-            flippingCard = true;
-            foreach (var button in rewardCards) button.interactable = false;
-            var cardTransform = rewardCards[card].transform;
-            const float duration = .38f;
-            for (float elapsed = 0; elapsed < duration; elapsed += Time.unscaledDeltaTime)
+            float deadline = Time.unscaledTime + CardChoiceSeconds;
+            while (Time.unscaledTime < deadline && world.CardsRevealed < RegionalWorld.CatacombPicks)
             {
-                float width = Mathf.Abs(Mathf.Cos(elapsed / duration * Mathf.PI));
-                cardTransform.localScale = new Vector3(Mathf.Max(.03f,width),1,1);
-                if (elapsed >= duration * .5f) ShowRevealedReward(card);
+                int remaining = RegionalWorld.CatacombPicks - world.CardsRevealed;
+                instanceInfo.text = "Escolha " + remaining + (remaining == 1 ? " carta" : " cartas") +
+                    "  ·  " + Mathf.CeilToInt(deadline-Time.unscaledTime) + " s";
                 yield return null;
             }
-            cardTransform.localScale = Vector3.one;
+
+            flippingCard = true;
+            foreach (var button in rewardCards) button.interactable = false;
+            if (!world.FinalizeCatacombCards())
+            {
+                flippingCard = false;
+                cardCountdownStarted = false;
+                instanceInfo.text = "Não foi possível salvar os prêmios. Feche e reabra as cartas para tentar novamente.";
+                yield break;
+            }
+
+            const float duration = .56f;
+            bool revealed = false;
+            for (float elapsed = 0; elapsed < duration; elapsed += Time.unscaledDeltaTime)
+            {
+                float width = Mathf.Max(.04f,Mathf.Abs(Mathf.Cos(elapsed/duration*Mathf.PI)));
+                foreach (var button in rewardCards) button.transform.localScale = new Vector3(width,1,1);
+                if (!revealed && elapsed >= duration*.5f)
+                {
+                    revealed = true;
+                    RefreshCatacombCards();
+                }
+                yield return null;
+            }
+            foreach (var button in rewardCards) button.transform.localScale = Vector3.one;
             flippingCard = false;
             RefreshCatacombCards();
         }
 
-        void ShowRevealedReward(int card)
-        {
-            var label = rewardCards[card].GetComponentInChildren<Text>();
-            label.text = world.CardRewardLabel(card);
-            label.color = RusticHudTheme.Gold;
-        }
-
         void RefreshCatacombCards()
         {
+            bool finished = world.CardsFinalized;
             int remaining = RegionalWorld.CatacombPicks - world.CardsRevealed;
-            var service = world.GetComponent<RegionalInventory>()?.Service;
-            instanceInfo.text = (remaining > 0 ? "Cartas restantes: " + remaining : "Prêmios salvos no seu perfil.") +
-                "\nPedras de Têmpera no perfil: " + (service?.Profile.strengtheningStones ?? 0);
-            leaveInstance.interactable = remaining == 0;
+            instanceInfo.text = finished ? "Prêmios salvos  ·  suas cartas estão marcadas em dourado." :
+                "Escolha " + remaining + (remaining == 1 ? " carta." : " cartas.");
+            leaveInstance.interactable = finished && !flippingCard;
             for (int i = 0; i < rewardCards.Length; i++)
             {
-                bool revealed = world.IsCardRevealed(i);
-                rewardCards[i].interactable = remaining > 0 && !revealed && !flippingCard;
-                if (revealed) ShowRevealedReward(i);
-                else rewardCards[i].GetComponentInChildren<Text>().text = "◆\n" + (i+1);
+                bool picked = world.IsCardRevealed(i);
+                var button = rewardCards[i];
+                var card = button.GetComponent<RoundedHudGraphic>();
+                var label = button.GetComponentInChildren<Text>();
+                button.interactable = !finished && !picked && !flippingCard && remaining > 0;
+                button.targetGraphic.canvasRenderer.SetColor(Color.white);
+                card.border = picked ? 3 : 1;
+                card.borderColor = picked ? RusticHudTheme.Gold : RusticHudTheme.Copper;
+                int reward = world.VisibleCardReward(i);
+                card.color = finished
+                    ? reward == RegionalWorld.RuneCard ? new Color(.24f,.15f,.41f) :
+                      reward == RegionalWorld.StoneCard ? new Color(.11f,.29f,.31f) : new Color(.28f,.20f,.09f)
+                    : picked ? new Color(.24f,.21f,.12f) : new Color(.10f,.14f,.19f);
+                label.fontSize = finished ? 13 : 17;
+                label.text = finished ? (reward == RegionalWorld.RuneCard ? "◆\nRuna" :
+                    reward == RegionalWorld.StoneCard ? "◈\nTêmpera" : "●\n"+reward+" ouro") :
+                    picked ? "✓\nEscolhida" : "◆\n"+(i+1);
+                label.color = picked ? RusticHudTheme.Gold : RusticHudTheme.Parchment;
+                card.SetVerticesDirty();
             }
         }
 

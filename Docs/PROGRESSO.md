@@ -769,3 +769,13 @@ Lança, Pulso e Prisão usam malhas facetadas e uma textura procedural de veios.
 
 ### Ouro recolhível nas regiões do RPG
 A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a cada duas ou três baixas. Pilhas valem de 8 a 16 ouro e são reutilizadas. Clique para aproximar e recolher no PC ou use F de perto. No Android, toque na pilha de perto ou use o botão de interação. A runa fica para a próxima etapa. A coleta, a proteção contra repetição e a persistência passaram no teste regional. Windows compilou; quatro testes da suíte separada de combate com mouse falharam também com DesktopRpgControls sem alterações.
+
+## XP regional - 10/11/2026
+- RegionalWorld encaminha mortes registradas para ProfileService, que grava imediatamente o XP configurado no catálogo.
+- RegionalWorldHud: corrigido erro de compilação na rotina de revelação das cartas.
+- Unity 6000.3.26f1: 15 testes PlayMode de Town e Catacumbas passaram. A persistência de XP após reabrir ainda precisa de conferência dedicada.
+
+## Apresentação no Windows - 10/11/2026
+- RegionalSettingsMenu, PresentationQuality e ArenaCamera: resolução nativa em tela cheia, SMAA alto e câmera RPG 18% mais distante (ajustável).
+- CoopInventoryHud.Areas e ItemDescriptions: resumo equipado com ícone, raridade e seções de leitura, reutilizando os dados reais.
+- Build StandaloneWindows64 concluída sem erros. Conferir nitidez em F11 e leitura ao passar o mouse no equipamento em uma sessão visual.

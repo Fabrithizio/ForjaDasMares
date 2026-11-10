@@ -20,7 +20,8 @@ namespace ForjaDasMares.Networking
         void LateUpdate(){if(areaNavigation!=null&&IsOpen&&!results&&activeArea==3&&!sheet.IsOpen)NavigateProfile(0);}
         static readonly string[] AreaLabels={"PERSONAGEM","MOCHILA","STATUS","TALENTOS","RECURSOS","RUNAS"};
         GameObject runeArea;
-        Text runeDetails, runeFeedback, equipmentTooltip;
+        Text runeDetails, runeFeedback, equipmentTooltip, equipmentTitle, equipmentMeta;
+        HudIcon equipmentTooltipIcon;
         Button runeEquip, runeImprove;
         float equipmentPress;
         int NavigationCount => view.IsRegional ? 5 : 4;
@@ -151,8 +152,15 @@ namespace ForjaDasMares.Networking
 
         void BuildEquipmentTooltip(Transform parent)
         {
-            var panel = InventoryPanel(parent,"EquippedTooltip",387,48,445,440,RusticHudTheme.Ink);
-            equipmentTooltip = InventoryText(panel,"ItemDetails",19,12,407,415,"",16);
+            var panel = InventoryPanel(parent,"EquippedTooltip",387,48,445,440,new Color(.025f,.065f,.066f,1));
+            equipmentTooltipIcon = RusticHudTheme.Icon(panel,HudSymbol.Sword,InventoryTop,new Vector2(20,-19),38);
+            equipmentTitle = InventoryText(panel,"ItemTitle",70,14,354,33,"",21);
+            equipmentTitle.fontStyle = FontStyle.Bold;
+            equipmentTitle.color = RusticHudTheme.Gold;
+            equipmentMeta = InventoryText(panel,"ItemMeta",70,48,354,33,"",15);
+            equipmentTooltip = InventoryText(panel,"ItemDetails",22,92,401,326,"",16);
+            equipmentTooltip.supportRichText = true;
+            equipmentTooltip.lineSpacing = 1.12f;
             equipmentTooltip.alignment = TextAnchor.UpperLeft;
             foreach (var graphic in panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
             panel.gameObject.SetActive(false);
@@ -191,8 +199,22 @@ namespace ForjaDasMares.Networking
             var hero = ActiveActor?.Roster?.Current;
             var loadout = hero == null ? null : profile?.Loadout(hero.heroId);
             var item = loadout == null ? null : profile.Item(loadout.items[slot]);
-            equipmentTooltip.text = item == null ? RusticHudTheme.SlotName((EquipmentSlot)slot) + "\nEspaço vazio" :
-                ItemDescriptions.Describe(channel.Catalog,item);
+            var catalog = channel.Catalog;
+            var definition = item == null ? null : catalog.Find(item.definitionId);
+            equipmentTooltipIcon.symbol = SlotSymbol((EquipmentSlot)slot);
+            equipmentTooltipIcon.SetVerticesDirty();
+            equipmentTitle.text = definition?.displayName ?? RusticHudTheme.SlotName((EquipmentSlot)slot);
+            equipmentMeta.text = definition == null ? "Espaço vazio" :
+                RusticHudTheme.RarityName(item.rarity) + "  ·  " + ItemDescriptions.Category(definition) + "  ·  Nv. " + definition.minimumLevel;
+            equipmentMeta.color = definition == null ? RusticHudTheme.Muted : catalog.Rarity(item.rarity).color;
+            if (definition == null) equipmentTooltip.text = "";
+            else
+            {
+                string content = ItemDescriptions.Summary(catalog,item,includeHeader:false).TrimStart();
+                equipmentTooltip.text = content.Replace("ATAQUE DA ARMA","<color=#F4CD83><b>ATAQUE DA ARMA</b></color>")
+                    .Replace("BÔNUS DO ITEM","<color=#9CE0CA><b>BÔNUS DO ITEM</b></color>")
+                    .Replace("Efeito: ","<b>Efeito:</b> ").Replace("Habilidade especial: ","<b>Habilidade:</b> ");
+            }
             equipmentTooltip.transform.parent.SetAsLastSibling();
             equipmentTooltip.transform.parent.gameObject.SetActive(true);
         }

@@ -164,6 +164,24 @@ namespace ForjaDasMares
         public bool ToggleCollectionRune() => CollectionRuneLevel > 0 &&
             Transaction(next => next.collectionRuneEquipped = !next.collectionRuneEquipped, "Runa de coleta atualizada.");
 
+        public bool ClaimCatacombCards(int first, int second)
+        {
+            if (!ValidCatacombReward(first) || !ValidCatacombReward(second)) return false;
+            return Transaction(next => { AddCatacombReward(next,first); AddCatacombReward(next,second); }, "Prêmios das Catacumbas recebidos.");
+        }
+
+        static bool ValidCatacombReward(int reward) => reward == -1 || reward == -2 || (reward > 0 && reward <= 1000);
+        static void AddCatacombReward(PlayerProfile profile,int reward)
+        {
+            if (reward == -1 && profile.collectionRuneLevel <= 0)
+            {
+                profile.collectionRuneLevel = 1;
+                profile.collectionRuneEquipped = true;
+            }
+            else if (reward == -2) profile.strengtheningStones = Mathf.Clamp(profile.strengtheningStones,0,999998) + 1;
+            else profile.coins = Mathf.Min(100000000,profile.coins+(reward == -1 ? 60 : reward));
+        }
+
         public bool ClaimCatacombCard(int reward)
         {
             if (reward == -1)
@@ -179,6 +197,14 @@ namespace ForjaDasMares
                 return Transaction(next => next.strengtheningStones = Mathf.Clamp(next.strengtheningStones,0,999998) + 1,
                     "Pedra de Têmpera recebida.");
             return CollectRegionalGold(reward);
+        }
+
+        public bool GrantRegionalEnemyExperience()
+        {
+            int amount = catalog.enemy.experience;
+            if (amount <= 0 || Profile.experience >= 1000000) return false;
+            return Transaction(next => next.experience = Mathf.Min(1000000, next.experience + amount),
+                "+" + amount + " XP por inimigo derrotado.");
         }
 
         public bool CollectRegionalGold(int amount)

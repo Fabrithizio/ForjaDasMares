@@ -26,8 +26,10 @@ namespace ForjaDasMares
         [SerializeField,Range(30,60)]float rpgFieldOfView=42;
         [SerializeField,Range(.5f,1)]float minimumZoom=.75f;
         [SerializeField,Range(1,2)]float maximumZoom=1.35f;
+        [SerializeField, Range(1f, 1.5f)] float fullscreenRpgDistance = 1.18f;
+        bool rpgFraming;
         float zoom=1,desiredZoom=1;UnityEngine.InputSystem.InputAction wheel;
-        public void UseRpgFraming(){offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}
+        public void UseRpgFraming(){rpgFraming=true;offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}
         public void SetZoom(float value){desiredZoom=Mathf.Clamp(value,minimumZoom,maximumZoom);}
         Camera cameraComponent;
         bool boundFocus;
@@ -69,7 +71,7 @@ namespace ForjaDasMares
             float aspect = Mathf.Max(0.1f, cameraComponent.aspect);
             float tangent = Mathf.Tan(verticalFieldOfView * Mathf.Deg2Rad * 0.5f);
             cameraComponent.fieldOfView = Mathf.Clamp(2f * Mathf.Atan(tangent * Mathf.Max(1f, referenceAspect / aspect)) * Mathf.Rad2Deg, 30f, 95f);
-            float armLength = Mathf.Max(0.1f, offset.magnitude*zoom);
+            float armLength = Mathf.Max(0.1f, offset.magnitude*zoom*(rpgFraming&&!Application.isMobilePlatform&&Screen.fullScreen?fullscreenRpgDistance:1f));
             // A sight-line obstruction must not change the pitch or zoom. Only an
             // actual overlap at the lens may retract the arm for camera safety.
             Vector3 direction = offset.sqrMagnitude > 0.001f ? offset.normalized : Vector3.up;

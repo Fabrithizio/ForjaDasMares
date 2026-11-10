@@ -48,7 +48,10 @@ namespace ForjaDasMares.Networking
         void Refresh(){for(int i=0;i<4;i++)values[i].text=Mathf.RoundToInt(PlayerPrefs.GetFloat(keys[i],i==0?.8f:i==1?.7f:i==2?.65f:.8f)*100)+"%";quality.text="GRÁFICOS · "+PresentationQuality.ModeName(PresentationQuality.Selected);}
         static void ToggleFullscreen()
         {
-            Screen.fullScreenMode = Screen.fullScreen ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
+            if (Screen.fullScreen)
+                Screen.SetResolution(Mathf.Min(1280,Display.main.systemWidth),Mathf.Min(720,Display.main.systemHeight),FullScreenMode.Windowed);
+            else
+                Screen.SetResolution(Display.main.systemWidth,Display.main.systemHeight,FullScreenMode.FullScreenWindow);
         }
         public void Open(){if(overlay==null)return;GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<CoopInventoryHud>()?.CloseInventory();overlay.SetActive(true);overlay.transform.SetAsLastSibling();SetBlocked(true);Refresh();}
         public void Close(){if(overlay==null)return;overlay.SetActive(false);SetBlocked(false);}

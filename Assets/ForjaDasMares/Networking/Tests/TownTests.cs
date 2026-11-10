@@ -47,7 +47,7 @@ namespace ForjaDasMares.Networking.Tests
         {
             var motor = world.Hero.GetComponent<PlayerMotor>();
             var hud = Object.FindFirstObjectByType<RegionalWorldHud>();
-            foreach (string name in new[] { "Altar das Catacumbas","Runa de Coleta" })
+            foreach (string name in new[] { "Altar das Catacumbas" })
             {
                 var station = GameObject.Find(name).GetComponent<WorldClickTarget>();
                 Assert.Less(Vector3.Distance(station.transform.position,world.Definition.refuge),9);

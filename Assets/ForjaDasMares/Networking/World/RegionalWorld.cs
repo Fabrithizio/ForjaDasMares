@@ -76,14 +76,16 @@ namespace ForjaDasMares.Networking
         readonly Vector3[] goldOrigins = new Vector3[GoldCapacity];
         Material altarMaterial;
         public bool IsCatacombInstance => definition.regionId == "catacumbas-previa";
-        public const int CatacombCardCount = 6, CatacombPicks = 2;
+        public const int CatacombCardCount = 32, CatacombPicks = 2;
         public const int RuneCard = -1, StoneCard = -2;
-        readonly int[] cardOrder = {15,20,25,30,35,StoneCard};
+        readonly int[] cardOrder = new int[CatacombCardCount];
         readonly bool[] revealedCards = new bool[CatacombCardCount];
         bool claimingCard, pendingCards;
         public int CardsRevealed { get; private set; }
         public bool IsCardRevealed(int card) => revealedCards[card];
-        public string CardRewardLabel(int card) => revealedCards[card] ? RewardLabel(cardOrder[card]) : "";
+        public bool CardsFinalized { get; private set; }
+        public string CardRewardLabel(int card) => CardsFinalized ? RewardLabel(cardOrder[card]) : "";
+        public int VisibleCardReward(int card) => CardsFinalized ? cardOrder[card] : 0;
         static string RewardLabel(int reward) => reward == RuneCard ? "Runa de Coleta" :
             reward == StoneCard ? "Pedra de Têmpera" : reward + " ouro";
         RegionDefinition testRoom;
@@ -116,14 +118,12 @@ namespace ForjaDasMares.Networking
             residents=new EnemyActor[definition.camps.Length][];timers=new float[residents.Length][];firstKills=new int[residents.Length];cleared=new bool[residents.Length];firstDefeated=new bool[residents.Length][];
             for(int i=0;i<residents.Length;i++){residents[i]=new EnemyActor[definition.camps[i].enemies.Length];timers[i]=new float[residents[i].Length];firstDefeated[i]=new bool[residents[i].Length];}
             if (town != null && Journey != null)
-            {
                 catacombAltar = BuildPlazaStation("Altar das Catacumbas",new Vector3(5,0,-4),() => Hud?.OpenCatacombEntrance());
-                runeStation = BuildPlazaStation("Runa de Coleta",new Vector3(-5,0,-4),() => Hud?.OpenRuneSettings());
-            }
             if (IsCatacombInstance)
             {
-                if (UnityEngine.Random.value < .20f) cardOrder[cardOrder.Length-1] = RuneCard;
-                else if (UnityEngine.Random.value >= .5f) cardOrder[cardOrder.Length-1] = 40;
+                for (int i = 0; i < cardOrder.Length; i++) cardOrder[i] = 15 + (i % 6) * 5;
+                cardOrder[0] = RuneCard;
+                cardOrder[1] = cardOrder[2] = StoneCard;
                 for (int i = cardOrder.Length - 1; i > 0; i--)
                 {
                     int other = UnityEngine.Random.Range(0,i+1);
@@ -140,6 +140,7 @@ namespace ForjaDasMares.Networking
         void EnemyDied(EnemyActor actor)
         {
             if(!ownership.TryGetValue(actor,out int camp))return;ownership.Remove(actor);
+            regionalInventory?.Service?.GrantRegionalEnemyExperience();
             if (!IsCatacombInstance) TryDropGold(camp, actor.transform.position);
             var members=residents[camp];for(int i=0;i<members.Length;i++)if(members[i]==actor){members[i]=null;timers[camp][i]=definition.camps[camp].respawnSeconds;if(!firstDefeated[camp][i]){firstDefeated[camp][i]=true;firstKills[camp]++;}break;}
             if(!cleared[camp]){if(firstKills[camp]>=members.Length){cleared[camp]=true;if(IsCatacombInstance && PortalReady)pendingCards=true;Changed?.Invoke();}}
@@ -243,7 +244,7 @@ namespace ForjaDasMares.Networking
             if (!Physics.Raycast(camera.ScreenPointToRay(screenPosition),out var hit,150,
                 (1<<0)|(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
             var target = hit.collider.GetComponentInParent<WorldClickTarget>();
-            if (target == null || (target != catacombAltar && target != runeStation && Array.IndexOf(goldPiles,target) < 0)) return false;
+            if (target == null || (target != catacombAltar && Array.IndexOf(goldPiles,target) < 0)) return false;
             return target.TryUse(hero.transform);
         }
 
@@ -339,7 +340,7 @@ namespace ForjaDasMares.Networking
             };
             return target;
         }
-        WorldClickTarget catacombAltar, runeStation;
+        WorldClickTarget catacombAltar;
 
         public void EnterCatacombInstance()
         {
@@ -393,26 +394,50 @@ namespace ForjaDasMares.Networking
 
         public bool ClaimCatacombCard(int card)
         {
-            if (!IsCatacombInstance || !PortalReady || travelling || claimingCard || !hero.Health.IsAlive ||
+            if (!IsCatacombInstance || !PortalReady || travelling || CardsFinalized || !hero.Health.IsAlive ||
                 CardsRevealed >= CatacombPicks || card < 0 || card >= cardOrder.Length || revealedCards[card])
                 return false;
-            claimingCard = true;
-            int reward = cardOrder[card];
-            if (reward == RuneCard && regionalInventory?.Service?.CollectionRuneLevel > 0) reward = 60;
-            bool saved = regionalInventory?.Service?.ClaimCatacombCard(reward) == true;
-            if (saved)
+            revealedCards[card] = true;
+            CardsRevealed++;
+            return true;
+        }
+
+        public bool FinalizeCatacombCards()
+        {
+            if (!IsCatacombInstance || !PortalReady || travelling || CardsFinalized || claimingCard || !hero.Health.IsAlive) return false;
+            var service = regionalInventory?.Service;
+            if (service == null) return false;
+            while (CardsRevealed < CatacombPicks)
             {
-                cardOrder[card] = reward;
-                revealedCards[card] = true;
-                CardsRevealed++;
+                int candidate = UnityEngine.Random.Range(0,cardOrder.Length-CardsRevealed);
+                for (int i = 0; i < cardOrder.Length; i++)
+                {
+                    if (revealedCards[i]) continue;
+                    if (candidate-- != 0) continue;
+                    ClaimCatacombCard(i);
+                    break;
+                }
             }
+
+            int first = Array.IndexOf(revealedCards,true);
+            int second = Array.IndexOf(revealedCards,true,first+1);
+            bool duplicateRune = service.CollectionRuneLevel > 0;
+            claimingCard = true;
+            bool saved = service.ClaimCatacombCards(cardOrder[first],cardOrder[second]);
             claimingCard = false;
-            return saved;
+            if (!saved) return false;
+            if (duplicateRune)
+            {
+                if (cardOrder[first] == RuneCard) cardOrder[first] = 60;
+                if (cardOrder[second] == RuneCard) cardOrder[second] = 60;
+            }
+            CardsFinalized = true;
+            return true;
         }
 
         public void LeaveCatacombInstance()
         {
-            if (IsCatacombInstance && CardsRevealed == CatacombPicks) TravelTo("RefugioUltimoSino");
+            if (IsCatacombInstance && CardsFinalized) TravelTo("RefugioUltimoSino");
         }
 
         public void Respawn(){Dismount();hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}

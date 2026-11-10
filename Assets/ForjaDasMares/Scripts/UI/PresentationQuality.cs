@@ -10,11 +10,19 @@ namespace ForjaDasMares
         UniversalRenderPipelineAsset original,copy;Camera sceneCamera;bool mobile;
         public static int Selected=>Mathf.Clamp(PlayerPrefs.GetInt(Preference,1),0,2);
         public static string ModeName(int index)=>index==0?"ECONÔMICO":index==1?"EQUILIBRADO":"NÍTIDO";
+        bool lastFullscreen;
         public float RenderScale=>copy!=null?copy.renderScale:1;
         public void Configure(Camera camera)
         {
             sceneCamera=camera;mobile=Application.isMobilePlatform;
             if(copy==null){original=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;if(original!=null){copy=Instantiate(original);copy.name=original.name+" (runtime quality)";QualitySettings.renderPipeline=copy;}}
+            lastFullscreen=Screen.fullScreen;
+            Apply();
+        }
+        void Update()
+        {
+            if (mobile || lastFullscreen == Screen.fullScreen) return;
+            lastFullscreen = Screen.fullScreen;
             Apply();
         }
         public void Cycle(){PlayerPrefs.SetInt(Preference,(Selected+1)%3);PlayerPrefs.Save();Apply();}
@@ -24,16 +32,17 @@ namespace ForjaDasMares
             if(copy!=null)
             {
                 copy.shadowDistance=Mathf.Min(original.shadowDistance,mobile?(Selected==0?12:Selected==1?22:32):(Selected==0?24:Selected==1?40:60));
-                copy.renderScale=mobile?(Selected==0?.55f:Selected==1?.7f:.9f):(Selected==0?.8f:1);
+                copy.renderScale=mobile?(Selected==0?.55f:Selected==1?.7f:.9f):(Selected==0&&!Screen.fullScreen?.8f:1);
                 copy.msaaSampleCount=mobile?(Selected==0?1:Selected==2?4:2):1;
                 if(mobile)copy.supportsHDR=false;
             }
             if(sceneCamera==null)return;
             sceneCamera.allowMSAA=mobile;
+            if (!mobile) sceneCamera.allowDynamicResolution=false;
             var data=sceneCamera.GetUniversalAdditionalCameraData();data.renderPostProcessing=!mobile||Selected!=0;
             // PC uses Deferred: use SMAA, not an ignored MSAA checkbox. Mobile is Forward.
-            data.antialiasing=mobile?AntialiasingMode.None:Selected==0?AntialiasingMode.FastApproximateAntialiasing:AntialiasingMode.SubpixelMorphologicalAntiAliasing;
-            data.antialiasingQuality=Selected==2?AntialiasingQuality.High:AntialiasingQuality.Medium;
+            data.antialiasing=mobile?AntialiasingMode.None:Selected==0&&!Screen.fullScreen?AntialiasingMode.FastApproximateAntialiasing:AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            data.antialiasingQuality=Selected==2||(!mobile&&Screen.fullScreen)?AntialiasingQuality.High:AntialiasingQuality.Medium;
         }
         void OnDestroy(){if(copy!=null){if(QualitySettings.renderPipeline==copy)QualitySettings.renderPipeline=original;Destroy(copy);}}
     }

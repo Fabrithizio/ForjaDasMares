@@ -53,6 +53,9 @@ namespace ForjaDasMares.Networking.Tests
             GameObject.Find("Card1").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             Assert.AreEqual(2,world.CardsRevealed);
             Assert.IsFalse(world.ClaimCatacombCard(2));
+            yield return new WaitForSecondsRealtime(.8f);
+            Assert.IsTrue(world.CardsFinalized);
+            Assert.IsNotEmpty(world.CardRewardLabel(31));
             Assert.IsNotEmpty(world.CardRewardLabel(0));
             Assert.IsNotEmpty(world.CardRewardLabel(1));
         }

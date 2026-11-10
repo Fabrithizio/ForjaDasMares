@@ -79,13 +79,19 @@ namespace ForjaDasMares
             if(definition==null)return "Item não encontrado no catálogo.";
             return ProgressionStats.CanEquip(profile,catalog,hero.heroId,item,definition.slot,out string reason)?"Disponível para equipar":reason;
         }
-        public static string Summary(ProgressionCatalog catalog,ItemInstance item)
+        public static string Summary(ProgressionCatalog catalog,ItemInstance item,bool includeHeader=true)
         {
             if(item==null)return "Nenhum item neste slot.";
             var d=catalog.Find(item.definitionId);if(d==null)return "Item não encontrado no catálogo.";
-            var text=new StringBuilder();text.AppendLine(d.displayName);text.AppendLine(RusticHudTheme.RarityName(item.rarity)+" · "+Category(d));
-            text.AppendLine("ONDE EQUIPA: "+RusticHudTheme.SlotName(d.slot));text.AppendLine("CLASSE: "+RusticHudTheme.ClassNames(d.compatibleHeroes)+" · nível "+d.minimumLevel);
-            text.AppendLine(RoleSummary(d));
+            var text = new StringBuilder();
+            if (includeHeader)
+            {
+                text.AppendLine(d.displayName);
+                text.AppendLine(RusticHudTheme.RarityName(item.rarity)+" · "+Category(d));
+                text.AppendLine("ONDE EQUIPA: "+RusticHudTheme.SlotName(d.slot));
+                text.AppendLine("CLASSE: "+RusticHudTheme.ClassNames(d.compatibleHeroes)+" · nível "+d.minimumLevel);
+                text.AppendLine(RoleSummary(d));
+            }
             if(d.twoHanded)text.AppendLine("Duas mãos: não permite item na mão secundária.");
             else if(d.allowsOffHand)text.AppendLine("Permite equipamento na mão secundária.");
             if(d.attacks!=null&&d.attacks.Length>0)
