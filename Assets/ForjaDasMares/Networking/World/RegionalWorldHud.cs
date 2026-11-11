@@ -577,29 +577,47 @@ namespace ForjaDasMares.Networking
         void BuildSkillBar(RectTransform root,float height)
         {
             bool touch = Application.isMobilePlatform;
-            float start = touch ? -315 : -432;
+            float start = touch ? -286 : -432;
             for (int i = 0; i < skillButtons.Length; i++)
             {
                 int slot = i;
-                var symbol = i == 0 ? HudSymbol.Target : i == 1 ? HudSymbol.Fury : HudSymbol.Rune;
+                var symbol = i == 0 ? HudSymbol.SpellBolt : i == 1 ? HudSymbol.SpellBurst : HudSymbol.SpellPrison;
                 Color accent = i == 0 ? new Color(.26f,.83f,1) : i == 1 ? new Color(.48f,.58f,1) : new Color(.79f,.51f,1);
-                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+68*i,height),60,"",symbol,accent,() => CastRegionalSkill(slot),touch);
+                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+(touch ? 76 : 68)*i,height),touch ? 68 : 60,"",symbol,accent,() => CastRegionalSkill(slot),touch);
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
             }
             var combat = world.Hero.GetComponent<HeroCombat>();
-            attackMode = CombatAction(root,"AttackMode",new Vector2(start+204,height),60,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
+            attackMode = CombatAction(root,"AttackMode",new Vector2(start+(touch ? 228 : 204),height),touch ? 68 : 60,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
+        }
+
+        RectTransform touchSafeArea;
+        Rect lastTouchSafeArea;
+        Vector2Int lastTouchResolution;
+        void RefreshTouchSafeArea()
+        {
+            if (touchSafeArea == null) return;
+            var resolution = new Vector2Int(Screen.width, Screen.height);
+            var area = Screen.safeArea;
+            if (resolution == lastTouchResolution && area == lastTouchSafeArea) return;
+            lastTouchResolution = resolution;
+            lastTouchSafeArea = area;
+            touchSafeArea.anchorMin = new Vector2(area.xMin / resolution.x, area.yMin / resolution.y);
+            touchSafeArea.anchorMax = new Vector2(area.xMax / resolution.x, area.yMax / resolution.y);
+            touchSafeArea.offsetMin = touchSafeArea.offsetMax = Vector2.zero;
         }
 
         void BuildTouchControls(RectTransform root)
         {
-            var input=world.Hero.GetComponent<ArenaInput>();var stick=RusticHudTheme.Rect(root,"RegionalStick",Vector2.zero,new Vector2(120,170),new Vector2(160,160));stick.pivot=Vector2.one*.5f;
+            touchSafeArea = RusticHudTheme.Rect(root,"TouchSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);
+            RefreshTouchSafeArea();
+            var input=world.Hero.GetComponent<ArenaInput>();var stick=RusticHudTheme.Rect(touchSafeArea,"RegionalStick",Vector2.zero,new Vector2(116,133),new Vector2(160,160));stick.pivot=Vector2.one*.5f;
             var ring=stick.gameObject.AddComponent<RoundedHudGraphic>();ring.color=new Color(.12f,.19f,.16f,.65f);ring.radius=80;
             var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(52,52));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=26;cap.raycastTarget=false;
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
-            CombatAction(root,"RegionalAttack",new Vector2(-22,70),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
-            CombatAction(root,"RegionalDodge",new Vector2(-148,50),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true);
-            CombatAction(root,"RegionalInteract",new Vector2(-242,64),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
-            BuildSkillBar(root,205);
+            CombatAction(touchSafeArea,"RegionalAttack",new Vector2(-22,46),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
+            CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-148,34),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true);
+            CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-242,38),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
+            BuildSkillBar(touchSafeArea,172);
             movementMode.gameObject.SetActive(false);
             controlHint.gameObject.SetActive(false);
             foreach(string name in new[]{"Controls","Scope","MapLegend"}){var label=root.Find(name);if(label!=null)label.gameObject.SetActive(false);}
@@ -622,6 +640,7 @@ namespace ForjaDasMares.Networking
         void OnInteract(InputAction.CallbackContext _){if((journalPanel==null||!journalPanel.activeSelf)&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked)world.Interact();}
         void Update()
         {
+            RefreshTouchSafeArea();
             if (mountCaption != null) mountCaption.text = (world.IsMounted ? "DESCER" : "MONTAR") + (Application.isMobilePlatform ? "" : " · M");
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)

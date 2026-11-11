@@ -799,3 +799,7 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 - Tema compartilhado: superfícies em azul profundo e gradiente leve nos botões.
 - O ZIP contém um gerador de prévias de cenário para o Editor. A referência da interface foi aplicada no código do HUD.
 - Windows compilou sem erros. A revisão visual no monitor e o teste de toque físico estão pendentes.
+
+## HUD Android - 11/11/2026
+- Controles do RPG ancorados na área segura da tela, com botões de habilidade maiores e pictogramas distintos.
+- Build Android concluída sem erros. Limites e sobreposição dos comandos verificados em três proporções. Validação física pendente.

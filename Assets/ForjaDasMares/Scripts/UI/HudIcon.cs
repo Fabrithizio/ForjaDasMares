@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ForjaDasMares
 {
-    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass, Coin, Settings, Scroll }
+    public enum HudSymbol { Sword, Rune, Dodge, Bag, Menu, Hero, Interact, Compass, Fury, Shield, Armor, Accessory, Artifact, Heart, Target, Hourglass, Coin, Settings, Scroll, SpellBolt, SpellBurst, SpellPrison }
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class HudIcon : MaskableGraphic
     {
@@ -29,6 +29,31 @@ namespace ForjaDasMares
             vh.Clear();
             switch (symbol)
             {
+                case HudSymbol.SpellBolt:
+                    Line(vh,new Vector2(-11,-10),new Vector2(11,10),4);
+                    Line(vh,new Vector2(1,8),new Vector2(11,10),2);
+                    Line(vh,new Vector2(11,10),new Vector2(9,0),2);
+                    Line(vh,new Vector2(-13,-1),new Vector2(-5,5),2);
+                    Line(vh,new Vector2(-5,-13),new Vector2(3,-7),2);
+                    break;
+                case HudSymbol.SpellBurst:
+                    Ring(vh,5);
+                    for(int i=0;i<8;i++)
+                    {
+                        float angle = i * Mathf.PI / 4;
+                        Vector2 ray = new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));
+                        Line(vh,ray*8,ray*(i%2==0?15:12),2.4f);
+                    }
+                    break;
+                case HudSymbol.SpellPrison:
+                    Line(vh,new Vector2(-13,-9),new Vector2(13,-9),2);
+                    Line(vh,new Vector2(-13,-9),new Vector2(-10,4),2);
+                    Line(vh,new Vector2(-10,4),new Vector2(0,13),2);
+                    Line(vh,new Vector2(0,13),new Vector2(10,4),2);
+                    Line(vh,new Vector2(10,4),new Vector2(13,-9),2);
+                    Line(vh,new Vector2(0,13),new Vector2(0,-9),2);
+                    Line(vh,new Vector2(-10,4),new Vector2(10,4),2);
+                    break;
                 case HudSymbol.Coin:
                     Ring(vh,12);Ring(vh,9);Line(vh,new Vector2(0,-6),new Vector2(0,7),2);Line(vh,new Vector2(-4,4),new Vector2(0,0),2);Line(vh,new Vector2(4,4),new Vector2(0,0),2);break;
                 case HudSymbol.Heart:
