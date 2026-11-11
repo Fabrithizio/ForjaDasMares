@@ -265,7 +265,8 @@ namespace ForjaDasMares
             {
                 Vector3 point = origin.position + facing * ability.placementDistance;
                 if (Physics.Linecast(origin.position, point, geometry, QueryTriggerInteraction.Ignore) || Physics.CheckSphere(point, 0.2f, geometry, QueryTriggerInteraction.Ignore)) return;
-                pool.PlaceZone(point, ability.radius, ability.trapLifetime, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
+                if (pool.PlaceZone(point, ability.radius, ability.trapLifetime, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical))
+                    pool.PrismBurst(new Vector3(point.x,.08f,point.z), ability.radius, 4, .8f);
             }
             else if (ability.effect == AbilityEffect.ProtectionCharge)
             {
@@ -279,14 +280,14 @@ namespace ForjaDasMares
                 }
                 System.Array.Clear(nearbyAllies, 0, count);
                 chargeWindow = motor.StartCharge(facing, ability.chargeDuration, ability.chargeSpeed);
-                pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
+                pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, 5, ability.protectionDuration);
             }
             else
             {
                 resolver.Area(origin.position, ability.radius, facing, 360f, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
                 if (currentAttack.prismaticEffect == PrismaticEffect.Pulse || currentAttack.prismaticEffect == PrismaticEffect.Imprison)
                     pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, currentAttack.prismaticEffect == PrismaticEffect.Pulse ? 1 : 2);
-                else pool.PlaceZone(transform.position, ability.radius, 0.6f, currentAttack, health, targets, geometry, false);
+                else pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, 3, .7f);
             }
         }
         public void ResetCombat() {System.Array.Clear(regionalCooldowns,0,regionalCooldowns.Length);wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }

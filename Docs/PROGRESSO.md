@@ -788,3 +788,8 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 ## Runas na mochila - 10/11/2026
 - Aba Runas com coleção e um encaixe ativo. A Runa de Coleta usa um ícone de cristal e moeda que acompanha o estado salvo. A capacidade atual reflete a única runa implementada.
 - Teste manual: abrir Runas, equipar, desequipar e conferir ícone, ocupação, nível e custo de melhoria.
+
+## Apresentação das habilidades - 11/11/2026
+- Prisma e Baluarte ganharam cúpulas de malha aberta. Brasa ganhou uma erupção de fragmentos, e Vento ganhou uma espiral na ativação da armadilha.
+- HeroModelView suaviza a mudança de passada entre caminhada e corrida e corrige a escolha da animação de habilidade ao andar.
+- Unity PlayMode: 33 testes focados passaram. Windows compilou sem erros. Aparência, desempenho em Android e mecânicas novas do guia ainda precisam de validação ou implementação.

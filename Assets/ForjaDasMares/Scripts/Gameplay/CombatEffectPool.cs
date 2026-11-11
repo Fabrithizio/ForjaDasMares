@@ -23,7 +23,7 @@ namespace ForjaDasMares
                 renderer.sharedMaterial = material;
             }
         }
-        public void PrismBurst(Vector3 position,float radius,int kind) => Prism().Burst(position,radius,kind);
+        public void PrismBurst(Vector3 position,float radius,int kind, float duration = 0) => Prism().Burst(position,radius,kind,duration);
         PrismaticSpellVisuals Prism()
         {
             if (prism == null)

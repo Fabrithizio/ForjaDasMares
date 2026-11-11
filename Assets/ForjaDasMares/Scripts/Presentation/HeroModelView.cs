@@ -56,7 +56,7 @@ namespace ForjaDasMares
         }
         int lastState=-1,lastUpper=-1,lastVersion=-1;
         bool running,wantsDefaultWeapon=true;
-        float phase,upperWeight;
+        float phase,upperWeight, locomotionWeight;
         public Animator Animator=>animator;
         public Transform PrimarySocket=>primarySocket;
         public Transform SecondarySocket=>secondarySocket;
@@ -69,7 +69,7 @@ namespace ForjaDasMares
         public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon,bool animationsReady=true)
         {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;authoredAnimationsReady=animationsReady;}
         public void ShowDefaultWeapon(bool visible){wantsDefaultWeapon=visible;if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
-        void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=0;running=false;}
+        void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=locomotionWeight=0;running=false;}
         float pauseUntil,heldActionTime;
         public void PauseImpact(float duration){pauseUntil=Mathf.Max(pauseUntil,Time.unscaledTime+Mathf.Clamp(duration,0,.06f));}
         public void Animate(HeroState state,float normalizedAttack,float movement,bool alive,int variant=0,int version=0,float impact=.25f)
@@ -87,7 +87,9 @@ namespace ForjaDasMares
             CurrentState=state;MovementSpeed=Mathf.Max(0,movement);
             LocomotionActive=alive&&movement>.12f&&state!=HeroState.Dodge&&state!=HeroState.Dead;
             if(running?movement<2.6f:movement>3.2f)running=!running;
-            if(LocomotionActive)phase=Mathf.Repeat(phase+movement*Time.deltaTime/(running?runStride:walkStride),1);
+            float stride = Mathf.Lerp(walkStride, runStride, locomotionWeight);
+            locomotionWeight = Mathf.MoveTowards(locomotionWeight, running ? 1 : 0, Time.deltaTime * 6);
+            if (LocomotionActive) phase = Mathf.Repeat(phase + movement * Time.deltaTime / stride, 1);
             animator.SetFloat(GaitTime,phase);animator.SetFloat(Speed,1);
             animator.SetInteger(State,(int)state);animator.SetBool(Alive,alive);
             bool action=state==HeroState.Attack||state==HeroState.Skill;
@@ -107,7 +109,7 @@ namespace ForjaDasMares
             }
             if(animator.layerCount>1)
             {
-                int upper=action&&variant!=4?AttackHash(variantIndex,true,state==HeroState.Skill):attackVariant?UpperAttacks[variantIndex]:UpperStates[(int)state];
+                int upper=action&&variant!=4?AttackHash(variant,true,state==HeroState.Skill):attackVariant?UpperAttacks[variantIndex]:UpperStates[(int)state];
                 if(masked&&(upper!=lastUpper||action&&version!=lastVersion))
                 {animator.CrossFadeInFixedTime(upper,.07f,1,0);lastUpper=upper;}
                 upperWeight=Mathf.MoveTowards(upperWeight,masked?1:0,Time.deltaTime/0.10f);
