@@ -793,3 +793,9 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 - Prisma e Baluarte ganharam cúpulas de malha aberta. Brasa ganhou uma erupção de fragmentos, e Vento ganhou uma espiral na ativação da armadilha.
 - HeroModelView suaviza a mudança de passada entre caminhada e corrida e corrige a escolha da animação de habilidade ao andar.
 - Unity PlayMode: 33 testes focados passaram. Windows compilou sem erros. Aparência, desempenho em Android e mecânicas novas do guia ainda precisam de validação ou implementação.
+
+## Direção visual da interface - 11/11/2026
+- HUD regional: barra de combate central no PC, moldura dupla, ícones coloridos por função e controles circulares separados no celular.
+- Tema compartilhado: superfícies em azul profundo e gradiente leve nos botões.
+- O ZIP contém um gerador de prévias de cenário para o Editor. A referência da interface foi aplicada no código do HUD.
+- Windows compilou sem erros. A revisão visual no monitor e o teste de toque físico estão pendentes.

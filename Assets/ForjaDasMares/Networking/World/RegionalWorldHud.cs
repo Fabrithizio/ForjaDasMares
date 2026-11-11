@@ -537,42 +537,68 @@ namespace ForjaDasMares.Networking
             superFill=RusticHudTheme.Rect(focus,"Fill",Top,Vector2.zero,new Vector2(0,5));superFill.gameObject.AddComponent<Image>().color=new Color(.18f,.6f,.85f);
             superCaption=Label(panel,"SuperValue",new Vector2(94,-70),new Vector2(238,16),"",11);
         }
-        Button RoundAction(RectTransform root,string name,Vector2 position,float size,string text,HudSymbol symbol,UnityEngine.Events.UnityAction action)
+        Button CombatAction(RectTransform root, string name, Vector2 position, float size, string caption,
+            HudSymbol symbol, Color accent, UnityEngine.Events.UnityAction action, bool round = false)
         {
-            var button=RusticHudTheme.Button(root,name,new Vector2(1,0),position,Vector2.one*size,"",action);var surface=button.GetComponent<RoundedHudGraphic>();surface.radius=size/2;surface.borderColor=RusticHudTheme.Gold;surface.color=new Color(.035f,.065f,.09f,.94f);
-            RusticHudTheme.Icon(button.transform,symbol,Vector2.one*.5f,new Vector2(0,10),size*.43f);var caption=button.GetComponentInChildren<Text>();caption.text=text;caption.fontSize=12;caption.rectTransform.anchoredPosition=new Vector2(0,-size*.28f);caption.rectTransform.sizeDelta=new Vector2(size-6,22);return button;
+            var button = RusticHudTheme.Button(root,name,new Vector2(1,0),position,Vector2.one*size,"",action);
+            var surface = button.GetComponent<RoundedHudGraphic>();
+            surface.radius = round ? size / 2 : 9;
+            surface.border = 2;
+            surface.borderColor = Color.Lerp(RusticHudTheme.Gold, accent, .26f);
+            surface.color = new Color(.014f,.031f,.052f,.98f);
+            surface.topColor = Color.Lerp(surface.color,accent,.32f);
+            var inset = RusticHudTheme.Rect(button.transform,"Inlay",Vector2.one*.5f,Vector2.zero,Vector2.one*(size-8));
+            var rim = RusticHudTheme.Panel(inset,new Color(.035f,.065f,.095f,.54f),round ? size/2-4 : 6);
+            rim.borderColor = accent;
+            rim.border = 1;
+            RusticHudTheme.Icon(button.transform,symbol,Vector2.one*.5f,new Vector2(0,size*.11f),size*.49f).color = accent;
+            var label = button.GetComponentInChildren<Text>();
+            label.text = caption;
+            label.fontStyle = FontStyle.Bold;
+            label.fontSize = 11;
+            label.rectTransform.anchoredPosition = new Vector2(0,-size*.27f);
+            label.rectTransform.sizeDelta = new Vector2(size-5,18);
+            label.transform.SetAsLastSibling();
+            return button;
         }
+
         void BuildPcActions(RectTransform root)
         {
-            var input=world.Hero.GetComponent<ArenaInput>();
-            RoundAction(root,"RegionalDodge",new Vector2(-158,20),64,"ESQUIVA",HudSymbol.Dodge,input.RequestDodge);
-            RoundAction(root,"RegionalAttack",new Vector2(-84,20),64,"ATAQUE",HudSymbol.Sword,input.RequestAttack);
-            RoundAction(root,"RegionalInteract",new Vector2(-232,20),64,"USAR",HudSymbol.Interact,world.Interact);
-            BuildSkillBar(root,120);
+            var input = world.Hero.GetComponent<ArenaInput>();
+            var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,22),new Vector2(510,88));
+            RusticHudTheme.Panel(dock,RusticHudTheme.Ink,15).borderColor = RusticHudTheme.Gold;
+            BuildSkillBar(dock,12);
+            CombatAction(dock,"RegionalAttack",new Vector2(-160,12),64,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack);
+            CombatAction(dock,"RegionalDodge",new Vector2(-90,12),64,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
+            CombatAction(dock,"RegionalInteract",new Vector2(-20,12),64,"F",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact);
         }
+
         Button attackMode;
         void BuildSkillBar(RectTransform root,float height)
         {
-            var input=world.Hero.GetComponent<ArenaInput>();
-            var combat=world.Hero.GetComponent<HeroCombat>();
+            bool touch = Application.isMobilePlatform;
+            float start = touch ? -315 : -432;
             for (int i = 0; i < skillButtons.Length; i++)
             {
                 int slot = i;
                 var symbol = i == 0 ? HudSymbol.Target : i == 1 ? HudSymbol.Fury : HudSymbol.Rune;
-                skillButtons[i] = RoundAction(root,"SkillSlot"+(i+1),new Vector2(-315+75*i,height),64,"",symbol,() => CastRegionalSkill(slot));
+                Color accent = i == 0 ? new Color(.26f,.83f,1) : i == 1 ? new Color(.48f,.58f,1) : new Color(.79f,.51f,1);
+                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+68*i,height),60,"",symbol,accent,() => CastRegionalSkill(slot),touch);
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
             }
-            attackMode=RoundAction(root,"AttackMode",new Vector2(-88,height),68,"NORMAL",HudSymbol.Sword,combat.ToggleWeaponMode);
+            var combat = world.Hero.GetComponent<HeroCombat>();
+            attackMode = CombatAction(root,"AttackMode",new Vector2(start+204,height),60,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
         }
+
         void BuildTouchControls(RectTransform root)
         {
             var input=world.Hero.GetComponent<ArenaInput>();var stick=RusticHudTheme.Rect(root,"RegionalStick",Vector2.zero,new Vector2(120,170),new Vector2(160,160));stick.pivot=Vector2.one*.5f;
             var ring=stick.gameObject.AddComponent<RoundedHudGraphic>();ring.color=new Color(.12f,.19f,.16f,.65f);ring.radius=80;
             var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(52,52));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=26;cap.raycastTarget=false;
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
-            RoundAction(root,"RegionalAttack",new Vector2(-22,70),112,"ATAQUE",HudSymbol.Sword,input.RequestAttack).gameObject.AddComponent<HoldAttackButton>().Configure(input);
-            RoundAction(root,"RegionalDodge",new Vector2(-148,50),78,"ESQUIVA",HudSymbol.Dodge,input.RequestDodge);
-            RoundAction(root,"RegionalInteract",new Vector2(-242,64),74,"USAR",HudSymbol.Interact,world.Interact);
+            CombatAction(root,"RegionalAttack",new Vector2(-22,70),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
+            CombatAction(root,"RegionalDodge",new Vector2(-148,50),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true);
+            CombatAction(root,"RegionalInteract",new Vector2(-242,64),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
             BuildSkillBar(root,205);
             movementMode.gameObject.SetActive(false);
             controlHint.gameObject.SetActive(false);
@@ -601,14 +627,14 @@ namespace ForjaDasMares.Networking
             if (attackMode != null)
             {
                 attackMode.interactable = combat.CanUseWeapon;
-                attackMode.GetComponentInChildren<Text>().text = (combat.HeavyMode ? "PESADO" : "NORMAL") + (Application.isMobilePlatform ? "" : " · TAB");
+                attackMode.GetComponentInChildren<Text>().text = (combat.HeavyMode ? "PESADO" : "NORMAL");
                 for (int i = 0; i < skillButtons.Length; i++)
                 {
                     bool unlocked = combat.RegionalSkillUnlocked(i);
                     float remaining = combat.RegionalSkillCooldown(i);
                     skillButtons[i].interactable = unlocked && remaining <= 0 && world.Hero.Health.IsAlive;
-                    string role = i == 0 ? "ALVO" : i == 1 ? "ÁREA" : "CONTROLE";
-                    skillLabels[i].text = !unlocked ? (i+1)+" · VAZIO" : remaining > 0 ? Mathf.CeilToInt(remaining)+"s" : (i+1)+" · "+role;
+                    string role = i == 0 ? "ALVO" : i == 1 ? "ÁREA" : "CTRL";
+                    skillLabels[i].text = !unlocked ? "—" : remaining > 0 ? Mathf.CeilToInt(remaining)+"s" : (i+1)+" · "+role;
                 }
             }
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;

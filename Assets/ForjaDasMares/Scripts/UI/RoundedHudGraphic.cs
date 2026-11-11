@@ -8,6 +8,8 @@ namespace ForjaDasMares
     {
         public float radius = 14f, border = 1.5f;
         public Color borderColor = new Color(.49f, .38f, .23f, 1);
+        public bool gradient;
+        public Color topColor;
         const int CornerSegments = 16, Segments = CornerSegments * 4;
         Vector2 Point(Rect rect, float inset, int index)
         {
@@ -31,9 +33,9 @@ namespace ForjaDasMares
             {
                 float offset=ring==0?-feather:ring==1?0:ring==2?Mathf.Max(0,inset-feather*.5f):inset+feather*.5f;
                 Color shade=ring==0?transparent:ring<3?edge:color;
-                for(int i=0;i<Segments;i++)vh.AddVert(Point(rect,offset,i),shade,Vector2.zero);
+                for(int i=0;i<Segments;i++){Vector2 point=Point(rect,offset,i);vh.AddVert(point,ring==3&&gradient?Color.Lerp(color,topColor,Mathf.InverseLerp(rect.yMin,rect.yMax,point.y)):shade,Vector2.zero);}
             }
-            vh.AddVert(rect.center,color,Vector2.zero);
+            vh.AddVert(rect.center,gradient?Color.Lerp(color,topColor,.5f):color,Vector2.zero);
             for(int i=0;i<Segments;i++)
             {
                 int next=(i+1)%Segments;

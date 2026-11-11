@@ -5,8 +5,8 @@ namespace ForjaDasMares
 {
     public static class RusticHudTheme
     {
-        public static readonly Color Ink = new Color(.065f,.079f,.067f,.96f), Surface = new Color(.13f,.15f,.12f,.96f);
-        public static readonly Color Copper = new Color(.65f,.47f,.28f), Gold = new Color(.91f,.74f,.43f), Parchment = new Color(.95f,.90f,.78f), Muted = new Color(.65f,.70f,.61f);
+        public static readonly Color Ink = new Color(.022f,.048f,.071f,.96f), Surface = new Color(.027f,.074f,.103f,.97f);
+        public static readonly Color Copper = new Color(.55f,.42f,.24f), Gold = new Color(.91f,.74f,.43f), Parchment = new Color(.95f,.90f,.78f), Muted = new Color(.64f,.75f,.80f);
         public static string RarityName(ItemRarity value)=>value==ItemRarity.Common?"Comum":value==ItemRarity.Uncommon?"Incomum":value==ItemRarity.Rare?"Raro":value==ItemRarity.Epic?"Épico":"Lendário";
         public static string ClassNames(HeroAffinity value)
         {
@@ -39,7 +39,7 @@ namespace ForjaDasMares
             if(button.GetComponent<MenuAudioFeedback>()==null)button.gameObject.AddComponent<MenuAudioFeedback>();
             var image=button.GetComponent<Image>();if(image!=null)image.enabled=false;
             var graphic=button.GetComponent<RoundedHudGraphic>()??Panel((RectTransform)button.transform,Surface);
-            graphic.raycastTarget=true;button.targetGraphic=graphic;
+            graphic.gradient=true;graphic.topColor=new Color(.084f,.16f,.19f,Surface.a);graphic.raycastTarget=true;button.targetGraphic=graphic;
             var colors=button.colors;colors.normalColor=Color.white;colors.highlightedColor=new Color(1.2f,1.15f,1.05f);colors.pressedColor=new Color(.75f,.78f,.68f);colors.selectedColor=colors.highlightedColor;colors.disabledColor=new Color(.6f,.6f,.6f,.5f);colors.fadeDuration=.1f;button.colors=colors;
             foreach(var text in button.GetComponentsInChildren<Text>(true))text.color=Parchment;
         }
