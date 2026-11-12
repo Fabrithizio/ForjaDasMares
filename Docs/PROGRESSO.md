@@ -803,3 +803,8 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 ## HUD Android - 11/11/2026
 - Controles do RPG ancorados na área segura da tela, com botões de habilidade maiores e pictogramas distintos.
 - Build Android concluída sem erros. Limites e sobreposição dos comandos verificados em três proporções. Validação física pendente.
+
+## Asa do Rosal - 12/11/2026
+- Bumerangue lendário de Arcanista e Patrulheiro. O arremesso contorna o eixo de mira e retorna ao portador, com um acerto por inimigo.
+- Ícone, materiais e modelo originais em Art/Arsenal/RoseBoomerang. Catálogo Forge usa a tabela de saques lendários existente.
+- 27 testes PlayMode de arsenal e progressão passaram, incluindo o retorno e dois alvos. Build Windows concluída. Falta revisão visual do arremesso no jogo.

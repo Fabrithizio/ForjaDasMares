@@ -31,8 +31,13 @@ namespace ForjaDasMares
             if(eligible.Count==0)return result;
             for (int i = 0; i < count; i++)
             {
-                var definition = eligible[random.Next(eligible.Count)];if(!string.IsNullOrEmpty(table.preferredItem)&&random.NextDouble()<table.preferredChance){var preferred=eligible.Find(x=>x.itemId==table.preferredItem);if(preferred!=null)definition=preferred;}
-                result.Add(Create(catalog, definition.itemId, table.fixedRarity?table.minimumRarity:RollRarity(catalog, random, table.minimumRarity), random));
+                var rarity = table.fixedRarity ? table.minimumRarity : RollRarity(catalog, random, table.minimumRarity);
+                var candidates = eligible.FindAll(item => item.minimumDropRarity <= rarity);
+                if (candidates.Count == 0) continue;
+                var definition = candidates[random.Next(candidates.Count)];
+                if (!string.IsNullOrEmpty(table.preferredItem) && random.NextDouble() < table.preferredChance)
+                    definition = candidates.Find(item => item.itemId == table.preferredItem) ?? definition;
+                result.Add(Create(catalog, definition.itemId, rarity, random));
             }
             return result;
         }

@@ -62,6 +62,7 @@ namespace ForjaDasMares
         public static string Pattern(AttackDefinition attack)
         {
             if(attack==null)return "Sem ataque próprio";
+            if (attack.returningProjectile) return "Arremesso em curva · atravessa inimigos e retorna";
             if(attack.shape==AttackShape.Projectile)
             {
                 string shot=attack.projectileCount>1?"Leque de "+Mathf.Clamp(attack.projectileCount,1,5)+" projéteis":"Projétil único";

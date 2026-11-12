@@ -23,6 +23,9 @@ namespace ForjaDasMares
         [Min(0)] public float splashRadius;
         public ControlEffect control;
         public PrismaticEffect prismaticEffect;
+        public bool returningProjectile;
+        public Mesh projectileVisual;
+        public Material[] projectileMaterials;
         [Min(0)] public float controlDuration;
         [Range(0.05f, 1)] public float slowMultiplier = 0.5f;
         public Color color = Color.yellow;

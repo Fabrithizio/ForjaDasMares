@@ -15,6 +15,7 @@ namespace ForjaDasMares
         Mesh shard, pulse, cage, fracture, volcano, wind, barrier;
         Texture2D texture;
         Material surface;
+        Material[] lanceMaterials;
         MaterialPropertyBlock tint;
         int next;
 
@@ -40,6 +41,7 @@ namespace ForjaDasMares
             surface.SetFloat("_Smoothness", .68f);
             surface.EnableKeyword("_EMISSION");
             surface.SetColor("_EmissionColor", new Color(.10f,.25f,.38f));
+            lanceMaterials = new[] { surface };
             shard = Build(0, 1);
             pulse = Build(1, 16);
             cage = Build(2, 12);
@@ -63,7 +65,7 @@ namespace ForjaDasMares
         public void ShapeLance(MeshFilter filter, MeshRenderer renderer)
         {
             filter.sharedMesh = shard;
-            renderer.sharedMaterial = surface;
+            renderer.sharedMaterials = lanceMaterials;
         }
 
         public void Burst(Vector3 position, float radius, int kind, float lifetime = 0)

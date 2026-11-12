@@ -73,6 +73,50 @@ namespace ForjaDasMares.Networking.Tests
             var resolver=new DamageResolver();int count=resolver.Area(new Vector3(100,1,100),3,Vector3.forward,50,hit,session.Actor(0).Health,1<<10,1<<9);Assert.AreEqual(1,count);Assert.AreEqual(82,hp.Current);hp.Restore();wall.SetActive(true);Physics.SyncTransforms();Assert.AreEqual(0,resolver.Area(new Vector3(100,1,100),3,Vector3.forward,50,hit,session.Actor(0).Health,1<<10,1<<9));Assert.AreEqual(100,hp.Current);
             }finally{UnityEngine.Object.Destroy(victim);UnityEngine.Object.Destroy(wall);UnityEngine.Object.Destroy(hit);}yield return null;
         }
+        [UnityTest] public IEnumerator RoseBoomerangCrossesTwoTargetsAndReturnsWithoutDuplicateDamage()
+        {
+            var definition = catalog.Find("asa-rosal");
+            Assert.NotNull(definition);
+            Assert.AreEqual(ItemRarity.Legendary, definition.minimumDropRarity);
+            var attack = definition.attacks[0];
+            Vector3 origin = new Vector3(100,1,100);
+            var source = new GameObject("Thrower");
+            var projectile = new GameObject("Returning projectile",typeof(MeshFilter),typeof(MeshRenderer));
+            var first = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            var second = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            try
+            {
+                source.transform.position = origin;
+                var owner = source.AddComponent<Health>();
+                owner.Configure(100,CombatFaction.Player,0);
+                Health SetupTarget(GameObject target, float distance)
+                {
+                    float lateral = Mathf.Sin(distance / attack.range * Mathf.PI) * attack.range * .23f;
+                    target.transform.position = origin + new Vector3(lateral,0,distance);
+                    target.layer = 10;
+                    target.AddComponent<SphereCollider>();
+                    var health = target.AddComponent<Health>();
+                    health.Configure(100,CombatFaction.Enemy,0);
+                    return health;
+                }
+                var firstHealth = SetupTarget(first,2);
+                var secondHealth = SetupTarget(second,4);
+                Physics.SyncTransforms();
+                projectile.AddComponent<CombatProjectile>().Fire(origin,Vector3.forward,attack,owner,1<<10,0);
+                for (int i = 0; i < 145 && projectile.activeSelf; i++) yield return null;
+                Assert.IsFalse(projectile.activeSelf);
+                Assert.Less(Vector3.Distance(origin,projectile.transform.position),.65f);
+                Assert.AreEqual(100-attack.damage,firstHealth.Current);
+                Assert.AreEqual(100-attack.damage,secondHealth.Current);
+            }
+            finally
+            {
+                UnityEngine.Object.Destroy(source);
+                UnityEngine.Object.Destroy(projectile);
+                UnityEngine.Object.Destroy(first);
+                UnityEngine.Object.Destroy(second);
+            }
+        }
         [Test]public void WeaponCategorySelectsItsOwnAnimatorStates()
         {
             var actor=session.Actor(0);actor.Presentation.enabled=false;var model=actor.Presentation.Visible.GetComponentInChildren<HeroModelView>();int version=0;

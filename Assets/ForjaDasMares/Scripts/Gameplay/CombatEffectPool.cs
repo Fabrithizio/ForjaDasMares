@@ -11,16 +11,17 @@ namespace ForjaDasMares
         [SerializeField] Mesh projectileMesh, zoneMesh;
         [SerializeField, Min(1)] int projectileCapacity = 32, zoneCapacity = 12;
         CombatProjectile[] projectiles;
+        Material[] defaultProjectileMaterials;
         PrismaticSpellVisuals prism;
         public void ShapeProjectile(GameObject shot, bool prismatic)
         {
             var mesh = shot.GetComponent<MeshFilter>();
             var renderer = shot.GetComponent<MeshRenderer>();
             if (prismatic) Prism().ShapeLance(mesh,renderer);
-            else if (mesh.sharedMesh != projectileMesh)
+            else
             {
                 mesh.sharedMesh = projectileMesh;
-                renderer.sharedMaterial = material;
+                renderer.sharedMaterials = defaultProjectileMaterials;
             }
         }
         public void PrismBurst(Vector3 position,float radius,int kind, float duration = 0) => Prism().Burst(position,radius,kind,duration);
@@ -44,6 +45,7 @@ namespace ForjaDasMares
         void Awake()
         {
             if (projectileMesh == null || zoneMesh == null || material == null) { Debug.LogError("Combat pool requires explicit meshes and material.", this); enabled = false; return; }
+            defaultProjectileMaterials = new[] { material };
             projectiles = new CombatProjectile[projectileCapacity]; zones = new CombatZone[zoneCapacity];
             for (int i = 0; i < projectiles.Length; i++) projectiles[i] = Create("PooledProjectile_" + i, projectileMesh).AddComponent<CombatProjectile>();
             for (int i = 0; i < zones.Length; i++) zones[i] = Create("PooledZone_" + i, zoneMesh).AddComponent<CombatZone>();
