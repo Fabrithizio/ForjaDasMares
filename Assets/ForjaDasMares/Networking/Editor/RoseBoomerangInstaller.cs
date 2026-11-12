@@ -13,7 +13,8 @@ namespace ForjaDasMares.Networking.Editor
         static readonly Color[] Palette =
         {
             new Color(.88f,.16f,.46f), new Color(.99f,.69f,.34f),
-            new Color(.29f,.065f,.19f), new Color(1f,.44f,.72f)
+            new Color(.29f,.065f,.19f), new Color(1f,.44f,.72f),
+            new Color(1f,.91f,.78f), new Color(.67f,.36f,.96f)
         };
 
         [MenuItem("Forja/Arsenal/Gerar Asa do Rosal")]
@@ -22,11 +23,21 @@ namespace ForjaDasMares.Networking.Editor
             Directory.CreateDirectory(Folder);
             AssetDatabase.Refresh();
             var vertices = new List<Vector3>();
-            var faces = new[] { new List<int>(), new List<int>(), new List<int>(), new List<int>() };
+            var faces = new List<int>[Palette.Length];
+            for (int i = 0; i < faces.Length; i++) faces[i] = new List<int>();
             BuildWing(vertices, faces, -1);
             BuildWing(vertices, faces, 1);
-            Diamond(vertices, faces, Vector2.zero, .13f, .19f, .085f, 2);
-            Diamond(vertices, faces, Vector2.up*.026f, .082f, .12f, .112f, 3);
+            Heart(vertices, faces[1], Vector2.zero, .235f, .10f);
+            Heart(vertices, faces[3], Vector2.up*.012f, .166f, .15f);
+            Heart(vertices, faces[1], new Vector2(.16f,-.58f), .093f, .065f);
+            Heart(vertices, faces[3], new Vector2(.16f,-.575f), .064f, .09f);
+            for (int i = 0; i < 13; i++)
+            {
+                Vector2 Ribbon(float t) => new Vector2(.16f*t+.16f*Mathf.Sin(t*Mathf.PI*2),-.08f-.48f*t);
+                Vector2 a = Ribbon(i/13f), b = Ribbon((i+1)/13f);
+                Vector2 width = Vector2.right * Mathf.Lerp(.055f,.017f,i/13f);
+                Quad(vertices,faces[i%3==0?3:0],a-width,a+width,b+width,b-width,.052f,.057f);
+            }
 
             var mesh = new Mesh { name = "Asa do Rosal" };
             mesh.SetVertices(vertices);
@@ -42,10 +53,10 @@ namespace ForjaDasMares.Networking.Editor
                 material.SetColor("_BaseColor",Palette[i]);
                 material.SetFloat("_Metallic",i == 1 ? .65f : .28f);
                 material.SetFloat("_Smoothness",.67f);
-                if (i == 0 || i == 3)
+                if (i == 0 || i >= 3)
                 {
                     material.EnableKeyword("_EMISSION");
-                    material.SetColor("_EmissionColor",Palette[i]*(i == 3 ? .65f : .22f));
+                    material.SetColor("_EmissionColor",Palette[i]*(i == 3 || i == 4 ? 1.35f : .35f));
                 }
                 materials[i] = Save(material,"Finish"+i+".mat");
             }
@@ -65,10 +76,21 @@ namespace ForjaDasMares.Networking.Editor
             hit.color = Palette[3];
             hit = Save(hit,"ReturningThrow.asset");
 
+            var heavy = UnityEngine.Object.Instantiate(hit);
+            heavy.range = 9;
+            heavy.splashRadius = 2.7f;
+            heavy = Save(heavy,"RosalBurst.asset");
+            var ability = ScriptableObject.CreateInstance<AbilityDefinition>();
+            ability.displayName = "Coração do Rosal";
+            ability.effect = AbilityEffect.WeaponStrike;
+            ability.hit = heavy;
+            ability.cooldown = 8;
+            ability = Save(ability,"RosalAbility.asset");
+
             var item = ScriptableObject.CreateInstance<EquipmentDefinition>();
             item.itemId = Id;
             item.displayName = "Asa do Rosal";
-            item.description = "Duas lâminas de cristal rosa presas a um cabo de bronze. O arremesso abre uma curva, atravessa inimigos e volta ao portador. Cada alvo sofre um acerto por arremesso.";
+            item.description = "Duas lâminas de cristal rosa presas a um cabo de bronze. O arremesso abre uma curva, atravessa inimigos e volta ao portador. O modo pesado faz o Coração do Rosal florescer ao voltar, atingindo inimigos próximos ao portador.";
             item.slot = EquipmentSlot.MainHand;
             item.category = WeaponCategory.MagicWeapon;
             item.compatibleHeroes = HeroAffinity.Ranger | HeroAffinity.Arcanist;
@@ -80,6 +102,7 @@ namespace ForjaDasMares.Networking.Editor
             item.color = Palette[3];
             item.icon = WriteIcon(vertices,faces);
             item.attacks = new[] { hit };
+            item.ability = ability;
             item = Save(item,"AsaDoRosal.asset");
             var catalog = AssetDatabase.LoadAssetAtPath<ProgressionCatalog>("Assets/ForjaDasMares/Data/Campaign/Forge/Catalog.asset");
             if (catalog.Find(Id) == null)
@@ -97,22 +120,51 @@ namespace ForjaDasMares.Networking.Editor
 
         static void BuildWing(List<Vector3> vertices,List<int>[] faces,int sign)
         {
-            Vector2 Point(float t) => new Vector2(sign*(.04f+.63f*t),-.09f+.83f*t*t-.18f*t);
-            Vector2 Normal(float t) => new Vector2(.18f-1.66f*t,sign*.63f).normalized;
-            for (int i = 0; i < 14; i++)
+            Vector2 Arc(float t) => new Vector2(sign*(.18f+.52f*Mathf.Sin(t*Mathf.PI)), -.24f+.99f*t);
+            Vector2 Normal(float t) => new Vector2(sign*.99f,-.52f*Mathf.PI*Mathf.Cos(t*Mathf.PI)).normalized;
+            for (int i = 0; i < 28; i++)
             {
-                float t = i / 14f, end = (i+1)/14f;
-                Vector2 a = Point(t), b = Point(end);
-                Vector2 normal = Normal(t), endNormal = Normal(end);
-                float w = (.035f+.16f*Mathf.Sin(t*Mathf.PI))*Mathf.Lerp(1,.22f,t);
-                float v = (.035f+.16f*Mathf.Sin(end*Mathf.PI))*Mathf.Lerp(1,.22f,end);
-                Vector2 al = a+normal*w, ar = a-normal*w, bl = b+endNormal*v, br = b-endNormal*v;
-                Quad(vertices,faces[0],al,a,b,bl,.035f,.095f);
-                Quad(vertices,faces[3],a,ar,br,b,.095f,.035f);
-                Quad(vertices,faces[1],al,Vector2.Lerp(al,a,.22f),Vector2.Lerp(bl,b,.22f),bl,.108f,.108f);
-                Quad(vertices,faces[2],ar,al,bl,br,-.04f,-.04f);
-                Quad(vertices,faces[1],ar,ar,br,br,-.04f,.035f,true);
-                Quad(vertices,faces[1],al,al,bl,bl,.035f,-.04f,true);
+                float t = i/28f, u = (i+1)/28f;
+                Vector2 a = Arc(t), b = Arc(u);
+                Vector2 wa = Normal(t) * (.012f+.155f*Mathf.Sin(t*Mathf.PI));
+                Vector2 wb = Normal(u) * (.008f+.155f*Mathf.Sin(u*Mathf.PI));
+                Quad(vertices,faces[4],a+wa,a+wa*.56f,b+wb*.56f,b+wb,.045f,.079f);
+                Quad(vertices,faces[0],a+wa*.56f,a-wa*.78f,b-wb*.78f,b+wb*.56f,.08f,.084f);
+                Quad(vertices,faces[1],a-wa*.77f,a-wa,b-wb,b-wb*.77f,.09f,.06f);
+                Quad(vertices,faces[2],a+wa,a-wa,b-wb,b+wb,-.042f,-.042f);
+                Quad(vertices,faces[1],a+wa,a+wa,b+wb,b+wb,.045f,-.042f,true);
+                Quad(vertices,faces[1],a-wa,a-wa,b-wb,b-wb,-.042f,.06f,true);
+                if (i % 5 == 2 && i < 22)
+                    Diamond(vertices,faces,a-wa*.17f,.027f,.043f,.112f,1);
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                float t = .24f+i*.055f;
+                Vector2 root = Arc(t)+new Vector2(sign*.1f,0);
+                Vector2 tip = root+new Vector2(sign*(.30f-i*.017f),-.26f+i*.089f);
+                Vector2 side = new Vector2(-(tip-root).y,(tip-root).x).normalized * .052f;
+                Vector2 mid = Vector2.Lerp(root,tip,.48f);
+                Quad(vertices,faces[5],root,mid+side,tip,mid-side,.03f,.058f);
+                Quad(vertices,faces[3],root,mid,tip,mid-side*.7f,.05f,.077f);
+            }
+        }
+
+        static void Heart(List<Vector3> vertices,List<int> faces,Vector2 center,float size,float depth)
+        {
+            Vector2 Point(float t)
+            {
+                float sin = Mathf.Sin(t);
+                return center + new Vector2(16*sin*sin*sin,13*Mathf.Cos(t)-5*Mathf.Cos(2*t)
+                    -2*Mathf.Cos(3*t)-Mathf.Cos(4*t)) * (size/17);
+            }
+            for (int i = 0; i < 28; i++)
+            {
+                Vector2 a = Point(i*Mathf.PI/14), b = Point((i+1)*Mathf.PI/14);
+                int first = vertices.Count;
+                vertices.Add(new Vector3(center.x,center.y,depth+.035f));
+                vertices.Add(new Vector3(a.x,a.y,depth));
+                vertices.Add(new Vector3(b.x,b.y,depth));
+                faces.AddRange(new[] {first,first+1,first+2,first+2,first+1,first});
             }
         }
 
@@ -134,14 +186,14 @@ namespace ForjaDasMares.Networking.Editor
 
         static Sprite WriteIcon(List<Vector3> vertices,List<int>[] faces)
         {
-            const int size = 144;
+            const int size = 192;
             var texture = new Texture2D(size,size,TextureFormat.RGBA32,false);
             var pixels = new Color32[size*size];
             float Cross(Vector2 a,Vector2 b) => a.x*b.y-a.y*b.x;
             for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
             {
-                Vector2 point = new Vector2((x+.5f)/size*1.62f-.81f,(y+.5f)/size*1.62f-.54f);
+                Vector2 point = new Vector2((x+.5f)/size*2.32f-1.16f,(y+.5f)/size*2.32f-1.03f);
                 float nearest = float.NegativeInfinity;
                 for (int layer = 0; layer < faces.Length; layer++)
                 for (int j = 0; j < faces[layer].Count; j += 6)

@@ -108,6 +108,18 @@ namespace ForjaDasMares.Networking.Tests
                 Assert.Less(Vector3.Distance(origin,projectile.transform.position),.65f);
                 Assert.AreEqual(100-attack.damage,firstHealth.Current);
                 Assert.AreEqual(100-attack.damage,secondHealth.Current);
+                var heavy = definition.ability.hit;
+                firstHealth.Restore();
+                secondHealth.Restore();
+                first.transform.position = origin + new Vector3(-1.4f,0,.6f);
+                second.transform.position = origin + new Vector3(-3.8f,0,.6f);
+                Physics.SyncTransforms();
+                projectile.GetComponent<CombatProjectile>().Fire(origin,Vector3.forward,heavy,owner,1<<10,0);
+                Assert.AreEqual(100,firstHealth.Current);
+                for (int i = 0; i < 180 && projectile.activeSelf; i++) yield return null;
+                Assert.IsFalse(projectile.activeSelf);
+                Assert.AreEqual(100-heavy.damage,firstHealth.Current,"The return burst hits nearby enemies.");
+                Assert.AreEqual(100,secondHealth.Current,"The burst respects its radius.");
             }
             finally
             {

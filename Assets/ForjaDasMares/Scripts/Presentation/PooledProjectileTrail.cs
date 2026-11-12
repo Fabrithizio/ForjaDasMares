@@ -6,7 +6,7 @@ namespace ForjaDasMares
     public sealed class PooledProjectileTrail : MonoBehaviour
     {
         TrailRenderer trail;
-        public void Configure(Material material,Color color,float radius,bool restart=false)
+        public void Configure(Material material,Color color,float radius,bool restart=false,bool rose=false)
         {
             if(trail==null)
             {
@@ -15,8 +15,9 @@ namespace ForjaDasMares
                 trail.shadowCastingMode=ShadowCastingMode.Off;trail.receiveShadows=false;
                 trail.autodestruct=false;
             }
+            trail.time = rose ? .43f : .20f;
             trail.startWidth=Mathf.Clamp(radius*1.9f,.035f,.28f);trail.endWidth=0;
-            trail.startColor=new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
+            trail.startColor=rose ? new Color(1f,.65f,.85f,.94f) : new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
             trail.emitting=true;if(restart)trail.Clear();
         }
         void OnEnable(){if(trail!=null)trail.Clear();}

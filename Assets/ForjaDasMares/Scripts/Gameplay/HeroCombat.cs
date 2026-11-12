@@ -146,7 +146,7 @@ namespace ForjaDasMares
         public bool TryHeavy()
         {
             if(!CanUseWeapon || flow == null || heavyCooldown > 0 || !CanStart || BasicAttack == null) return false;
-            currentAttack = BasicAttack; Begin(false, Mathf.Max(flow.heavyWindup+.1f,flow.heavyDuration)); heavy = true; AnimationVariant = 3;
+            currentAttack = BasicAttack.returningProjectile && weaponAbility != null ? weaponAbility.hit : BasicAttack; Begin(false, Mathf.Max(flow.heavyWindup+.1f,flow.heavyDuration)); heavy = true; AnimationVariant = 3;
             strikeScale *= Mathf.Max(1,flow.heavyMultiplier); heldTime = 0; heavyCooldown = Mathf.Max(.1f,flow.heavyCooldown); motor.LockFacing(flow.heavyWindup); return true;
         }
         public bool TrySuper()
@@ -230,8 +230,8 @@ namespace ForjaDasMares
                     { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, Quaternion.Euler(0, angle, 0) * facing, currentAttack, health, targets, geometry, strikeScale, strikeCritical); }
             }
             else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
-            if(heavy&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
-            if (legendaryEcho != null && combo % 3 == 0 && !echoResolved)
+            if(heavy&&!currentAttack.returningProjectile&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
+            if (legendaryEcho != null && !currentAttack.returningProjectile && combo % 3 == 0 && !echoResolved)
             { echoResolved = true; resolver.Area(origin.position, legendaryEcho.range, facing, 360, legendaryEcho, health, targets, geometry, true, strikeScale, strikeCritical); }
         }
         void ResolveSuper()

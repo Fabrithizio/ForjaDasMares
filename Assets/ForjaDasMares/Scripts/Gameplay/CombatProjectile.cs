@@ -47,7 +47,7 @@ namespace ForjaDasMares
                 transform.localScale = Vector3.one * .84f;
             }
             var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
-            if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true);}
+            if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true,data.returningProjectile);}
         }
         void Update()
         {
@@ -89,6 +89,11 @@ namespace ForjaDasMares
                 returnTime += Time.deltaTime;
                 if (returnTime > 2.5f || Vector3.Distance(hand, position) <= Mathf.Max(step, .35f))
                 {
+                    if (returnTime <= 2.5f && attack.splashRadius > 0)
+                    {
+                        resolver.Area(hand, attack.splashRadius, direction, 360, attack, owner, targets, geometry, false, damageScale, criticalHit);
+                        effectPool?.PrismBurst(hand - Vector3.up * .45f, attack.splashRadius, 6, .74f);
+                    }
                     gameObject.SetActive(false);
                     return;
                 }
@@ -116,7 +121,11 @@ namespace ForjaDasMares
             {
                 var target = hits[i].collider.GetComponentInParent<Health>();
                 if (target != null && target.CanReceiveFrom(owner) && struck.Add(target))
+                {
+                    resolver.Remember(target);
                     target.ApplyHit(attack, heading, owner, damageScale, criticalHit);
+                    effectPool?.PrismBurst(target.transform.position, .55f, 6, .34f);
+                }
             }
             System.Array.Clear(hits, 0, count);
             transform.position = position + heading * Mathf.Max(0, wallDistance - (wall.collider != null ? .025f : 0));

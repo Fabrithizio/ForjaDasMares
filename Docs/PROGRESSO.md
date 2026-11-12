@@ -808,3 +808,8 @@ A primeira baixa de cada acampamento deixa ouro e as próximas pilhas aparecem a
 - Bumerangue lendário de Arcanista e Patrulheiro. O arremesso contorna o eixo de mira e retorna ao portador, com um acerto por inimigo.
 - Ícone, materiais e modelo originais em Art/Arsenal/RoseBoomerang. Catálogo Forge usa a tabela de saques lendários existente.
 - 27 testes PlayMode de arsenal e progressão passaram, incluindo o retorno e dois alvos. Build Windows concluída. Falta revisão visual do arremesso no jogo.
+
+## Asa do Rosal — revisão da prancha
+- Crescentes de marfim e rosa, bordas douradas, cristais laterais e pingente em coração no modelo e no ícone.
+- Rastro rosa mais longo, contornos em coração ao atingir e explosão de raio 2,7 m no retorno do ataque pesado. Um alvo atingido no trajeto fica fora da explosão do mesmo arremesso.
+- Build Windows concluída. Revisão visual em partida e gesto de arremesso dedicado pendentes.

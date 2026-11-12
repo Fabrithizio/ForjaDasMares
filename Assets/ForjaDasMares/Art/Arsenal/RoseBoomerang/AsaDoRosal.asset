@@ -24,10 +24,12 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f2faa562ad16c13469aa7e478dd9515f, type: 2}
   - {fileID: 2100000, guid: 7eb057c33e507a74fbf5019ae9b313e4, type: 2}
   - {fileID: 2100000, guid: a9a4655243a5b384bbd0d30492c606e5, type: 2}
+  - {fileID: 2100000, guid: 74b4c6dfa3ac8cf4598f7192a79ae47d, type: 2}
+  - {fileID: 2100000, guid: ce57ca208dac84944855a276d18435d0, type: 2}
   authoredScale: {x: 0.65, y: 0.65, z: 0.65}
   description: "Duas l\xE2minas de cristal rosa presas a um cabo de bronze. O arremesso
-    abre uma curva, atravessa inimigos e volta ao portador. Cada alvo sofre um acerto
-    por arremesso."
+    abre uma curva, atravessa inimigos e volta ao portador. O modo pesado faz o Cora\xE7\xE3o
+    do Rosal florescer ao voltar, atingindo inimigos pr\xF3ximos ao portador."
   slot: 0
   category: 8
   compatibleHeroes: 6
@@ -41,7 +43,7 @@ MonoBehaviour:
   twinStrike: 0
   attacks:
   - {fileID: 11400000, guid: 5e0cbe804490a73439f738d59cb20c26, type: 2}
-  ability: {fileID: 0}
+  ability: {fileID: 11400000, guid: 0dbbdc104267103408536c9ac3106ef1, type: 2}
   bonuses: []
   frontalBlock: 0
   color: {r: 1, g: 0.44, b: 0.72, a: 1}

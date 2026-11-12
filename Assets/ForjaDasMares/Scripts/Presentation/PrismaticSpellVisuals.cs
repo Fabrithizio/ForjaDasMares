@@ -12,7 +12,7 @@ namespace ForjaDasMares
         readonly float[] ages = new float[Capacity], lifetimes = new float[Capacity];
         readonly int[] kinds = new int[Capacity];
         readonly Vector3[] sizes = new Vector3[Capacity];
-        Mesh shard, pulse, cage, fracture, volcano, wind, barrier;
+        Mesh shard, pulse, cage, fracture, volcano, wind, barrier, rose;
         Texture2D texture;
         Material surface;
         Material[] lanceMaterials;
@@ -49,6 +49,7 @@ namespace ForjaDasMares
             volcano = Build(4, Application.isMobilePlatform ? 24 : 40);
             wind = Build(5, Application.isMobilePlatform ? 28 : 48);
             barrier = Build(6, Application.isMobilePlatform ? 24 : 40);
+            rose = BuildRoseBurst();
             for (int i = 0; i < Capacity; i++)
             {
                 var go = new GameObject("Prismatic spell visual", typeof(MeshFilter), typeof(MeshRenderer));
@@ -75,10 +76,10 @@ namespace ForjaDasMares
             var body = bursts[slot];
             body.GetComponent<MeshFilter>().sharedMesh = kind switch
             {
-                0 => fracture, 1 => pulse, 3 => volcano, 4 => wind, 5 => barrier, _ => cage
+                0 => fracture, 1 => pulse, 3 => volcano, 4 => wind, 5 => barrier, 6 => rose, _ => cage
             };
             Color color = kind == 3 ? new Color(1,.37f,.05f) : kind == 4 ? new Color(.32f,1,.46f) :
-                kind == 5 ? new Color(.30f,.76f,1) : new Color(.75f,.9f,1);
+                kind == 5 ? new Color(.30f,.76f,1) : kind == 6 ? new Color(1,.18f,.52f) : new Color(.75f,.9f,1);
             tint.SetColor("_BaseColor", color);
             tint.SetColor("_EmissionColor", color * .6f);
             body.GetComponent<MeshRenderer>().SetPropertyBlock(tint);
@@ -188,10 +189,50 @@ namespace ForjaDasMares
             return mesh;
         }
 
+        static Mesh BuildRoseBurst()
+        {
+            var vertices = new List<Vector3>();
+            var uv = new List<Vector2>();
+            var indices = new List<int>();
+            void Heart(Vector3 center,float size,float yaw)
+            {
+                Vector3 Point(float t)
+                {
+                    float s = Mathf.Sin(t);
+                    var point = new Vector3(16*s*s*s,0,13*Mathf.Cos(t)-5*Mathf.Cos(2*t)
+                        -2*Mathf.Cos(3*t)-Mathf.Cos(4*t));
+                    return center + Quaternion.AngleAxis(yaw,Vector3.up)*point*(size/17);
+                }
+                for (int i = 0; i < 32; i++)
+                {
+                    Vector3 a = Point(i*Mathf.PI/16), b = Point((i+1)*Mathf.PI/16);
+                    Vector3 normal = Vector3.Cross(Vector3.up,b-a).normalized * size * .055f;
+                    int n = vertices.Count;
+                    vertices.AddRange(new[] {a-normal,a+normal,b+normal,b-normal});
+                    uv.AddRange(new[] {Vector2.zero,Vector2.right,Vector2.one,Vector2.up});
+                    indices.AddRange(new[] {n,n+1,n+2,n,n+2,n+3,n+2,n+1,n,n+3,n+2,n});
+                }
+            }
+
+            Heart(Vector3.up*.16f,.53f,0);
+            int petals = Application.isMobilePlatform ? 4 : 7;
+            for (int i = 0; i < petals; i++)
+            {
+                float angle = i*2*Mathf.PI/petals;
+                Heart(new Vector3(Mathf.Cos(angle)*.77f,.19f+(.065f*(i%3)),Mathf.Sin(angle)*.77f),
+                    .085f+.035f*(i%2),i*360f/petals);
+            }
+            var mesh = new Mesh { name = "Coração do Rosal - contornos e pétalas" };
+            mesh.SetVertices(vertices);
+            mesh.SetUVs(0,uv);
+            mesh.SetTriangles(indices,0);
+            mesh.RecalculateNormals();
+            return mesh;
+        }
         void OnDestroy()
         {
             Destroy(shard); Destroy(pulse); Destroy(cage); Destroy(fracture);
-            Destroy(volcano); Destroy(wind); Destroy(barrier);
+            Destroy(volcano); Destroy(wind); Destroy(barrier); Destroy(rose);
             Destroy(surface); Destroy(texture);
         }
     }
