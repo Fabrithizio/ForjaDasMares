@@ -79,7 +79,7 @@ namespace ForjaDasMares
                 0 => fracture, 1 => pulse, 3 => volcano, 4 => wind, 5 => barrier, 6 => rose, _ => cage
             };
             Color color = kind == 3 ? new Color(1,.37f,.05f) : kind == 4 ? new Color(.32f,1,.46f) :
-                kind == 5 ? new Color(.30f,.76f,1) : kind == 6 ? new Color(1,.18f,.52f) : new Color(.75f,.9f,1);
+                kind == 5 ? new Color(.30f,.76f,1) : kind == 6 ? new Color(.90f,.22f,.52f) : new Color(.75f,.9f,1);
             tint.SetColor("_BaseColor", color);
             tint.SetColor("_EmissionColor", color * .6f);
             body.GetComponent<MeshRenderer>().SetPropertyBlock(tint);
@@ -226,7 +226,9 @@ namespace ForjaDasMares
             mesh.SetVertices(vertices);
             mesh.SetUVs(0,uv);
             mesh.SetTriangles(indices,0);
-            mesh.RecalculateNormals();
+            var normals = new Vector3[vertices.Count];
+            for (int i = 0; i < normals.Length; i++) normals[i] = Vector3.up;
+            mesh.normals = normals;
             return mesh;
         }
         void OnDestroy()

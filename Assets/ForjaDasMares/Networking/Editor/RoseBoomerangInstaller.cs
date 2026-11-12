@@ -40,9 +40,21 @@ namespace ForjaDasMares.Networking.Editor
             }
 
             var mesh = new Mesh { name = "Asa do Rosal" };
-            mesh.SetVertices(vertices);
-            mesh.subMeshCount = faces.Length;
-            for (int i = 0; i < faces.Length; i++) mesh.SetTriangles(faces[i],i);
+            // Opposite-facing triangles need independent vertices so their normals cannot cancel.
+            var litVertices = new List<Vector3>();
+            var litFaces = new List<int>[faces.Length];
+            for (int i = 0; i < faces.Length; i++)
+            {
+                litFaces[i] = new List<int>();
+                foreach (int index in faces[i])
+                {
+                    litFaces[i].Add(litVertices.Count);
+                    litVertices.Add(vertices[index]);
+                }
+            }
+            mesh.SetVertices(litVertices);
+            mesh.subMeshCount = litFaces.Length;
+            for (int i = 0; i < litFaces.Length; i++) mesh.SetTriangles(litFaces[i],i);
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             var savedMesh = Save(mesh,"Model.asset");
@@ -56,7 +68,7 @@ namespace ForjaDasMares.Networking.Editor
                 if (i == 0 || i >= 3)
                 {
                     material.EnableKeyword("_EMISSION");
-                    material.SetColor("_EmissionColor",Palette[i]*(i == 3 || i == 4 ? 1.35f : .35f));
+                    material.SetColor("_EmissionColor",Palette[i]*(i == 3 || i == 4 ? .48f : .18f));
                 }
                 materials[i] = Save(material,"Finish"+i+".mat");
             }
