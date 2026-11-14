@@ -41,7 +41,6 @@ namespace ForjaDasMares.Networking
             status = Label(root, "", new Vector2(870, 110), new Vector2(385, -15), 20);
             party = Label(root, "", new Vector2(870, 130), new Vector2(385, -132), 20);
             TopRight("ENCERRAR / SAIR", -15, session.Close);
-            TopRight("JOGAR LOCAL", -67, () => { session.Close(); UnityEngine.SceneManagement.SceneManager.LoadScene("ProgressionDungeon"); });
             touch = new GameObject("TouchControls", typeof(RectTransform)); touch.transform.SetParent(root, false); var tr = (RectTransform)touch.transform; tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.offsetMin = tr.offsetMax = Vector2.zero;
             var stick = new GameObject("MoveStick", typeof(RectTransform), typeof(Image), typeof(TouchMoveStick)); stick.transform.SetParent(touch.transform, false);
             var sr = (RectTransform)stick.transform; sr.anchorMin = sr.anchorMax = new Vector2(0, 0); sr.pivot = Vector2.one * .5f; sr.anchoredPosition = new Vector2(112, 115); sr.sizeDelta = new Vector2(160, 160); stick.GetComponent<Image>().color = new Color(.2f, .4f, .5f, .5f);

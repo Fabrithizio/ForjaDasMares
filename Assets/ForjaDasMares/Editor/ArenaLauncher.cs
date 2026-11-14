@@ -6,14 +6,17 @@ using UnityEngine.SceneManagement;
 
 namespace ForjaDasMares.Editor
 {
+    // Ao abrir o projeto numa cena vazia, abre o menu principal do jogo (CampaignCoop).
+    // F6 abre o menu principal a qualquer momento.
     [InitializeOnLoad]
     public static class ArenaLauncher
     {
+        public const string MainScene = "Assets/ForjaDasMares/Scenes/CampaignCoop.unity";
+
         static ArenaLauncher()
         {
             if (Application.isBatchMode) return;
             EditorApplication.delayCall += OpenOnEmptyStartup;
-            EditorApplication.playModeStateChanged += GuardEmptyPlay;
         }
 
         static bool IsEmptyTemplate()
@@ -37,34 +40,16 @@ namespace ForjaDasMares.Editor
         static void OpenOnEmptyStartup()
         {
             if (!EditorApplication.isPlayingOrWillChangePlaymode && IsEmptyTemplate() &&
-                !SceneManager.GetActiveScene().isDirty && File.Exists(ArenaBuilder.ScenePath))
-                EditorSceneManager.OpenScene(ArenaBuilder.ScenePath);
+                !SceneManager.GetActiveScene().isDirty && File.Exists(MainScene))
+                EditorSceneManager.OpenScene(MainScene);
         }
 
-        static void GuardEmptyPlay(PlayModeStateChange state)
+        [MenuItem("Forja/Abrir menu principal do jogo _F6")]
+        public static void OpenFromMenu()
         {
-            if (state != PlayModeStateChange.ExitingEditMode || !IsEmptyTemplate()) return;
-            EditorApplication.isPlaying = false;
-            EditorApplication.delayCall += () =>
-            {
-                if (OpenArena()) EditorApplication.EnterPlaymode();
-            };
-        }
-
-        [MenuItem("Forja das Mares/Open playable arena _F6")]
-        public static void OpenFromMenu() => OpenArena();
-
-        static bool OpenArena()
-        {
-            if (EditorApplication.isPlayingOrWillChangePlaymode) return false;
-            if (!File.Exists(ArenaBuilder.ScenePath))
-            {
-                Debug.LogError("ArenaTest is missing. Use Create test arena from the same menu.");
-                return false;
-            }
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
-            EditorSceneManager.OpenScene(ArenaBuilder.ScenePath);
-            return true;
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorSceneManager.OpenScene(MainScene);
         }
     }
 }

@@ -421,7 +421,7 @@ MonoBehaviour:
   seed: 12345
   maximumRooms: 9
   fixedMap: 1
-  arenaSceneName: ArenaTest
+  arenaSceneName: RefugioUltimoSino
 --- !u!114 &29639291
 MonoBehaviour:
   m_ObjectHideFlags: 0

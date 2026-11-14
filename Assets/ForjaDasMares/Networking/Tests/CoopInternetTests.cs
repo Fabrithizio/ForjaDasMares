@@ -32,14 +32,14 @@ namespace ForjaDasMares.Networking.Tests
         [UnityTest] public IEnumerator UnlinkedInternetAttemptPreservesOfflineSession()
         {
             if (CoopInternetSettings.HasLinkedProject(Application.cloudProjectId)) Assert.Ignore("Requires unlinked project; no live service calls in regression.");
-            SceneManager.LoadScene("CoopDungeon"); yield return null; yield return null;
+            SceneManager.LoadScene("CampaignCoop"); yield return null; yield return null;
             var director = Object.FindFirstObjectByType<CoopDirector>();
             var cloud = director.GetComponent<CoopCloud>();
             Assert.IsFalse(cloud.Configured); cloud.Create(); yield return null;
             Assert.IsFalse(cloud.Busy); Assert.IsFalse(director.Manager.IsListening);
             Assert.AreEqual(CoopPhase.Offline, director.Phase);
             Assert.That(cloud.Message, Does.Contain("Internet indisponível"));
-            director.Close(); SceneManager.LoadScene("ArenaTest"); yield return null; yield return null;
+            director.Close(); SceneManager.LoadScene("CampaignCoop"); yield return null; yield return null;
         }
     }
 }
