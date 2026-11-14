@@ -25,13 +25,14 @@ namespace ForjaDasMares.Networking
             get
             {
                 if(homeProfile!=null)return homeProfile;
-                homeProfile=new ProfileService(catalog,new ProfileStore(CoopRewardLedger.ParticipantPath(directory,director.ParticipantIdentity)));
+                homeProfile=new ProfileService(catalog,new ProfileStore(PathFor(director.ParticipantIdentity)));
                 if(homeProfile.Profile.expedition!=null)homeProfile.FinishExpedition(homeProfile.Profile.expedition.runId,false,"Aplicação interrompida");
                 homeProfile.Changed+=HomeChanged;HomeRevision++;return homeProfile;
             }
         }
         void HomeChanged()=>HomeRevision++;
         public void ReleaseHome(){if(homeProfile!=null)homeProfile.Changed-=HomeChanged;homeProfile=null;HomeRevision++;}
+        bool customDirectory;
         string directory, expeditionId; int serial; float retry; bool bound;
         public ProgressionCatalog Catalog => catalog;
         public string Error { get; private set; }
@@ -48,12 +49,20 @@ namespace ForjaDasMares.Networking
             var args = Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i] == "-runTests") directory = Path.Combine(Application.temporaryCachePath, "CoopIntegration", Guid.NewGuid().ToString("N"));
-                if (args[i] == "-netSavePath" && i + 1 < args.Length) directory = Path.GetFullPath(args[++i]);
+                if (args[i] == "-runTests") { directory = Path.Combine(Application.temporaryCachePath, "CoopIntegration", Guid.NewGuid().ToString("N")); customDirectory = true; }
+                if (args[i] == "-netSavePath" && i + 1 < args.Length) { directory = Path.GetFullPath(args[++i]); customDirectory = true; }
             }
         }
         public ProfileService Profile(int slot) => slot >= 0 && slot < profiles.Length ? profiles[slot] : null;
-        public string SavePath(int slot) => CoopRewardLedger.ParticipantPath(directory, identities[slot]);
+        public string SavePath(int slot) => PathFor(identities[slot]);
+        // One save only: the local player's expedition progress is the same file as the RPG character.
+        // Other participants keep the expedition folder until there is a server.
+        string PathFor(string identity)
+        {
+            if (!customDirectory && AccountService.HasCharacter && identity == AccountService.Peek().accountId)
+                return CoopRewardLedger.ParticipantPath(AccountService.CharacterFolder, identity);
+            return CoopRewardLedger.ParticipantPath(directory, identity);
+        }
         public int Revision(int slot) => slot >= 0 && slot < revisions.Length ? revisions[slot] : 0;
         public bool Attach(int slot, string identity,int hero=-1)
         {
@@ -65,7 +74,7 @@ namespace ForjaDasMares.Networking
             if(Active&&!TryFlush())return false;
             try
             {
-                var profile = new ProfileService(catalog, new ProfileStore(CoopRewardLedger.ParticipantPath(directory, identity)));
+                var profile = new ProfileService(catalog, new ProfileStore(PathFor(identity)));
                 if (profile.Profile.expedition != null && !profile.FinishExpedition(profile.Profile.expedition.runId, false, "Aplicação interrompida")) { Error = profile.Message; return false; }
                 if(Active&&!ledger.Join(slot,profile,director.Actor(slot).Roster.Current.heroId,director.Dungeon.Biome.displayName)){Error=ledger.Error??"Falha ao registrar participante.";return false;}
                 if (profiles[slot] != null && callbacks[slot] != null) profiles[slot].Changed -= callbacks[slot];

@@ -30,7 +30,7 @@ namespace ForjaDasMares.Networking
             qualityButton=Button("RegionalGraphics","",30,432,565,()=>{var q=world.GetComponentInChildren<PresentationQuality>();if(q==null&&Camera.main!=null)q=Camera.main.GetComponent<PresentationQuality>();q?.Cycle();Refresh();});
             quality=qualityButton.GetComponentInChildren<Text>();
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
-            Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToCampaign);
+            Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToStartMenu);
             Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · Tab: modo de ataque · 1 / 2 / 3: habilidades · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
             if (!Application.isMobilePlatform)
             {

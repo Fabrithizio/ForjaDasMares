@@ -105,6 +105,7 @@ namespace ForjaDasMares.Networking
         public void OpenRunes()
         {
             if (view?.IsRegional != true) return;
+            if (mochila != null && !legacyRoute) { OpenInventory(); mochila.OpenPage(3); return; }
             OpenInventory();
             if (touchLayout) OpenTouchRunes();
             else NavigateProfile(5);

@@ -83,6 +83,7 @@ namespace ForjaDasMares.Networking.Editor
             hit.recovery = .65f;
             hit.knockback = 0;
             hit.returningProjectile = true;
+            hit.projectileVisualScale = .93f;
             hit.projectileVisual = savedMesh;
             hit.projectileMaterials = materials;
             hit.color = Palette[3];
@@ -102,7 +103,7 @@ namespace ForjaDasMares.Networking.Editor
             var item = ScriptableObject.CreateInstance<EquipmentDefinition>();
             item.itemId = Id;
             item.displayName = "Asa do Rosal";
-            item.description = "Duas lâminas de cristal rosa presas a um cabo de bronze. O arremesso abre uma curva, atravessa inimigos e volta ao portador. O modo pesado faz o Coração do Rosal florescer ao voltar, atingindo inimigos próximos ao portador.";
+            item.description = "Duas lâminas de cristal rosa presas a um cabo de bronze. O arremesso vai até o inimigo, atravessa e volta pelo lado ao portador. O modo pesado faz o Coração do Rosal florescer ao voltar, atingindo inimigos próximos ao portador.";
             item.slot = EquipmentSlot.MainHand;
             item.category = WeaponCategory.MagicWeapon;
             item.compatibleHeroes = HeroAffinity.Ranger | HeroAffinity.Arcanist;
@@ -111,6 +112,7 @@ namespace ForjaDasMares.Networking.Editor
             item.visualMesh = savedMesh;
             item.visualMaterials = materials;
             item.authoredScale = Vector3.one * .65f;
+            item.heldLength = .5f;
             item.color = Palette[3];
             item.icon = WriteIcon(vertices,faces);
             item.attacks = new[] { hit };

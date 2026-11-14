@@ -64,7 +64,7 @@ namespace ForjaDasMares
                 Mount(mainVisual,model!=null?model.PrimarySocket:visual,model!=null,mainRestPosition,mainRestRotation,MainWeapon);
                 Mount(secondaryVisual,model!=null?model.SecondarySocket:visual,model!=null,offRestPosition,offRestRotation,secondary);
             }
-            combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null,MainWeapon!=null?MainWeapon.ability:null);
+            combat.ApplyEquipment(MainWeapon != null ? MainWeapon.attacks : null, Stats, main != null ? catalog.Rarity(main.rarity).power * ForgeRules.DamageMultiplier(main.forgeLevel) : 1, MainWeapon != null && MainWeapon.twinStrike || secondary != null && secondary.category == WeaponCategory.Daggers, main != null && main.rarity == ItemRarity.Legendary ? catalog.legendaryEcho : null,MainWeapon!=null?MainWeapon.ability:null);
             var effects=GetComponent<CombatBuildEffects>()??gameObject.AddComponent<CombatBuildEffects>();BuildSynergy synergy=BuildSynergy.None;if(loadout!=null)foreach(var id in loadout.items){var owned=profile.Item(id);var item=owned!=null?catalog.Find(owned.definitionId):null;if(item!=null)synergy|=item.synergy;}effects.Configure(MainWeapon!=null?MainWeapon.perk:WeaponPerk.None,synergy);
             Visual(mainVisual, MainWeapon); Visual(secondaryVisual, secondary);
             // Keep the original geometric hero body/poses; hide its old weapon only when an item replaces it.
@@ -88,7 +88,7 @@ namespace ForjaDasMares
         }
         public float DamageMultiplier(Vector3 direction, Health source, AttackDefinition attack)
         { return Stats.block > 0 && Vector3.Dot(-direction.normalized, transform.forward) > .5f ? 1 - Stats.block : 1; }
-        void LateUpdate(){if(heroes==null)return;if(mainVisual!=null)mainVisual.enabled=heroes.Health.IsAlive;if(secondaryVisual!=null)secondaryVisual.enabled=heroes.Health.IsAlive;}
+        void LateUpdate(){if(heroes==null)return;if(mainVisual!=null)mainVisual.enabled=heroes.Health.IsAlive&&!CombatProjectile.HasReturningInFlight(heroes.Health);if(secondaryVisual!=null)secondaryVisual.enabled=heroes.Health.IsAlive;}
         void Update()
         {
             if (service == null || !heroes.Health.IsAlive || Stats.recovery <= 0) return;

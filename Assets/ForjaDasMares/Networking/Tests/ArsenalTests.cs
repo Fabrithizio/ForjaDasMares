@@ -91,8 +91,8 @@ namespace ForjaDasMares.Networking.Tests
                 owner.Configure(100,CombatFaction.Player,0);
                 Health SetupTarget(GameObject target, float distance)
                 {
-                    float lateral = Mathf.Sin(distance / attack.range * Mathf.PI) * attack.range * .23f;
-                    target.transform.position = origin + new Vector3(lateral,0,distance);
+                    // The boomerang flies straight at the aimed enemy and turns back about 1 m behind it.
+                    target.transform.position = origin + new Vector3(0,0,distance);
                     target.layer = 10;
                     target.AddComponent<SphereCollider>();
                     var health = target.AddComponent<Health>();
@@ -100,7 +100,7 @@ namespace ForjaDasMares.Networking.Tests
                     return health;
                 }
                 var firstHealth = SetupTarget(first,2);
-                var secondHealth = SetupTarget(second,4);
+                var secondHealth = SetupTarget(second,2.7f);
                 Physics.SyncTransforms();
                 projectile.AddComponent<CombatProjectile>().Fire(origin,Vector3.forward,attack,owner,1<<10,0);
                 for (int i = 0; i < 145 && projectile.activeSelf; i++) yield return null;

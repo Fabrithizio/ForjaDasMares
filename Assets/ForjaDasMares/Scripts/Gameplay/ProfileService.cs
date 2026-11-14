@@ -129,6 +129,65 @@ namespace ForjaDasMares
             return Transaction(next=>next.inventory.Add(LootGenerator.Create(catalog,definitionId,rarity,new System.Random())),
                 definition.displayName+" foi para a mochila. Abra com I para equipar.");
         }
+        // ---- Forja (melhoria de armas). Quando houver servidor, o sorteio passa a ser feito lá. ----
+        static readonly System.Random forgeRandom = new System.Random();
+        public float LastForgeRoll { get; private set; } = -1f;
+        public float LastForgeChance { get; private set; }
+        public int ForgeStoneCount(int level) =>
+            level >= 1 && level <= ForgeRules.StoneLevels && Profile.forgeStones != null && Profile.forgeStones.Length >= level ? Profile.forgeStones[level - 1] : 0;
+        public bool Forge(string instanceId, int stoneLevel, int stoneCount, bool useLuck, bool useSeal, out bool success)
+        {
+            success = false;
+            if (Profile.expedition != null) { Message = "Finalize a expedição antes de usar a Forja."; return false; }
+            var item = Profile.inventory.Find(x => x.instanceId == instanceId);
+            var definition = item != null ? catalog.Find(item.definitionId) : null;
+            if (definition == null || definition.slot != EquipmentSlot.MainHand) { Message = "Escolha uma arma para forjar."; return false; }
+            int level = item.forgeLevel;
+            if (level >= ForgeRules.MaxLevel) { Message = definition.displayName + " já está no nível máximo (+12)."; return false; }
+            stoneCount = Mathf.Clamp(stoneCount, 1, ForgeRules.MaxStonesPerTry);
+            if (ForgeStoneCount(stoneLevel) < stoneCount) { Message = "Você não tem pedras Nv" + stoneLevel + " suficientes."; return false; }
+            if (useLuck && Profile.luckCharms <= 0) { Message = "Você não tem Amuleto da Sorte."; return false; }
+            float chance = ForgeRules.Chance(level, stoneLevel, stoneCount, useLuck);
+            if (chance <= 0f) { Message = "Pedras Nv" + stoneLevel + " são fracas demais para chegar ao +" + (level + 1) + "."; return false; }
+            // Pure luck: one random number from 0 to 100, compared with the chance shown on screen. Nothing forces a result.
+            float roll = (float)(forgeRandom.NextDouble() * 100.0);
+            LastForgeRoll = roll; LastForgeChance = chance;
+            bool won = roll < chance;
+            bool drops = !won && ForgeRules.DropsOnFailure(level);
+            bool sealUsed = drops && useSeal && Profile.protectionSeals > 0;
+            string name = definition.displayName;
+            string message = won ? "SUCESSO! " + name + " agora está +" + (level + 1) + "."
+                : drops && !sealUsed ? "Falhou. " + name + " caiu para +" + (level - 1) + "."
+                : sealUsed ? "Falhou, mas o Selo protegeu: " + name + " continua +" + level + "."
+                : "Falhou. " + name + " continua +" + level + ". As pedras foram gastas.";
+            int count = stoneCount;
+            bool saved = Transaction(next =>
+            {
+                next.forgeStones[stoneLevel - 1] -= count;
+                if (useLuck) next.luckCharms--;
+                if (sealUsed) next.protectionSeals--;
+                var target = next.inventory.Find(x => x.instanceId == instanceId);
+                if (won) target.forgeLevel = level + 1;
+                else if (drops && !sealUsed) target.forgeLevel = Mathf.Max(0, level - 1);
+            }, message);
+            success = saved && won;
+            return saved;
+        }
+        // Fusion: 4 stones of one level become 1 stone of the next level.
+        public bool FuseStones(int level)
+        {
+            if (level < 1 || level >= ForgeRules.StoneLevels) { Message = "Pedras Nv" + ForgeRules.StoneLevels + " já são as mais fortes."; return false; }
+            if (ForgeStoneCount(level) < ForgeRules.FusionCost) { Message = "Precisa de " + ForgeRules.FusionCost + " pedras Nv" + level + " para a fusão."; return false; }
+            return Transaction(next => { next.forgeStones[level - 1] -= ForgeRules.FusionCost; next.forgeStones[level]++; },
+                ForgeRules.FusionCost + " pedras Nv" + level + " viraram 1 pedra Nv" + (level + 1) + ".");
+        }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public bool GrantTestForgeMaterials() => Transaction(next =>
+        {
+            for (int i = 0; i < next.forgeStones.Length; i++) next.forgeStones[i] += 12;
+            next.luckCharms += 3; next.protectionSeals += 3;
+        }, "TESTE: +12 pedras de cada nível, 3 Amuletos da Sorte e 3 Selos.");
+#endif
         public bool ClaimDelivery(string id)
         {
             if (InventoryRules.BagCount(Profile) >= catalog.inventoryCapacity) { Message = "Inventário cheio. Libere um espaço."; return false; }
@@ -190,7 +249,7 @@ namespace ForjaDasMares
                 profile.collectionRuneLevel = 1;
                 profile.collectionRuneEquipped = true;
             }
-            else if (reward == -2) profile.strengtheningStones = Mathf.Clamp(profile.strengtheningStones,0,999998) + 1;
+            else if (reward == -2) profile.forgeStones[0] = Mathf.Clamp(profile.forgeStones[0],0,999998) + 1;
             else profile.coins = Mathf.Min(100000000,profile.coins+(reward == -1 ? 60 : reward));
         }
 
@@ -206,8 +265,8 @@ namespace ForjaDasMares
                 }, "Runa de Coleta recebida e equipada.");
             }
             if (reward == -2)
-                return Transaction(next => next.strengtheningStones = Mathf.Clamp(next.strengtheningStones,0,999998) + 1,
-                    "Pedra de Têmpera recebida.");
+                return Transaction(next => next.forgeStones[0] = Mathf.Clamp(next.forgeStones[0],0,999998) + 1,
+                    "Pedra da Forja Nv1 recebida. Use na Forja do Téo.");
             return CollectRegionalGold(reward);
         }
 

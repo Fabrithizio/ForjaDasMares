@@ -16,7 +16,7 @@ namespace ForjaDasMares
             if(!fitEquipmentToBody||item==null||item.visualMesh==null)return 1;
             Vector3 size=Vector3.Scale(item.visualMesh.bounds.size,item.authoredScale);
             float length=Mathf.Max(Mathf.Abs(size.x),Mathf.Abs(size.y),Mathf.Abs(size.z));
-            float maximum=item.category==WeaponCategory.Staff?staffLength:item.category==WeaponCategory.Grimoire?bookLength:item.category==WeaponCategory.Shield?shieldLength:item.category==WeaponCategory.MagicWeapon?focusLength:otherWeaponLength;
+            float maximum=item.heldLength>0?item.heldLength:item.category==WeaponCategory.Staff?staffLength:item.category==WeaponCategory.Grimoire?bookLength:item.category==WeaponCategory.Shield?shieldLength:item.category==WeaponCategory.MagicWeapon?focusLength:otherWeaponLength;
             return length>.0001f?Mathf.Min(1,maximum/length):1;
         }
         [SerializeField] Transform primarySocket, secondarySocket;

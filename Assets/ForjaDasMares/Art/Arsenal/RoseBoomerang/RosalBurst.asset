@@ -28,6 +28,7 @@ MonoBehaviour:
   control: 0
   prismaticEffect: 0
   returningProjectile: 1
+  projectileVisualScale: 0.93
   projectileVisual: {fileID: 4300000, guid: 5766a531696d9094ab11449107b748b3, type: 2}
   projectileMaterials:
   - {fileID: 2100000, guid: 3da77b1b835d4724fa0c376a8684f074, type: 2}

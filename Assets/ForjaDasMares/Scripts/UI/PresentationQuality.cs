@@ -32,7 +32,7 @@ namespace ForjaDasMares
             if(copy!=null)
             {
                 copy.shadowDistance=Mathf.Min(original.shadowDistance,mobile?(Selected==0?12:Selected==1?22:32):(Selected==0?24:Selected==1?40:60));
-                copy.renderScale=mobile?(Selected==0?.55f:Selected==1?.7f:.9f):(Selected==0&&!Screen.fullScreen?.8f:1);
+                copy.renderScale=mobile?(Selected==0?.75f:Selected==1?.9f:1f):(Selected==0&&!Screen.fullScreen?.8f:1);
                 copy.msaaSampleCount=mobile?(Selected==0?1:Selected==2?4:2):1;
                 if(mobile)copy.supportsHDR=false;
             }

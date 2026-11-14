@@ -24,10 +24,10 @@ namespace ForjaDasMares.Networking
             Label(main,"O MUNDO ALÉM DO REFÚGIO",68,220,550,38,21).color=RusticHudTheme.Gold;
             Label(main,"Comece sua jornada no Refúgio.",68,264,550,40,19);
             Button(main,"Profile",65,403,470,"PERSONAGEM E EQUIPAMENTOS",()=>profile());
-            Button(main,"ActOne",65,330,470,string.IsNullOrEmpty(CharacterName)?"JOGAR RPG":"CONTINUAR RPG",()=>{if(string.IsNullOrEmpty(LocalAccountId))Show(account);else if(string.IsNullOrEmpty(CharacterName))Show(creation);else EnterRpg();});
+            // Account and character now live in the "Inicio" scene (StartMenu). Without a character, go there.
+            Button(main,"ActOne",65,330,470,AccountService.HasCharacter?"CONTINUAR RPG":"IR PARA O INÍCIO",()=>{if(AccountService.HasCharacter)EnterRpg();else UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Inicio");});
             BuildCharacterCreation(parent);
             BuildAccountCreation(parent);
-            Button(main,"NewLocalAccount",65,620,470,"CRIAR OUTRO PERFIL LOCAL",()=>Show(account));
             Button(main,"Friends",65,476,470,"AMIGOS E CONVITES",()=>Show(friends));
             Button(main,"Settings",65,549,225,"CONFIGURAÇÕES",()=>Show(options));
             Button(main,"Quit",310,549,225,"SAIR",()=>Show(confirm));
@@ -69,9 +69,12 @@ namespace ForjaDasMares.Networking
         }
         void Volume(float step){AudioListener.volume=Mathf.Clamp01(AudioListener.volume+step);PlayerPrefs.SetFloat(VolumeKey,AudioListener.volume);PlayerPrefs.Save();if(volume!=null)volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";}
         void Show(GameObject page){main.SetActive(page==main);friends.SetActive(page==friends);options.SetActive(page==options);confirm.SetActive(page==confirm);if(account!=null)account.SetActive(page==account);if(creation!=null){creation.SetActive(page==creation);if(page==creation){var roster=director.Actor(0)?.Roster;if(roster!=null)creation.GetComponentInChildren<EquipmentPaperDoll>().Refresh(roster.GetComponent<HeroPresentation>(),new PlayerProfile(),roster.Current.heroId);}}if(page==options){volume.text=Mathf.RoundToInt(AudioListener.volume*100)+"%";RefreshAudioLabels();}}
-        public static string LocalAccountId=>PlayerPrefs.GetString("Forja.LocalAccount.Id","");
-        public static string LocalAccountFolder=>Guid.TryParseExact(LocalAccountId,"N",out _)
-            ?System.IO.Path.Combine(Application.persistentDataPath,"RpgAccounts",LocalAccountId):null;
+        // The account and its single character come from AccountService. The old local-profile keys remain only as a
+        // fallback for tests and old builds without the "Inicio" scene.
+        public static string LocalAccountId=>AccountService.HasCharacter?AccountService.Peek().accountId:PlayerPrefs.GetString("Forja.LocalAccount.Id","");
+        public static string LocalAccountFolder=>AccountService.HasCharacter?AccountService.CharacterFolder
+            :Guid.TryParseExact(PlayerPrefs.GetString("Forja.LocalAccount.Id",""),"N",out _)
+            ?System.IO.Path.Combine(Application.persistentDataPath,"RpgAccounts",PlayerPrefs.GetString("Forja.LocalAccount.Id","")):null;
         void BuildAccountCreation(Transform parent)
         {
             account=Page(parent,"CreateLocalAccount");
@@ -103,8 +106,8 @@ namespace ForjaDasMares.Networking
                     ?"Forja.RpgCharacter."+id.ToString("N"):"Forja.RpgCharacter";
             }
         }
-        public static string CharacterName=>PlayerPrefs.GetString(CharacterKey+".Name","");
-        public static int CharacterClass=>PlayerPrefs.GetInt(CharacterKey+".Class",2);
+        public static string CharacterName=>AccountService.HasCharacter?AccountService.Character.name:PlayerPrefs.GetString(CharacterKey+".Name","");
+        public static int CharacterClass=>AccountService.HasCharacter?AccountService.Character.look:PlayerPrefs.GetInt(CharacterKey+".Class",2);
         void EnterRpg()
         {
             director.Close();

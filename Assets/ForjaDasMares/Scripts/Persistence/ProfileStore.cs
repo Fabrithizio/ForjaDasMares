@@ -67,6 +67,7 @@ namespace ForjaDasMares
         {
             if (profile.version != 2 || profile.experience < 0 || profile.experience > 1000000 || profile.coins < 0 || profile.coins > 100000000 || profile.inventory == null || profile.deliveries == null || profile.loadouts == null || profile.completedRuns == null || profile.options == null) throw new InvalidDataException("Perfil inválido.");
             if (InventoryRules.BagCount(profile) > catalog.inventoryCapacity || profile.inventory.Count + profile.deliveries.Count > 512 || profile.completedRuns.Count > 256 || profile.loadouts.Count > catalog.heroes.Length) throw new InvalidDataException("Limites de perfil excedidos.");
+            NormalizeForge(profile);
             if (float.IsNaN(profile.options.volume) || profile.options.volume < 0 || profile.options.volume > 1) throw new InvalidDataException("Opções inválidas.");
             profile.talents??=new List<HeroTalentAllocation>();var talentHeroes=new HashSet<string>();
             foreach(var set in profile.talents){if(set==null||!talentHeroes.Add(set.heroId)||catalog.Hero(set.heroId)==null||set.ranks==null||set.ranks.Length!=6)throw new InvalidDataException("Talentos inválidos.");int spent=0;for(int i=0;i<6;i++){if(set.ranks[i]<0||set.ranks[i]>catalog.talents[i].maximumRank)throw new InvalidDataException("Talento fora dos limites.");spent+=set.ranks[i];}if(spent>ProgressionStats.Level(profile.experience,catalog.maximumLevel)-1)throw new InvalidDataException("Pontos de talento excedidos.");}
@@ -88,8 +89,21 @@ namespace ForjaDasMares
             }
             if (profile.lastResult != null && (profile.lastResult.items == null || profile.lastResult.items.Count > catalog.expeditionCapacity)) throw new InvalidDataException("Resultado inválido.");
         }
+        static void NormalizeForge(PlayerProfile profile)
+        {
+            if (profile.forgeStones == null || profile.forgeStones.Length != ForgeRules.StoneLevels)
+            {
+                var stones = new int[ForgeRules.StoneLevels];
+                if (profile.forgeStones != null) for (int i = 0; i < Math.Min(stones.Length, profile.forgeStones.Length); i++) stones[i] = profile.forgeStones[i];
+                profile.forgeStones = stones;
+            }
+            if (profile.strengtheningStones > 0) { profile.forgeStones[0] += profile.strengtheningStones; profile.strengtheningStones = 0; }
+            for (int i = 0; i < profile.forgeStones.Length; i++) if (profile.forgeStones[i] < 0 || profile.forgeStones[i] > 999999) throw new InvalidDataException("Pedras da Forja inválidas.");
+            if (profile.luckCharms < 0 || profile.luckCharms > 99999 || profile.protectionSeals < 0 || profile.protectionSeals > 99999) throw new InvalidDataException("Itens da Forja inválidos.");
+        }
         static void Item(ItemInstance item, ProgressionCatalog catalog, HashSet<string> ids)
         {
+            if (item != null && (item.forgeLevel < 0 || item.forgeLevel > ForgeRules.MaxLevel)) throw new InvalidDataException("Nível de Forja inválido.");
             if (item == null || string.IsNullOrWhiteSpace(item.instanceId) || item.instanceId.Length > 64 || !ids.Add(item.instanceId) || catalog.Find(item.definitionId) == null || !Enum.IsDefined(typeof(ItemRarity), item.rarity) || item.modifiers == null || item.modifiers.Count != catalog.Rarity(item.rarity).affixCount) throw new InvalidDataException("Item inválido ou duplicado.");
             var stats = new HashSet<ItemStat>();
             foreach (var bonus in item.modifiers) if (!Enum.IsDefined(typeof(ItemStat), bonus.stat) || !stats.Add(bonus.stat) || float.IsNaN(bonus.value) || bonus.value < 0 || bonus.value > ProgressionStats.ModifierLimit(bonus.stat)) throw new InvalidDataException("Modificador fora dos limites.");

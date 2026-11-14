@@ -450,6 +450,7 @@ namespace ForjaDasMares.Networking
 
         public void Respawn(){Dismount();hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
         public void ReturnToCampaign() => TravelTo("CampaignCoop");
+        public void ReturnToStartMenu() => TravelTo("Inicio");
         void TravelTo(string scene){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
         void OnDestroy(){if(hero!=null&&hero.Health!=null)hero.Health.Damaged-=Dismount;if(mountMetal!=null)Destroy(mountMetal);if(mountCrystal!=null)Destroy(mountCrystal);if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }

@@ -116,13 +116,14 @@ namespace ForjaDasMares.Networking
             network.OnTransportFailure+=TransportFailed;network.OnServerStopped+=ServerStopped;
             ready = true;
             if(Campaign!=null)(GetComponent<CampaignSoundscape>()??gameObject.AddComponent<CampaignSoundscape>()).Configure(this,Resources.Load<SoundscapeLibrary>("CampaignSoundscape"));
-            if(Campaign!=null&&HeroCount>2)SelectHero(2);
+            if(Campaign!=null&&HeroCount>2)SelectHero(AccountService.HasCharacter?Mathf.Clamp(AccountService.Character.look,0,HeroCount-1):2);
             if (GetComponent<CoopCloud>() == null) gameObject.AddComponent<CoopCloud>();
             var args = Environment.GetCommandLineArgs();
             if (Arg(args, "-netProbe") != null && GetComponent<CoopSmokeProbe>() == null) gameObject.AddComponent<CoopSmokeProbe>();
             string savedIdentity = PlayerPrefs.GetString("CoopParticipantIdentity", "");
             if (!Guid.TryParseExact(savedIdentity, "N", out _)) { savedIdentity = Guid.NewGuid().ToString("N"); PlayerPrefs.SetString("CoopParticipantIdentity", savedIdentity); PlayerPrefs.Save(); }
-            identity = Arg(args, "-netIdentity") ?? savedIdentity;
+            // The account id identifies the player in expeditions too, so rewards go to the character's save.
+            identity = Arg(args, "-netIdentity") ?? (AccountService.HasCharacter ? AccountService.Peek().accountId : savedIdentity);
             string mode = Arg(args, "-netMode");
             if (mode == "host") HostDirect(Arg(args, "-netPin") ?? "TEST42", ParsePort(Arg(args, "-netPort")), Arg(args, "-netLan") == "true");
             if (mode == "client") JoinDirect(Arg(args, "-netAddress") ?? "127.0.0.1", Arg(args, "-netPin") ?? "TEST42", ParsePort(Arg(args, "-netPort")));

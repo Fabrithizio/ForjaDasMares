@@ -373,6 +373,7 @@ namespace ForjaDasMares.Networking
         readonly string[] shopItems={"cais-blade","sal-staff","vento-bow","estrada-charm"};
         readonly int[] shopPrices={45,45,45,35};
         GameObject shop;
+        ForgePanel forge;
         Text shopBalance,shopFeedback;
         Button[] shopButtons;
         RegionalInventory shopInventory;
@@ -388,7 +389,7 @@ namespace ForjaDasMares.Networking
             shop=full.gameObject;
             var panel=RusticHudTheme.Rect(full,"ShopPanel",Vector2.one*.5f,Vector2.zero,new Vector2(820,600));
             RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
-            Label(panel,"ShopTitle",new Vector2(25,-20),new Vector2(540,42),"BANCA DO TÉO",28).color=RusticHudTheme.Gold;
+            Label(panel,"ShopTitle",new Vector2(25,-20),new Vector2(540,42),"BANCA DO TÉO · MESTRE ARTESÃO",28).color=RusticHudTheme.Gold;
             shopBalance=Label(panel,"ShopBalance",new Vector2(25,-66),new Vector2(750,40),"",19);
             shopFeedback=Label(panel,"ShopFeedback",new Vector2(25,-445),new Vector2(770,45),"",17);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -410,7 +411,9 @@ namespace ForjaDasMares.Networking
                 Label(panel,"Item"+i,new Vector2(25,-row),new Vector2(540,47),item.displayName+" · Comum · Nível "+item.minimumLevel,18);
                 shopButtons[i]=RusticHudTheme.Button(panel,"Buy"+i,Top,new Vector2(590,-row),new Vector2(200,45),"COMPRAR · "+shopPrices[i]+" OURO",()=>BuyShopItem(index));
             }
+            RusticHudTheme.Button(panel,"OpenForge",Top,new Vector2(25,-530),new Vector2(300,46),"FORJA E FUSÃO",()=>{if(ShopOpen)forge?.Open();});
             RusticHudTheme.Button(panel,"CloseShop",Top,new Vector2(565,-530),new Vector2(225,46),"VOLTAR · ESC",CloseShop);
+            forge=ForgePanel.Build(full,shopInventory);
             shop.SetActive(false);
         }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -429,6 +432,7 @@ namespace ForjaDasMares.Networking
             if(shop==null||shopInventory.Service==null)return;
             CloseJournal();
             shop.transform.SetAsLastSibling();
+            if(forge!=null)forge.gameObject.SetActive(false);
             shop.SetActive(true);
             world.Hero.GetComponent<ArenaInput>().BlockCommands(true);
             world.Hero.GetComponent<PlayerMotor>().StopWalking();

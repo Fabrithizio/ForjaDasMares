@@ -20,6 +20,8 @@ namespace ForjaDasMares
         public Sprite icon;
         public bool customGrip;public Vector3 socketPosition;public Vector3 socketEuler;
         public Mesh visualMesh;public Material[] visualMaterials;public Vector3 authoredScale=Vector3.one;
+        // Largest size (metres) of the weapon held in the hand. 0 = use the category default.
+        [Min(0)] public float heldLength;
         [TextArea] public string description;
         public EquipmentSlot slot;
         public WeaponCategory category = WeaponCategory.None;

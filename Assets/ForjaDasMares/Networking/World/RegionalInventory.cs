@@ -47,7 +47,7 @@ namespace ForjaDasMares.Networking
             if(!tests&&CampaignHome.LocalAccountFolder!=null){directory=CampaignHome.LocalAccountFolder;identity=CampaignHome.LocalAccountId;}
             for(int i=0;i<args.Length-1;i++){if(args[i]=="-netSavePath")directory=Path.GetFullPath(args[++i]);else if(args[i]=="-netIdentity")identity=args[++i];}
             if(!Guid.TryParseExact(identity,"N",out _)){identity=Guid.NewGuid().ToString("N");if(!tests){PlayerPrefs.SetString("CoopParticipantIdentity",identity);PlayerPrefs.Save();}}
-            SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath),false);Service.Changed+=Changed;Notice=Service.Message??"";
+            SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath),false);if(Service.Profile.expedition!=null)Service.FinishExpedition(Service.Profile.expedition.runId,false,"Aplicação interrompida");Service.Changed+=Changed;Notice=Service.Message??"";
             equipment=world.Hero.GetComponent<HeroEquipment>();if(equipment==null)equipment=world.Hero.gameObject.AddComponent<HeroEquipment>();
             equipment.Configure(world.Hero,world.Hero.GetComponent<PlayerMotor>(),world.Hero.GetComponent<HeroCombat>(),Visual("RegionalEquippedMain"),Visual("RegionalEquippedSecondary"));
             world.Hero.GetComponent<HeroCombat>().ConfigureRegionalRules(()=>equipment.MainWeapon!=null,()=>world.Journey!=null&&world.Journey.ClueCount>0);

@@ -54,6 +54,9 @@ namespace ForjaDasMares.Networking
         int page, revision = -1,lastHero=-1; string selected, pendingDiscard; bool results;
         public void Configure(CoopDirector session) => director = session;
         public void Configure(RegionalInventory local,RectTransform root){regional=local;regionalRoot=root;}
+        // New Personagem/Mochila window for the RPG. Talentos and Runas still open the older screens (legacyRoute).
+        MochilaPanel mochila;bool legacyRoute;
+        public void OpenLegacyArea(int area){legacyRoute=true;try{if(area==5)OpenRunes();else{OpenInventory();NavigateProfile(area);}}finally{legacyRoute=false;}}
         void Start()
         {
             itemOrder=CompareInventoryItems;
@@ -80,6 +83,7 @@ namespace ForjaDasMares.Networking
             if(view.FullLayout){BuildPaperDoll();BuildItemPopup();if(!touchLayout)BuildDesktopInventory();else BuildTouchInventory();}
             overlay.SetActive(false);
             if(view.IsRegional)BuildRegionalKeys();
+            if(view.IsRegional)mochila=MochilaPanel.Build(parent,regional,value=>view.SetInputBlocked(value),OpenLegacyArea);
         }
         void BuildPaperDoll()
         {
@@ -180,10 +184,10 @@ namespace ForjaDasMares.Networking
             if(string.IsNullOrEmpty(selected)){category=slot;classOnly=true;page=0;channel.SetNotice(RusticHudTheme.SlotName((EquipmentSlot)slot)+" vazio. Selecione um item compatível na mochila.");}
             Refresh();OpenItem();
         }
-        public bool IsOpen=>overlay!=null&&overlay.activeSelf;
-        public void OpenInventory(){if(view!=null&&view.IsRegional){GetComponent<RegionalWorldHud>()?.CloseStoryModal();GetComponent<RegionalWorldHud>()?.CloseShop();GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<RegionalSettingsMenu>()?.Close();}activeArea=1;Show(false);}
-        public void OpenCharacter(){Show(false);NavigateProfile(0);}
-        public void CloseInventory(){if(IsOpen)Close();}
+        public bool IsOpen=>overlay!=null&&overlay.activeSelf||mochila!=null&&mochila.IsOpen;
+        public void OpenInventory(){if(view!=null&&view.IsRegional){GetComponent<RegionalWorldHud>()?.CloseStoryModal();GetComponent<RegionalWorldHud>()?.CloseShop();GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<RegionalSettingsMenu>()?.Close();}if(mochila!=null&&!legacyRoute){if(overlay!=null&&overlay.activeSelf)Close();mochila.Open();return;}if(mochila!=null)mochila.Close();activeArea=1;Show(false);}
+        public void OpenCharacter(){if(mochila!=null&&!legacyRoute){OpenInventory();return;}Show(false);NavigateProfile(0);}
+        public void CloseInventory(){if(mochila!=null&&mochila.IsOpen)mochila.Close();if(overlay!=null&&overlay.activeSelf)Close();}
         void Show(bool result)
         {
             if (channel.LocalProfile == null || view.LocalSlot < 0&&!channel.HomeMode) return;

@@ -62,7 +62,7 @@ namespace ForjaDasMares
         public static string Pattern(AttackDefinition attack)
         {
             if(attack==null)return "Sem ataque próprio";
-            if (attack.returningProjectile) return "Arremesso em curva · atravessa inimigos e retorna";
+            if (attack.returningProjectile) return "Arremesso no inimigo · atravessa e volta pelo lado";
             if(attack.shape==AttackShape.Projectile)
             {
                 string shot=attack.projectileCount>1?"Leque de "+Mathf.Clamp(attack.projectileCount,1,5)+" projéteis":"Projétil único";
@@ -80,6 +80,7 @@ namespace ForjaDasMares
             if(definition==null)return "Item não encontrado no catálogo.";
             return ProgressionStats.CanEquip(profile,catalog,hero.heroId,item,definition.slot,out string reason)?"Disponível para equipar":reason;
         }
+        public static string ForgeTag(ItemInstance item)=>item!=null&&item.forgeLevel>0?" +"+item.forgeLevel:"";
         public static string Summary(ProgressionCatalog catalog,ItemInstance item,bool includeHeader=true)
         {
             if(item==null)return "Nenhum item neste slot.";
@@ -87,7 +88,8 @@ namespace ForjaDasMares
             var text = new StringBuilder();
             if (includeHeader)
             {
-                text.AppendLine(d.displayName);
+                text.AppendLine(d.displayName+ForgeTag(item));
+                if(d.slot==EquipmentSlot.MainHand)text.AppendLine("FORJA: +"+item.forgeLevel+" · dano +"+Mathf.RoundToInt((ForgeRules.DamageMultiplier(item.forgeLevel)-1)*100)+"%");
                 text.AppendLine(RusticHudTheme.RarityName(item.rarity)+" · "+Category(d));
                 text.AppendLine("ONDE EQUIPA: "+RusticHudTheme.SlotName(d.slot));
                 text.AppendLine("CLASSE: "+RusticHudTheme.ClassNames(d.compatibleHeroes)+" · nível "+d.minimumLevel);
@@ -152,7 +154,7 @@ namespace ForjaDasMares
         public static string Describe(ProgressionCatalog catalog,ItemInstance item,ItemInstance compare=null)
         {
             if(item==null)return "Nenhum item neste slot.";var d=catalog.Find(item.definitionId);if(d==null)return "Item não encontrado no catálogo.";var text=new StringBuilder();
-            text.AppendLine(d.displayName+" · "+RusticHudTheme.RarityName(item.rarity));text.AppendLine(RusticHudTheme.SlotName(d.slot)+" · nível "+d.minimumLevel);text.AppendLine("Classes: "+RusticHudTheme.ClassNames(d.compatibleHeroes));text.AppendLine(RoleSummary(d));text.AppendLine();
+            text.AppendLine(d.displayName+ForgeTag(item)+" · "+RusticHudTheme.RarityName(item.rarity));text.AppendLine(RusticHudTheme.SlotName(d.slot)+" · nível "+d.minimumLevel);text.AppendLine("Classes: "+RusticHudTheme.ClassNames(d.compatibleHeroes));text.AppendLine(RoleSummary(d));text.AppendLine();
             var a=Bonuses(catalog,item);var b=Bonuses(catalog,compare);bool any=false;
             for(int i=0;i<10;i++)if(a[i]!=0||b[i]!=0){any=true;var stat=(ItemStat)i;text.Append(Name(stat)+": +"+Amount(stat,a[i]));if(compare!=null){float delta=a[i]-b[i];text.Append("  ("+(delta>=0?"+":"−")+Amount(stat,Mathf.Abs(delta))+")");}text.AppendLine();}
             if(!any)text.AppendLine("Sem bônus passivos. Usa o padrão de ataque abaixo.");

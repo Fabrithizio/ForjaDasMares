@@ -27,8 +27,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 74b4c6dfa3ac8cf4598f7192a79ae47d, type: 2}
   - {fileID: 2100000, guid: ce57ca208dac84944855a276d18435d0, type: 2}
   authoredScale: {x: 0.65, y: 0.65, z: 0.65}
+  heldLength: 0.5
   description: "Duas l\xE2minas de cristal rosa presas a um cabo de bronze. O arremesso
-    abre uma curva, atravessa inimigos e volta ao portador. O modo pesado faz o Cora\xE7\xE3o
+    vai at\xE9 o inimigo, atravessa e volta pelo lado ao portador. O modo pesado faz o Cora\xE7\xE3o
     do Rosal florescer ao voltar, atingindo inimigos pr\xF3ximos ao portador."
   slot: 0
   category: 8

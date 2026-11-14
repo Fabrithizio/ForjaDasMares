@@ -7,6 +7,8 @@ namespace ForjaDasMares
         public string instanceId, definitionId;
         public ItemRarity rarity;
         public List<StatModifier> modifiers = new List<StatModifier>();
+        // Forge level (+0 to +12). See ForgeRules.
+        public int forgeLevel;
     }
     [Serializable] public sealed class HeroLoadout
     { public string heroId; public string[] items = new string[5]; }
@@ -30,7 +32,11 @@ namespace ForjaDasMares
         public int version = 2, experience, coins;
         public uint campaignCleared;
         public int collectionRuneLevel;
+        // Old single stone counter. Moved to forgeStones (level 1) when the profile loads.
         public int strengtheningStones;
+        // Forge stones by level: index 0 = Nv1 ... index 4 = Nv5.
+        public int[] forgeStones = new int[5];
+        public int luckCharms, protectionSeals;
         public bool collectionRuneEquipped;
         public List<string> starterGranted=new List<string>();
         public List<ItemInstance> inventory = new List<ItemInstance>();

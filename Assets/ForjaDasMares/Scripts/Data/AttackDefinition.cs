@@ -24,6 +24,8 @@ namespace ForjaDasMares
         public ControlEffect control;
         public PrismaticEffect prismaticEffect;
         public bool returningProjectile;
+        // Multiplies the size of projectileVisual in flight. 1 = original size.
+        [Min(0)] public float projectileVisualScale = 1;
         public Mesh projectileVisual;
         public Material[] projectileMaterials;
         [Min(0)] public float controlDuration;

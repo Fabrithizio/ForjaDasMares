@@ -11,7 +11,8 @@ namespace ForjaDasMares.Editor
     [InitializeOnLoad]
     public static class ArenaLauncher
     {
-        public const string MainScene = "Assets/ForjaDasMares/Scenes/CampaignCoop.unity";
+        public const string StartScene = "Assets/ForjaDasMares/Scenes/Inicio.unity";
+        public static string MainScene => File.Exists(StartScene) ? StartScene : "Assets/ForjaDasMares/Scenes/CampaignCoop.unity";
 
         static ArenaLauncher()
         {

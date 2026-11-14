@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed247d7950c4ddbaf86ae7b4a86a478, type: 3}
+  m_Name: ForgeSettings
+  m_EditorClassIdentifier: 
+  bands:
+  - label: '+1 a +3'
+    upToLevel: 3
+    percentPerStone:
+    - 25
+    - 40
+    - 70
+    - 100
+    - 100
+  - label: '+4 a +6'
+    upToLevel: 6
+    percentPerStone:
+    - 10
+    - 18
+    - 30
+    - 50
+    - 80
+  - label: '+7 a +9'
+    upToLevel: 9
+    percentPerStone:
+    - 0
+    - 7
+    - 13
+    - 22
+    - 35
+  - label: '+10 e +11'
+    upToLevel: 11
+    percentPerStone:
+    - 0
+    - 0
+    - 4
+    - 8
+    - 13
+  - label: '+12'
+    upToLevel: 12
+    percentPerStone:
+    - 0
+    - 0
+    - 0
+    - 2.5
+    - 5
+  luckBonus: 5
+  dropFromLevel: 7
+  damagePerLevel: 0.05
+  fusionCost: 4
