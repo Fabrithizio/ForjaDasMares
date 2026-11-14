@@ -386,11 +386,20 @@ namespace ForjaDasMares.Networking
             full.offsetMin=full.offsetMax=Vector2.zero;
             full.gameObject.AddComponent<Image>().color=new Color(.015f,.025f,.02f,.92f);
             shop=full.gameObject;
-            var panel=RusticHudTheme.Rect(full,"ShopPanel",Vector2.one*.5f,Vector2.zero,new Vector2(820,530));
+            var panel=RusticHudTheme.Rect(full,"ShopPanel",Vector2.one*.5f,Vector2.zero,new Vector2(820,600));
             RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
             Label(panel,"ShopTitle",new Vector2(25,-20),new Vector2(540,42),"BANCA DO TÉO",28).color=RusticHudTheme.Gold;
             shopBalance=Label(panel,"ShopBalance",new Vector2(25,-66),new Vector2(750,40),"",19);
-            shopFeedback=Label(panel,"ShopFeedback",new Vector2(25,-398),new Vector2(770,45),"",17);
+            shopFeedback=Label(panel,"ShopFeedback",new Vector2(25,-445),new Vector2(770,45),"",17);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Linha de teste: entrega itens novos sem depender de sorte no saque. Não aparece em build final.
+            var testItem=shopInventory.Catalog.Find(TestItemId);
+            if(testItem!=null)
+            {
+                Label(panel,"TestItem",new Vector2(25,-382),new Vector2(540,47),"TESTE · "+testItem.displayName+" · Lendária",18).color=new Color(1f,.62f,.82f);
+                RusticHudTheme.Button(panel,"TestGift",Top,new Vector2(590,-382),new Vector2(200,45),"PEGAR GRÁTIS",GiveTestItem);
+            }
+#endif
             shopButtons=new Button[shopItems.Length];
             for(int i=0;i<shopItems.Length;i++)
             {
@@ -401,9 +410,20 @@ namespace ForjaDasMares.Networking
                 Label(panel,"Item"+i,new Vector2(25,-row),new Vector2(540,47),item.displayName+" · Comum · Nível "+item.minimumLevel,18);
                 shopButtons[i]=RusticHudTheme.Button(panel,"Buy"+i,Top,new Vector2(590,-row),new Vector2(200,45),"COMPRAR · "+shopPrices[i]+" OURO",()=>BuyShopItem(index));
             }
-            RusticHudTheme.Button(panel,"CloseShop",Top,new Vector2(565,-456),new Vector2(225,46),"VOLTAR · ESC",CloseShop);
+            RusticHudTheme.Button(panel,"CloseShop",Top,new Vector2(565,-530),new Vector2(225,46),"VOLTAR · ESC",CloseShop);
             shop.SetActive(false);
         }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        const string TestItemId="asa-rosal";
+        void GiveTestItem()
+        {
+            if(!ShopOpen)return;
+            var service=shopInventory.Service;
+            service.GrantTestEquipment(TestItemId,ItemRarity.Legendary);
+            shopFeedback.text=service.Message;
+            RefreshShop();
+        }
+#endif
         public void OpenShop()
         {
             if(shop==null||shopInventory.Service==null)return;

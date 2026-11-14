@@ -5,6 +5,26 @@ namespace ForjaDasMares.Networking
     public sealed partial class CoopInventoryHud
     {
         RectTransform touchIdentity,touchXpFill;Text touchName,touchResources,touchXp;
+        void FitTouchInventory()
+        {
+            var panel = (RectTransform)overlay.transform;
+            var parent = (RectTransform)panel.parent;
+            var safe = Screen.safeArea;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,safe.min,null,out var min) ||
+                !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,safe.max,null,out var max)) return;
+
+            min = Vector2.Max(min,parent.rect.min);
+            max = Vector2.Min(max,parent.rect.max);
+            Vector2 size = max-min;
+            const float padding = 8;
+            if (size.x <= padding*2 || size.y <= padding*2) return;
+            float fit = Mathf.Min((size.x-padding*2)/panel.rect.width,(size.y-padding*2)/panel.rect.height);
+            Vector2 position = (min+max)*.5f-parent.rect.center;
+            if (panel.anchoredPosition != position) panel.anchoredPosition = position;
+            var scale = Vector3.one*fit;
+            if (panel.localScale != scale) panel.localScale = scale;
+        }
+
         void BuildTouchInventory()
         {
             var parent=overlay.transform;

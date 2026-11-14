@@ -97,6 +97,7 @@ namespace ForjaDasMares.Networking.Editor
             }
             AssetDatabase.CreateAsset(data,DataRoot+"Encounter"+tier+(hard?"Hard":"Normal")+".asset");return data;
         }
+        [MenuItem("Forja/Build/Gerar Windows (Builds/Atual)")]
         public static void Windows()=>Build(BuildTarget.StandaloneWindows64);
         public static void Android()=>Build(BuildTarget.Android);
         static void Build(BuildTarget target)

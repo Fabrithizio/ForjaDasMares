@@ -207,6 +207,7 @@ namespace ForjaDasMares.Networking
                 if(view.FullLayout)resultButton.gameObject.SetActive(view.Phase==CoopPhase.Victory||view.Phase==CoopPhase.Defeat);
             }
             if (overlay == null || !overlay.activeSelf) return;
+            if (touchLayout) FitTouchInventory();
             if (view.LocalSlot < 0&&!channel.HomeMode) { Close(); return; }
             if(pendingClaim!=null)
             {

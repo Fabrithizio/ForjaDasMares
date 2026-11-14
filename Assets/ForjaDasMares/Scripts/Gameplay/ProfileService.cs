@@ -117,6 +117,18 @@ namespace ForjaDasMares
                 next.coins-=price;
             },definition.displayName+" foi para a mochila.");
         }
+        // Entrega gratuita de um item para testes manuais (usada só em builds de desenvolvimento/Editor).
+        // Não entrega uma segunda cópia se o perfil já tiver o item.
+        public bool GrantTestEquipment(string definitionId,ItemRarity rarity)
+        {
+            var definition=catalog.Find(definitionId);
+            if(definition==null){Message="Item de teste não encontrado no catálogo.";return false;}
+            if(Profile.inventory.Exists(item=>item.definitionId==definitionId)){Message="Você já tem "+definition.displayName+". Abra a mochila (I) para equipar.";return false;}
+            if(Profile.expedition!=null){Message="Finalize a expedição antes de pegar o item.";return false;}
+            if(InventoryRules.BagCount(Profile)>=catalog.inventoryCapacity){Message="Mochila cheia.";return false;}
+            return Transaction(next=>next.inventory.Add(LootGenerator.Create(catalog,definitionId,rarity,new System.Random())),
+                definition.displayName+" foi para a mochila. Abra com I para equipar.");
+        }
         public bool ClaimDelivery(string id)
         {
             if (InventoryRules.BagCount(Profile) >= catalog.inventoryCapacity) { Message = "Inventário cheio. Libere um espaço."; return false; }
