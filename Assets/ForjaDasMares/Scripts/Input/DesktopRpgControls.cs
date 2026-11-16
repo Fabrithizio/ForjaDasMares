@@ -61,6 +61,7 @@ namespace ForjaDasMares
             if(Physics.Raycast(ray,out var ground,500,1<<8,QueryTriggerInteraction.Ignore)){point=ground.point;return true;}
             var plane=new Plane(Vector3.up,motor.transform.position);if(!plane.Raycast(ray,out float distance))return false;point=ray.GetPoint(distance);return true;
         }
+        bool holdTracked,holdFromWorld;
         void Update()
         {
             HoveredInteraction = null;
@@ -75,7 +76,10 @@ namespace ForjaDasMares
                 }
                 SelectionTarget=autoAimTarget!=null&&autoAimTarget.IsAlive?autoAimTarget:null;CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;
             }
-            bool ui=input.PointerIsBlocked;
+            // A hold that started on the world keeps walking even when the cursor slides over the HUD.
+            bool overUi=input.PointerIsBlocked;
+            if(input.MouseAttackHeld){if(!holdTracked){holdTracked=true;holdFromWorld=!overUi;}}else holdTracked=holdFromWorld=false;
+            bool ui=overUi&&!holdFromWorld;
             if(ui){Cancel();Movement=input.RawMove;return;}
             bool pointer=TryPointer(out var point,out var hovered);
             SelectionTarget=hovered;

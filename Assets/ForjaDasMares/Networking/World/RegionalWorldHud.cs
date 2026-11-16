@@ -589,29 +589,30 @@ namespace ForjaDasMares.Networking
         void BuildPcActions(RectTransform root)
         {
             var input = world.Hero.GetComponent<ArenaInput>();
-            var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,22),new Vector2(510,88));
+            // Docked to the bottom edge and compact, so it covers as little of the world as possible.
+            var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,-10),new Vector2(424,74));
             RusticHudTheme.Panel(dock,RusticHudTheme.Ink,15).borderColor = RusticHudTheme.Gold;
-            BuildSkillBar(dock,12);
-            CombatAction(dock,"RegionalAttack",new Vector2(-160,12),64,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack);
-            CombatAction(dock,"RegionalDodge",new Vector2(-90,12),64,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
-            CombatAction(dock,"RegionalInteract",new Vector2(-20,12),64,"F",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact);
+            BuildSkillBar(dock,18);
+            CombatAction(dock,"RegionalAttack",new Vector2(-126,18),52,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack);
+            CombatAction(dock,"RegionalDodge",new Vector2(-68,18),52,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
+            CombatAction(dock,"RegionalInteract",new Vector2(-10,18),52,"F",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact);
         }
 
         Button attackMode;
         void BuildSkillBar(RectTransform root,float height)
         {
             bool touch = Application.isMobilePlatform;
-            float start = touch ? -286 : -432;
+            float start = touch ? -286 : -358;
             for (int i = 0; i < skillButtons.Length; i++)
             {
                 int slot = i;
                 var symbol = i == 0 ? HudSymbol.SpellBolt : i == 1 ? HudSymbol.SpellBurst : HudSymbol.SpellPrison;
                 Color accent = i == 0 ? new Color(.26f,.83f,1) : i == 1 ? new Color(.48f,.58f,1) : new Color(.79f,.51f,1);
-                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+(touch ? 76 : 68)*i,height),touch ? 68 : 60,"",symbol,accent,() => CastRegionalSkill(slot),touch);
+                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+(touch ? 76 : 58)*i,height),touch ? 68 : 52,"",symbol,accent,() => CastRegionalSkill(slot),touch);
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
             }
             var combat = world.Hero.GetComponent<HeroCombat>();
-            attackMode = CombatAction(root,"AttackMode",new Vector2(start+(touch ? 228 : 204),height),touch ? 68 : 60,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
+            attackMode = CombatAction(root,"AttackMode",new Vector2(start+(touch ? 228 : 174),height),touch ? 68 : 52,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
         }
 
         RectTransform touchSafeArea;

@@ -9,6 +9,8 @@ namespace ForjaDasMares.Networking
     {
         [SerializeField]RegionalWorld world;
         [SerializeField]Vector3[] arrivalPoints;
+        // New city: the expedition board stays where the scene puts it (in front of the instance hall).
+        [SerializeField]bool fixedExpeditionPlace;
         public string Notice {get;private set;}
         public string CurrentNotice => Notice ?? (world.Journey?.Accepted == true ? world.Journey.Objective : "Fale com Nara perto da tenda. Clique nela ou use F.");
         public Vector3[] ArrivalPoints=>arrivalPoints;
@@ -22,7 +24,7 @@ namespace ForjaDasMares.Networking
             targets = FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None);
             foreach (var target in targets)
             {
-                if (!target.Label.StartsWith("Expedições")) continue;
+                if (fixedExpeditionPlace || !target.Label.StartsWith("Expedições")) continue;
                 var position = world.Definition.refuge + new Vector3(-7,0,3);
                 if (UnityEngine.AI.NavMesh.SamplePosition(position,out var hit,2,UnityEngine.AI.NavMesh.AllAreas))
                     target.transform.position = hit.position;
