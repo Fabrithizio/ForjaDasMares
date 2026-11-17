@@ -99,7 +99,16 @@ namespace ForjaDasMares.Networking.Editor
         }
         [MenuItem("Forja/Build/Gerar Windows (Builds/Atual)")]
         public static void Windows()=>Build(BuildTarget.StandaloneWindows64);
-        public static void Android()=>Build(BuildTarget.Android);
+        [MenuItem("Forja/Build/Gerar APK do celular (Builds/Atual/Android)")]
+        public static void Android()
+        {
+            if(EditorUserBuildSettings.activeBuildTarget!=BuildTarget.Android&&!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android,BuildTarget.Android))
+            {EditorUtility.DisplayDialog("Forja","Não consegui trocar a plataforma para Android.","OK");return;}
+            if(!UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())return;
+            Build(BuildTarget.Android);
+            string apk=Path.GetFullPath("Builds/Atual/Android/ForjaDasMaresCampanha.apk");
+            if(File.Exists(apk)){Debug.Log("APK_PRONTO "+apk);EditorUtility.RevealInFinder(apk);}
+        }
         static void Build(BuildTarget target)
         {
             if(EditorUserBuildSettings.activeBuildTarget!=target)throw new InvalidOperationException("Incorrect active build target.");
@@ -114,7 +123,7 @@ namespace ForjaDasMares.Networking.Editor
                 if(target==BuildTarget.Android&&Application.platform==RuntimePlatform.WindowsEditor)
                 {string javaTemp=Path.GetFullPath(Path.Combine(Application.dataPath,"../Library/JavaTmp"));Directory.CreateDirectory(javaTemp);Environment.SetEnvironmentVariable("TEMP",javaTemp);Environment.SetEnvironmentVariable("TMP",javaTemp);}
                 PlayerSettings.productName="Forja das Mares - Campanha";PlayerSettings.bundleVersion="0.36.0";PlayerSettings.runInBackground=true;
-                if(target==BuildTarget.Android){PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.forjadasmares.campaign");PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.bundleVersionCode=54;PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35;EditorUserBuildSettings.buildAppBundle=false;}
+                if(target==BuildTarget.Android){PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.forjadasmares.campaign");PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.bundleVersionCode=Math.Max(55,PlayerSettings.Android.bundleVersionCode+1);PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)35;EditorUserBuildSettings.buildAppBundle=false;}
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{StartMenuInstaller.ScenePath,ScenePath,TownInstaller.ScenePath,ActOneInstaller.ScenePath,CatacombPreviewInstaller.ScenePath},target=target,locationPathName=folder+(target==BuildTarget.Android?"/ForjaDasMaresCampanha.apk":"/ForjaDasMaresCampanha.exe"),options=BuildOptions.Development});
                 Debug.Log("CAMPAIGN_BUILD "+target+" "+report.summary.result+" errors="+report.summary.totalErrors);
                 if(report.summary.result!=BuildResult.Succeeded)throw new InvalidOperationException("Campaign build failed; inspect the generated project and log.");
