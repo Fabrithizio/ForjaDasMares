@@ -14,8 +14,33 @@ namespace ForjaDasMares.Networking
         NavMeshAgent agent;float wait,phase;int destination;
         public void Configure(Vector3[] route,Transform a,Transform b,Transform c,Transform d,Transform label){waypoints=route;leftLeg=a;rightLeg=b;leftArm=c;rightArm=d;nameplate=label;}
         void LateUpdate(){if(nameplate!=null)nameplate.rotation=Quaternion.Euler(50,0,0);}
+        // Big gold name with the role underneath and a dark shadow, readable on grass and stone.
+        void StyleNameplate()
+        {
+            var text=nameplate!=null?nameplate.GetComponent<TextMesh>():null;
+            if(text==null||nameplate.Find("Sombra")!=null)return;
+            string raw=text.text;int dot=raw.IndexOf('·');
+            string name=dot>0?raw.Substring(0,dot).Trim():raw.Trim();
+            string role=dot>0?raw.Substring(dot+1).Trim():"";
+            float top=2.1f;
+            foreach(var r in GetComponentsInChildren<Renderer>())
+                if(r.enabled&&!(r is MeshRenderer&&r.GetComponent<TextMesh>()!=null))top=Mathf.Max(top,r.bounds.max.y-transform.position.y+.35f);
+            nameplate.position=transform.position+Vector3.up*Mathf.Min(top,2.6f);
+            text.richText=true;text.color=Color.white;text.fontSize=64;text.characterSize=.05f;text.fontStyle=FontStyle.Bold;
+            text.anchor=TextAnchor.MiddleCenter;text.alignment=TextAlignment.Center;text.lineSpacing=.85f;
+            string body=role.Length>0?name+"\n<size=40>"+role+"</size>":name;
+            text.text="<color=#FFD36B>"+(role.Length>0?name+"</color>\n<size=40><color=#F4EEDF>"+role+"</color></size>":name+"</color>");
+            var shadowObject=Instantiate(text.gameObject,nameplate);shadowObject.name="Sombra";
+            foreach(Transform child in shadowObject.transform)Destroy(child.gameObject);
+            var shadow=shadowObject.GetComponent<TextMesh>();
+            shadow.text="<color=#140E08DD>"+body+"</color>";
+            shadowObject.transform.localPosition=new Vector3(.045f,-.045f,.02f);shadowObject.transform.localRotation=Quaternion.identity;shadowObject.transform.localScale=Vector3.one;
+            var textRenderer=text.GetComponent<MeshRenderer>();var shadowRenderer=shadowObject.GetComponent<MeshRenderer>();
+            textRenderer.sortingOrder=2;shadowRenderer.sortingOrder=1;
+        }
         void Start()
         {
+            StyleNameplate();
             target=GetComponent<WorldClickTarget>();
             if(target!=null)target.Interacting+=FacePlayer;
             phase=transform.GetSiblingIndex()*.7f;

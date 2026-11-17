@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f8ff50b1f39c7438a2c99b33b18f89, type: 3}
+  m_Name: ArremessoForte
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.AttackDefinition
+  shape: 1
+  footprint: 0
+  width: 0.65
+  maximumTargets: 0
+  damage: 24
+  range: 9
+  arc: 120
+  windup: 0.18
+  recovery: 0.65
+  knockback: 0
+  projectileSpeed: 13
+  projectileRadius: 0.32
+  splashRadius: 2.7
+  control: 0
+  prismaticEffect: 0
+  returningProjectile: 1
+  projectileVisualScale: 1.1
+  projectileVisual: {fileID: 4300000, guid: 4b358a06a151c1a41a242b3c4af62a99, type: 2}
+  projectileMaterials:
+  - {fileID: 2100000, guid: 9e023c7e0deb7ce428d25f187dad80aa, type: 2}
+  controlDuration: 0
+  slowMultiplier: 0.5
+  color: {r: 1, g: 0.42, b: 0.74, a: 1}
+  projectileCount: 1
+  projectileSpread: 0
+  heartFx: {fileID: 11400000, guid: 08e7e062dac7fc743a31e15536c682b9, type: 2}

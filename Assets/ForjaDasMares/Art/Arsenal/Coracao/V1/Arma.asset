@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbef15d127412841b7f88cdada6e702, type: 3}
+  m_Name: (Clone)
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EquipmentDefinition
+  itemId: coracao-v1
+  displayName: "Bumerangue do Cora\xE7\xE3o \xB7 Broto"
+  icon: {fileID: 21300000, guid: ae28af2a43ba4024abfa8c84fffc3b4d, type: 3}
+  customGrip: 0
+  socketPosition: {x: 0, y: 0, z: 0}
+  socketEuler: {x: 0, y: 0, z: 0}
+  visualMesh: {fileID: 4300000, guid: b4721ff775bdbdf4b8bbb7c1719a97f4, type: 2}
+  visualMaterials:
+  - {fileID: 2100000, guid: 83d1a085726d5b14380b8d9053071325, type: 2}
+  authoredScale: {x: 0.65, y: 0.65, z: 0.65}
+  heldLength: 0.5
+  description: "Madeira clara, bordas de a\xE7o e um pequeno cora\xE7\xE3o rosa.
+    A primeira forma da rel\xEDquia: vai at\xE9 o inimigo e volta \xE0 m\xE3o."
+  slot: 0
+  category: 8
+  compatibleHeroes: 6
+  minimumLevel: 1
+  minimumDropRarity: 4
+  starter: 0
+  perk: 0
+  synergy: 0
+  twoHanded: 0
+  allowsOffHand: 0
+  twinStrike: 0
+  attacks:
+  - {fileID: 11400000, guid: a3bf8fd5480ddd14cbdb3cd688aa0f04, type: 2}
+  ability: {fileID: 11400000, guid: 7f6c3017c6f0b384296c4722bcbbf8fa, type: 2}
+  bonuses: []
+  frontalBlock: 0
+  color: {r: 1, g: 0.55, b: 0.75, a: 1}
+  visualScale: {x: 0.15, y: 1, z: 0.2}
+  evolvesInto: {fileID: 11400000, guid: 381b186ab42b2954a8d2bb82609390ae, type: 2}
+  evolveAtForge: 8

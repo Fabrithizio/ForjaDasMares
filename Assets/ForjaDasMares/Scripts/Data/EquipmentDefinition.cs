@@ -36,5 +36,8 @@ namespace ForjaDasMares
         [Range(0, .5f)] public float frontalBlock;
         public Color color = Color.white;
         public Vector3 visualScale = new Vector3(.15f, 1, .2f);
+        // Evolution in the Forge: reaching this forge level turns the weapon into "evolvesInto" (keeps the level). Permanent.
+        public EquipmentDefinition evolvesInto;
+        [Min(0)] public int evolveAtForge;
     }
 }

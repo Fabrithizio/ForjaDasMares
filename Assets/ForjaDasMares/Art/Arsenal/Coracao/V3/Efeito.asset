@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5279c157d34ae4d429e54f8b3a733512, type: 3}
+  m_Name: Efeito
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeartFxStyle
+  heart: {fileID: 2100000, guid: adc78ee08cb683542b6329a8336e8365, type: 2}
+  glow: {fileID: 2100000, guid: b56c6d8788c7c924f89aeef0f96f70bc, type: 2}
+  trail: {fileID: 2100000, guid: be80c956aa87aac4582af40e3596eb1b, type: 2}
+  trailCore: {fileID: 2100000, guid: 515790ceca2191b498cbc0f76cd0e688, type: 2}
+  ring: {fileID: 2100000, guid: da3364bc55614fa428291513a22c21c2, type: 2}
+  main: {r: 1, g: 0.28, b: 0.72, a: 1}
+  second: {r: 0.72, g: 0.42, b: 1, a: 1}
+  trailWidth: 1.05
+  trailTime: 0.45
+  heartsPerMetre: 5
+  heartSize: {x: 0.26, y: 0.52}
+  sparklesPerMetre: 7
+  haloSize: 1.4
+  impactHearts: 18
+  impactSize: 1.25
+  bigHeart: 1

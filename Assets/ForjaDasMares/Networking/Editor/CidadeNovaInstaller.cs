@@ -26,6 +26,7 @@ namespace ForjaDasMares.Networking.Editor
             { "Estalagem", 8f }, { "Carroca", 3f }, { "EstacaoAntiga", 8f }, { "BarracaFrutas", 3.2f },
             { "BarracaTecidos", 3.2f }, { "FonteCura", 2.4f }, { "Poco", 2.6f }, { "MesaMapas", 1.3f },
             { "Ponte", 5f }, { "RuinaGigante", 45f }, { "Tenda", 4.5f },
+            { "Banco", 1.1f }, { "Caixotes", 1.7f }, { "MesaBancos", 1.15f }, { "Poste", 3.6f }, { "QuadroAvisos", 2.6f }, { "Rochas", 1.5f },
             { "NPCTeo", 1.85f }, { "NPCOficial", 1.75f }, { "NPCIria", 1.7f }, { "NPCMercador", 1.75f },
         };
         static readonly HashSet<string> Big = new HashSet<string> { "Monumento", "PortaoSul", "ForjaTeo", "SalaoInstancias", "Estalagem", "EstacaoAntiga", "CasaA" };
@@ -55,7 +56,8 @@ namespace ForjaDasMares.Networking.Editor
                 {
                     importer.materialImportMode = ModelImporterMaterialImportMode.None;
                     importer.importAnimation = false; importer.importCameras = false; importer.importLights = false;
-                    importer.animationType = ModelImporterAnimationType.None;
+                    // Characters keep their skeleton so their bones can move; scenery has none.
+                    importer.animationType = slug.StartsWith("NPC") ? ModelImporterAnimationType.Generic : ModelImporterAnimationType.None;
                     importer.meshCompression = ModelImporterMeshCompression.Medium;
                     importer.isReadable = false;
                     importer.SaveAndReimport();
@@ -343,6 +345,7 @@ namespace ForjaDasMares.Networking.Editor
                         var body = (GameObject)PrefabUtility.InstantiatePrefab(modelPrefab, child);
                         body.transform.localPosition = new Vector3(0, -child.position.y, 0); body.transform.localRotation = Quaternion.identity;
                         foreach (var t in body.GetComponentsInChildren<Transform>(true)) t.gameObject.isStatic = false;
+                        body.AddComponent<NpcIdle>().Configure(model == "NPCTeo" ? NpcIdle.Style.Ferreiro : model == "NPCIria" ? NpcIdle.Style.Curandeira : NpcIdle.Style.Oficial);
                     }
                 }
                 if (sign != null)
@@ -358,7 +361,16 @@ namespace ForjaDasMares.Networking.Editor
             // The market merchant stands by the fruit stall (scenery for now).
             var merchantSpot = new Vector3(11.5f, 0, 11.5f);
             var merchant = Place(city, "NPCMercador", merchantSpot, 0, true);
-            if (merchant != null) foreach (var t in merchant.GetComponentsInChildren<Transform>(true)) t.gameObject.isStatic = false;
+            if (merchant != null)
+            {
+                foreach (var t in merchant.GetComponentsInChildren<Transform>(true)) t.gameObject.isStatic = false;
+                merchant.AddComponent<NpcIdle>().Configure(NpcIdle.Style.Mercador);
+                var nameText = new GameObject("Nome").AddComponent<TextMesh>();
+                nameText.transform.SetParent(merchant.transform, false);
+                nameText.transform.localPosition = Vector3.up * 2.2f;
+                nameText.text = "Brás · Feirante"; nameText.fontSize = 48; nameText.characterSize = .035f; nameText.anchor = TextAnchor.MiddleCenter;
+                merchant.AddComponent<TownResident>().Configure(null, null, null, null, null, nameText.transform);
+            }
 
             // 4. Region and story data for this scene only (the old city keeps its own).
             var region = Object.Instantiate(world.Definition);
@@ -714,10 +726,11 @@ namespace ForjaDasMares.Networking.Editor
             for (int i = 0; i < 8; i++)
             {
                 float a = (i + .5f) / 8f * Mathf.PI * 2;
-                Lamp(holder, new Vector3(Mathf.Sin(a) * 16.6f, 0, Mathf.Cos(a) * 16.6f));
+                var lampSpot = new Vector3(Mathf.Sin(a) * 16.6f, 0, Mathf.Cos(a) * 16.6f);
+                Lamp(holder, lampSpot, -lampSpot);
             }
-            foreach (float z in new[] { -24f, -31.5f }) { Lamp(holder, new Vector3(-3.7f, 0, z)); Lamp(holder, new Vector3(3.7f, 0, z)); }
-            foreach (float x in new[] { 31f, -31f }) { Lamp(holder, new Vector3(x, 0, 3.4f)); Lamp(holder, new Vector3(x, 0, -3.4f)); }
+            foreach (float z in new[] { -24f, -31.5f }) { Lamp(holder, new Vector3(-3.7f, 0, z), Vector3.right); Lamp(holder, new Vector3(3.7f, 0, z), Vector3.left); }
+            foreach (float x in new[] { 31f, -31f }) { Lamp(holder, new Vector3(x, 0, 3.4f), Vector3.back); Lamp(holder, new Vector3(x, 0, -3.4f), Vector3.forward); }
 
             var random = new System.Random(31);
             Color[] petals = { new Color(.95f, .45f, .6f), new Color(.98f, .85f, .35f), new Color(.75f, .55f, .95f), new Color(.98f, .98f, .95f) };
@@ -736,14 +749,38 @@ namespace ForjaDasMares.Networking.Editor
             Vector3[] piles = { new Vector3(19, 0, 11), new Vector3(20, 0, 2), new Vector3(11, 0, -13), new Vector3(10, 0, -28), new Vector3(-12, 0, -22), new Vector3(-20, 0, 9) };
             foreach (var p in piles)
             {
+                if (Prefab("Caixotes") != null) { Place(holder, "Caixotes", p + new Vector3(.5f, 0, -.2f), (float)random.NextDouble() * 360); continue; }
                 Shape(holder, PrimitiveType.Cylinder, "Barril", p + new Vector3(0, .55f, 0), new Vector3(.8f, .55f, .8f), wood);
                 Shape(holder, PrimitiveType.Cube, "Caixote", p + new Vector3(1f, .4f, .3f), Vector3.one * .8f, woodDark, 20);
                 Shape(holder, PrimitiveType.Cube, "Caixote", p + new Vector3(.4f, .3f, -.9f), Vector3.one * .6f, wood, 50);
             }
+
+            // Benches around the plaza, facing the monument.
+            for (int i = 0; i < 4; i++)
+            {
+                float a = (i + .5f) / 4f * Mathf.PI * 2;
+                var p = new Vector3(Mathf.Sin(a) * 13.2f, 0, Mathf.Cos(a) * 13.2f);
+                if (Free(p, 3f)) Place(holder, "Banco", p, 0, true);
+            }
+            // Tables outside the inn and a notice board by the expedition hall.
+            int tables = 0;
+            foreach (var p in new[] { new Vector3(-17.5f, 0, 11f), new Vector3(-17.5f, 0, 1.5f), new Vector3(-25f, 0, 14f), new Vector3(-25f, 0, -2f) })
+                if (tables < 2 && !OnRoad(p) && Free(p, 3f)) { Place(holder, "MesaBancos", p, 90); tables++; }
+            foreach (var p in new[] { new Vector3(8.5f, 0, 18f), new Vector3(-8.5f, 0, 18f) })
+                if (!OnRoad(p) && Free(p, 2.5f)) { Place(holder, "QuadroAvisos", p, 0, true); break; }
         }
 
-        static void Lamp(Transform parent, Vector3 p)
+        // "toward" = where the lantern should hang: over the road or the plaza.
+        static void Lamp(Transform parent, Vector3 p, Vector3 toward)
         {
+            if (Prefab("Poste") != null)
+            {
+                // The lantern arm of the model points along its local +X, so that axis turns to "toward".
+                toward.y = 0; toward.Normalize();
+                float yaw = Quaternion.LookRotation(Vector3.Cross(toward, Vector3.up)).eulerAngles.y;
+                Place(parent, "Poste", p, yaw);
+                return;
+            }
             var iron = Flat("Ferro", new Color(.18f, .17f, .18f));
             var glow = Flat("LuzLanterna", new Color(1f, .86f, .55f));
             glow.EnableKeyword("_EMISSION");
@@ -826,6 +863,15 @@ namespace ForjaDasMares.Networking.Editor
 
         static void Rock(Transform parent, Vector3 p, System.Random random)
         {
+            var rocks = Prefab("Rochas");
+            if (rocks != null)
+            {
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(rocks, parent);
+                go.transform.position = p;
+                go.transform.rotation = Quaternion.Euler(0, (float)random.NextDouble() * 360, 0);
+                go.transform.localScale = Vector3.one * (.7f + (float)random.NextDouble() * .7f);
+                return;
+            }
             float s = .9f + (float)random.NextDouble() * 1.2f;
             Soft(parent, PrimitiveType.Sphere, "Rocha", p + Vector3.up * s * .2f, new Vector3(s * 1.4f, s * .8f, s), Flat("Rocha", new Color(.70f, .66f, .58f)));
         }

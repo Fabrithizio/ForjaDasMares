@@ -156,7 +156,9 @@ namespace ForjaDasMares
             bool drops = !won && ForgeRules.DropsOnFailure(level);
             bool sealUsed = drops && useSeal && Profile.protectionSeals > 0;
             string name = definition.displayName;
-            string message = won ? "SUCESSO! " + name + " agora está +" + (level + 1) + "."
+            var evolved = won && definition.evolvesInto != null && definition.evolveAtForge > 0 && level + 1 >= definition.evolveAtForge && catalog.Find(definition.evolvesInto.itemId) != null ? definition.evolvesInto : null;
+            string message = evolved != null ? "SUCESSO! +" + (level + 1) + " · A ARMA EVOLUIU: " + evolved.displayName + "!"
+                : won ? "SUCESSO! " + name + " agora está +" + (level + 1) + "."
                 : drops && !sealUsed ? "Falhou. " + name + " caiu para +" + (level - 1) + "."
                 : sealUsed ? "Falhou, mas o Selo protegeu: " + name + " continua +" + level + "."
                 : "Falhou. " + name + " continua +" + level + ". As pedras foram gastas.";
@@ -168,6 +170,7 @@ namespace ForjaDasMares
                 if (sealUsed) next.protectionSeals--;
                 var target = next.inventory.Find(x => x.instanceId == instanceId);
                 if (won) target.forgeLevel = level + 1;
+                if (evolved != null) target.definitionId = evolved.itemId;
                 else if (drops && !sealUsed) target.forgeLevel = Mathf.Max(0, level - 1);
             }, message);
             success = saved && won;

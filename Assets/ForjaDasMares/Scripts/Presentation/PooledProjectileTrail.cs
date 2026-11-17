@@ -20,6 +20,7 @@ namespace ForjaDasMares
             trail.startColor=rose ? new Color(1f,.65f,.85f,.94f) : new Color(color.r,color.g,color.b,.7f);trail.endColor=new Color(color.r,color.g,color.b,0);
             trail.emitting=true;if(restart)trail.Clear();
         }
+        public void Stop(){if(trail!=null){trail.emitting=false;trail.Clear();}}
         void OnEnable(){if(trail!=null)trail.Clear();}
         void OnDisable(){if(trail!=null){trail.emitting=false;trail.Clear();}}
     }

@@ -394,10 +394,10 @@ namespace ForjaDasMares.Networking
             shopFeedback=Label(panel,"ShopFeedback",new Vector2(25,-445),new Vector2(770,45),"",17);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // Linha de teste: entrega itens novos sem depender de sorte no saque. Não aparece em build final.
-            var testItem=shopInventory.Catalog.Find(TestItemId);
+            var testItem=shopInventory.Catalog.Find(TestItemIds[0]);
             if(testItem!=null)
             {
-                Label(panel,"TestItem",new Vector2(25,-382),new Vector2(540,47),"TESTE · "+testItem.displayName+" · Lendária",18).color=new Color(1f,.62f,.82f);
+                Label(panel,"TestItem",new Vector2(25,-382),new Vector2(540,47),"TESTE · Bumerangue do Coração · as 3 versões",18).color=new Color(1f,.62f,.82f);
                 RusticHudTheme.Button(panel,"TestGift",Top,new Vector2(590,-382),new Vector2(200,45),"PEGAR GRÁTIS",GiveTestItem);
             }
 #endif
@@ -417,13 +417,14 @@ namespace ForjaDasMares.Networking
             shop.SetActive(false);
         }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        const string TestItemId="asa-rosal";
+        static readonly string[] TestItemIds={"coracao-v1","coracao-v2","coracao-v3"};
         void GiveTestItem()
         {
             if(!ShopOpen)return;
             var service=shopInventory.Service;
-            service.GrantTestEquipment(TestItemId,ItemRarity.Legendary);
-            shopFeedback.text=service.Message;
+            int given=0;
+            foreach(var id in TestItemIds)if(service.GrantTestEquipment(id,ItemRarity.Legendary))given++;
+            shopFeedback.text=given>0?"Bumerangue do Coração: "+given+" versão(ões) foram para a mochila. Abra com I para equipar.":service.Message;
             RefreshShop();
         }
 #endif

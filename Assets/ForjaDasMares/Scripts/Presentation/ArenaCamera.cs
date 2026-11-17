@@ -24,13 +24,59 @@ namespace ForjaDasMares
         [Header("Action RPG framing")]
         [SerializeField] Vector3 rpgOffset=new Vector3(0,11.5f,-8.5f);
         [SerializeField,Range(30,60)]float rpgFieldOfView=42;
-        [SerializeField,Range(.5f,1)]float minimumZoom=.75f;
-        [SerializeField,Range(1,2)]float maximumZoom=1.35f;
+        [SerializeField,Range(.4f,1)]float minimumZoom=.5f;
+        [SerializeField,Range(1,2)]float maximumZoom=1.6f;
         [SerializeField, Range(1f, 1.5f)] float fullscreenRpgDistance = 1.2744f;
         bool rpgFraming;
         float zoom=1,desiredZoom=1;UnityEngine.InputSystem.InputAction wheel;
         public void UseRpgFraming(){rpgFraming=true;offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}
         public void SetZoom(float value){desiredZoom=Mathf.Clamp(value,minimumZoom,maximumZoom);}
+        // Turning the view around the hero. Movement already follows the camera, so controls stay natural.
+        float yaw,desiredYaw;
+        public float Yaw=>yaw;
+        public void ResetYaw(){desiredYaw=0;}
+        readonly System.Collections.Generic.List<int> freeTouches=new System.Collections.Generic.List<int>();
+        float pinchDistance;
+        void ReadViewGestures()
+        {
+            float dt=Time.unscaledDeltaTime;
+            bool turning=false;
+            var events=UnityEngine.EventSystems.EventSystem.current;
+            if(UnityEngine.InputSystem.Touchscreen.current is UnityEngine.InputSystem.Touchscreen screen)
+            {
+                // Only fingers that started on the world (not on the joystick or buttons) move the camera.
+                foreach(var touch in screen.touches)
+                {
+                    int id=touch.touchId.ReadValue();
+                    var phase=touch.phase.ReadValue();
+                    if(phase==UnityEngine.InputSystem.TouchPhase.Began&&!freeTouches.Contains(id)&&(events==null||!events.IsPointerOverGameObject(id)))freeTouches.Add(id);
+                    else if((phase==UnityEngine.InputSystem.TouchPhase.Ended||phase==UnityEngine.InputSystem.TouchPhase.Canceled||phase==UnityEngine.InputSystem.TouchPhase.None)&&freeTouches.Contains(id))freeTouches.Remove(id);
+                }
+                UnityEngine.InputSystem.Controls.TouchControl a=null,b=null;
+                foreach(var touch in screen.touches){if(!freeTouches.Contains(touch.touchId.ReadValue())||!touch.press.isPressed)continue;if(a==null)a=touch;else if(b==null)b=touch;}
+                if(a!=null&&b!=null)
+                {
+                    float distance=Vector2.Distance(a.position.ReadValue(),b.position.ReadValue());
+                    if(pinchDistance>1&&distance>1)SetZoom(desiredZoom*pinchDistance/distance);
+                    pinchDistance=distance;
+                }
+                else
+                {
+                    pinchDistance=0;
+                    if(a!=null){desiredYaw+=a.delta.ReadValue().x/Mathf.Max(1,Screen.width)*240;turning=true;}
+                }
+            }
+            if(UnityEngine.InputSystem.Mouse.current is UnityEngine.InputSystem.Mouse mouse&&mouse.middleButton.isPressed){desiredYaw+=mouse.delta.ReadValue().x*.35f;turning=true;}
+            if(UnityEngine.InputSystem.Keyboard.current is UnityEngine.InputSystem.Keyboard keys)
+            {
+                if(keys.zKey.isPressed){desiredYaw-=90*dt;turning=true;}
+                if(keys.xKey.isPressed){desiredYaw+=90*dt;turning=true;}
+            }
+            // A quick look around only: when the finger is lifted the view goes back to the standard angle,
+            // the one names, signs and the whole layout are designed for.
+            if(!turning)desiredYaw=0;
+            yaw=Mathf.LerpAngle(yaw,desiredYaw,1-Mathf.Exp(-(turning?14:6)*dt));
+        }
         Camera cameraComponent;
         bool boundFocus;
         float armDistance, armVelocity;
@@ -58,8 +104,9 @@ namespace ForjaDasMares
         }
         void LateUpdate()
         {
-            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f)SetZoom(desiredZoom-Mathf.Clamp(amount/120,-3,3)*.08f);}
-            zoom=Mathf.Lerp(zoom,desiredZoom,1-Mathf.Exp(-8*Time.unscaledDeltaTime));
+            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f){float notches=Mathf.Abs(amount)>=30?amount/120:amount;SetZoom(desiredZoom-Mathf.Clamp(notches,-3,3)*.4f);}}
+            if(rpgFraming)ReadViewGestures();
+            zoom=Mathf.Lerp(zoom,desiredZoom,1-Mathf.Exp(-14*Time.unscaledDeltaTime));
             smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
             // This is a virtual tracking point, not the camera lens. Crossing a crate
             // must not reset the spring and repeatedly snap the view to the player.
@@ -74,7 +121,7 @@ namespace ForjaDasMares
             float armLength = Mathf.Max(0.1f, offset.magnitude*zoom*(rpgFraming&&!Application.isMobilePlatform&&Screen.fullScreen?fullscreenRpgDistance:1f));
             // A sight-line obstruction must not change the pitch or zoom. Only an
             // actual overlap at the lens may retract the arm for camera safety.
-            Vector3 direction = offset.sqrMagnitude > 0.001f ? offset.normalized : Vector3.up;
+            Vector3 direction = offset.sqrMagnitude > 0.001f ? (Quaternion.Euler(0f, yaw, 0f) * offset).normalized : Vector3.up;
             float safeDistance = armLength;
             if (Physics.CheckSphere(smoothedFocus + direction * armLength, collisionRadius, blockers, QueryTriggerInteraction.Ignore))
                 safeDistance = ClearDistance(direction, armLength);

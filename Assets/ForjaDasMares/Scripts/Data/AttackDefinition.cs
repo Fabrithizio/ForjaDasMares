@@ -33,5 +33,7 @@ namespace ForjaDasMares
         public Color color = Color.yellow;
         [Range(1, 5)] public int projectileCount = 1;
         [Range(0, 60)] public float projectileSpread;
+        // Optional heart effects (trail, hearts in the air, burst on contact). Empty = the normal trail.
+        public HeartFxStyle heartFx;
     }
 }

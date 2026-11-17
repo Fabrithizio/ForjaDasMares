@@ -53,8 +53,19 @@ namespace ForjaDasMares
                 renderer.SetPropertyBlock(null);
                 transform.localScale = Vector3.one * (.84f * (data.projectileVisualScale > 0 ? data.projectileVisualScale : 1f));
             }
-            var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
-            if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true,data.returningProjectile);}
+            var hearts=GetComponent<HeartFx>();
+            if(data.heartFx!=null)
+            {
+                if(hearts==null)hearts=gameObject.AddComponent<HeartFx>();
+                hearts.Play(data.heartFx);
+                var plain=GetComponent<PooledProjectileTrail>();if(plain!=null)plain.Stop();
+            }
+            else
+            {
+                if(hearts!=null)hearts.Stop();
+                var ribbon=effectPool!=null?effectPool.ProjectileTrailMaterial:null;
+                if(ribbon!=null){var trail=GetComponent<PooledProjectileTrail>()??gameObject.AddComponent<PooledProjectileTrail>();trail.Configure(ribbon,data.color,data.projectileRadius,true,data.returningProjectile);}
+            }
             if (data.returningProjectile && source != null && !countedInFlight)
             { inFlight.TryGetValue(source, out int count); inFlight[source] = count + 1; countedInFlight = true; }
         }
@@ -101,7 +112,7 @@ namespace ForjaDasMares
                 transform.position += direction * nearest;
                 Health victim = hits[closest].collider.GetComponentInParent<Health>();
                 resolver.Clear();
-                if (victim != null) { resolver.Remember(victim); victim.ApplyHit(attack, direction, owner, damageScale, criticalHit); }
+                if (victim != null) { resolver.Remember(victim); victim.ApplyHit(attack, direction, owner, damageScale, criticalHit); if (attack.heartFx != null) HeartFx.Impact(transform.position, attack.heartFx); }
                 if (attack.prismaticEffect == PrismaticEffect.Shatter)
                     effectPool?.PrismBurst(transform.position, .55f, 0);
                 if (attack.splashRadius > 0) resolver.Area(transform.position, attack.splashRadius, direction, 360f, attack, owner, targets, geometry, false, damageScale, criticalHit);
@@ -125,7 +136,8 @@ namespace ForjaDasMares
                     if (returnTime <= 2.5f && attack.splashRadius > 0)
                     {
                         resolver.Area(hand, attack.splashRadius, direction, 360, attack, owner, targets, geometry, false, damageScale, criticalHit);
-                        effectPool?.PrismBurst(hand - Vector3.up * .45f, attack.splashRadius, 6, .74f);
+                        if (attack.heartFx != null) HeartFx.Impact(hand, attack.heartFx);
+                        else effectPool?.PrismBurst(hand - Vector3.up * .45f, attack.splashRadius, 6, .74f);
                     }
                     gameObject.SetActive(false);
                     return;
@@ -156,7 +168,8 @@ namespace ForjaDasMares
                 {
                     resolver.Remember(target);
                     target.ApplyHit(attack, heading, owner, damageScale, criticalHit);
-                    effectPool?.PrismBurst(target.transform.position, .55f, 6, .34f);
+                    if (attack.heartFx != null) HeartFx.Impact(position, attack.heartFx);
+                    else effectPool?.PrismBurst(target.transform.position, .55f, 6, .34f);
                 }
             }
             System.Array.Clear(hits, 0, count);
