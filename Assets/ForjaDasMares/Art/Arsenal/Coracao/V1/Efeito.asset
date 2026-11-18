@@ -10,21 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5279c157d34ae4d429e54f8b3a733512, type: 3}
-  m_Name: Efeito
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeartFxStyle
   heart: {fileID: 2100000, guid: adc78ee08cb683542b6329a8336e8365, type: 2}
   glow: {fileID: 2100000, guid: b56c6d8788c7c924f89aeef0f96f70bc, type: 2}
   trail: {fileID: 2100000, guid: 1d697b716b74f6d42876051bcfdb440c, type: 2}
   trailCore: {fileID: 2100000, guid: 515790ceca2191b498cbc0f76cd0e688, type: 2}
   ring: {fileID: 2100000, guid: da3364bc55614fa428291513a22c21c2, type: 2}
-  main: {r: 1, g: 0.5, b: 0.74, a: 1}
-  second: {r: 1, g: 0.78, b: 0.6, a: 1}
+  main: {r: 0.2, g: 0.55, b: 1, a: 1}
+  second: {r: 0.5, g: 0.85, b: 1, a: 1}
+  core: {r: 0.85, g: 0.95, b: 1, a: 1}
+  sparkle: {r: 0.7, g: 0.9, b: 1, a: 1}
   trailWidth: 0.4
   trailTime: 0.22
-  heartsPerMetre: 1.4
-  heartSize: {x: 0.14, y: 0.24}
-  sparklesPerMetre: 0
+  heartsPerMetre: 0.6
+  heartSize: {x: 0.2, y: 0.3}
+  sparklesPerMetre: 1.5
   haloSize: 0
   impactHearts: 6
   impactSize: 0.65
+  impactHeartSize: {x: 0.22, y: 0.45}
+  bigHeartSize: 1.1
   bigHeart: 0
+  legendary: 0
+  petal: {fileID: 2100000, guid: a1159e906b6d29547ae04902c707704b, type: 2}
+  rune: {fileID: 2100000, guid: 20fb7395acfc82342906ea01ac01ef32, type: 2}
+  heartColors: []

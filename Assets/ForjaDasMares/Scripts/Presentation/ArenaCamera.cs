@@ -29,7 +29,10 @@ namespace ForjaDasMares
         [SerializeField, Range(1f, 1.5f)] float fullscreenRpgDistance = 1.2744f;
         bool rpgFraming;
         float zoom=1,desiredZoom=1;UnityEngine.InputSystem.InputAction wheel;
-        public void UseRpgFraming(){rpgFraming=true;offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;}
+        public void UseRpgFraming(){rpgFraming=true;offset=rpgOffset;verticalFieldOfView=rpgFieldOfView;zoom=desiredZoom=1;minimumZoom=CloseZoom;maximumZoom=1.6f;}
+        // Close-up: the camera can come right up to the hero, and the closer it gets the lower it looks,
+        // so the face, the clothes and the weapon in the hand can be seen. Far away it stays high for combat.
+        const float CloseZoom=.22f, FlattenFrom=.6f, CloseUpPitch=16f;
         public void SetZoom(float value){desiredZoom=Mathf.Clamp(value,minimumZoom,maximumZoom);}
         // Turning the view around the hero. Movement already follows the camera, so controls stay natural.
         float yaw,desiredYaw;
@@ -104,7 +107,7 @@ namespace ForjaDasMares
         }
         void LateUpdate()
         {
-            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f){float notches=Mathf.Abs(amount)>=30?amount/120:amount;SetZoom(desiredZoom-Mathf.Clamp(notches,-3,3)*.4f);}}
+            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f){float notches=Mathf.Abs(amount)>=30?amount/120:amount;SetZoom(desiredZoom*Mathf.Pow(.75f,Mathf.Clamp(notches,-3,3)));}}
             if(rpgFraming)ReadViewGestures();
             zoom=Mathf.Lerp(zoom,desiredZoom,1-Mathf.Exp(-14*Time.unscaledDeltaTime));
             smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
@@ -122,6 +125,16 @@ namespace ForjaDasMares
             // A sight-line obstruction must not change the pitch or zoom. Only an
             // actual overlap at the lens may retract the arm for camera safety.
             Vector3 direction = offset.sqrMagnitude > 0.001f ? (Quaternion.Euler(0f, yaw, 0f) * offset).normalized : Vector3.up;
+            if(rpgFraming&&zoom<FlattenFrom)
+            {
+                Vector3 level=new Vector3(direction.x,0,direction.z);
+                if(level.sqrMagnitude>.0001f)
+                {
+                    float t=Mathf.SmoothStep(0,1,Mathf.InverseLerp(FlattenFrom,CloseZoom,zoom));
+                    Vector3 low=level.normalized*Mathf.Cos(CloseUpPitch*Mathf.Deg2Rad)+Vector3.up*Mathf.Sin(CloseUpPitch*Mathf.Deg2Rad);
+                    direction=Vector3.Slerp(direction,low,t).normalized;
+                }
+            }
             float safeDistance = armLength;
             if (Physics.CheckSphere(smoothedFocus + direction * armLength, collisionRadius, blockers, QueryTriggerInteraction.Ignore))
                 safeDistance = ClearDistance(direction, armLength);

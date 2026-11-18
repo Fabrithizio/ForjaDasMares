@@ -22,7 +22,7 @@ MonoBehaviour:
   windup: 0.18
   recovery: 0.65
   knockback: 0
-  projectileSpeed: 13
+  projectileSpeed: 11
   projectileRadius: 0.32
   splashRadius: 2.7
   control: 0
@@ -34,7 +34,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 83d1a085726d5b14380b8d9053071325, type: 2}
   controlDuration: 0
   slowMultiplier: 0.5
-  color: {r: 1, g: 0.55, b: 0.75, a: 1}
+  color: {r: 0.2, g: 0.55, b: 1, a: 1}
   projectileCount: 1
   projectileSpread: 0
   heartFx: {fileID: 11400000, guid: e1ae19e88f0b13c4e82e2f6f1dfdfbf0, type: 2}
+  spinSpeed: 640

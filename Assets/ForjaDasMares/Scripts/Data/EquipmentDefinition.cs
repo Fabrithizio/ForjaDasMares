@@ -39,5 +39,7 @@ namespace ForjaDasMares
         // Evolution in the Forge: reaching this forge level turns the weapon into "evolvesInto" (keeps the level). Permanent.
         public EquipmentDefinition evolvesInto;
         [Min(0)] public int evolveAtForge;
+        // Optional aura while the weapon is held (hearts and sparkles around it).
+        public HeartFxStyle heldFx;
     }
 }

@@ -41,7 +41,8 @@ MonoBehaviour:
   ability: {fileID: 11400000, guid: 2efc24469f14ebf43bd7f657cb88dfab, type: 2}
   bonuses: []
   frontalBlock: 0
-  color: {r: 1, g: 0.42, b: 0.74, a: 1}
+  color: {r: 1, g: 0.5, b: 0.8, a: 1}
   visualScale: {x: 0.15, y: 1, z: 0.2}
   evolvesInto: {fileID: 11400000, guid: 9e100263c51510c458ee8e6d5353bf8f, type: 2}
   evolveAtForge: 12
+  heldFx: {fileID: 0}

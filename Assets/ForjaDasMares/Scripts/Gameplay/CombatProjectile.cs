@@ -58,6 +58,8 @@ namespace ForjaDasMares
             {
                 if(hearts==null)hearts=gameObject.AddComponent<HeartFx>();
                 hearts.Play(data.heartFx);
+                // Legendary: magic circle at the hero's feet on every throw.
+                if(data.heartFx.legendary&&source!=null)HeartFx.Rune(source.transform.position,data.heartFx,2.6f,true);
                 var plain=GetComponent<PooledProjectileTrail>();if(plain!=null)plain.Stop();
             }
             else
@@ -174,7 +176,7 @@ namespace ForjaDasMares
             }
             System.Array.Clear(hits, 0, count);
             transform.position = position + heading * Mathf.Max(0, wallDistance - (wall.collider != null ? .025f : 0));
-            spin += Time.deltaTime * 1040;
+            spin += Time.deltaTime * (attack.spinSpeed > 0 ? attack.spinSpeed : 1040);
             transform.rotation = Quaternion.AngleAxis(spin, Vector3.up) * Quaternion.Euler(90, 0, 0);
             if (wall.collider != null && returning) gameObject.SetActive(false);
             else if (wall.collider != null || distance >= outboundLimit) returning = true;

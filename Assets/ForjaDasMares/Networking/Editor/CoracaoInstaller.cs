@@ -25,7 +25,7 @@ namespace ForjaDasMares.Networking.Editor
             public int glowRadius;
             public bool sparkles;
             // Heart effects
-            public Color fxMain, fxSecond;
+            public Color fxMain, fxSecond, fxCore, fxSparkle;
             public float trailWidth, trailTime, heartsPerMetre, sparklesPerMetre, haloSize, impactSize;
             public Vector2 heartSize;
             public int impactHearts;
@@ -36,16 +36,16 @@ namespace ForjaDasMares.Networking.Editor
         {
             new Version { folder = "V1", id = Ids[0], name = "Bumerangue do Coração · Broto", size = 1.15f, held = .5f, emission = 0f, damage = 13, heavyDamage = 18, textureSize = 1024,
                 description = "Madeira clara, bordas de aço e um pequeno coração rosa. A primeira forma da relíquia: vai até o inimigo e volta à mão.",
-                backdrop = new Color(1f, .78f, .48f, .22f), glow = new Color(1f, .62f, .78f, .25f), glowRadius = 5,
-                fxMain = new Color(1f, .5f, .74f), fxSecond = new Color(1f, .78f, .6f), trailWidth = .4f, trailTime = .22f, heartsPerMetre = 1.4f, heartSize = new Vector2(.14f, .24f), sparklesPerMetre = 0, haloSize = 0, impactHearts = 6, impactSize = .65f },
+                backdrop = new Color(.55f, .78f, 1f, .22f), glow = new Color(.4f, .72f, 1f, .45f), glowRadius = 5,
+                fxMain = new Color(.2f, .55f, 1f), fxSecond = new Color(.5f, .85f, 1f), fxCore = new Color(.85f, .95f, 1f), fxSparkle = new Color(.7f, .9f, 1f), trailWidth = .4f, trailTime = .22f, heartsPerMetre = .6f, heartSize = new Vector2(.2f, .3f), sparklesPerMetre = 1.5f, haloSize = 0, impactHearts = 6, impactSize = .65f },
             new Version { folder = "V2", id = Ids[1], name = "Bumerangue do Coração · Desperto", size = 1.3f, held = .56f, emission = .2f, damage = 17, heavyDamage = 24, textureSize = 1024,
                 description = "As lâminas viraram duas luas de prata e o coração despertou. O arremesso deixa um rastro de corações.",
-                backdrop = new Color(.82f, .88f, 1f, .24f), glow = new Color(1f, .42f, .74f, .6f), glowRadius = 8,
-                fxMain = new Color(1f, .32f, .7f), fxSecond = new Color(.82f, .58f, 1f), trailWidth = .7f, trailTime = .32f, heartsPerMetre = 2.8f, heartSize = new Vector2(.2f, .36f), sparklesPerMetre = 3, haloSize = .8f, impactHearts = 11, impactSize = .9f },
+                backdrop = new Color(.82f, .88f, 1f, .24f), glow = new Color(1f, .6f, .85f, .6f), glowRadius = 8,
+                fxMain = new Color(1f, .5f, .8f), fxSecond = new Color(1f, .74f, .9f), fxCore = new Color(1f, .95f, .98f), fxSparkle = new Color(1f, .9f, .95f), trailWidth = .6f, trailTime = .3f, heartsPerMetre = 1f, heartSize = new Vector2(.26f, .4f), sparklesPerMetre = 3, haloSize = .6f, impactHearts = 11, impactSize = .9f },
             new Version { folder = "V3", id = Ids[2], name = "Bumerangue do Coração · Asa do Coração", size = 1.45f, held = .62f, emission = .5f, damage = 22, heavyDamage = 31, textureSize = 2048,
                 description = "A forma final: luas douradas, asas de cristal e o coração em chamas rosas. Cada arremesso floresce em corações.",
-                backdrop = new Color(1f, .5f, .86f, .3f), glow = new Color(1f, .45f, .86f, .95f), glowRadius = 12, sparkles = true,
-                fxMain = new Color(1f, .28f, .72f), fxSecond = new Color(.72f, .42f, 1f), trailWidth = 1.05f, trailTime = .45f, heartsPerMetre = 5f, heartSize = new Vector2(.26f, .52f), sparklesPerMetre = 7, haloSize = 1.4f, impactHearts = 18, impactSize = 1.25f, bigHeart = true },
+                backdrop = new Color(1f, .5f, .86f, .3f), glow = new Color(.95f, .18f, .58f, .95f), glowRadius = 12, sparkles = true,
+                fxMain = new Color(.88f, .06f, .45f), fxSecond = new Color(.55f, .1f, .75f), fxCore = new Color(1f, .86f, .5f), fxSparkle = new Color(1f, .8f, .3f), trailWidth = .85f, trailTime = .38f, heartsPerMetre = 4.5f, heartSize = new Vector2(.13f, .22f), sparklesPerMetre = 3, haloSize = .6f, impactHearts = 18, impactSize = 1f, bigHeart = true },
         };
 
         [MenuItem("Forja/Arsenal/Bumerangue do Coração (3 versões)")]
@@ -106,7 +106,9 @@ namespace ForjaDasMares.Networking.Editor
                 hit.name = "Arremesso";
                 hit.damage = v.damage;
                 hit.projectileVisual = mesh; hit.projectileMaterials = materials; hit.projectileVisualScale = 1f;
-                hit.color = v.glow.a > .5f ? new Color(v.glow.r, v.glow.g, v.glow.b, 1) : new Color(1f, .55f, .75f, 1);
+                hit.color = new Color(v.fxMain.r, v.fxMain.g, v.fxMain.b, 1);
+                // Slower flight and spin so the weapon can be seen (was 13 m/s and 1040 degrees/s).
+                hit.projectileSpeed = 12f; hit.spinSpeed = 720;
                 hit.heartFx = Style(v, folder, shared);
                 hit = Save(hit, folder + "Arremesso.asset");
                 var heavy = Object.Instantiate(baseBurst);
@@ -115,6 +117,7 @@ namespace ForjaDasMares.Networking.Editor
                 heavy.projectileVisual = mesh; heavy.projectileMaterials = materials; heavy.projectileVisualScale = 1.1f;
                 heavy.color = hit.color;
                 heavy.heartFx = hit.heartFx;
+                heavy.projectileSpeed = 11f; heavy.spinSpeed = 640;
                 heavy = Save(heavy, folder + "ArremessoForte.asset");
                 var ability = Object.Instantiate(baseAbility);
                 ability.hit = heavy;
@@ -134,6 +137,7 @@ namespace ForjaDasMares.Networking.Editor
                 item.icon = icon;
                 item.attacks = new[] { hit };
                 item.ability = ability;
+                item.heldFx = v.bigHeart ? hit.heartFx : null;
                 item = Save(item, folder + "Arma.asset");
 
                 if (catalog.Find(v.id) == null)
@@ -400,7 +404,7 @@ namespace ForjaDasMares.Networking.Editor
         }
 
         // ---------- Heart effects: textures and additive materials made once, one style per version ----------
-        sealed class Shared { public Material heart, glow, ring, core; public Texture2D trail; }
+        sealed class Shared { public Material heart, heartFilled, glow, ring, core, petal, rune; public Texture2D trail; }
 
         static Shared SharedFx()
         {
@@ -411,9 +415,12 @@ namespace ForjaDasMares.Networking.Editor
                 float x = (u - .5f) * 2.6f, y = (v - .47f) * 2.6f + .1f;
                 float f = Mathf.Pow(x * x + y * y - 1, 3) - x * x * y * y * y;
                 float inside = Mathf.Clamp01(-f * 8);
-                float halo = Mathf.Exp(-Mathf.Max(0, f) * 3.5f) * .45f;
-                float core = Mathf.Clamp01(1 - Mathf.Sqrt(x * x + (y - .2f) * (y - .2f)) * .9f);
-                return new Color(1, 1, 1, Mathf.Clamp01(Mathf.Max(inside * (.75f + .25f * core), halo)));
+                // Hollow heart: a strong bright outline, a light see-through middle and a soft glow outside.
+                float rim = Mathf.Exp(-Mathf.Abs(f) * 9f);
+                float halo = Mathf.Exp(-Mathf.Max(0, f) * 4f) * .3f;
+                float alpha = Mathf.Max(Mathf.Max(rim, inside * .28f), halo);
+                float shade = Mathf.Lerp(.9f, 1f, rim);
+                return new Color(shade, shade, shade, Mathf.Clamp01(alpha));
             }, false);
             var glow = Texture(fx + "Brilho.png", 64, (u, v) =>
             {
@@ -428,20 +435,72 @@ namespace ForjaDasMares.Networking.Editor
             // Ribbon tile: a soft band with a heart drawn in the middle (repeats along the trail).
             var trail = Texture(fx + "Faixa.png", 128, (u, v) =>
             {
-                float band = Mathf.Exp(-Mathf.Pow((v - .5f) / .3f, 2)) * .55f;
-                float x = (v - .5f) * 3.4f, y = (u - .5f) * 3.4f + .1f; // heart pointing along the trail
-                float f = Mathf.Pow(x * x + y * y - 1, 3) - x * x * y * y * y;
-                float rim = Mathf.Exp(-Mathf.Abs(f) * 14f);
-                float fill = Mathf.Clamp01(-f * 6) * .55f;
-                return new Color(1, 1, 1, Mathf.Clamp01(band + Mathf.Max(rim, fill)));
+                float centre = Mathf.Exp(-Mathf.Pow((v - .5f) / .07f, 2));
+                float edges = Mathf.Exp(-Mathf.Pow((v - .16f) / .04f, 2)) + Mathf.Exp(-Mathf.Pow((v - .84f) / .04f, 2));
+                float fill = Mathf.Clamp01(1 - Mathf.Abs(v - .5f) / .38f) * .32f;
+                float alpha = Mathf.Clamp01(fill + edges * .85f + centre);
+                return new Color(1, 1, 1, alpha);
             }, true);
+            // Filled heart for the final version: solid colour, bright outline and a shine on the upper left.
+            var filled = Texture(fx + "CoracaoCheio.png", 128, (u, v) =>
+            {
+                float x = (u - .5f) * 2.5f, y = (v - .47f) * 2.5f + .1f;
+                float f = Mathf.Pow(x * x + y * y - 1, 3) - x * x * y * y * y;
+                float inside = Mathf.Clamp01(-f * 10);
+                float rim = Mathf.Exp(-Mathf.Abs(f) * 9f);
+                float shine = Mathf.Exp(-(Mathf.Pow((x + .45f) / .28f, 2) + Mathf.Pow((y - .35f) / .2f, 2)));
+                float halo = Mathf.Exp(-Mathf.Max(0, f) * 6f) * .1f;
+                float shade = Mathf.Clamp01(.78f + rim * .22f + shine * .5f);
+                return new Color(shade, shade, shade, Mathf.Clamp01(Mathf.Max(inside * .95f, Mathf.Max(rim, halo))));
+            }, false);
+            // Rose petal.
+            var petal = Texture(fx + "Petala.png", 64, (u, v) =>
+            {
+                float x = (u - .5f) / .3f, y = (v - .5f) / .46f;
+                float d = x * x + y * y;
+                float notch = Mathf.Clamp01((Mathf.Abs(u - .5f) * 8f) + (1 - Mathf.Clamp01((v - .9f) * 12f)));
+                float shade = Mathf.Lerp(.78f, 1f, v);
+                return new Color(shade, shade, shade, Mathf.Clamp01((1 - d) * 4f) * Mathf.Clamp01(notch));
+            }, false);
+            // Magic circle: rings, an eight-point star, small hearts around and a heart in the middle.
+            var rune = Texture(fx + "Runa.png", 256, (u, v) =>
+            {
+                float x = (u - .5f) * 2, y = (v - .5f) * 2, r = Mathf.Sqrt(x * x + y * y);
+                float a = 0;
+                a = Mathf.Max(a, Mathf.Exp(-Mathf.Pow((r - .95f) / .014f, 2)));
+                a = Mathf.Max(a, Mathf.Exp(-Mathf.Pow((r - .87f) / .009f, 2)) * .9f);
+                a = Mathf.Max(a, Mathf.Exp(-Mathf.Pow((r - .52f) / .01f, 2)) * .85f);
+                float angle = Mathf.Atan2(y, x);
+                if (r > .87f && r < .95f) a = Mathf.Max(a, Mathf.Exp(-Mathf.Pow(Mathf.Sin(angle * 16) / .08f, 2)) * .8f);
+                for (int k = 0; k < 8; k++)
+                {
+                    float t0 = k * Mathf.PI / 4, t1 = (k + 3) * Mathf.PI / 4;
+                    var p0 = new Vector2(Mathf.Cos(t0), Mathf.Sin(t0)) * .87f; var p1 = new Vector2(Mathf.Cos(t1), Mathf.Sin(t1)) * .87f;
+                    var p = new Vector2(x, y); var d = p1 - p0;
+                    float t = Mathf.Clamp01(Vector2.Dot(p - p0, d) / d.sqrMagnitude);
+                    a = Mathf.Max(a, Mathf.Exp(-Mathf.Pow(Vector2.Distance(p, p0 + d * t) / .008f, 2)) * .6f);
+                    var c = new Vector2(Mathf.Cos(t0 + Mathf.PI / 8), Mathf.Sin(t0 + Mathf.PI / 8)) * .7f;
+                    float hx = (x - c.x) / .095f, hy = (y - c.y) / .095f + .15f;
+                    float hf = Mathf.Pow(hx * hx + hy * hy - 1, 3) - hx * hx * hy * hy * hy;
+                    a = Mathf.Max(a, Mathf.Clamp01(-hf * 25));
+                }
+                // Heart in the middle: an outline of even thickness (outer heart minus a smaller one).
+                float Heart(float hx, float hy) => Mathf.Pow(hx * hx + hy * hy - 1, 3) - hx * hx * hy * hy * hy;
+                float outer = Mathf.Clamp01(-Heart(x / .22f, y / .22f + .1f) * 25), inner = Mathf.Clamp01(-Heart(x / .17f, y / .17f + .14f) * 25);
+                a = Mathf.Max(a, outer * (1 - inner) + inner * .3f);
+                a = Mathf.Max(a, Mathf.Clamp01(1 - r) * .12f);
+                return new Color(1, 1, 1, Mathf.Clamp01(a));
+            }, false);
             var core = Texture(fx + "Nucleo.png", 64, (u, v) => new Color(1, 1, 1, Mathf.Exp(-Mathf.Pow((v - .5f) / .2f, 2))), false);
             return new Shared
             {
-                heart = Additive(fx + "Coracao.mat", heart, Vector2.one),
+                heart = Additive(fx + "Coracao.mat", heart, Vector2.one, false),
+                heartFilled = Additive(fx + "CoracaoCheio.mat", filled, Vector2.one, false),
                 glow = Additive(fx + "Brilho.mat", glow, Vector2.one),
-                ring = Additive(fx + "Anel.mat", ring, Vector2.one),
+                ring = Additive(fx + "Anel.mat", ring, Vector2.one, false),
                 core = Additive(fx + "Nucleo.mat", core, Vector2.one),
+                petal = Additive(fx + "Petala.mat", petal, Vector2.one, false),
+                rune = Additive(fx + "Runa.mat", rune, Vector2.one, false),
                 trail = trail
             };
         }
@@ -451,12 +510,22 @@ namespace ForjaDasMares.Networking.Editor
             var style = ScriptableObject.CreateInstance<HeartFxStyle>();
             style.heart = shared.heart; style.glow = shared.glow; style.ring = shared.ring; style.trailCore = shared.core;
             // One heart per tile: the tile is as long as the ribbon is wide, so hearts keep their shape.
-            style.trail = Additive(folder + "Rastro.mat", shared.trail, new Vector2(1f / Mathf.Max(.2f, v.trailWidth), 1));
-            style.main = v.fxMain; style.second = v.fxSecond;
+            style.trail = Additive(folder + "Rastro.mat", shared.trail, Vector2.one, false);
+            style.main = v.fxMain; style.second = v.fxSecond; style.core = v.fxCore; style.sparkle = v.fxSparkle;
             style.trailWidth = v.trailWidth; style.trailTime = v.trailTime;
             style.heartsPerMetre = v.heartsPerMetre; style.heartSize = v.heartSize;
             style.sparklesPerMetre = v.sparklesPerMetre; style.haloSize = v.haloSize;
             style.impactHearts = v.impactHearts; style.impactSize = v.impactSize; style.bigHeart = v.bigHeart;
+            style.legendary = v.bigHeart; style.petal = shared.petal; style.rune = shared.rune;
+            // Final version only: filled hearts, each one pink, gold or blue.
+            if (v.bigHeart)
+            {
+                style.heart = shared.heartFilled;
+                style.heartColors = new[] { new Color(1f, .3f, .68f), new Color(1f, .8f, .28f) };
+                style.impactHeartSize = new Vector2(.1f, .2f);
+                style.bigHeartSize = .9f;
+            }
+            else style.heartColors = new Color[0];
             return Save(style, folder + "Efeito.asset");
         }
 
@@ -483,19 +552,20 @@ namespace ForjaDasMares.Networking.Editor
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
-        // Additive transparent particle material (glows over everything, never darkens).
-        static Material Additive(string path, Texture2D texture, Vector2 tiling)
+        // Transparent particle material. Additive = glows (core, halo, flash); otherwise normal blending,
+        // which keeps strong colours on the light stone floor (additive turned them pale there).
+        static Material Additive(string path, Texture2D texture, Vector2 tiling, bool additive = true)
         {
             var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
             var m = new Material(shader);
             m.SetTexture("_BaseMap", texture);
             m.SetTextureScale("_BaseMap", tiling);
             m.SetColor("_BaseColor", Color.white);
-            m.SetFloat("_Surface", 1); m.SetFloat("_Blend", 2);
+            m.SetFloat("_Surface", 1); m.SetFloat("_Blend", additive ? 2 : 0);
             m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            m.SetFloat("_DstBlend", (float)(additive ? UnityEngine.Rendering.BlendMode.One : UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha));
             m.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One);
-            m.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One);
+            m.SetFloat("_DstBlendAlpha", (float)(additive ? UnityEngine.Rendering.BlendMode.One : UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha));
             m.SetFloat("_ZWrite", 0);
             m.SetOverrideTag("RenderType", "Transparent");
             m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");

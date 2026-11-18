@@ -35,5 +35,7 @@ namespace ForjaDasMares
         [Range(0, 60)] public float projectileSpread;
         // Optional heart effects (trail, hearts in the air, burst on contact). Empty = the normal trail.
         public HeartFxStyle heartFx;
+        // Turns per second of a flying weapon, in degrees. 0 = the standard fast spin (1040).
+        [Min(0)] public float spinSpeed;
     }
 }
