@@ -11,6 +11,7 @@ namespace ForjaDasMares
         public bool FitsEquipmentToBody=>fitEquipmentToBody;
         [SerializeField, Min(.1f)] float staffLength=1.45f, bookLength=.38f, shieldLength=.60f, focusLength=.30f, otherWeaponLength=.95f;
         public void ConfigureEquipmentFit(bool value)=>fitEquipmentToBody=value;
+        public void ConfigureStride(float walk,float run){walkStride=Mathf.Max(.1f,walk);runStride=Mathf.Max(.1f,run);}
         public float EquipmentScale(EquipmentDefinition item)
         {
             if(!fitEquipmentToBody||item==null||item.visualMesh==null)return 1;
@@ -72,8 +73,22 @@ namespace ForjaDasMares
         void OnEnable(){lastState=lastUpper=lastVersion=-1;phase=upperWeight=locomotionWeight=0;running=false;}
         float pauseUntil,heldActionTime;
         public void PauseImpact(float duration){pauseUntil=Mathf.Max(pauseUntil,Time.unscaledTime+Mathf.Clamp(duration,0,.06f));}
+        // The dash lasts a fraction of a second; the roll needs longer to be seen. On fitted bodies the roll keeps
+        // playing for DodgeLook seconds even after the dash itself has ended (unless something more important happens).
+        const float DodgeLook=.55f;
+        float dodgeVisual=-1;
         public void Animate(HeroState state,float normalizedAttack,float movement,bool alive,int variant=0,int version=0,float impact=.25f)
         {
+            if(fitEquipmentToBody)
+            {
+                if(state==HeroState.Dodge&&dodgeVisual<0)dodgeVisual=0;
+                if(dodgeVisual>=0)
+                {
+                    dodgeVisual+=Time.deltaTime;
+                    if(dodgeVisual<DodgeLook&&alive&&(state==HeroState.Dodge||state==HeroState.Walk||state==HeroState.Idle)){state=HeroState.Dodge;normalizedAttack=dodgeVisual/DodgeLook;}
+                    else if(state!=HeroState.Dodge)dodgeVisual=-1;
+                }
+            }
             if(Time.unscaledTime<pauseUntil)normalizedAttack=heldActionTime;else heldActionTime=normalizedAttack;
             if(defaultWeapon!=null)defaultWeapon.SetActive(wantsDefaultWeapon&&alive);
             // A newly integrated skin can expose its sockets/FX while its own clips

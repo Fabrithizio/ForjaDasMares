@@ -13,12 +13,19 @@ namespace ForjaDasMares.Networking
     {
         public const string FirstGameScene = "RefugioUltimoSino";
         const string VolumeKey = "CampaignMasterVolume";
+        public const string TestCreationKey = "ForjaTestarCriacao";
 
-        GameObject loading, creation, menu, options, confirmDelete;
+        GameObject loading, creation, menu, options, confirmDelete, accounts;
+        RectTransform accountList;
         Text creationError, lookLabel, characterLabel, accountLabel, volumeLabel;
         InputField nameField;
-        readonly Image[] lookFrames = new Image[4];
-        int chosenLook = 2;
+        readonly Button[] genderButtons = new Button[2];
+        int chosenLook = 2, chosenGender;
+        // 3D preview of the character: its own camera draws into a picture shown on the menu.
+        const int PreviewLayer = 31;
+        Camera previewCamera; RenderTexture previewTexture; Transform previewStage; RawImage previewImage;
+        readonly GameObject[] previewModels = new GameObject[2];
+        float previewYaw, previewZoom = 1; float pinchStart = -1, pinchZoom = 1;
         bool travelling;
 
         void Awake()
@@ -34,6 +41,7 @@ namespace ForjaDasMares.Networking
             }
             if (FindFirstObjectByType<EventSystem>() == null)
                 new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+            Camera.main.cullingMask &= ~(1 << PreviewLayer);
             BuildInterface();
         }
 
@@ -43,7 +51,10 @@ namespace ForjaDasMares.Networking
             yield return null;
             AccountService.SignIn();
             yield return new WaitForSecondsRealtime(.6f);
-            if (AccountService.HasCharacter) OpenMenu(); else OpenCreation();
+            // Test from the editor (menu Forja/Personagem/Testar tela de criação): open creation even with a character.
+            bool test = PlayerPrefs.GetInt(TestCreationKey, 0) == 1;
+            if (test) { PlayerPrefs.DeleteKey(TestCreationKey); PlayerPrefs.Save(); }
+            if (AccountService.HasCharacter && !test) OpenMenu(); else OpenCreation();
         }
 
         void BuildInterface()
@@ -66,39 +77,29 @@ namespace ForjaDasMares.Networking
             Label(loading, "FORJA\nDAS MARÉS", 0, 250, 1280, 160, 60, TextAnchor.MiddleCenter);
             Label(loading, "Carregando...", 0, 430, 1280, 50, 22, TextAnchor.MiddleCenter).color = RusticHudTheme.Gold;
 
+            BuildPreview(root);
             BuildCreation(root);
             BuildMenu(root);
             BuildOptions(root);
             BuildConfirmDelete(root);
+            BuildAccounts(root);
         }
 
         void BuildCreation(RectTransform root)
         {
             creation = Page(root, "CriarPersonagem", true);
             Label(creation, "CRIAR PERSONAGEM", 65, 50, 900, 64, 38).color = RusticHudTheme.Gold;
-            Label(creation, "Escolha seu nome e sua aparência. A arma que você usa define como você luta.", 65, 115, 1150, 45, 20);
-            nameField = Field(creation, "Nome", 65, 175, 560, "Nome do personagem", AccountService.MaxNameLength);
-            var cards = Resources.Load<Texture2D>("MenuArt/ClassCards");
-            float[] left = { .045f, .107f, .171f, .234f };
-            for (int i = 0; i < AccountService.Looks.Length; i++)
-            {
-                int index = i;
-                float x = 65 + i * 205;
-                var frame = RusticHudTheme.Rect(creation.transform, "Aparencia" + i, new Vector2(0, 1), new Vector2(x, -260), new Vector2(185, 200));
-                lookFrames[i] = frame.gameObject.AddComponent<Image>();
-                lookFrames[i].raycastTarget = false;
-                var portraitRect = RusticHudTheme.Rect(frame, "Retrato", new Vector2(.5f, .5f), Vector2.zero, new Vector2(170, 185));
-                var portrait = portraitRect.gameObject.AddComponent<RawImage>();
-                portrait.texture = cards;
-                portrait.uvRect = new Rect(left[i], .686f, .057f, .147f);
-                portrait.raycastTarget = false;
-                Button(creation, "EscolherAparencia" + i, x, 470, 185, AccountService.Looks[i], () => ChooseLook(index));
-            }
-            lookLabel = Label(creation, "", 65, 540, 820, 40, 19);
-            creationError = Label(creation, "", 65, 580, 820, 40, 18);
+            Label(creation, "Escolha seu expedicionário e dê um nome a ele.\nRoupas, chapéus e outros estilos você ganha jogando.", 65, 115, 560, 70, 19);
+            Label(creation, "Personagem", 65, 205, 300, 30, 18).color = RusticHudTheme.Gold;
+            genderButtons[0] = Button(creation, "Masculino", 65, 240, 270, "MASCULINO", () => ChooseGender(0));
+            genderButtons[1] = Button(creation, "Feminino", 355, 240, 270, "FEMININO", () => ChooseGender(1));
+            Label(creation, "Nome", 65, 330, 300, 30, 18).color = RusticHudTheme.Gold;
+            nameField = Field(creation, "Nome", 65, 365, 560, "Nome do personagem", AccountService.MaxNameLength);
+            lookLabel = Label(creation, "", 65, 440, 560, 40, 18);
+            creationError = Label(creation, "", 65, 480, 560, 60, 18);
             creationError.color = new Color(1f, .62f, .55f);
-            Button(creation, "CriarEEntrar", 900, 610, 315, "CRIAR E ENTRAR", ConfirmCreation);
-            ChooseLook(chosenLook);
+            Button(creation, "CriarEEntrar", 65, 600, 560, "CRIAR E ENTRAR", ConfirmCreation);
+            ChooseGender(chosenGender);
         }
 
         void BuildMenu(RectTransform root)
@@ -111,7 +112,8 @@ namespace ForjaDasMares.Networking
             Button(menu, "Configuracoes", 65, 418, 225, "CONFIGURAÇÕES", () => Show(options));
             Button(menu, "Sair", 310, 418, 225, "SAIR", Application.Quit);
             Button(menu, "ApagarPersonagem", 65, 491, 470, "APAGAR PERSONAGEM", () => Show(confirmDelete));
-            accountLabel = Label(menu, "", 68, 600, 900, 70, 16);
+            Button(menu, "TrocarConta", 65, 564, 470, "TROCAR DE CONTA", OpenAccounts);
+            accountLabel = Label(menu, "", 68, 640, 900, 60, 16);
             accountLabel.color = RusticHudTheme.Muted;
             var badge = RusticHudTheme.Rect(menu.transform, "Versao", new Vector2(1, 0), new Vector2(-40, 40), new Vector2(310, 65));
             RusticHudTheme.Panel(badge, new Color(.025f, .05f, .055f, .85f), 16);
@@ -140,19 +142,123 @@ namespace ForjaDasMares.Networking
             Button(confirmDelete, "Confirmar", 690, 420, 430, "APAGAR", () => { AccountService.DeleteCharacter(); OpenCreation(); });
         }
 
-        void ChooseLook(int index)
+        // ---------- Switch account (saved on this device) ----------
+        void BuildAccounts(RectTransform root)
         {
-            chosenLook = Mathf.Clamp(index, 0, AccountService.Looks.Length - 1);
-            for (int i = 0; i < lookFrames.Length; i++)
-                if (lookFrames[i] != null) lookFrames[i].color = i == chosenLook ? RusticHudTheme.Gold : new Color(.08f, .12f, .14f, .9f);
-            lookLabel.text = "Aparência: " + AccountService.Looks[chosenLook] + " · arma inicial: " + AccountService.LookWeapons[chosenLook];
+            accounts = Page(root, "Contas", true);
+            Label(accounts, "TROCAR DE CONTA", 65, 50, 900, 64, 38).color = RusticHudTheme.Gold;
+            Label(accounts, "Contas salvas neste aparelho. Escolha uma ou crie uma nova para começar do zero.", 65, 115, 1100, 40, 19);
+            accountList = RusticHudTheme.Rect(accounts.transform, "Lista", new Vector2(0, 1), new Vector2(65, -170), new Vector2(1150, 400));
+            Button(accounts, "NovaConta", 65, 600, 540, "NOVA CONTA", () => { AccountService.NewAccount(); OpenCreation(); });
+            Button(accounts, "VoltarContas", 675, 600, 540, "VOLTAR", OpenMenu);
+        }
+
+        void OpenAccounts()
+        {
+            foreach (Transform child in accountList) Destroy(child.gameObject);
+            var list = AccountService.LocalAccounts();
+            string active = AccountService.Peek()?.accountId;
+            for (int i = 0; i < list.Length && i < 6; i++)
+            {
+                var account = list[i];
+                string who = account.HasCharacter ? account.character.name + " · " + AccountService.Genders[Mathf.Clamp(account.character.gender, 0, 1)] : "sem personagem";
+                string label = (account.accountId == active ? "▶ " : "") + who + "   (" + AccountService.ShortIdOf(account.accountId) + ")";
+                string id = account.accountId;
+                RusticHudTheme.Button(accountList, "Conta" + i, new Vector2(0, 1), new Vector2(i % 2 * 575, -(i / 2) * 75), new Vector2(560, 60), label, () => { AccountService.UseAccount(id); OpenMenu(); });
+            }
+            Show(accounts);
+        }
+
+        void ChooseGender(int index)
+        {
+            chosenGender = Mathf.Clamp(index, 0, 1);
+            for (int i = 0; i < genderButtons.Length; i++)
+            {
+                var graphic = genderButtons[i] != null ? genderButtons[i].GetComponent<RoundedHudGraphic>() : null;
+                if (graphic == null) continue;
+                bool active = i == chosenGender;
+                graphic.borderColor = active ? RusticHudTheme.Gold : RusticHudTheme.Copper;
+                graphic.border = active ? 3f : 1.5f;
+                graphic.SetVerticesDirty();
+            }
+            lookLabel.text = AccountService.Genders[chosenGender] + " · roupa inicial de expedicionário";
+            ShowPreview(chosenGender);
+        }
+
+        // ---------- 3D preview (drag to turn, wheel or two fingers to zoom) ----------
+        void BuildPreview(RectTransform root)
+        {
+            previewTexture = new RenderTexture(720, 960, 24, RenderTextureFormat.ARGB32) { name = "PreviewPersonagem", antiAliasing = 4 };
+            previewStage = new GameObject("PalcoPersonagem").transform;
+            previewStage.position = new Vector3(0, -500, 0);
+            var cameraObject = new GameObject("CameraPersonagem");
+            cameraObject.transform.SetParent(previewStage, false);
+            previewCamera = cameraObject.AddComponent<Camera>();
+            previewCamera.clearFlags = CameraClearFlags.SolidColor; previewCamera.backgroundColor = new Color(0, 0, 0, 0);
+            previewCamera.cullingMask = 1 << PreviewLayer; previewCamera.targetTexture = previewTexture;
+            previewCamera.fieldOfView = 26; previewCamera.nearClipPlane = .1f; previewCamera.farClipPlane = 30;
+            var lightObject = new GameObject("LuzPersonagem");
+            lightObject.transform.SetParent(previewStage, false);
+            lightObject.transform.rotation = Quaternion.Euler(32, 155, 0);
+            var light = lightObject.AddComponent<Light>();
+            light.type = LightType.Directional; light.intensity = 1.25f; light.color = new Color(1f, .95f, .88f); light.shadows = LightShadows.None;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(.62f, .62f, .68f);
+
+            var rect = RusticHudTheme.Rect(root, "PreviewPersonagem", new Vector2(0, 1), new Vector2(0, 0), new Vector2(540, 720));
+            rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f); rect.pivot = new Vector2(.5f, .5f);
+            rect.anchoredPosition = new Vector2(300, -10);
+            previewImage = rect.gameObject.AddComponent<RawImage>();
+            previewImage.texture = previewTexture;
+            var drag = rect.gameObject.AddComponent<PreviewDragArea>();
+            drag.Dragged = dx => previewYaw -= dx * .45f;
+            drag.Scrolled = dy => previewZoom = Mathf.Clamp(previewZoom - dy * .08f, .55f, 1.15f);
+            Label(rect.gameObject, "Arraste para girar · role ou use dois dedos para aproximar", 0, 690, 540, 26, 14, TextAnchor.MiddleCenter).color = RusticHudTheme.Muted;
+            rect.gameObject.SetActive(false);
+        }
+
+        void ShowPreview(int gender)
+        {
+            if (previewStage == null) return;
+            for (int i = 0; i < previewModels.Length; i++)
+            {
+                if (previewModels[i] == null && i == gender)
+                {
+                    var prefab = Resources.Load<GameObject>("Personagens/" + (i == 0 ? "Masculino" : "Feminino"));
+                    if (prefab == null) continue;
+                    previewModels[i] = Instantiate(prefab, previewStage);
+                    previewModels[i].transform.localPosition = Vector3.zero;
+                    foreach (var t in previewModels[i].GetComponentsInChildren<Transform>(true)) t.gameObject.layer = PreviewLayer;
+                    // Until real "standing" animations arrive, the body is kept alive by code (breathing, arms down, looking around).
+                    foreach (var animator in previewModels[i].GetComponentsInChildren<Animator>(true)) animator.enabled = false;
+                    previewModels[i].AddComponent<NpcIdle>();
+                }
+                if (previewModels[i] != null) previewModels[i].SetActive(i == gender);
+            }
+        }
+
+        void Update()
+        {
+            if (previewCamera == null || previewImage == null || !previewImage.gameObject.activeInHierarchy) return;
+            // Two fingers on the phone: pinch to zoom the preview.
+            var screen = UnityEngine.InputSystem.Touchscreen.current;
+            int pressed = 0; Vector2 a = default, b = default;
+            if (screen != null) foreach (var touch in screen.touches) if (touch.press.isPressed) { if (pressed == 0) a = touch.position.ReadValue(); else if (pressed == 1) b = touch.position.ReadValue(); pressed++; }
+            if (pressed >= 2) { float d = Vector2.Distance(a, b); if (pinchStart < 0) { pinchStart = d; pinchZoom = previewZoom; } else if (d > 1) previewZoom = Mathf.Clamp(pinchZoom * pinchStart / d, .55f, 1.15f); }
+            else pinchStart = -1;
+            foreach (var model in previewModels) if (model != null && model.activeSelf) model.transform.localRotation = Quaternion.Euler(0, 180 + previewYaw, 0);
+            // Close: looks at the face; far: the whole body.
+            float t = Mathf.InverseLerp(.55f, 1.15f, previewZoom);
+            var look = new Vector3(0, Mathf.Lerp(1.4f, .92f, t), 0);
+            previewCamera.transform.localPosition = look + new Vector3(0, .15f, Mathf.Lerp(-2.4f, -7.4f, t));
+            previewCamera.transform.LookAt(previewStage.position + look);
         }
 
         void ConfirmCreation()
         {
             string error = AccountService.ValidateName(nameField.text);
             if (error != null) { creationError.text = error; return; }
-            if (AccountService.CreateCharacter(nameField.text, chosenLook) == null) { creationError.text = "Não foi possível criar o personagem."; return; }
+            if (AccountService.CreateCharacter(nameField.text, chosenLook, chosenGender) == null) { creationError.text = "Não foi possível criar o personagem."; return; }
             Play();
         }
 
@@ -167,7 +273,7 @@ namespace ForjaDasMares.Networking
         {
             var character = AccountService.Character;
             if (character == null) { OpenCreation(); return; }
-            characterLabel.text = character.name + "\n" + AccountService.Looks[Mathf.Clamp(character.look, 0, AccountService.Looks.Length - 1)];
+            characterLabel.text = character.name + "\n" + AccountService.Genders[Mathf.Clamp(character.gender, 0, AccountService.Genders.Length - 1)];
             accountLabel.text = "Conta de convidado neste aparelho · " + AccountService.ShortId +
                 "\nEntrar com Google e salvar na nuvem: em breve.";
             Show(menu);
@@ -191,8 +297,11 @@ namespace ForjaDasMares.Networking
 
         void Show(GameObject page)
         {
-            foreach (var each in new[] { loading, creation, menu, options, confirmDelete })
+            foreach (var each in new[] { loading, creation, menu, options, confirmDelete, accounts })
                 if (each != null) each.SetActive(each == page);
+            bool preview = page == creation;
+            if (previewImage != null) { previewImage.gameObject.SetActive(preview); previewImage.transform.SetAsLastSibling(); }
+            if (previewCamera != null) previewCamera.enabled = preview;
         }
 
         static GameObject Page(Transform parent, string name, bool panel)

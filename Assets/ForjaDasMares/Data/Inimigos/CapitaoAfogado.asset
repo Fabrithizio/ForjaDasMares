@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: Enemy_custodio(Clone)
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 1.4
+  enemyId: capitao-afogado
+  displayName: "Capit\xE3o Afogado"
+  kind: 6
+  prefab: {fileID: 415103210328988871, guid: 6a669517389b8404cba4403308e0227e, type: 3}
+  maximumHealth: 600
+  poolCapacity: 1
+  armor: 0.1
+  speed: 3.1
+  acceleration: 20
+  height: 2.5
+  radius: 0.5
+  agentTypeId: 0
+  detectionRange: 18
+  forgetRange: 30
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: 29cac0eabf66f1e4198e34956ee15ee7, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0.9
+  staggerDuration: 0
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 11400000, guid: 645dd1ee0336c9b4f9a47db9cd171040, type: 2}
+  rewardTheme: -1
+  miniboss: 0
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
+  color: {r: 1, g: 1, b: 1, a: 1}

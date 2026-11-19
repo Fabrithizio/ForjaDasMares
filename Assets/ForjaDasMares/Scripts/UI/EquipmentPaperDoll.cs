@@ -28,7 +28,7 @@ namespace ForjaDasMares
         public void Refresh(HeroPresentation actor,PlayerProfile profile,string hero)
         {
             if(preview==null||actor==null||actor.Visible==null||!image.gameObject.activeInHierarchy)return;
-            string next=hero;var set=profile.Loadout(hero);if(set!=null)foreach(string item in set.items)next+=":"+item;
+            string next=hero+"#"+ExpedicionarioCorpo.Version;var set=profile.Loadout(hero);if(set!=null)foreach(string item in set.items)next+=":"+item;
             if(next==signature&&model!=null)return;signature=next;dirty=2;world.SetActive(true);preview.enabled=true;
             if(model!=null){model.SetActive(false);Destroy(model);}model=Instantiate(actor.Visible.gameObject,world.transform);model.SetActive(true);model.transform.localPosition=Vector3.zero;model.transform.localRotation=Quaternion.Euler(0,-18,0);
             foreach(var t in model.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
@@ -37,9 +37,15 @@ namespace ForjaDasMares
             foreach(var line in model.GetComponentsInChildren<LineRenderer>(true))line.enabled=false;
             foreach(var effect in model.GetComponentsInChildren<TrailRenderer>(true)){effect.emitting=false;effect.Clear();effect.enabled=false;}
             foreach(var renderer in model.GetComponentsInChildren<Renderer>(true)){renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;}
+            // The hero now wears the starting character: show only it (and the weapons), not the old test body underneath.
+            var body=FindChild(model.transform,"Expedicionario");
+            if(body!=null)foreach(var renderer in model.GetComponentsInChildren<Renderer>(true))if(!renderer.transform.IsChildOf(body)&&renderer.GetComponentInParent<EquipmentMeshView>()==null)renderer.enabled=false;
             if(portrait){var renderers=model.GetComponentsInChildren<Renderer>();Bounds bounds=new Bounds();bool first=true;foreach(var renderer in renderers){if(!renderer.enabled||renderer is ParticleSystemRenderer||renderer is LineRenderer||renderer is TrailRenderer)continue;if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);}if(!first){var focus=bounds.center+Vector3.up*bounds.size.y*.28f;preview.orthographicSize=Mathf.Max(.12f,bounds.size.y*.25f);preview.transform.position=focus+Vector3.forward*4;preview.transform.rotation=Quaternion.LookRotation(focus-preview.transform.position);}}
-            var animator=model.GetComponentInChildren<Animator>();if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");}
+            var animator=model.GetComponentInChildren<Animator>();
+            if(body!=null){animator=body.GetComponentInChildren<Animator>(true);if(animator!=null)animator.enabled=true;}
+            if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");}
         }
+        static Transform FindChild(Transform root,string name){if(root.name==name)return root;foreach(Transform child in root){var found=FindChild(child,name);if(found!=null)return found;}return null;}
         void LateUpdate(){if(portrait&&preview!=null&&preview.enabled&&--dirty<=0){preview.enabled=false;world.SetActive(false);}}
         void OnDisable(){if(preview!=null)preview.enabled=false;if(world!=null)world.SetActive(false);}
         void OnDestroy(){if(world!=null)Destroy(world);if(texture!=null){texture.Release();Destroy(texture);}}

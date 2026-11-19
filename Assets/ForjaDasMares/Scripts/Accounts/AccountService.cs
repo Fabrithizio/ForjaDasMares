@@ -13,6 +13,8 @@ namespace ForjaDasMares
         public string createdUtc;
         // Visual base until a real appearance editor exists: 0 Brasa, 1 Vento, 2 Prisma, 3 Baluarte.
         public int look;
+        // Starting character: 0 Expedicionário, 1 Expedicionária. Style (skins, accessories) comes later from play.
+        public int gender;
     }
 
     [Serializable]
@@ -121,6 +123,33 @@ namespace ForjaDasMares
             return current;
         }
 
+        // Accounts saved on this device (to switch while testing; later the login does this).
+        public static PlayerAccount[] LocalAccounts()
+        {
+            var list = new System.Collections.Generic.List<PlayerAccount>();
+            if (!Directory.Exists(Root)) return list.ToArray();
+            foreach (var folder in Directory.GetDirectories(Root))
+            {
+                string file = Path.Combine(folder, AccountFile);
+                if (!File.Exists(file)) continue;
+                try { var account = JsonUtility.FromJson<PlayerAccount>(File.ReadAllText(file)); if (account != null && !string.IsNullOrEmpty(account.accountId)) list.Add(account); }
+                catch (ArgumentException) { }
+            }
+            list.Sort((a, b) => string.CompareOrdinal(b.lastLoginUtc ?? "", a.lastLoginUtc ?? ""));
+            return list.ToArray();
+        }
+
+        public static void UseAccount(string accountId)
+        {
+            current = null; store = null;
+            PlayerPrefs.SetString(ActiveKey, accountId); PlayerPrefs.Save();
+            SignIn();
+        }
+
+        public static void NewAccount() => UseAccount(Guid.NewGuid().ToString("N"));
+
+        public static string ShortIdOf(string accountId) => string.IsNullOrEmpty(accountId) || accountId.Length < 8 ? accountId : accountId.Substring(0, 4).ToUpperInvariant() + "-" + accountId.Substring(4, 4).ToUpperInvariant();
+
         public static bool HasCharacter => Peek()?.HasCharacter == true;
         public static CharacterRecord Character => HasCharacter ? current.character : null;
 
@@ -137,6 +166,16 @@ namespace ForjaDasMares
                 if (!char.IsLetterOrDigit(c) && c != ' ' && c != '-' && c != '\'')
                     return "Use letras, números, espaço, hífen ou apóstrofo.";
             return null;
+        }
+
+        public static readonly string[] Genders = { "Expedicionário", "Expedicionária" };
+        public static CharacterRecord CreateCharacter(string name, int look, int gender)
+        {
+            var created = CreateCharacter(name, look);
+            if (created == null) return null;
+            created.gender = Mathf.Clamp(gender, 0, Genders.Length - 1);
+            Save();
+            return created;
         }
 
         public static CharacterRecord CreateCharacter(string name, int look)

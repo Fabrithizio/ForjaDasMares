@@ -1146,7 +1146,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c7e6c40d74fa4b4d98364de6e24d284, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatFeedback
   attack: {fileID: 60716047}
   weaponPivot: {fileID: 1063822325}
@@ -1161,7 +1161,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4dccb47610f05a4abafdc796c5e295b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.MeleeAttack
   motor: {fileID: 60716049}
   definition: {fileID: 11400000, guid: 9140d5ae65fecb146aa1d8d841e380ea, type: 2}
@@ -1182,7 +1182,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2740506b1be65454d814a367fc3f04ff, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PlayerAim
   motor: {fileID: 60716049}
   viewCamera: {fileID: 936252431}
@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a43075983c5ce454daf337fa6fdefd64, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.PlayerMotor
   commandSource: {fileID: 60716050}
   cameraBasis: {fileID: 936252432}
@@ -1224,7 +1224,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 003dbd074c753cc4e89a8ed6a6a9722e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ArenaInput
   actions: {fileID: -944628639613478452, guid: 0713524035847ed4097988bd2b86ebbb, type: 3}
 --- !u!143 &60716051
@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25cb51678dbe00347a8bd8d522e082d8, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroCombat
   motor: {fileID: 60716049}
   health: {fileID: 60716053}
@@ -1288,7 +1288,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 100
   faction: 0
@@ -1304,7 +1304,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98d4d94da4d0da047aa4c381155a3e66, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroPresentation
   models:
   - {fileID: 2074112483}
@@ -1325,7 +1325,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82a994f431b411e4888c17f09994cf06, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroRoster
   heroes:
   - {fileID: 11400000, guid: 56c2cc8dcc7f2374ba769a282d3c0e7c, type: 2}
@@ -2721,7 +2721,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 655201cfac6648a69d6a8466dd4a4757, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalWorld
   definition: {fileID: 11400000, guid: d42644e7d295f4e4d88d5e2cbd3d9dcb, type: 2}
   hero: {fileID: 60716055}
@@ -2753,7 +2753,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f81a800b3763e845a71bf277f31bd65, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalInventory
   catalog: {fileID: 11400000, guid: cd8c0a63bd87f074381abe8f09ace44a, type: 2}
   profileDirectory: CampaignProfiles-v1
@@ -4614,10 +4614,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55a54a3f4dd34854893640a6df0b5d4c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyPool
   definitions:
   - {fileID: 11400000, guid: 6e185a0e1b640e044bd80e7c97c766cf, type: 2}
+  - {fileID: 11400000, guid: 837c3b3e1b7486344bc527cbdb85747b, type: 2}
   heroes: {fileID: 60716055}
   projectiles: {fileID: 1414071814}
   warnings: {fileID: 1919940724}
@@ -8467,7 +8468,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -8482,7 +8483,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 461781655}
   body: {fileID: 1847431255}
@@ -8498,7 +8499,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 140
   faction: 0
@@ -15850,7 +15851,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -16507,7 +16508,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e5063a69d768124d8edd0e3f99d4089, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ArenaCamera
   target: {fileID: 60716045}
   offset: {x: 7, y: 10, z: -7}
@@ -16528,6 +16529,7 @@ MonoBehaviour:
   rpgFieldOfView: 42
   minimumZoom: 0.75
   maximumZoom: 1.35
+  fullscreenRpgDistance: 1.2744
 --- !u!81 &936252434
 AudioListener:
   m_ObjectHideFlags: 0
@@ -16546,7 +16548,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -17712,7 +17714,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 100
   faction: 0
@@ -17728,7 +17730,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 1011635940}
   body: {fileID: 2140049195}
@@ -17784,7 +17786,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -20408,7 +20410,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
   m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
@@ -20439,7 +20441,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 0
@@ -24440,7 +24442,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 1398791425}
   body: {fileID: 2041000957}
@@ -24456,7 +24458,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 150
   faction: 1
@@ -24565,7 +24567,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a16fa55c82c7044aad50292257cd82d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatEffectPool
   material: {fileID: 2100000, guid: 145bf6acecd879e44a08fc7d10d09ebb, type: 2}
   projectileTrailMaterial: {fileID: 2100000, guid: 216bea98382e3794c8bd4dd056fa875c, type: 2}
@@ -28351,7 +28353,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
   m_SerializedVersion: 0
   m_AgentTypeID: 0
@@ -31465,7 +31467,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a3101c4a16a48698fc0ba7104096f65, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionalWorldHud
   world: {fileID: 140178805}
 --- !u!224 &1823962443
@@ -33547,7 +33549,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f0df448a4789214db2c75fdf7742498, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TelegraphPool
   circleMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   lineMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
@@ -35542,7 +35544,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fb72b9b834bb043a28fadc8e2e293a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TrainingTargetMotion
   geometry:
     serializedVersion: 2
@@ -35557,7 +35559,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
   health: {fileID: 2067434485}
   body: {fileID: 132349642}
@@ -35573,7 +35575,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3957ce73d96d8e94782b36064c548def, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.Health
   maximum: 140
   faction: 0

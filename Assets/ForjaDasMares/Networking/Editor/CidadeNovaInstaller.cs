@@ -37,6 +37,8 @@ namespace ForjaDasMares.Networking.Editor
         [MenuItem("Forja/Cidade nova/1. Preparar modelos")]
         public static void Prepare()
         {
+            // Vegetation kit from the Asset Store packs (made once; menu "0b" remakes it).
+            if (!VegetacaoInstaller.Ready) VegetacaoInstaller.Prepare();
             int count = 0;
             foreach (var slug in Heights.Keys)
             {
@@ -587,7 +589,24 @@ namespace ForjaDasMares.Networking.Editor
             foreach (var b in placed) if ((b - p).sqrMagnitude < distance * distance) return false;
             return true;
         }
-        static bool OnRoad(Vector3 p) => Mathf.Abs(p.x) < 4.5f || Mathf.Abs(p.z) < 4.5f || Mathf.Abs(new Vector2(p.x, p.z).magnitude - 20.5f) < 2.6f;
+        static bool OnRoad(Vector3 p) => Mathf.Abs(p.x) < 4.5f || Mathf.Abs(p.z) < 4.5f || Mathf.Abs(new Vector2(p.x, p.z).magnitude - 20.5f) < 2.6f || OnEntrance(p);
+
+        // The little stone paths from the ring street to each building (same rule Paths() uses to draw them).
+        static bool OnEntrance(Vector3 p)
+        {
+            const float ring = 20.5f;
+            foreach (var b in placed)
+            {
+                float r = new Vector2(b.x, b.z).magnitude;
+                if (r < ring + 2.5f || r > 34) continue;
+                var dir = new Vector3(b.x, 0, b.z).normalized;
+                float along = Vector3.Dot(new Vector3(p.x, 0, p.z), dir);
+                if (along < ring - 1 || along > r) continue;
+                float side = (new Vector3(p.x, 0, p.z) - dir * along).magnitude;
+                if (side < 2.4f) return true;
+            }
+            return false;
+        }
 
         // ---------- Ground, water and light ----------
 
@@ -734,11 +753,22 @@ namespace ForjaDasMares.Networking.Editor
 
             var random = new System.Random(31);
             Color[] petals = { new Color(.95f, .45f, .6f), new Color(.98f, .85f, .35f), new Color(.75f, .55f, .95f), new Color(.98f, .98f, .95f) };
+            var kitFlowers = VegetacaoInstaller.Load("Flores"); var kitGrass = VegetacaoInstaller.Load("Gramas");
             for (int i = 0; i < 18; i++)
             {
                 float a = (float)random.NextDouble() * Mathf.PI * 2, d = 17 + (float)random.NextDouble() * 15;
                 var p = new Vector3(Mathf.Sin(a) * d, 0, Mathf.Cos(a) * d);
                 if (OnRoad(p) || !Free(p, 5f)) continue;
+                if (kitFlowers.Length > 0)
+                {
+                    // Flower bed: hand-painted flowers with some grass between them.
+                    for (int k = 0; k < 6; k++)
+                    {
+                        var spot = p + new Vector3((float)random.NextDouble() * 1.6f - .8f, 0, (float)random.NextDouble() * 1.6f - .8f);
+                        Kit(holder, k < 4 || kitGrass.Length == 0 ? kitFlowers : kitGrass, spot, 1.3f + (float)random.NextDouble() * .4f, random);
+                    }
+                    continue;
+                }
                 var petal = Flat("Flor" + (i % petals.Length), petals[i % petals.Length]);
                 for (int k = 0; k < 3; k++)
                     Soft(holder, PrimitiveType.Sphere, "Flor", p + new Vector3((float)random.NextDouble() - .5f, .18f, (float)random.NextDouble() - .5f), Vector3.one * .38f, petal);
@@ -802,7 +832,7 @@ namespace ForjaDasMares.Networking.Editor
             {
                 float a = (i + .5f) / 24f * Mathf.PI * 2;
                 var p = new Vector3(Mathf.Sin(a) * 31.5f, 0, Mathf.Cos(a) * 31.5f);
-                if (Mathf.Abs(p.x) < 7 || Mathf.Abs(p.z) < 7 || !Free(p, 8.5f)) continue;
+                if (Mathf.Abs(p.x) < 7 || Mathf.Abs(p.z) < 7 || !Free(p, 8.5f) || OnEntrance(p)) continue;
                 Tree(holder, p, 1f, planted++ % 3 == 0, random, true);
             }
             foreach (var p in new[] { new Vector3(-12, 0, 13), new Vector3(11.5f, 0, -15.5f) })
@@ -826,6 +856,41 @@ namespace ForjaDasMares.Networking.Editor
                 if (Mathf.Abs(p.x) < 4.5f || Mathf.Abs(p.z) < 4.5f || !Free(p, 3.5f)) continue;
                 Bush(holder, p, random);
             }
+            if (!VegetacaoInstaller.Ready) return;
+
+            // More trees inside the walls, on the grass between the houses.
+            int extra = 0; var treeSpots = new List<Vector3>();
+            for (int i = 0; i < 400 && extra < 22; i++)
+            {
+                float a = (float)random.NextDouble() * Mathf.PI * 2, d = 18 + (float)random.NextDouble() * 15;
+                var p = new Vector3(Mathf.Sin(a) * d, 0, Mathf.Cos(a) * d);
+                if (OnRoad(p) || !Free(p, 7.5f) || Mathf.Abs(d - 20.5f) < 4 || treeSpots.Exists(t => (t - p).sqrMagnitude < 25)) continue;
+                Tree(holder, p, .8f + (float)random.NextDouble() * .3f, false, random, true);
+                treeSpots.Add(p); extra++;
+            }
+            // A denser forest outside.
+            for (int i = 0; i < 90; i++)
+            {
+                float a = (float)random.NextDouble() * Mathf.PI * 2, d = wallRadius + 5 + (float)random.NextDouble() * 38;
+                var p = new Vector3(Mathf.Sin(a) * d, 0, Mathf.Cos(a) * d);
+                if ((p.z < 0 && Mathf.Abs(p.x) < 8) || Mathf.Abs(p.x - 58) < 8 || Mathf.Abs(p.z) < 7 || OnRoad(p)) continue;
+                Tree(holder, p, 1f + (float)random.NextDouble() * .5f, false, random, false);
+            }
+            // Grass tufts and flowers all over the lawns, so the grass is not a flat green sheet.
+            var tufts = VegetacaoInstaller.Load("Gramas"); var blooms = VegetacaoInstaller.Load("Flores");
+            var lawn = new GameObject("GramaEspalhada").transform; lawn.SetParent(holder, false);
+            int inside = 0, outside = 0;
+            for (int i = 0; i < 4000 && (inside < 260 || outside < 320); i++)
+            {
+                bool inner = inside < 260;
+                float a = (float)random.NextDouble() * Mathf.PI * 2;
+                float d = inner ? 16 + (float)random.NextDouble() * 18 : wallRadius + 3 + (float)random.NextDouble() * 40;
+                var p = new Vector3(Mathf.Sin(a) * d, 0, Mathf.Cos(a) * d);
+                if (OnRoad(p) || !Free(p, inner ? 5.5f : 2f) || Mathf.Abs(d - wallRadius) < 2.5f || Mathf.Abs(p.x - 58) < 5) continue;
+                bool flower = blooms.Length > 0 && random.NextDouble() < .14;
+                Kit(lawn, flower ? blooms : tufts, p, flower ? 1.2f + (float)random.NextDouble() * .3f : .9f + (float)random.NextDouble() * .7f, random);
+                if (inner) inside++; else outside++;
+            }
         }
 
         static GameObject Soft(Transform parent, PrimitiveType type, string name, Vector3 position, Vector3 scale, Material material)
@@ -835,8 +900,28 @@ namespace ForjaDasMares.Networking.Editor
             return go;
         }
 
+        static GameObject Kit(Transform parent, GameObject[] options, Vector3 p, float scale, System.Random random)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(options[random.Next(options.Length)], parent);
+            go.transform.position = p;
+            go.transform.rotation = Quaternion.Euler(0, (float)random.NextDouble() * 360, 0);
+            go.transform.localScale = Vector3.one * scale;
+            return go;
+        }
+
         static void Tree(Transform parent, Vector3 p, float size, bool pink, System.Random random, bool solid)
         {
+            var kitTrees = VegetacaoInstaller.Load("Arvores");
+            if (kitTrees.Length > 0)
+            {
+                // Half pointy pines, half round trees (Arvore_3 and Arvore_4 have round crowns).
+                var round = System.Array.FindAll(kitTrees, t => t.name == "Arvore_3" || t.name == "Arvore_4");
+                var pointy = System.Array.FindAll(kitTrees, t => t.name != "Arvore_3" && t.name != "Arvore_4");
+                var pool = round.Length > 0 && pointy.Length > 0 ? (random.NextDouble() < .5 ? round : pointy) : kitTrees;
+                var planted = Kit(parent, pool, p, size * (.85f + (float)random.NextDouble() * .3f), random);
+                if (!solid) foreach (var c in planted.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c);
+                return;
+            }
             var bark = Flat("Tronco", new Color(.45f, .31f, .20f));
             var leaves = pink
                 ? new[] { Flat("FlorRosa", new Color(.96f, .66f, .80f)), Flat("FlorLilas", new Color(.84f, .64f, .95f)) }
@@ -856,6 +941,18 @@ namespace ForjaDasMares.Networking.Editor
 
         static void Bush(Transform parent, Vector3 p, System.Random random)
         {
+            var grass = VegetacaoInstaller.Load("Gramas"); var blooms = VegetacaoInstaller.Load("Flores");
+            if (grass.Length > 0)
+            {
+                // A little clump of grass with a flower or two.
+                int n = 3 + random.Next(3);
+                for (int k = 0; k < n; k++)
+                {
+                    var spot = p + new Vector3((float)random.NextDouble() * 1.8f - .9f, 0, (float)random.NextDouble() * 1.8f - .9f);
+                    Kit(parent, blooms.Length > 0 && random.NextDouble() < .35 ? blooms : grass, spot, 1.2f + (float)random.NextDouble() * .5f, random);
+                }
+                return;
+            }
             var leaf = random.NextDouble() < .5 ? Flat("FolhaMedia", new Color(.38f, .64f, .30f)) : Flat("FolhaClara", new Color(.52f, .76f, .36f));
             float s = 1.1f + (float)random.NextDouble() * .7f;
             Soft(parent, PrimitiveType.Sphere, "Arbusto", p + Vector3.up * s * .3f, new Vector3(s * 1.2f, s * .8f, s), leaf);

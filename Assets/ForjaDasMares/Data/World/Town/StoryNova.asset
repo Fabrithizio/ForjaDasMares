@@ -19,12 +19,12 @@ MonoBehaviour:
   points:
   - label: Conversar com Nara
     interaction: 0
-    position: {x: -10, y: 0.08, z: -4}
+    position: {x: -5, y: 0.08, z: -23}
     clue: 0
     discovery: 
   - label: Conversar com Daro
     interaction: 1
-    position: {x: 7, y: 0.08, z: -7}
+    position: {x: 19, y: 0.08, z: 3.8}
     clue: 0
     discovery: 
   - label: "Examinar di\xE1rio da expedi\xE7\xE3o"

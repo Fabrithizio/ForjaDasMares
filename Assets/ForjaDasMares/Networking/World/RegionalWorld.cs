@@ -127,6 +127,7 @@ namespace ForjaDasMares.Networking
             for(int i=0;i<residents.Length;i++){residents[i]=new EnemyActor[definition.camps[i].enemies.Length];timers[i]=new float[residents[i].Length];firstDefeated[i]=new bool[residents[i].Length];}
             if (town != null && Journey != null)
                 catacombAltar = BuildPlazaStation("Altar das Catacumbas",new Vector3(5,0,-4),() => Hud?.OpenCatacombEntrance());
+            if (town != null) mapStation = BuildMapStation();
             if (IsCatacombInstance)
             {
                 for (int i = 0; i < cardOrder.Length; i++) cardOrder[i] = 15 + (i % 6) * 5;
@@ -251,6 +252,7 @@ namespace ForjaDasMares.Networking
             var camera = follow.GetComponent<Camera>();
             if (!Physics.Raycast(camera.ScreenPointToRay(screenPosition),out var hit,150,
                 (1<<0)|(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
+            if (mapStation != null && (hit.point - mapStation.transform.position).sqrMagnitude < 36) return mapStation.TryUse(hero.transform);
             var target = hit.collider.GetComponentInParent<WorldClickTarget>();
             if (target == null || (target != catacombAltar && Array.IndexOf(goldPiles,target) < 0)) return false;
             return target.TryUse(hero.transform);
@@ -273,12 +275,14 @@ namespace ForjaDasMares.Networking
             {
                 timers[c][i]=Mathf.Max(0,timers[c][i]-elapsed);
                 if(residents[c][i]!=null||timers[c][i]>0 || (IsCatacombInstance && firstDefeated[c][i]))continue;
+                // The boss of the room only arrives after its guards fall.
+                if(IsCatacombInstance&&definition.camps[c].enemies[i]!=null&&definition.camps[c].enemies[i].kind==EnemyKind.Boss&&firstKills[c]<GuardsOf(c))continue;
                 var data=definition.camps[c];var point=data.spawns[i%data.spawns.Length];float distance=(hero.transform.position-point).sqrMagnitude;
                 if(distance>75*75||(!IsCatacombInstance&&distance<8*8))continue;
-                var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){if(IsCatacombInstance){actor.Health.ApplyAttributes(22,0);actor.Health.Restore();actor.Combat.NormalDamageScale=.35f;}residents[c][i]=actor;ownership[actor]=c;}
+                var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){if(IsCatacombInstance){bool boss=data.enemies[i].kind==EnemyKind.Boss;actor.Health.ApplyAttributes(boss?260:22,0);actor.Health.Restore();actor.Combat.NormalDamageScale=.35f;}residents[c][i]=actor;ownership[actor]=c;}
             }
         }
-        public string InteractionHint => IsCatacombInstance && PortalReady ? "F · Abrir cartas" : NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
+        public string InteractionHint => IsCatacombInstance && PortalReady ? "F · Abrir cartas" : NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : mapStation != null && mapStation.InRange(hero.transform) ? "F · Estação do Último Sino (mapa)" : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
@@ -288,6 +292,7 @@ namespace ForjaDasMares.Networking
                 return;
             }
             if(NearbyGold()?.TryUse(hero.transform)==true)return;
+            if(mapStation!=null&&mapStation.TryUse(hero.transform))return;
             if(town!=null&&town.TryInteractNearest())return;
             if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
@@ -350,11 +355,39 @@ namespace ForjaDasMares.Networking
         }
         WorldClickTarget catacombAltar;
 
+        // Estação do Último Sino: the monument in the middle of the plaza. Opens the world map.
+        // A ring of light on the ground marks where to stand. (A 3D model of the station with the cracked bell comes later.)
+        WorldClickTarget mapStation;
+        WorldClickTarget BuildMapStation()
+        {
+            var station = new GameObject("Estacao do Ultimo Sino");
+            station.transform.SetParent(transform,false);
+            station.transform.position = new Vector3(0,0,0);
+            var ring = station.AddComponent<LineRenderer>();
+            const int Steps = 48; const float Radius = 4.6f;
+            ring.loop = true; ring.positionCount = Steps; ring.useWorldSpace = false; ring.widthMultiplier = .14f;
+            for (int i = 0; i < Steps; i++) { float a = i * Mathf.PI * 2 / Steps; ring.SetPosition(i,new Vector3(Mathf.Cos(a)*Radius,.07f,Mathf.Sin(a)*Radius)); }
+            var glow = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            glow.SetColor("_BaseColor",new Color(.45f,1f,.85f,1));
+            ring.sharedMaterial = glow; ring.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            var target = station.AddComponent<WorldClickTarget>();
+            target.Configure("Estação do Último Sino",6.2f);
+            target.Interacting += actor =>
+            {
+                if (actor != hero.transform || !hero.Health.IsAlive || MapaDoMundo.Aberto) return;
+                DescobertasDoMapa.Descobrir("refugio");
+                MapaDoMundo.Abrir(this,true);
+            };
+            return target;
+        }
+
         public void EnterCatacombInstance()
         {
-            if (travelling || !hero.Health.IsAlive || Journey?.Completed != true) return;
+            if (travelling || !hero.Health.IsAlive) return; // test phase: always open
             TravelTo("CatacumbasDasMares");
         }
+
+        int GuardsOf(int camp){int count=0;foreach(var e in definition.camps[camp].enemies)if(e!=null&&e.kind!=EnemyKind.Boss)count++;return count;}
 
         void ConfigureCatacombTestRoom()
         {
@@ -368,25 +401,28 @@ namespace ForjaDasMares.Networking
             definition.route = new[] { definition.refuge, center, definition.portal };
             definition.connections = Array.Empty<RegionConnection>();
             definition.landmarks = Array.Empty<RegionLandmark>();
-            definition.bounds = new Bounds(center,new Vector3(16,10,15));
-            definition.activeEnemyLimit = 2;
+            // With a boss in the camp the room is bigger (room to dodge its charge) and holds the whole camp.
+            bool hasBoss = Array.Exists(oldCamp.enemies, e => e != null && e.kind == EnemyKind.Boss);
+            float halfX = hasBoss ? 10 : 8, halfZ = hasBoss ? 8.5f : 7.5f;
+            definition.bounds = new Bounds(center,new Vector3(halfX*2,10,halfZ*2));
+            definition.activeEnemyLimit = hasBoss ? 3 : 2;
             definition.camps = new[]
             {
                 new RegionCampDefinition
                 {
                     label = oldCamp.label,
                     center = center,
-                    spawns = new[] { oldCamp.spawns[0],oldCamp.spawns[1] },
-                    enemies = new[] { oldCamp.enemies[0],oldCamp.enemies[1] }
+                    spawns = hasBoss ? oldCamp.spawns : new[] { oldCamp.spawns[0],oldCamp.spawns[1] },
+                    enemies = hasBoss ? oldCamp.enemies : new[] { oldCamp.enemies[0],oldCamp.enemies[1] }
                 }
             };
 
             testRoomWallMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             testRoomWallMaterial.SetColor("_BaseColor",new Color(.21f,.29f,.32f));
-            BuildTestRoomWall(center + Vector3.left * 8,new Vector3(.45f,2.1f,15));
-            BuildTestRoomWall(center + Vector3.right * 8,new Vector3(.45f,2.1f,15));
-            BuildTestRoomWall(center + Vector3.forward * 7.5f,new Vector3(16,2.1f,.45f));
-            BuildTestRoomWall(center + Vector3.back * 7.5f,new Vector3(16,2.1f,.45f));
+            BuildTestRoomWall(center + Vector3.left * halfX,new Vector3(.45f,2.1f,halfZ*2));
+            BuildTestRoomWall(center + Vector3.right * halfX,new Vector3(.45f,2.1f,halfZ*2));
+            BuildTestRoomWall(center + Vector3.forward * halfZ,new Vector3(halfX*2,2.1f,.45f));
+            BuildTestRoomWall(center + Vector3.back * halfZ,new Vector3(halfX*2,2.1f,.45f));
         }
 
         void BuildTestRoomWall(Vector3 point, Vector3 size)

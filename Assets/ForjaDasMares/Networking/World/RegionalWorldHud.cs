@@ -260,7 +260,7 @@ namespace ForjaDasMares.Networking
         public void OpenCatacombEntrance()
         {
             if (enterInstance == null || !OpenModal(instanceModal)) return;
-            enterInstance.interactable = world.Journey?.Completed == true;
+            enterInstance.interactable = true; // test phase: the Catacomb (and its boss) is always open
             instanceInfo.text = "Teste solo · 1 sala, 2 inimigos. Escolha 2 de 32 cartas em 5 s.\n\nOuro · 15 a 40\nPedra de Têmpera · material de fortalecimento\nRuna de Coleta · rara (60 ouro se já possuir)" +
                 (enterInstance.interactable ? "" : "\nConclua a investigação de Nara e Daro para entrar.");
         }
@@ -686,7 +686,7 @@ namespace ForjaDasMares.Networking
             RefreshArea();
             movementMode.GetComponentInChildren<Text>().text="CONTROLES · AJUDA";
             controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";
-            var hero=world.Hero;life.text=string.IsNullOrEmpty(CampaignHome.CharacterName)?hero.Current.displayName:CampaignHome.CharacterName+" · "+hero.Current.displayName;
+            var hero=world.Hero;string heroTitle=AccountService.Genders[Mathf.Clamp(AccountService.Character!=null?AccountService.Character.gender:0,0,1)];life.text=string.IsNullOrEmpty(CampaignHome.CharacterName)?heroTitle:CampaignHome.CharacterName+" · "+heroTitle;
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);

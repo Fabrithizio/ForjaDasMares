@@ -20,6 +20,7 @@ namespace ForjaDasMares
         public bool IsBusy => busy;public bool IsRecovering=>busy&&resolved;
         public void SetTarget(Health player) { if (!busy) target = player; }
         public float WarningRemaining => busy && !resolved ? Mathf.Max(0, windup - elapsed) : 0;
+        public BossAttack CurrentBossMove => busy ? bossMove : null;
         public BossAttackKind? CurrentBossAttack => bossMove != null && busy ? bossMove.kind : (BossAttackKind?)null;
         public void Prepare(EnemyActor owner, Health player, EnemyPool registry, CombatEffectPool shots, TelegraphPool signs, int playerTargets, int walls)
         { actor = owner; target = player; enemies = registry; projectiles = shots; warnings = signs; targets = playerTargets; geometry = walls; cooldown = 0; summonCount = 0; NormalDamageScale = 1; Cancel(); }
