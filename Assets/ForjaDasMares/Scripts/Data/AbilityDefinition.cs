@@ -10,6 +10,8 @@ namespace ForjaDasMares
         public AbilityEffect effect;
         public AttackDefinition hit;
         [Min(0.1f)] public float cooldown = 5f;
+        // Inner energy spent to use it (EnergiaInterior). There is no mana.
+        [Min(0)] public float energyCost = 25f;
         [Min(0.1f)] public float radius = 3.5f;
         [Min(0.1f)] public float trapLifetime = 6f;
         [Min(0.1f)] public float placementDistance = 2.2f;

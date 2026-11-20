@@ -7,7 +7,7 @@ namespace ForjaDasMares.Networking
     [DefaultExecutionOrder(260)]public sealed class RegionalWorldHud:MonoBehaviour
     {
         [SerializeField]RegionalWorld world;
-        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption;RectTransform healthFill,superFill;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey, mountKey;
+        Text life,objective,hint,controlHint,storyNotice,healthCaption,superCaption,energyCaption;RectTransform healthFill,superFill,energyFill;Image energyImage;EquipmentPaperDoll portrait;PlayerProfile previewProfile=new PlayerProfile();TownHub town;Button movementMode;GameObject death;float poll;InputAction interact, weaponModeKey, mountKey;
         Text mountCaption;
         readonly InputAction[] skillKeys = new InputAction[3];
         readonly Button[] skillButtons = new Button[3];
@@ -553,16 +553,20 @@ namespace ForjaDasMares.Networking
 
         void BuildVitals(RectTransform root)
         {
-            var panel=RusticHudTheme.Rect(root,"HeroVitals",Top,new Vector2(18,-16),new Vector2(360,92));RusticHudTheme.Panel(panel,new Color(.025f,.045f,.055f,.94f),20);
+            var panel=RusticHudTheme.Rect(root,"HeroVitals",Top,new Vector2(18,-16),new Vector2(360,108));RusticHudTheme.Panel(panel,new Color(.025f,.045f,.055f,.94f),20);
             var frame=RusticHudTheme.Rect(panel,"Portrait",Top,new Vector2(8,-8),new Vector2(74,74));RusticHudTheme.Panel(frame,RusticHudTheme.Ink,37);frame.gameObject.AddComponent<Mask>().showMaskGraphic=true;
             var image=RusticHudTheme.Rect(frame,"Hero",Vector2.one*.5f,Vector2.zero,new Vector2(68,68)).gameObject.AddComponent<RawImage>();image.raycastTarget=false;portrait=frame.gameObject.AddComponent<EquipmentPaperDoll>();portrait.Configure(image,true);
             life=Label(panel,"HeroName",new Vector2(94,-7),new Vector2(252,26),"",18);life.color=RusticHudTheme.Gold;
             var track=RusticHudTheme.Rect(panel,"HealthTrack",Top,new Vector2(94,-36),new Vector2(238,16));track.gameObject.AddComponent<Image>().color=new Color(.18f,.05f,.055f);
             healthFill=RusticHudTheme.Rect(track,"Fill",Top,Vector2.zero,new Vector2(238,14));healthFill.gameObject.AddComponent<Image>().color=new Color(.76f,.12f,.18f);
             healthCaption=Label(panel,"HealthValue",new Vector2(96,-32),new Vector2(230,23),"",13);
-            var focus=RusticHudTheme.Rect(panel,"FocusTrack",Top,new Vector2(94,-64),new Vector2(238,5));focus.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
+            // Inner energy: spent by the dodge and by the abilities (no mana).
+            var energy=RusticHudTheme.Rect(panel,"EnergyTrack",Top,new Vector2(94,-58),new Vector2(238,12));energy.gameObject.AddComponent<Image>().color=new Color(.07f,.12f,.08f);
+            energyFill=RusticHudTheme.Rect(energy,"Fill",Top,Vector2.zero,new Vector2(238,12));energyImage=energyFill.gameObject.AddComponent<Image>();energyImage.color=new Color(.86f,.72f,.26f);
+            energyCaption=Label(panel,"EnergyValue",new Vector2(96,-56),new Vector2(230,17),"",11);
+            var focus=RusticHudTheme.Rect(panel,"FocusTrack",Top,new Vector2(94,-80),new Vector2(238,5));focus.gameObject.AddComponent<Image>().color=RusticHudTheme.Surface;
             superFill=RusticHudTheme.Rect(focus,"Fill",Top,Vector2.zero,new Vector2(0,5));superFill.gameObject.AddComponent<Image>().color=new Color(.18f,.6f,.85f);
-            superCaption=Label(panel,"SuperValue",new Vector2(94,-70),new Vector2(238,16),"",11);
+            superCaption=Label(panel,"SuperValue",new Vector2(94,-86),new Vector2(238,16),"",11);
         }
         Button CombatAction(RectTransform root, string name, Vector2 position, float size, string caption,
             HudSymbol symbol, Color accent, UnityEngine.Events.UnityAction action, bool round = false)
@@ -690,6 +694,8 @@ namespace ForjaDasMares.Networking
             controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";
             var hero=world.Hero;string heroTitle=AccountService.Genders[Mathf.Clamp(AccountService.Character!=null?AccountService.Character.gender:0,0,1)];life.text=string.IsNullOrEmpty(CampaignHome.CharacterName)?heroTitle:CampaignHome.CharacterName+" · "+heroTitle;
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
+            var energia=EnergiaInterior.Of(hero);energyFill.sizeDelta=new Vector2(238*energia.Fraction,12);energyCaption.text=EnergiaInterior.Nome+"  "+Mathf.FloorToInt(energia.Current)+" / "+Mathf.RoundToInt(energia.maximum);
+            energyImage.color=Time.time-energia.LastFail<.45f?new Color(.9f,.2f,.18f):new Color(.86f,.72f,.26f);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);
             // New places of the world (sketches): just the name and what to do there, no old challenge portal.

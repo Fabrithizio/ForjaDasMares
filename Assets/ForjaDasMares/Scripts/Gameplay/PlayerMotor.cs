@@ -94,6 +94,8 @@ namespace ForjaDasMares
         public bool TryDodge(Vector2 direction)
         {
             if (cooldownRemaining > 0f || dodgeRemaining > 0f || (health != null && (!health.IsAlive || health.ControlMultiplier == 0f))) return false;
+            // The dodge costs a lot of inner energy, so dodging is a real decision.
+            if (!EnergiaInterior.Of(this).TrySpendDodge()) return false;
             dodgeDirection = direction.sqrMagnitude > 0.01f ? WorldDirection(direction).normalized : transform.forward;
             dodgeRemaining = dodgeDuration;perfectUsed=false;
             charge = false;

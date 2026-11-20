@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2fbb59015900d4f8fd45423f145ee0, type: 3}
+  m_Name: LocomocaoPorArma
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.LocomocaoPorArma
+  baseParado: {fileID: -203655887218126122, guid: 8f5c7601d444f5748ae6e87b91f2a026, type: 3}
+  baseParadoOlhando: {fileID: -203655887218126122, guid: 4a2f7323bd733aa4fa71eb2b99ed14c0, type: 3}
+  baseAndar: {fileID: -203655887218126122, guid: d79f6e3f25829f94281bf12b1e1d9bcb, type: 3}
+  baseAndarFeminino: {fileID: 0}
+  baseCorrer: {fileID: -203655887218126122, guid: a92ab634b7691cd4c9f52d90bb1dff4e, type: 3}
+  espada:
+    nome: Espada
+    parado: {fileID: -203655887218126122, guid: 1fe78595303f89543b5e27737683523a, type: 3}
+    andar: {fileID: -203655887218126122, guid: 6374f3714e4a63d429b38b6aeccdcded, type: 3}
+    correr: {fileID: -203655887218126122, guid: 62221b92bb4816f41b810b93ad37d95b, type: 3}
+    passadaAndar:
+    - 1.3253804
+    - 1.1514004
+    passadaCorrer:
+    - 1.9557798
+    - 1.6990485
+  cajado:
+    nome: Cajado
+    parado: {fileID: -203655887218126122, guid: f364e9cc240624c449f02d2ccc10dc0a, type: 3}
+    andar: {fileID: -203655887218126122, guid: b5465e0eac76b174b88537bf499f69f4, type: 3}
+    correr: {fileID: -203655887218126122, guid: 9f61711b74e70f248b16838d3a9333b0, type: 3}
+    passadaAndar:
+    - 1.4580613
+    - 1.2666645
+    passadaCorrer:
+    - 2.10479
+    - 1.8284985

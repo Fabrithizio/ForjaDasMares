@@ -31,6 +31,7 @@ namespace ForjaDasMares
         {
             if (!RegionalSkillUnlocked(slot) || !CanStart || regionalCooldowns[slot] > 0) return false;
             var ability = regionalSkills[slot];
+            if (!EnergiaInterior.Of(this).TrySpend(ability.energyCost)) return false;
             regionalCooldowns[slot] = ability.cooldown * cooldownMultiplier;
             StartAbility(ability);
             return true;
@@ -65,6 +66,25 @@ namespace ForjaDasMares
         public Vector3 StrikeOrigin=>origin!=null?origin.position:transform.position+Vector3.up;
         // Where shots leave from (the body moves it to the tip of a staff held in the hand).
         public Transform StrikePoint=>origin;
+        // Tip of the weapon in the hand (staff). Shots leave from it when it is in front of the hero,
+        // and bend toward the line the hero aims at, so they never fly off to the side.
+        public Transform Muzzle { get; set; }
+        Vector3 ShotFrom(Vector3 facing)
+        {
+            Vector3 o = origin.position;
+            if (Muzzle == null) return o + facing * .05f;
+            Vector3 tip = Muzzle.position, d = tip - o;
+            if (Vector3.Dot(new Vector3(d.x, 0, d.z), facing) < -.05f || d.magnitude > 1.6f) return o + facing * .05f;
+            tip.y = Mathf.Clamp(tip.y, o.y - .35f, o.y + .35f);
+            if (Physics.Linecast(o, tip, geometry, QueryTriggerInteraction.Ignore)) return o + facing * .05f;
+            return tip;
+        }
+        Vector3 ShotDirection(Vector3 start, Vector3 direction)
+        {
+            Vector3 target = origin.position + direction * Mathf.Max(3f, currentAttack != null ? currentAttack.range : 3f);
+            Vector3 d = target - start; d.y = 0;
+            return d.sqrMagnitude > .0001f ? d.normalized : direction;
+        }
         bool OriginClear=>!Physics.Linecast(transform.position+Vector3.up,origin.position,geometry,QueryTriggerInteraction.Ignore)&&!Physics.CheckSphere(origin.position,.04f,geometry,QueryTriggerInteraction.Ignore);
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
         public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superHits = 0; }
@@ -167,6 +187,7 @@ namespace ForjaDasMares
         {
             if (regionalSkills != null) return TryRegionalSkill(0);
             if (!CanUseSkill || !CanStart || specialCooldown > 0 || Ability == null) return false;
+            if (!EnergiaInterior.Of(this).TrySpend(Ability.energyCost)) return false;
             specialCooldown = Ability.cooldown * cooldownMultiplier;
             StartAbility(Ability);
             return true;
@@ -226,10 +247,10 @@ namespace ForjaDasMares
             if(!OriginClear)return;
             if (currentAttack.shape == AttackShape.Projectile)
             {
-                Vector3 start = origin.position + facing * 0.05f;
+                Vector3 start = ShotFrom(facing);
                 if (!Physics.Linecast(origin.position, start, geometry))
                     for (int i = 0; i < Mathf.Clamp(currentAttack.projectileCount, 1, 5); i++)
-                    { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, Quaternion.Euler(0, angle, 0) * facing, currentAttack, health, targets, geometry, strikeScale, strikeCritical); }
+                    { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, ShotDirection(start, Quaternion.Euler(0, angle, 0) * facing), currentAttack, health, targets, geometry, strikeScale, strikeCritical); }
             }
             else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
             if(heavy&&!currentAttack.returningProjectile&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
@@ -242,7 +263,7 @@ namespace ForjaDasMares
             if(currentAttack.shape==AttackShape.Projectile)
             {
                 for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)
-                {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;pool.Shoot(origin.position+facing*.05f,Quaternion.Euler(0,angle,0)*facing,currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
+                {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;var from=ShotFrom(facing);pool.Shoot(from,ShotDirection(from,Quaternion.Euler(0,angle,0)*facing),currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
             }
             else resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
             if(flow.superProtection>0)
@@ -260,7 +281,7 @@ namespace ForjaDasMares
             if(ability.effect==AbilityEffect.WeaponStrike)
             {
                 if(currentAttack.shape==AttackShape.Projectile)
-                {for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)pool.Shoot(origin.position,Quaternion.Euler(0,(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread,0)*facing,currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
+                {for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++){var from=ShotFrom(facing);pool.Shoot(from,ShotDirection(from,Quaternion.Euler(0,(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread,0)*facing),currentAttack,health,targets,geometry, strikeScale, strikeCritical);}}
                 else resolver.Area(origin.position,currentAttack.range,facing,currentAttack.arc,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
             }
             else if (ability.effect == AbilityEffect.Trap)

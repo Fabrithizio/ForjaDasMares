@@ -94,8 +94,69 @@ namespace ForjaDasMares.Networking.Editor
                 var prefab = BuildPrefab(fbx, folder, material, g == 1 ? female : controller, Heights[g], Genders[g], andar, correr, out fixedVertices);
                 report.Append(" | ").Append(Genders[g]).Append(prefab != null ? " ok" : " ERRO").Append(" passada ").Append(andar.ToString("0.00")).Append("/").Append(correr.ToString("0.00")).Append(" (cabelo corrigido: ").Append(fixedVertices).Append(" pontos)");
             }
+            InstallWeaponLocomotion();
             AssetDatabase.SaveAssets();
             Debug.Log(report.ToString());
+        }
+
+        // Standing, walking and running with the weapon in the hand (Mixamo packs "Sword and Shield" and "Pro Magic").
+        // Files: Animacoes/Espada/Espada_Parado|Andar|Correr.fbx and Animacoes/Cajado/Cajado_Parado|Andar|Correr.fbx.
+        // Result: Resources/Personagens/LocomocaoPorArma.asset, used by the hero's body while the weapon is equipped.
+        [MenuItem("Forja/Personagem/Animações por arma (Espada e Cajado)")]
+        public static void InstallWeaponLocomotion()
+        {
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+            if (controller == null) { Debug.LogError("Rode antes: Forja/Personagem/Instalar personagens iniciais"); return; }
+            AnimationClip Base(string state) => controller.layers[0].stateMachine.states.Select(s => s.state).FirstOrDefault(s => s.name == state)?.motion as AnimationClip;
+            EnsureFolder("Assets/ForjaDasMares/Resources"); EnsureFolder(ResourcesFolder.TrimEnd('/'));
+            string path = ResourcesFolder + "LocomocaoPorArma.asset";
+            var set = AssetDatabase.LoadAssetAtPath<LocomocaoPorArma>(path);
+            if (set == null) { set = ScriptableObject.CreateInstance<LocomocaoPorArma>(); AssetDatabase.CreateAsset(set, path); }
+            set.baseParado = Base("Idle"); set.baseParadoOlhando = Base("Idle2"); set.baseAndar = Base("Walk"); set.baseCorrer = Base("Run");
+            var female = AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(Root + "Feminino/Animador.overrideController");
+            set.baseAndarFeminino = female != null && set.baseAndar != null ? female[set.baseAndar] : null;
+            var report = new System.Text.StringBuilder("ANIMACOES_POR_ARMA ·");
+            set.espada = WeaponMoves("Espada", report);
+            set.cajado = WeaponMoves("Cajado", report);
+            EditorUtility.SetDirty(set);
+            AssetDatabase.SaveAssets();
+            Debug.Log(report.ToString());
+        }
+
+        static LocomocaoPorArma.Jeito WeaponMoves(string nome, System.Text.StringBuilder report)
+        {
+            string folder = Animations + nome + "/";
+            var moves = new LocomocaoPorArma.Jeito { nome = nome };
+            AnimationClip Import(string kind)
+            {
+                string file = folder + nome + "_" + kind + ".fbx";
+                if (!File.Exists(file) || !(AssetImporter.GetAtPath(file) is ModelImporter importer)) { report.Append(" faltando ").Append(file); return null; }
+                importer.animationType = ModelImporterAnimationType.Human;
+                importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                importer.importAnimation = true; importer.materialImportMode = ModelImporterMaterialImportMode.None;
+                importer.importCameras = importer.importLights = false;
+                importer.SaveAndReimport();
+                SetClip(importer, nome + "_" + kind, true, -1, -1);
+                return Clip(file);
+            }
+            moves.parado = Import("Parado"); moves.andar = Import("Andar"); moves.correr = Import("Correr");
+            for (int g = 0; g < Genders.Length; g++)
+            {
+                var source = AssetDatabase.LoadAssetAtPath<GameObject>(Root + Genders[g] + "/Modelo.fbx");
+                if (source == null) continue;
+                var rig = Object.Instantiate(source);
+                try
+                {
+                    var b = Bounds(rig);
+                    float scale = b.size.y > .01f ? Heights[g] / b.size.y : 1;
+                    moves.passadaAndar[g] = moves.andar != null ? Mathf.Clamp(Stride(rig, moves.andar, scale, .95f), .6f, 2.4f) : .95f;
+                    moves.passadaCorrer[g] = moves.correr != null ? Mathf.Clamp(Stride(rig, moves.correr, scale, 2.45f), 1.2f, 5f) : 2.45f;
+                }
+                finally { Object.DestroyImmediate(rig); }
+            }
+            report.Append(" | ").Append(nome).Append(moves.parado != null && moves.andar != null && moves.correr != null ? " ok" : " INCOMPLETO")
+                .Append(" passada ").Append(moves.passadaAndar[0].ToString("0.00")).Append("/").Append(moves.passadaCorrer[0].ToString("0.00"));
+            return moves;
         }
 
         static string Vivid(string source, string target)
