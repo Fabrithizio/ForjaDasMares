@@ -50,7 +50,7 @@ namespace ForjaDasMares.Networking
             SavePath=CoopRewardLedger.ParticipantPath(directory,identity);Service=new ProfileService(catalog,new ProfileStore(SavePath),false);if(Service.Profile.expedition!=null)Service.FinishExpedition(Service.Profile.expedition.runId,false,"Aplicação interrompida");Service.Changed+=Changed;Notice=Service.Message??"";
             equipment=world.Hero.GetComponent<HeroEquipment>();if(equipment==null)equipment=world.Hero.gameObject.AddComponent<HeroEquipment>();
             equipment.Configure(world.Hero,world.Hero.GetComponent<PlayerMotor>(),world.Hero.GetComponent<HeroCombat>(),Visual("RegionalEquippedMain"),Visual("RegionalEquippedSecondary"));
-            world.Hero.GetComponent<HeroCombat>().ConfigureRegionalRules(()=>equipment.MainWeapon!=null,()=>world.Journey!=null&&world.Journey.ClueCount>0);
+            world.Hero.GetComponent<HeroCombat>().ConfigureRegionalRules(()=>equipment.MainWeapon!=null,()=>Historia.TemArmaInicial||world.Journey!=null&&world.Journey.ClueCount>0);
             var combat = world.Hero.GetComponent<HeroCombat>();
             starterSkills = BuildStarterSkills(world.Hero.Current.heroId);
             int carriedSkills = 0;

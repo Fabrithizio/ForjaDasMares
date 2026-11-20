@@ -31,6 +31,8 @@ namespace ForjaDasMares.Networking
             var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
             var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,world.Journey!=null?-80:-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
             mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,world.Journey!=null?-258:-403),new Vector2(200,42),"Branco: você · verde: refúgio\nDourado: missão · azul: passagem",11).gameObject;
+            // Old square map replaced by the round minimap (photo of the region, discovered places, turns with the camera).
+            mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,world.Journey!=null?-96:-236);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
             desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;
             Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).color=RusticHudTheme.Muted;
@@ -52,7 +54,7 @@ namespace ForjaDasMares.Networking
                 controlHint.gameObject.SetActive(false);
             }
             death=RusticHudTheme.Rect(root,"Death",Vector2.one*.5f,Vector2.zero,new Vector2(450,180)).gameObject;RusticHudTheme.Panel((RectTransform)death.transform,RusticHudTheme.Ink,20);
-            Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. Retorne ao refúgio.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
+            Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. A Raiz-Mãe vai te puxar de volta.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
             interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
             weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button, "<Keyboard>/tab");
             weaponModeKey.performed += OnWeaponMode;
@@ -690,10 +692,12 @@ namespace ForjaDasMares.Networking
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             float focus=hero.GetComponent<HeroCombat>().SuperProgress;superFill.sizeDelta=new Vector2(238*focus,5);superCaption.text="SUPER "+Mathf.RoundToInt(focus*100)+"%";
             portrait.Refresh(hero.GetComponent<HeroPresentation>(),world.GetComponent<RegionalInventory>()?.Service?.Profile??previewProfile,hero.Current.heroId);
-            objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?(world.IsCatacombInstance?"Escolha suas duas cartas.":"O portal dos desafios está aberto."):(world.IsCatacombInstance?"Derrote os dois inimigos da sala.":"Derrote a primeira patrulha de cada local."));
+            // New places of the world (sketches): just the name and what to do there, no old challenge portal.
+            if(AreasDoMundo.Selvagem(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name))objective.text=world.Definition.displayName.ToUpperInvariant()+"\nExplore. Siga as setas no chão para os lugares vizinhos.";
+            else objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?(world.IsCatacombInstance?"Escolha suas duas cartas.":"O portal dos desafios está aberto."):(world.IsCatacombInstance?"Derrote os dois inimigos da sala.":"Derrote a primeira patrulha de cada local."));
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice ?? world.Journey.Objective;}
-            if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(established);mapLegend.SetActive(established&&!Application.isMobilePlatform);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
+            if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(false);mapLegend.SetActive(false);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
             if(world.GoldFeedback!=null)hint.text=world.GoldFeedback;
             if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
         }

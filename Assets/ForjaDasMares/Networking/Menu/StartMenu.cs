@@ -284,7 +284,7 @@ namespace ForjaDasMares.Networking
             if (travelling || !AccountService.HasCharacter) return;
             travelling = true;
             Show(loading);
-            SceneManager.LoadSceneAsync(FirstGameScene);
+            SceneManager.LoadSceneAsync(Historia.PrimeiraCena); // the home village until the prologue is done
         }
 
         void Volume(float step)

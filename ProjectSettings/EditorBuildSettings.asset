@@ -23,6 +23,42 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ForjaDasMares/Scenes/CostaDasRuinas.unity
     guid: 81eba657148e0924e9c0b0a404f2c7be
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/RefugioAntigo.unity
+    guid: 18fbfb08606b82145a1a71f1338fb1e8
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Bosque.unity
+    guid: 83f9b52eda5ab3a4f8647e0a4d2eb66f
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Nascente.unity
+    guid: 325588254931ca14abbb731c509ecc7d
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Vale.unity
+    guid: 8fcaec090b3a75144985a821c0c9c51d
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Campos.unity
+    guid: 650ce5666d2ec5f47a1e1bb711259b26
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Gruta.unity
+    guid: c47b74b117958324bbe0dbc93abcb2f0
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_EstacaoAntiga.unity
+    guid: 32af467562ade1c4086339b3c5fbeaa6
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Mina.unity
+    guid: d7241bcdaff82754d962d5cdf39cc397
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Trilhos.unity
+    guid: 436fa9a62e57eca429512c1ea3715a43
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Foz.unity
+    guid: 121409c21de10ec47bc032a400725399
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Costa.unity
+    guid: 8c3117cda4b99694383a30bbbef972f9
+  - enabled: 1
+    path: Assets/ForjaDasMares/Scenes/Areas/Area_Cemiterio.unity
+    guid: a20c3fe6fbdb603459133555a039f04d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

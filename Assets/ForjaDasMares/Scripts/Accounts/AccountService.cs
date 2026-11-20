@@ -193,6 +193,14 @@ namespace ForjaDasMares
             return current.character;
         }
 
+        // The fighting style follows the first weapon (sword = close combat look 0, staff = distance look 2).
+        public static void SetLook(int look)
+        {
+            if (!HasCharacter) return;
+            current.character.look = Mathf.Clamp(look, 0, Looks.Length - 1);
+            Save();
+        }
+
         public static void DeleteCharacter()
         {
             if (!HasCharacter) return;

@@ -15,6 +15,9 @@ namespace ForjaDasMares
         readonly List<Renderer> hidden = new List<Renderer>();
         int refreshIn;
         Transform backSocket, chestBone;
+        Animator bodyAnimator; HeroModelView bodyView; HeroCombat combat;
+        int lastAction; float drawnUntil;
+        Transform movedOrigin; Vector3 originRest; bool originMoved;
         // Goes up every time a hero changes body, so portraits and previews redraw.
         public static int Version { get; private set; }
 
@@ -51,8 +54,98 @@ namespace ForjaDasMares
             if (refreshIn > 0 && --refreshIn == 0) RefreshEquipment();
             // Other systems may switch the old body back on: keep it hidden.
             foreach (var r in hidden) if (r != null && !r.forceRenderingOff) r.forceRenderingOff = true;
-            PoseBackWeapon();
+            PoseWeapon();
         }
+
+        // Each kind of weapon is carried its own way (decided with Fabricio):
+        // sword, axe, hammer and staff stay in the right hand; the others (boomerang, bow, daggers...) rest on the back
+        // and go to the hand while attacking, then back after a few seconds without fighting.
+        const float DrawnSeconds = 3f;
+        static bool AlwaysInHand(WeaponCategory c) => c == WeaponCategory.Sword || c == WeaponCategory.Axe || c == WeaponCategory.Hammer || c == WeaponCategory.Staff;
+        void PoseWeapon()
+        {
+            if (bodyView == null) { PoseBackWeapon(); return; }
+            if (combat == null) combat = GetComponentInParent<HeroCombat>();
+            if (combat != null && (combat.IsBusy || combat.ActionVersion != lastAction)) { lastAction = combat.ActionVersion; drawnUntil = Time.time + DrawnSeconds; }
+            var category = bodyView.CurrentWeaponCategory;
+            bool inHand = AlwaysInHand(category) || Time.time < drawnUntil;
+            Vector3? tip = null;
+            if (inHand) tip = PoseHandWeapon(category); else PoseBackWeapon();
+            // Shots of a staff (or bow, focus) leave from the tip of the weapon in the hand, not from the chest.
+            bool shoots = category == WeaponCategory.Staff || category == WeaponCategory.MagicWeapon || category == WeaponCategory.Bow;
+            var origin = combat != null ? combat.StrikePoint : null;
+            if (origin != movedOrigin) { RestoreOrigin(); movedOrigin = origin; if (origin != null) originRest = origin.localPosition; }
+            if (origin != null && shoots && tip.HasValue) { origin.position = tip.Value; originMoved = true; }
+            else RestoreOrigin();
+        }
+        void RestoreOrigin() { if (originMoved && movedOrigin != null) movedOrigin.localPosition = originRest; originMoved = false; }
+
+        // In the fist: the weapon crosses the palm along the thumb, the thin end (handle) in the hand.
+        Vector3? PoseHandWeapon(WeaponCategory category)
+        {
+            if (backSocket == null || bodyAnimator == null || body == null) return null;
+            var hand = bodyAnimator.GetBoneTransform(HumanBodyBones.RightHand);
+            var middle = bodyAnimator.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
+            var thumb = bodyAnimator.GetBoneTransform(HumanBodyBones.RightThumbProximal);
+            if (hand == null || middle == null) { PoseBackWeapon(); return null; }
+            // Sizes follow the character's real height (head to feet), so the staff reaches about the shoulder.
+            var head = bodyAnimator.GetBoneTransform(HumanBodyBones.Head); var foot = bodyAnimator.GetBoneTransform(HumanBodyBones.LeftFoot);
+            float height = head != null && foot != null ? Mathf.Max(.5f, head.position.y - foot.position.y + .2f) : 1.6f * Mathf.Max(.3f, body.transform.lossyScale.y);
+            Vector3 grip = Vector3.Lerp(hand.position, middle.position, .55f);
+            Vector3 fingers = (middle.position - hand.position).normalized;
+            Vector3 up = thumb != null ? thumb.position - hand.position : body.transform.up;
+            Vector3 blade = up - Vector3.Dot(up, fingers) * fingers;
+            if (blade.sqrMagnitude < 1e-6f) blade = body.transform.up;
+            blade.Normalize();
+            // A staff stands almost upright in the fist; blades follow the thumb.
+            if (category == WeaponCategory.Staff) blade = Vector3.Slerp(blade, body.transform.up, .8f).normalized;
+            float length = (category == WeaponCategory.Staff ? .85f : category == WeaponCategory.Sword ? .55f : category == WeaponCategory.Axe ? .48f : category == WeaponCategory.Hammer ? .52f : .38f) * height;
+            Vector3? tip = null;
+            float hold = category == WeaponCategory.Staff ? .38f : category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? .1f : .3f;
+            for (int i = 0; i < backSocket.childCount; i++)
+            {
+                var item = backSocket.GetChild(i);
+                var filter = item.GetComponent<MeshFilter>();
+                if (filter == null || filter.sharedMesh == null) continue;
+                var mesh = filter.sharedMesh; var bounds = mesh.bounds; Vector3 extent = bounds.size;
+                int along = extent.x >= extent.y && extent.x >= extent.z ? 0 : extent.y >= extent.z ? 1 : 2;
+                int thin = extent.x <= extent.y && extent.x <= extent.z ? 0 : extent.y <= extent.z ? 1 : 2;
+                if (thin == along) thin = (along + 1) % 3;
+                float sign = HandleAtMin(mesh, along) ? 1 : -1;
+                var model = Quaternion.LookRotation(Axis(thin), Axis(along) * sign);
+                var world = Quaternion.LookRotation(fingers, blade);
+                item.rotation = world * Quaternion.Inverse(model);
+                float factor = length / Mathf.Max(.0001f, extent[along]);
+                var parent = backSocket.lossyScale;
+                item.localScale = new Vector3(factor / Mathf.Max(.0001f, parent.x), factor / Mathf.Max(.0001f, parent.y), factor / Mathf.Max(.0001f, parent.z));
+                Vector3 handle = bounds.center + Axis(along) * (sign * (-extent[along] * .5f + hold * extent[along]));
+                item.position += grip - item.TransformPoint(handle);
+                if (tip == null) tip = item.TransformPoint(bounds.center + Axis(along) * (sign * extent[along] * .5f));
+            }
+            return tip;
+        }
+
+        // Which end of the long axis is the handle: the thinner one (a staff head or a blade is wider than the grip).
+        static readonly Dictionary<Mesh, bool> handleAtMin = new Dictionary<Mesh, bool>();
+        static bool HandleAtMin(Mesh mesh, int along)
+        {
+            if (handleAtMin.TryGetValue(mesh, out bool known)) return known;
+            bool result = true;
+            if (mesh.isReadable)
+            {
+                var vertices = mesh.vertices; var b = mesh.bounds; float min = b.min[along], span = Mathf.Max(.0001f, b.size[along]);
+                Vector2 center = Flat(b.center, along); float low = 0, high = 0; int nLow = 0, nHigh = 0;
+                foreach (var v in vertices)
+                {
+                    float k = (v[along] - min) / span; float r = (Flat(v, along) - center).magnitude;
+                    if (k < .15f) { low += r; nLow++; } else if (k > .85f) { high += r; nHigh++; }
+                }
+                if (nLow > 0 && nHigh > 0) result = low / nLow <= high / nHigh;
+            }
+            handleAtMin[mesh] = result;
+            return result;
+        }
+        static Vector2 Flat(Vector3 v, int along) => along == 0 ? new Vector2(v.y, v.z) : along == 1 ? new Vector2(v.x, v.z) : new Vector2(v.x, v.y);
 
         // Every frame, after the animation: the main weapon lies flat on the back, tilted like a sword carried
         // crosswise, about 58 cm long and just behind the jacket. Works for any weapon model, whatever its own axes.
@@ -114,6 +207,7 @@ namespace ForjaDasMares
             backSocket = back;
             chestBone = animator.GetBoneTransform(HumanBodyBones.UpperChest) ?? animator.GetBoneTransform(HumanBodyBones.Chest) ?? animator.GetBoneTransform(HumanBodyBones.Spine);
             view.Configure(animator, back, left, null, true);
+            bodyAnimator = animator; bodyView = view;
             view.ConfigureEquipmentFit(true);
             var passada = body.GetComponent<PassadaDoCorpo>();
             if (passada != null) view.ConfigureStride(passada.andar, passada.correr);

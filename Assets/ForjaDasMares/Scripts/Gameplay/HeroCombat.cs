@@ -63,6 +63,8 @@ namespace ForjaDasMares
         public int ActionVersion { get; private set; }
         public float ImpactTime => active ? (heavy ? Mathf.Max(.05f,flow.heavyWindup) : currentAttack.windup / (special ? 1 : AttackSpeed)) / length : .25f;
         public Vector3 StrikeOrigin=>origin!=null?origin.position:transform.position+Vector3.up;
+        // Where shots leave from (the body moves it to the tip of a staff held in the hand).
+        public Transform StrikePoint=>origin;
         bool OriginClear=>!Physics.Linecast(transform.position+Vector3.up,origin.position,geometry,QueryTriggerInteraction.Ignore)&&!Physics.CheckSphere(origin.position,.04f,geometry,QueryTriggerInteraction.Ignore);
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
         public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superHits = 0; }

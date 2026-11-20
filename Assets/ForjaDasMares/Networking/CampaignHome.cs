@@ -114,7 +114,7 @@ namespace ForjaDasMares.Networking
             var oldHud=GetComponentInParent<CoopHud>();
             if(oldHud!=null)oldHud.gameObject.SetActive(false);
             if(director.Manager!=null)Destroy(director.Manager.gameObject);
-            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("RefugioUltimoSino");
+            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(Historia.PrimeiraCena);
         }
         void BuildCharacterCreation(Transform parent)
         {

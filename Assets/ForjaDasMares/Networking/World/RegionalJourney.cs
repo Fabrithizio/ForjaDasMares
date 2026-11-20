@@ -35,7 +35,7 @@ namespace ForjaDasMares.Networking
         public int ClueCount {get{int bits=journal?.clues??0;return (bits&1)+((bits>>1)&1)+((bits>>2)&1);}}
         public string Objective=>!Accepted?"Fale com Nara no refúgio.":Completed?"Investigação concluída · Fragmento de Memória recebido.\nProcure o altar das Catacumbas na praça do Refúgio.":ClueCount>=definition.requiredClues?"Leve as pistas para Daro, no refúgio.":"Cais (sudoeste), Pedreira (leste) ou Jardim (noroeste): "+ClueCount+" / "+definition.requiredClues+" pistas. Escolha a ordem.";
         public void Configure(RegionalWorld region,RegionStoryDefinition story){world=region;definition=story;world.SetJourney(this);}
-        public int UnlockedSkills => SkillCount(journal);
+        public int UnlockedSkills => Historia.TemArmaInicial ? 3 : SkillCount(journal);
         public static int SkillCount(Journal value) => value?.completed == true ? 3 : value?.accepted == true ? Mathf.Min(2, CountClues(value.clues)) : 0;
         static int CountClues(int bits) => (bits & 1) + ((bits >> 1) & 1) + ((bits >> 2) & 1);
 

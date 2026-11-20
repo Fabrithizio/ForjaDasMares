@@ -37,6 +37,7 @@ namespace ForjaDasMares
         static readonly int[][] WeaponUpper={Hashes("Upper Body.",WeaponMoves[0]),Hashes("Upper Body.",WeaponMoves[1]),Hashes("Upper Body.",WeaponMoves[2]),Hashes("Upper Body.",WeaponMoves[3]),Hashes("Upper Body.",WeaponMoves[4]),Hashes("Upper Body.",WeaponMoves[5])};
         WeaponCategory weaponCategory;
         public void SetWeaponCategory(WeaponCategory value)=>weaponCategory=value;
+        public WeaponCategory CurrentWeaponCategory=>weaponCategory;
         int AttackHash(int variant,bool upper,bool skill)
         {
             int group=weaponCategory==WeaponCategory.Axe?1:weaponCategory==WeaponCategory.Hammer?2:weaponCategory==WeaponCategory.Staff?3:weaponCategory==WeaponCategory.Grimoire?4:weaponCategory==WeaponCategory.MagicWeapon?5:0;

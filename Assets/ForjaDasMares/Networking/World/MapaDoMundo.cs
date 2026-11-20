@@ -30,7 +30,7 @@ namespace ForjaDasMares.Networking
         }
     }
 
-    // World map opened at the Estação do Último Sino (centre of the Refúgio). Official art + the 52 places of the
+    // World map opened at the Nó do Refúgio (the root portal beside the Expedições hall). Official art + the 52 places of the
     // map guide; what was not discovered stays under the fog. Drag to move, wheel or pinch to zoom (PC and phone).
     public sealed class MapaDoMundo : MonoBehaviour
     {
@@ -55,7 +55,7 @@ namespace ForjaDasMares.Networking
         // x, y = percent of the map image (0 = left/top).
         public static readonly Lugar[] Lugares =
         {
-            new Lugar("refugio","Refúgio do Último Sino","c1","cidade",52.0f,44.0f,"Cidade nas raízes da árvore gigante, coração da teia. O sino rachado só traz, nunca leva. Onde todo Chegado cai."),
+            new Lugar("refugio","Refúgio do Último Sino","c1","cidade",52.0f,44.0f,"Cidade em volta de uma Raiz-Mãe antiga, coração da teia. Ela está rachada: puxa gente de longe, mas só leva para outras Raízes-Mães vivas. Onde todo Chegado cai."),
             new Lugar("bosque","Bosque Luzente","c1","lugar",44.0f,37.0f,"Primeira área: plantas que brilham, criaturas da teia, quase nenhum perigo. Ruína com o mapa gravado que mostra a vila do jogador."),
             new Lugar("nascente","Nascente do Rio","c1","lugar",53.0f,51.0f,"Água que brilha, nasce do coração. Pequenos segredos escondidos nas pedras."),
             new Lugar("trilhos","Trilhos Velhos","c1","lugar",42.0f,57.0f,"Trilho do povo antigo. Caminho rápido, vigiado por sentinelas flutuantes."),
@@ -111,6 +111,7 @@ namespace ForjaDasMares.Networking
 
         static MapaDoMundo open;
         public static bool Aberto => open != null;
+        public static int FechadoNoQuadro = -1;
         RegionalWorld world;
         RectTransform viewport, content;
         Text title, region, body, status;
@@ -133,7 +134,7 @@ namespace ForjaDasMares.Networking
         public void Fechar()
         {
             if (world != null && world.Hero != null) world.Hero.GetComponent<ArenaInput>()?.BlockCommands(false);
-            open = null;
+            open = null; FechadoNoQuadro = Time.frameCount;
             Destroy(gameObject);
         }
 
@@ -150,10 +151,10 @@ namespace ForjaDasMares.Networking
             var backdrop = Stretch(new GameObject("Fundo", typeof(RectTransform)).GetComponent<RectTransform>(), root, 0, 0, 0, 0);
             backdrop.gameObject.AddComponent<Image>().color = new Color(.02f, .035f, .05f, 1f);
 
-            RusticHudTheme.Label(root, "Titulo", new Vector2(0, 1), new Vector2(330, -42), new Vector2(600, 44), "MAPA DO MUNDO", 34).color = RusticHudTheme.Gold;
-            RusticHudTheme.Label(root, "Dica", new Vector2(0, 1), new Vector2(560, -78), new Vector2(1060, 28),
-                estacao ? "Estação do Último Sino · toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar"
-                        : "Toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar", 18).color = RusticHudTheme.Muted;
+            RusticHudTheme.Label(root, "Titulo", new Vector2(0, 1), new Vector2(40, -24), new Vector2(600, 44), "MAPA DO MUNDO", 34, TextAnchor.MiddleLeft).color = RusticHudTheme.Gold;
+            RusticHudTheme.Label(root, "Dica", new Vector2(0, 1), new Vector2(40, -70), new Vector2(1300, 28),
+                estacao ? "Raiz-Mãe do Refúgio · toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar"
+                        : "Toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar", 18, TextAnchor.MiddleLeft).color = RusticHudTheme.Muted;
             RusticHudTheme.Button(root, "Fechar", new Vector2(1, 1), new Vector2(-60, -50), new Vector2(84, 56), "X", Fechar);
 
             // Map area (left) and information panel (right).
@@ -198,7 +199,7 @@ namespace ForjaDasMares.Networking
             var tipOutline = tooltip.gameObject.AddComponent<Outline>(); tipOutline.effectColor = new Color(0, 0, 0, .95f); tipOutline.effectDistance = new Vector2(2, -2);
             tooltip.enabled = false;
 
-            var panel = RusticHudTheme.Rect(root, "Info", new Vector2(1, .5f), new Vector2(-236, -34), new Vector2(420, 900));
+            var panel = RusticHudTheme.Rect(root, "Info", new Vector2(1, .5f), new Vector2(-26, -34), new Vector2(420, 900));
             RusticHudTheme.Panel(panel, RusticHudTheme.Surface, 16);
             title = RusticHudTheme.Label(panel, "Nome", new Vector2(.5f, 1), new Vector2(0, -50), new Vector2(370, 70), "", 28, TextAnchor.UpperLeft);
             title.color = RusticHudTheme.Gold; title.horizontalOverflow = HorizontalWrapMode.Wrap; title.verticalOverflow = VerticalWrapMode.Overflow;
@@ -216,8 +217,18 @@ namespace ForjaDasMares.Networking
                 RusticHudTheme.Button(panel, "Teste", new Vector2(.5f, 0), new Vector2(0, 26), new Vector2(370, 40),
                     DescobertasDoMapa.RevelarTudo ? "(teste) esconder de novo" : "(teste) revelar tudo",
                     () => { DescobertasDoMapa.RevelarTudo = !DescobertasDoMapa.RevelarTudo; var w = world; bool s = estacao; Fechar(); Abrir(w, s); });
-            Show(Lugares[0]);
+            // Where the player is now: chosen at opening, marked with a ring.
+            aqui = AreasDoMundo.PorCena(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name)?.id ?? "refugio";
+            DescobertasDoMapa.Descobrir(aqui);
+            int index = System.Array.FindIndex(Lugares, l => l.id == aqui);
+            var here = Lugares[Mathf.Max(0, index)];
+            marcaAqui = RusticHudTheme.Rect(points, "VoceEstaAqui", new Vector2(here.x / 100f, 1 - here.y / 100f), Vector2.zero, new Vector2(46, 46));
+            var ring = marcaAqui.gameObject.AddComponent<RoundedHudGraphic>(); ring.radius = 23; ring.color = new Color(0, 0, 0, 0); ring.borderColor = new Color(.45f, 1f, .9f); ring.raycastTarget = false;
+            var you = RusticHudTheme.Label(marcaAqui, "Voce", new Vector2(.5f, 0), new Vector2(0, -22), new Vector2(200, 24), "VOCÊ ESTÁ AQUI", 15, TextAnchor.MiddleCenter);
+            you.color = new Color(.45f, 1f, .9f); you.gameObject.AddComponent<Outline>().effectColor = new Color(0, 0, 0, .95f);
+            Show(here);
         }
+        string aqui = "refugio"; RectTransform marcaAqui;
 
         RectTransform borders, selected;
         readonly Dictionary<string, Text> labels = new Dictionary<string, Text>();
@@ -310,7 +321,8 @@ namespace ForjaDasMares.Networking
             string kind = lugar.tipo == "cidade" ? "Cidade" : lugar.tipo == "estacao" ? "Estação" : lugar.tipo == "covil" ? "Covil" : lugar.tipo == "segredo" ? "Segredo" : "Lugar";
             region.text = kind + " · " + r.nome + " · " + r.capitulo + " · nível " + r.nivel;
             body.text = lugar.texto;
-            status.text = lugar.id == "refugio" ? "Você está aqui. A Estação do Último Sino só traz pessoas: o sino está rachado."
+            status.text = lugar.id == aqui ? (lugar.id == "refugio" ? "Você está aqui. A Raiz-Mãe do Refúgio está rachada: ela puxa gente de longe, mas só leva para outras Raízes-Mães vivas." : "Você está aqui.")
+                : lugar.id == "refugio" ? "A Raiz-Mãe do Refúgio está rachada: ela puxa gente de longe, mas só leva para outras Raízes-Mães vivas."
                 : lugar.tipo == "estacao" ? "Estação ainda não religada. Limpe o Breu em volta e acorde o Vigia para viajar até aqui."
                 : "Para viajar até aqui, religue a estação desta região.";
             travel.interactable = false;
@@ -373,12 +385,24 @@ namespace ForjaDasMares.Networking
         public void ClickAt(Vector2 screen)
         {
             int area = AreaAt(screen);
+            // On the phone there is no mouse hover: the tapped area is lit and named instead.
+            if (Application.isMobilePlatform && areas != null) { hovered = area; PaintHighlight(); Tip(area, screen); }
             if (area >= 0) Show(Lugares[area]);
+        }
+
+        void Tip(int area, Vector2 screen)
+        {
+            tooltip.enabled = area >= 0;
+            if (area < 0) return;
+            tooltip.text = DescobertasDoMapa.Conhece(Lugares[area].id) ? Lugares[area].nome : "Área não descoberta";
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(content, screen, null, out var at)) tooltipRect.anchoredPosition = at + new Vector2(0, 34 / Mathf.Max(.01f, zoom));
+            tooltipRect.localScale = Vector3.one / zoom;
         }
 
         void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) { Fechar(); return; }
+            if (Keyboard.current != null && (Keyboard.current.escapeKey.wasPressedThisFrame || Keyboard.current.kKey.wasPressedThisFrame)) { Fechar(); return; }
+            if (marcaAqui != null) marcaAqui.localScale = Vector3.one * (1 + Mathf.Sin(Time.unscaledTime * 4) * .12f) / Mathf.Max(.01f, zoom);
             if (viewport.rect.width > 10)
             {
                 // Fit the 16:9 art inside the map area (again every frame: the screen size can change).
@@ -387,18 +411,12 @@ namespace ForjaDasMares.Networking
                 if ((fit - content.sizeDelta).sqrMagnitude > .5f) { content.sizeDelta = fit; Pan(Vector2.zero); }
             }
             // Name of the area under the mouse (on the phone: the area you tap is chosen instead).
-            if (Mouse.current != null && areas != null)
+            if (!Application.isMobilePlatform && Mouse.current != null && areas != null)
             {
                 var screen = Mouse.current.position.ReadValue();
                 int area = AreaAt(screen);
                 if (area != hovered) { hovered = area; PaintHighlight(); }
-                tooltip.enabled = area >= 0;
-                if (area >= 0)
-                {
-                    tooltip.text = DescobertasDoMapa.Conhece(Lugares[area].id) ? Lugares[area].nome : "Área não descoberta";
-                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(content, screen, null, out var at)) tooltipRect.anchoredPosition = at + new Vector2(0, 34 / Mathf.Max(.01f, zoom));
-                    tooltipRect.localScale = Vector3.one / zoom;
-                }
+                Tip(area, screen);
             }
             var touch = Touchscreen.current;
             if (touch != null && touch.touches.Count > 1 && touch.touches[0].press.isPressed && touch.touches[1].press.isPressed)

@@ -125,9 +125,12 @@ namespace ForjaDasMares.Networking
             hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.SetFocusBounds(definition.bounds,true);follow.Snap();
             residents=new EnemyActor[definition.camps.Length][];timers=new float[residents.Length][];firstKills=new int[residents.Length];cleared=new bool[residents.Length];firstDefeated=new bool[residents.Length][];
             for(int i=0;i<residents.Length;i++){residents[i]=new EnemyActor[definition.camps[i].enemies.Length];timers[i]=new float[residents[i].Length];firstDefeated[i]=new bool[residents[i].Length];}
-            if (town != null && Journey != null)
-                catacombAltar = BuildPlazaStation("Altar das Catacumbas",new Vector3(5,0,-4),() => Hud?.OpenCatacombEntrance());
-            if (town != null) mapStation = BuildMapStation();
+            // The old Catacombs (and their altar) left the game: the new places of Chapter 1 replace them.
+            if (town != null) { mapStation = BuildMapStation(); BuildProtectorCrystal(); }
+            // Gates to the neighbour places (world map passages).
+            if (!IsCatacombInstance) PortoesDoMundo.Criar(this);
+            // You fell somewhere else: the web pulls you back to the Nó that recorded you.
+            if (Historia.RenascerNoNo && mapStation != null) { Historia.RenascerNoNo = false; hero.GetComponent<PlayerMotor>().Teleport(NoSpot,Quaternion.Euler(0,180,0)); follow.Snap(); }
             if (IsCatacombInstance)
             {
                 for (int i = 0; i < cardOrder.Length; i++) cardOrder[i] = 15 + (i % 6) * 5;
@@ -282,7 +285,7 @@ namespace ForjaDasMares.Networking
                 var actor=enemies.TrySpawn(data.enemies[i],point);if(actor!=null){if(IsCatacombInstance){bool boss=data.enemies[i].kind==EnemyKind.Boss;actor.Health.ApplyAttributes(boss?260:22,0);actor.Health.Restore();actor.Combat.NormalDamageScale=.35f;}residents[c][i]=actor;ownership[actor]=c;}
             }
         }
-        public string InteractionHint => IsCatacombInstance && PortalReady ? "F · Abrir cartas" : NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : mapStation != null && mapStation.InRange(hero.transform) ? "F · Estação do Último Sino (mapa)" : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
+        public string InteractionHint => IsCatacombInstance && PortalReady ? "F · Abrir cartas" : NearbyGold() is WorldClickTarget pile ? "F · "+pile.Label : mapStation != null && mapStation.InRange(hero.transform) ? "F · Raiz-Mãe do Refúgio (mapa)" : catacombAltar != null && catacombAltar.InRange(hero.transform) ? "F · Altar das Catacumbas" : RefugeDistance<5&&CanRest?"F · Descansar no refúgio":Vector3.Distance(hero.transform.position,definition.portal)<5?(PortalReady?(IsCatacombInstance?"F · Escolher carta":"F · Entrar nos desafios"):"Investigue os três acampamentos para abrir o portal"):"";
         public void Interact()
         {
             if(!hero.Health.IsAlive||travelling)return;
@@ -295,7 +298,7 @@ namespace ForjaDasMares.Networking
             if(mapStation!=null&&mapStation.TryUse(hero.transform))return;
             if(town!=null&&town.TryInteractNearest())return;
             if(Journey!=null&&Journey.Interact())return;
-            if(RefugeDistance<5){hero.Health.Restore();Changed?.Invoke();}
+            if(RefugeDistance<5&&CanRest){hero.Health.Restore();Changed?.Invoke();}
             else if(Journey==null&&PortalReady&&Vector3.Distance(hero.transform.position,definition.portal)<5)
             {
                 if (IsCatacombInstance) Hud?.OpenCatacombCards();
@@ -355,30 +358,91 @@ namespace ForjaDasMares.Networking
         }
         WorldClickTarget catacombAltar;
 
-        // Estação do Último Sino: the monument in the middle of the plaza. Opens the world map.
-        // A ring of light on the ground marks where to stand. (A 3D model of the station with the cracked bell comes later.)
+        // The Nó do Refúgio: the root portal (the tree with the cracked core, beside the Expedições hall).
+        // Touching it opens the world map and records the player in the root (falling brings you back here).
+        // A ring of light on the ground marks where to stand.
         WorldClickTarget mapStation;
+        public Transform No => mapStation != null ? mapStation.transform : null;
+        Vector3 NoSpot
+        {
+            get
+            {
+                var p = mapStation.transform.position;
+                return UnityEngine.AI.NavMesh.SamplePosition(p,out var hit,4,UnityEngine.AI.NavMesh.AllAreas) ? hit.position : p;
+            }
+        }
         WorldClickTarget BuildMapStation()
         {
-            var station = new GameObject("Estacao do Ultimo Sino");
+            // Where the tree is: its sign (the scene still calls it "Estação Antiga"). Without the sign: beside the instance hall.
+            Vector3 place = new Vector3(-13.5f,0,23);
+            foreach (var text in FindObjectsByType<TextMesh>(FindObjectsSortMode.None))
+                if (text.text != null && text.text.ToUpperInvariant().Contains("ESTAÇÃO ANTIGA"))
+                { text.text = "RAIZ-MÃE DO REFÚGIO"; place = new Vector3(text.transform.position.x,0,text.transform.position.z); }
+            // The old service that stood there (the "santuário") gives way to the Nó.
+            foreach (var old in FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None))
+                if (old.Label.IndexOf("santuário",StringComparison.OrdinalIgnoreCase) >= 0) old.enabled = false;
+            var station = new GameObject("No do Refugio");
             station.transform.SetParent(transform,false);
-            station.transform.position = new Vector3(0,0,0);
+            station.transform.position = place;
             var ring = station.AddComponent<LineRenderer>();
-            const int Steps = 48; const float Radius = 4.6f;
+            const int Steps = 48; const float Radius = 2.4f;
             ring.loop = true; ring.positionCount = Steps; ring.useWorldSpace = false; ring.widthMultiplier = .14f;
             for (int i = 0; i < Steps; i++) { float a = i * Mathf.PI * 2 / Steps; ring.SetPosition(i,new Vector3(Mathf.Cos(a)*Radius,.07f,Mathf.Sin(a)*Radius)); }
             var glow = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
             glow.SetColor("_BaseColor",new Color(.45f,1f,.85f,1));
             ring.sharedMaterial = glow; ring.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             var target = station.AddComponent<WorldClickTarget>();
-            target.Configure("Estação do Último Sino",6.2f);
+            target.Configure("Raiz-Mãe do Refúgio",4.5f);
             target.Interacting += actor =>
             {
                 if (actor != hero.transform || !hero.Health.IsAlive || MapaDoMundo.Aberto) return;
                 DescobertasDoMapa.Descobrir("refugio");
+                // The bell is the Nó's signal: it rings when the root records you.
+                bool first = Historia.CenaDoNo != SceneManager.GetActiveScene().name;
+                Historia.GravarNo(SceneManager.GetActiveScene().name);
+                if (first) AudioSource.PlayClipAtPoint(Historia.Sino(true),station.transform.position,.9f);
                 MapaDoMundo.Abrir(this,true);
             };
             return target;
+        }
+
+        // The protector crystal in the middle of the plaza: pure sap of the web, it keeps the Breu away (that is why
+        // the city is safe). It floats over the monument, turning slowly, with its own light.
+        void BuildProtectorCrystal()
+        {
+            float top = 4f;
+            var monument = GameObject.Find("Monumento");
+            if (monument != null)
+            {
+                var renderers = monument.GetComponentsInChildren<Renderer>();
+                if (renderers.Length > 0) { var b = renderers[0].bounds; foreach (var r in renderers) b.Encapsulate(r.bounds); top = b.max.y; }
+            }
+            var crystal = new GameObject("Cristal Protetor");
+            crystal.transform.SetParent(transform,false);
+            crystal.transform.position = new Vector3(0,top + 1.6f,0);
+            var mesh = new Mesh { name = "Cristal" };
+            const int Sides = 6; const float Up = 2.2f, Down = 1.3f, Width = .75f;
+            var vertices = new List<Vector3>(); var triangles = new List<int>();
+            for (int i = 0; i < Sides; i++)
+            {
+                float a0 = i * Mathf.PI * 2 / Sides, a1 = (i + 1) * Mathf.PI * 2 / Sides;
+                var p0 = new Vector3(Mathf.Cos(a0) * Width,0,Mathf.Sin(a0) * Width); var p1 = new Vector3(Mathf.Cos(a1) * Width,0,Mathf.Sin(a1) * Width);
+                int v = vertices.Count; vertices.Add(Vector3.up * Up); vertices.Add(p1); vertices.Add(p0); triangles.AddRange(new[] { v,v + 1,v + 2 });
+                v = vertices.Count; vertices.Add(Vector3.down * Down); vertices.Add(p0); vertices.Add(p1); triangles.AddRange(new[] { v,v + 1,v + 2 });
+            }
+            mesh.SetVertices(vertices); mesh.SetTriangles(triangles,0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            crystal.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            var color = new Color(.45f,1f,.88f);
+            material.SetColor("_BaseColor",new Color(color.r,color.g,color.b,1));
+            material.SetFloat("_Smoothness",.9f);
+            material.EnableKeyword("_EMISSION"); material.SetColor("_EmissionColor",color * 1.6f);
+            var renderer = crystal.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            var lamp = new GameObject("Luz do Cristal").AddComponent<Light>();
+            lamp.transform.SetParent(crystal.transform,false);
+            lamp.type = LightType.Point; lamp.color = color; lamp.range = 14; lamp.intensity = 2.2f; lamp.shadows = LightShadows.None;
+            crystal.AddComponent<CristalProtetor>();
         }
 
         public void EnterCatacombInstance()
@@ -484,10 +548,30 @@ namespace ForjaDasMares.Networking
             if (IsCatacombInstance && CardsFinalized) TravelTo("RefugioUltimoSino");
         }
 
-        public void Respawn(){Dismount();hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();hero.GetComponent<PlayerMotor>().Teleport(definition.refuge,Quaternion.identity);follow.Snap();Changed?.Invoke();}
+        public void Respawn()
+        {
+            Dismount();hero.GetComponent<ArenaInput>().Desktop?.Cancel();hero.ResetHero();
+            // The root that recorded you pulls you back to its Nó (instances keep their own start).
+            string noScene = Historia.CenaDoNo, here = SceneManager.GetActiveScene().name;
+            if (!IsCatacombInstance && !string.IsNullOrEmpty(noScene) && noScene != here && Application.CanStreamedLevelBeLoaded(noScene))
+            { Historia.RenascerNoNo = true; AreasDoMundo.VindoDe = null; TravelTo(noScene); return; }
+            hero.GetComponent<PlayerMotor>().Teleport(noScene == here && mapStation != null ? NoSpot : definition.refuge,Quaternion.identity);
+            follow.Snap();Changed?.Invoke();
+        }
         public void ReturnToCampaign() => TravelTo("CampaignCoop");
+        public void Viajar(string scene) => TravelTo(scene);
+        // In the wild there is no free rest (only in cities).
+        bool CanRest => !AreasDoMundo.Selvagem(SceneManager.GetActiveScene().name);
         public void ReturnToStartMenu() => TravelTo("Inicio");
         void TravelTo(string scene){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
         void OnDestroy(){if(hero!=null&&hero.Health!=null)hero.Health.Damaged-=Dismount;if(mountMetal!=null)Destroy(mountMetal);if(mountCrystal!=null)Destroy(mountCrystal);if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
+    }
+
+    // Turns slowly and floats up and down (the protector crystal of the city).
+    public sealed class CristalProtetor:MonoBehaviour
+    {
+        Vector3 start;
+        void Start()=>start=transform.position;
+        void Update(){transform.Rotate(0,25*Time.deltaTime,0,Space.World);transform.position=start+Vector3.up*Mathf.Sin(Time.time*1.1f)*.25f;}
     }
 }
