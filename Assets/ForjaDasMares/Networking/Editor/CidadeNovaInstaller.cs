@@ -237,7 +237,7 @@ namespace ForjaDasMares.Networking.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             Prepare();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            string GameScene = TownInstaller.ScenePath;
+            string GameScene = ForjaBuild.Cidade;
             if (!File.Exists(OldScene))
             {
                 string moved = AssetDatabase.MoveAsset(GameScene, OldScene);

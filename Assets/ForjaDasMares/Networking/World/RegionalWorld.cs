@@ -20,38 +20,92 @@ namespace ForjaDasMares.Networking
         int mountedAction;
         public bool IsMounted => mount != null && mount.activeSelf;
 
+        // Mount: the blue wolf (Resources/Animais/Lobo). Calling it takes 2 s (light gathers around the hero);
+        // then a burst of light and sparks and the hero appears riding. Moving, attacking or being hit cancels.
+        public const float TempoMontar = 2f;
+        static readonly Color LuzDoLobo = new Color(.45f, .8f, 1f);
+        Coroutine chamando; ParticleSystem auraChamando;
+        public bool Chamando => chamando != null;
+        public float ChamandoProgresso { get; private set; }
+
         public void ToggleMount()
         {
             if (travelling || !hero.Health.IsAlive || hero.GetComponent<ArenaInput>().CombatBlocked) return;
-            if (IsMounted) { Dismount(); return; }
+            if (IsMounted || Chamando) { Dismount(); return; }
             if (IsCatacombInstance || travelCombat.IsBusy || travelMotor.IsDodging || enemies.ThreatNear(hero.transform.position,9)) return;
+            chamando = StartCoroutine(Chamar());
+        }
+
+        System.Collections.IEnumerator Chamar()
+        {
+            var start = hero.transform.position; int action = travelCombat.ActionVersion;
+            auraChamando = EfeitosDeHabilidade.Aura(hero.transform, LuzDoLobo, true, .8f, 28);
+            var pose = hero.GetComponentInChildren<HeroModelView>(); if (pose != null) pose.PoseFixa = "Conjurar";
+            for (float t = 0; t < TempoMontar; t += Time.deltaTime)
+            {
+                ChamandoProgresso = t / TempoMontar;
+                var moved = hero.transform.position - start; moved.y = 0;
+                if (moved.sqrMagnitude > .35f * .35f || travelCombat.ActionVersion != action || travelMotor.IsDodging || !hero.Health.IsAlive) { PararChamado(); yield break; }
+                yield return null;
+            }
+            PararChamado();
+            // The burst: light, sparks, a column of light and a small shake.
+            var p = hero.transform.position;
+            EfeitosDeHabilidade.Explosao(p + Vector3.up, 2.4f, LuzDoLobo, 70);
+            EfeitosDeHabilidade.Coluna(p, 1.5f, LuzDoLobo);
+            EfeitosDeHabilidade.Tremer(.12f);
+            var flash = new GameObject("LuzDaMontaria").AddComponent<Light>(); flash.transform.position = p + Vector3.up * 1.5f;
+            flash.type = LightType.Point; flash.color = LuzDoLobo; flash.range = 9; flash.intensity = 6;
+            StartCoroutine(Apagar(flash));
             if (mount == null) BuildMount();
             mountedAction = travelCombat.ActionVersion;
             mount.SetActive(true);
             travelMotor.TravelSpeedMultiplier = 1.8f;
         }
+        static System.Collections.IEnumerator Apagar(Light l)
+        {
+            for (float t = 0; t < .6f && l != null; t += Time.deltaTime) { l.intensity = Mathf.Lerp(6, 0, t / .6f); yield return null; }
+            if (l != null) Destroy(l.gameObject);
+        }
+        void PararChamado()
+        {
+            if (chamando != null) StopCoroutine(chamando);
+            chamando = null; ChamandoProgresso = 0;
+            var pose = hero != null ? hero.GetComponentInChildren<HeroModelView>() : null; if (pose != null && pose.PoseFixa == "Conjurar") pose.PoseFixa = null;
+            if (auraChamando != null) { auraChamando.Stop(true, ParticleSystemStopBehavior.StopEmitting); Destroy(auraChamando.gameObject, 1.2f); auraChamando = null; }
+        }
 
         public void Dismount()
         {
-            if (mount != null) mount.SetActive(false);
+            PararChamado();
+            if (mount != null && mount.activeSelf)
+            {
+                EfeitosDeHabilidade.Explosao(hero.transform.position + Vector3.up * .6f, 1.4f, LuzDoLobo, 30);
+                mount.SetActive(false);
+            }
             if (travelMotor != null) travelMotor.TravelSpeedMultiplier = 1f;
         }
 
         void BuildMount()
         {
-            mount = new GameObject("Prancha Rúnica");
+            mount = new GameObject("Montaria");
             mount.transform.SetParent(hero.transform,false);
+            var prefab = Resources.Load<GameObject>("Animais/Lobo");
+            if (prefab != null)
+            {
+                var wolf = Instantiate(prefab, mount.transform, false);
+                wolf.transform.localScale *= 1.8f; // Fabricio: 80% bigger than the first try
+                foreach (var c in wolf.GetComponentsInChildren<Collider>()) c.enabled = false;
+                mount.AddComponent<MontariaLobo>().Configure(hero, wolf);
+                return;
+            }
+            // No wolf yet (run Forja → Animais → Preparar animais): the old rune board.
             mountMetal = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             mountMetal.SetColor("_BaseColor",new Color(.16f,.26f,.31f));
             mountCrystal = new Material(mountMetal);
             mountCrystal.SetColor("_BaseColor",new Color(.15f,.75f,.86f));
-            mountCrystal.EnableKeyword("_EMISSION");
-            mountCrystal.SetColor("_EmissionColor",new Color(.04f,.36f,.44f));
-
             AddMountPiece(PrimitiveType.Sphere,new Vector3(0,.07f,0),new Vector3(.92f,.14f,1.65f),mountMetal,0);
             AddMountPiece(PrimitiveType.Sphere,new Vector3(0,.08f,.64f),new Vector3(.37f,.16f,.59f),mountCrystal,0);
-            AddMountPiece(PrimitiveType.Cube,new Vector3(-.42f,.045f,-.08f),new Vector3(.17f,.09f,.91f),mountCrystal,-13);
-            AddMountPiece(PrimitiveType.Cube,new Vector3(.42f,.045f,-.08f),new Vector3(.17f,.09f,.91f),mountCrystal,13);
         }
 
         void AddMountPiece(PrimitiveType shape,Vector3 position,Vector3 scale,Material surface,float yaw)

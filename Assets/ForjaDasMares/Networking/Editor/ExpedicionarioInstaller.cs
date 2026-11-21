@@ -51,7 +51,7 @@ namespace ForjaDasMares.Networking.Editor
             // 2. Animations, cut around the moment of each throw, and the walks from the pirate captain's pack.
             var report = new System.Text.StringBuilder("PERSONAGENS_PRONTOS ·");
             var files = ImportAnimations();
-            CapitaoAfogadoInstaller.ImportModel();
+            ImportarCapitao();
             // Walk: our own Mixamo walk if there is one (Andar.fbx or any "Walking"), otherwise the normal run, slowed.
             // Run: the fast run, which matches the hero's real speed (the normal run made the legs spin too fast).
             string ownWalk = files.Keys.FirstOrDefault(k => k == "Andar") ?? files.Keys.FirstOrDefault(k => { var l = k.ToLowerInvariant(); return l.Contains("walk") && !l.Contains("pole") && !l.Contains("turn") && !l.Contains("dying") && !l.Contains("back"); });
@@ -102,6 +102,31 @@ namespace ForjaDasMares.Networking.Editor
         // Standing, walking and running with the weapon in the hand (Mixamo packs "Sword and Shield" and "Pro Magic").
         // Files: Animacoes/Espada/Espada_Parado|Andar|Correr.fbx and Animacoes/Cajado/Cajado_Parado|Andar|Correr.fbx.
         // Result: Resources/Personagens/LocomocaoPorArma.asset, used by the hero's body while the weapon is equipped.
+        // The walks of the pirate captain's pack (Meshy, Mixamo skeleton) are used by the hero: import it as Humanoid.
+        const string CapitaoModelo = "Assets/ForjaDasMares/Art/Inimigos/CapitaoAfogado/Modelo.fbx", CapitaoMarca = "forja-capitao-1";
+        static readonly string[] CapitaoLoops = { "Running", "Walking", "Walking_Woman", "Proud_Strut", "Flirty_Strut_inplace", "Limping_Walk_3", "Male_Head_Down_Charge", "Walk_Backward_While_Shooting_inplace" };
+        static void ImportarCapitao()
+        {
+            if (!File.Exists(CapitaoModelo) || !(AssetImporter.GetAtPath(CapitaoModelo) is ModelImporter importer)) return;
+            if (importer.userData == CapitaoMarca && importer.animationType == ModelImporterAnimationType.Human) return;
+            importer.animationType = ModelImporterAnimationType.Human;
+            importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+            importer.importAnimation = true; importer.materialImportMode = ModelImporterMaterialImportMode.None;
+            importer.importCameras = importer.importLights = false; importer.isReadable = false;
+            importer.SaveAndReimport();
+            var clips = importer.defaultClipAnimations;
+            foreach (var clip in clips)
+            {
+                clip.name = clip.takeName.Split('|').Last();
+                clip.loopTime = CapitaoLoops.Contains(clip.name); clip.loopPose = false;
+                clip.lockRootRotation = false; clip.lockRootPositionXZ = false;
+                clip.lockRootHeightY = true; clip.keepOriginalPositionY = true;
+            }
+            importer.clipAnimations = clips;
+            importer.userData = CapitaoMarca;
+            importer.SaveAndReimport();
+        }
+
         [MenuItem("Forja/Personagem/Animações por arma (Espada e Cajado)")]
         public static void InstallWeaponLocomotion()
         {

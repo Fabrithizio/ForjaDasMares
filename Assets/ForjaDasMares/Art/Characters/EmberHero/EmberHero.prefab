@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 318193494983709297}
   - component: {fileID: 2574870082772111369}
-  - component: {fileID: 7335912010141083721}
   m_Layer: 0
   m_Name: EmberHero
   m_TagString: Untagged
@@ -59,31 +58,6 @@ MonoBehaviour:
   defaultWeapon: {fileID: 5933230299923885333}
   walkStride: 0.77
   runStride: 2.43
---- !u!114 &7335912010141083721
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95566962407106893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26ccc08cec4f0e47bfa0ce0e9ed1cd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BrasaFootPlant
-  view: {fileID: 2574870082772111369}
-  leftThigh: {fileID: 9042732895004868846}
-  leftShin: {fileID: 8301700671666410295}
-  leftFoot: {fileID: 3908330932476690711}
-  rightThigh: {fileID: 5026765470687063255}
-  rightShin: {fileID: 4073434944170082736}
-  rightFoot: {fileID: 6484986158079581206}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ankleHeight: 0.135
-  halfWidth: 0.19
-  stepReach: 0.34
 --- !u!1 &5933230299923885333
 GameObject:
   m_ObjectHideFlags: 0
@@ -1629,24 +1603,9 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
   m_PrefabInstance: {fileID: 8553896407549374179}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &3908330932476690711 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4650148244318957556, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &4073434944170082736 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5634623300267388755, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4363741037167257598 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3874621611669829347, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &5026765470687063255 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5514899746449784268, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
   m_PrefabInstance: {fileID: 8553896407549374179}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6326539063008423672 stripped
@@ -1654,23 +1613,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2412217136216244251, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
   m_PrefabInstance: {fileID: 8553896407549374179}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &6484986158079581206 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5815616087595617547, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8160296073446099208 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &8301700671666410295 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 396347212607798740, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
-  m_PrefabInstance: {fileID: 8553896407549374179}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &9042732895004868846 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8373398017482871283, guid: 77f48f3595d631246b1158831adfaa10, type: 3}
   m_PrefabInstance: {fileID: 8553896407549374179}
   m_PrefabAsset: {fileID: 0}

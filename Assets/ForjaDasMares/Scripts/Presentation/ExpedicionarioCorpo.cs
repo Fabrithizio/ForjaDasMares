@@ -29,6 +29,9 @@ namespace ForjaDasMares
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
+            // Right when a scene loads (before the first frame is drawn), so the old body never flashes on screen.
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= Vestir; UnityEngine.SceneManagement.SceneManager.sceneLoaded += Vestir;
+            Vestir(default, default);
             if (FindFirstObjectByType<Watcher>() != null) return;
             var go = new GameObject("CorpoDosHerois");
             DontDestroyOnLoad(go);
@@ -47,7 +50,21 @@ namespace ForjaDasMares
             }
         }
 
-        void Awake() => hero = GetComponent<HeroPresentation>();
+        static void Vestir(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            foreach (var each in FindObjectsByType<HeroPresentation>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (each.GetComponent<ExpedicionarioCorpo>() == null) each.gameObject.AddComponent<ExpedicionarioCorpo>();
+        }
+
+        void Awake()
+        {
+            hero = GetComponent<HeroPresentation>();
+            // The old test bodies never draw, not even for one frame (weapons and effects keep drawing).
+            foreach (var oldBody in GetComponentsInChildren<HeroModelView>(true))
+                foreach (var r in oldBody.GetComponentsInChildren<Renderer>(true))
+                    if (r.GetComponentInParent<EquipmentMeshView>() == null && r is not ParticleSystemRenderer && r is not TrailRenderer)
+                        r.forceRenderingOff = true;
+        }
 
         void LateUpdate()
         {

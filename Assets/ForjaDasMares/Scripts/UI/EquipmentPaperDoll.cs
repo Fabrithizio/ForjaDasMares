@@ -33,7 +33,7 @@ namespace ForjaDasMares
             if(model!=null){model.SetActive(false);Destroy(model);}model=Instantiate(actor.Visible.gameObject,world.transform);model.SetActive(true);model.transform.localPosition=Vector3.zero;model.transform.localRotation=Quaternion.Euler(0,-18,0);
             foreach(var t in model.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
             foreach(var collider in model.GetComponentsInChildren<Collider>(true))collider.enabled=false;
-            foreach(var behavior in model.GetComponentsInChildren<MonoBehaviour>(true))behavior.enabled=false;
+            foreach(var behavior in model.GetComponentsInChildren<MonoBehaviour>(true))if(behavior!=null)behavior.enabled=false;
             foreach(var line in model.GetComponentsInChildren<LineRenderer>(true))line.enabled=false;
             foreach(var effect in model.GetComponentsInChildren<TrailRenderer>(true)){effect.emitting=false;effect.Clear();effect.enabled=false;}
             foreach(var renderer in model.GetComponentsInChildren<Renderer>(true)){renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;}

@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2904437310307000645}
   - component: {fileID: 7342114282407495580}
-  - component: {fileID: 6273133476884335663}
   - component: {fileID: 8807278637340216330}
   m_Layer: 0
   m_Name: SapphireMage
@@ -91,31 +90,6 @@ MonoBehaviour:
   defaultWeapon: {fileID: 5606935857666232241}
   walkStride: 0.77
   runStride: 2.43
---- !u!114 &6273133476884335663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5595775036087923537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26ccc08cec4f0e47bfa0ce0e9ed1cd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.BrasaFootPlant
-  view: {fileID: 7342114282407495580}
-  leftThigh: {fileID: 2101825707708705353}
-  leftShin: {fileID: 1396259056214079888}
-  leftFoot: {fileID: 6226293239716146096}
-  rightThigh: {fileID: 2708838622429431408}
-  rightShin: {fileID: 6400368853975067415}
-  rightFoot: {fileID: 4155237498507441841}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ankleHeight: 0.135
-  halfWidth: 0.19
-  stepReach: 0.34
 --- !u!114 &8807278637340216330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1298,44 +1272,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
   m_PrefabInstance: {fileID: 1648486265952912452}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1396259056214079888 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 396347212607798740, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2101825707708705353 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8373398017482871283, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2708838622429431408 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5514899746449784268, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4006360002888221791 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2412217136216244251, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
   m_PrefabInstance: {fileID: 1648486265952912452}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &4155237498507441841 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5815616087595617547, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &5154946122182785493 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6226293239716146096 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4650148244318957556, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
-  m_PrefabInstance: {fileID: 1648486265952912452}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6400368853975067415 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5634623300267388755, guid: 13bc48bf5067019498ac3387116ae79e, type: 3}
   m_PrefabInstance: {fileID: 1648486265952912452}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6690675221925825881 stripped

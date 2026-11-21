@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 namespace ForjaDasMares.Editor
 {
-    // Ao abrir o projeto numa cena vazia, abre o menu principal do jogo (CampaignCoop).
+    // Ao abrir o projeto numa cena vazia, abre o menu principal do jogo (cena Inicio).
     // F6 abre o menu principal a qualquer momento.
     [InitializeOnLoad]
     public static class ArenaLauncher
     {
         public const string StartScene = "Assets/ForjaDasMares/Scenes/Inicio.unity";
-        public static string MainScene => File.Exists(StartScene) ? StartScene : "Assets/ForjaDasMares/Scenes/CampaignCoop.unity";
+        public static string MainScene => StartScene;
 
         static ArenaLauncher()
         {

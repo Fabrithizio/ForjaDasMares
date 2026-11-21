@@ -759,7 +759,6 @@ GameObject:
   - component: {fileID: 60716049}
   - component: {fileID: 60716048}
   - component: {fileID: 60716047}
-  - component: {fileID: 60716046}
   - component: {fileID: 60716053}
   - component: {fileID: 60716052}
   - component: {fileID: 60716054}
@@ -796,21 +795,6 @@ Transform:
   - {fileID: 1908367242}
   m_Father: {fileID: 1341629887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &60716046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60716044}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c7e6c40d74fa4b4d98364de6e24d284, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.CombatFeedback
-  attack: {fileID: 60716047}
-  weaponPivot: {fileID: 1063822325}
-  slash: {fileID: 743382297}
 --- !u!114 &60716047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2505,7 +2489,6 @@ GameObject:
   - component: {fileID: 461781652}
   - component: {fileID: 461781656}
   - component: {fileID: 461781655}
-  - component: {fileID: 461781654}
   - component: {fileID: 461781653}
   - component: {fileID: 461781657}
   m_Layer: 10
@@ -2546,22 +2529,6 @@ MonoBehaviour:
   geometry:
     serializedVersion: 2
     m_Bits: 512
---- !u!114 &461781654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 461781651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
-  health: {fileID: 461781655}
-  body: {fileID: 1847431255}
-  flashDuration: 0.15
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &461781655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5583,10 +5550,6 @@ GameObject:
   - component: {fileID: 864011473}
   - component: {fileID: 864011472}
   - component: {fileID: 864011471}
-  - component: {fileID: 864011470}
-  - component: {fileID: 864011475}
-  - component: {fileID: 864011476}
-  - component: {fileID: 864011477}
   m_Layer: 0
   m_Name: 05_PrototypeHUD
   m_TagString: Untagged
@@ -5594,24 +5557,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &864011470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864011469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcd8ea0f69f90f7428d08eca232f03f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.ArenaHud
-  trainingTarget: {fileID: 1011635940}
-  label: {fileID: 2137412916}
-  fill: {fileID: 708650912}
-  touchControls: {fileID: 1779563697}
-  instructions: {fileID: 1894772659}
-  showTouchInEditor: 0
 --- !u!114 &864011471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5714,56 +5659,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &864011475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864011469}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7463745d4c5e8bf4081aeb059a2afd4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.HeroHud
-  roster: {fileID: 60716055}
-  combat: {fileID: 60716052}
-  status: {fileID: 2011261062}
---- !u!114 &864011476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864011469}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84cac5b6addf70247bb8c6a5e7b22bd7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EncounterHud
-  encounter: {fileID: 1873054188}
-  status: {fileID: 921168245}
-  bossText: {fileID: 2080103527}
-  bossFill: {fileID: 1985613501}
---- !u!114 &864011477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864011469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671292f61c2c54c4395972c684cc9766, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.DungeonHud
-  session: {fileID: 29639290}
-  title: {fileID: 2091945537}
-  hero: {fileID: 2011261062}
-  status: {fileID: 921168245}
-  interaction: {fileID: 1162330820}
-  bossText: {fileID: 2080103527}
-  bossFill: {fileID: 1985613501}
 --- !u!1 &873766124
 GameObject:
   m_ObjectHideFlags: 0
@@ -6593,6 +6488,11 @@ MonoBehaviour:
     m_Bits: 512
   verticalFieldOfView: 48
   referenceAspect: 1.777778
+  rpgOffset: {x: 0, y: 11.5, z: -8.5}
+  rpgFieldOfView: 42
+  minimumZoom: 0.5
+  maximumZoom: 1.6
+  fullscreenRpgDistance: 1.2744
 --- !u!81 &936252434
 AudioListener:
   m_ObjectHideFlags: 0
@@ -6746,7 +6646,6 @@ GameObject:
   - component: {fileID: 1011635943}
   - component: {fileID: 1011635942}
   - component: {fileID: 1011635940}
-  - component: {fileID: 1011635941}
   - component: {fileID: 1011635944}
   - component: {fileID: 1011635945}
   m_Layer: 10
@@ -6772,22 +6671,6 @@ MonoBehaviour:
   faction: 0
   dodgeSource: {fileID: 0}
   defenseSource: {fileID: 0}
---- !u!114 &1011635941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011635939}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
-  health: {fileID: 1011635940}
-  body: {fileID: 2140049195}
-  flashDuration: 0.15
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!136 &1011635942
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8658,7 +8541,6 @@ GameObject:
   - component: {fileID: 1398791423}
   - component: {fileID: 1398791426}
   - component: {fileID: 1398791425}
-  - component: {fileID: 1398791424}
   m_Layer: 12
   m_Name: TrainingAlly_ShieldTest
   m_TagString: Untagged
@@ -8682,22 +8564,6 @@ Transform:
   - {fileID: 2041000956}
   m_Father: {fileID: 1341629887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1398791424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1398791422}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
-  health: {fileID: 1398791425}
-  body: {fileID: 2041000957}
-  flashDuration: 0.15
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1398791425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9284,6 +9150,11 @@ MonoBehaviour:
   handle: {fileID: 1632433804}
   radius: 65
   deadzone: 0.1
+  floating: 1
+  activationMin: {x: 0, y: 0}
+  activationMax: {x: 0.42, y: 0.45}
+  edgePadding: {x: 16, y: 24}
+  idleOpacity: 0.35
 --- !u!1 &1579245283
 GameObject:
   m_ObjectHideFlags: 0
@@ -12903,7 +12774,6 @@ GameObject:
   - component: {fileID: 2067434482}
   - component: {fileID: 2067434486}
   - component: {fileID: 2067434485}
-  - component: {fileID: 2067434484}
   - component: {fileID: 2067434483}
   - component: {fileID: 2067434487}
   m_Layer: 10
@@ -12944,22 +12814,6 @@ MonoBehaviour:
   geometry:
     serializedVersion: 2
     m_Bits: 512
---- !u!114 &2067434484
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2067434481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e28b7f18bb937d45a210c93caff6dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.TargetFeedback
-  health: {fileID: 2067434485}
-  body: {fileID: 132349642}
-  flashDuration: 0.15
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &2067434485
 MonoBehaviour:
   m_ObjectHideFlags: 0

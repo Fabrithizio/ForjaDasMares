@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ForjaDasMares.Networking.Editor
 {
-    // Wild animals made by Fabricio (Meshy, low poly): imports the models, builds the animator
+    // Animals made by Fabricio (wild ones and the wolf mount) (Meshy, low poly): imports the models, builds the animator
     // (Idle, Walk, Run, Sprint, Pastar) and the prefab in Resources/Animais/<Nome>.prefab.
     // Runs by itself when a prefab is missing; menu: Forja/Animais/Preparar animais.
     [InitializeOnLoad]
@@ -19,6 +19,8 @@ namespace ForjaDasMares.Networking.Editor
         {
             ("Javali", 1.35f, false, new[] { ("Idle", "idle"), ("Walk", "walk"), ("Run", "run"), ("Sprint", "sprint") }),
             ("Cervo", 1.75f, true, new[] { ("Idle", "deer_idle"), ("Pastar", "idle01"), ("Walk", "walk"), ("Run", "run") }),
+            // The blue wolf mount (Fabricio, 21/11): about 2.2 m long, big enough to ride.
+            ("Lobo", 2.2f, false, new[] { ("Idle", "idle1"), ("Walk", "walk"), ("Run", "run"), ("Abanar", "yaoweiba") }),
         };
 
         static AnimaisInstaller() { EditorApplication.delayCall += () => { if (Lista.Any(a => File.Exists(Art + a.nome + "/" + a.nome + ".fbx") && !File.Exists(Out + a.nome + ".prefab"))) Install(); }; }

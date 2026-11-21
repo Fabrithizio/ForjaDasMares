@@ -39,7 +39,7 @@ namespace ForjaDasMares.Networking.Editor
             foreach (var path in ScenePaths) if (!scenes.Any(s => s.path == path)) scenes.Add(new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = scenes.ToArray();
             AssetDatabase.SaveAssets();
-            EditorSceneManager.OpenScene(TownInstaller.ScenePath);
+            EditorSceneManager.OpenScene(ForjaBuild.Cidade);
             Debug.Log("AREAS_PRONTAS " + feitas);
         }
 
@@ -53,7 +53,7 @@ namespace ForjaDasMares.Networking.Editor
         public static void RioAoSul()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-            var scene = EditorSceneManager.OpenScene(TownInstaller.ScenePath);
+            var scene = EditorSceneManager.OpenScene(ForjaBuild.Cidade);
             var all = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Transform>(true)).ToList();
             Transform Find(string name) => all.FirstOrDefault(t => t != null && t.name == name); // some get destroyed below
             var rio = Find("Rio"); var a = Find("MargemA"); var b = Find("MargemB");

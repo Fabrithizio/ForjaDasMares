@@ -21,7 +21,18 @@ namespace ForjaDasMares
             IPlayerCommands commands = motor.Commands;
             if (commands == null) return;
             Vector3 direction = motor.WorldDirection(commands.Move);
-            if(commands is IWorldAimCommands worldAim) direction=worldAim.AimDirection;
+            if(commands is IWorldAimCommands worldAim)
+            {
+                // PC with mouse: the hero does not follow the cursor. He turns to where he walks (the click),
+                // and toward the mouse only while the button is held. Attacks and abilities turn him themselves.
+                var arena=GetComponent<ArenaInput>();
+                if(!Application.isMobilePlatform&&commands.HasPointer&&arena!=null&&!arena.MouseAttackHeld)
+                {
+                    direction=motor.PlanarVelocity;
+                    if(direction.sqrMagnitude<.04f)return;
+                }
+                else direction=worldAim.AimDirection;
+            }
             else if (commands.HasPointer)
             {
                 Ray ray = viewCamera.ScreenPointToRay(commands.PointerPosition);

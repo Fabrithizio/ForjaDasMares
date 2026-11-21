@@ -68,6 +68,8 @@ namespace ForjaDasMares
         public float MovementSpeed {get;private set;}
         public bool LocomotionActive {get;private set;}
         public HeroState CurrentState {get;private set;}
+        // A fixed pose that wins over walking/attacking (riding the wolf: "Sentado"; calling it: "Conjurar"). Null = normal.
+        public string PoseFixa {get;set;}
         public void Configure(Animator player,Transform main,Transform offhand,GameObject weapon,bool animationsReady=true)
         {animator=player;primarySocket=main;secondarySocket=offhand;defaultWeapon=weapon;authoredAnimationsReady=animationsReady;}
         public void ShowDefaultWeapon(bool visible){wantsDefaultWeapon=visible;if(defaultWeapon!=null)defaultWeapon.SetActive(visible);}
@@ -102,6 +104,16 @@ namespace ForjaDasMares
             if(animator==null||!animator.isActiveAndEnabled||animator.runtimeAnimatorController==null)return;
             CurrentState=state;MovementSpeed=Mathf.Max(0,movement);
             LocomotionActive=alive&&movement>.12f&&state!=HeroState.Dodge&&state!=HeroState.Dead;
+            if(!string.IsNullOrEmpty(PoseFixa))
+            {
+                int pose=Animator.StringToHash(PoseFixa);
+                if(animator.HasState(0,pose))
+                {
+                    if(lastState!=pose){animator.CrossFadeInFixedTime(pose,.2f,0,0);lastState=pose;}
+                    if(animator.layerCount>1){upperWeight=0;animator.SetLayerWeight(1,0);}
+                    return;
+                }
+            }
             if(running?movement<2.6f:movement>3.2f)running=!running;
             float stride = Mathf.Lerp(walkStride, runStride, locomotionWeight);
             locomotionWeight = Mathf.MoveTowards(locomotionWeight, running ? 1 : 0, Time.deltaTime * 6);

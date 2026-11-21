@@ -727,7 +727,7 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             RefreshTouchSafeArea();
-            if (mountCaption != null) mountCaption.text = (world.IsMounted ? "DESCER" : "MONTAR") + (Application.isMobilePlatform ? "" : " · M");
+            if (mountCaption != null) mountCaption.text = world.Chamando ? "CHAMANDO " + Mathf.RoundToInt(world.ChamandoProgresso * 100) + "%" : (world.IsMounted ? "DESCER" : "MONTAR") + (Application.isMobilePlatform ? "" : " · M");
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)
             {

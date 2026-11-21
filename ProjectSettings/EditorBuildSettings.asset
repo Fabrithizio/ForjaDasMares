@@ -15,15 +15,6 @@ EditorBuildSettings:
     path: Assets/ForjaDasMares/Scenes/RefugioUltimoSino.unity
     guid: dfeb8862da242334eadc38fbd346bc3f
   - enabled: 1
-    path: Assets/ForjaDasMares/Scenes/CostaAto1.unity
-    guid: 9d56ea13f55dfae489fa9f948fca8c80
-  - enabled: 1
-    path: Assets/ForjaDasMares/Scenes/CatacumbasDasMares.unity
-    guid: 102b5684478672648881d45d154b3571
-  - enabled: 1
-    path: Assets/ForjaDasMares/Scenes/CostaDasRuinas.unity
-    guid: 81eba657148e0924e9c0b0a404f2c7be
-  - enabled: 1
     path: Assets/ForjaDasMares/Scenes/RefugioAntigo.unity
     guid: 18fbfb08606b82145a1a71f1338fb1e8
   - enabled: 1
