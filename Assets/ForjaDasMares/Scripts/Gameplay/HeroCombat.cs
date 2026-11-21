@@ -14,7 +14,10 @@ namespace ForjaDasMares
         AbilityDefinition weaponAbility, castingAbility;
         AbilityDefinition[] regionalSkills;
         System.Func<int> regionalSkillCount;
-        readonly float[] regionalCooldowns = new float[3];
+        // Waiting time of each ability (not of each slot), so swapping bars does not reset or share it.
+        readonly System.Collections.Generic.Dictionary<AbilityDefinition, float> abilityCooldowns = new System.Collections.Generic.Dictionary<AbilityDefinition, float>();
+        readonly System.Collections.Generic.List<AbilityDefinition> cooldownKeys = new System.Collections.Generic.List<AbilityDefinition>();
+        float CooldownOf(AbilityDefinition a) => a != null && abilityCooldowns.TryGetValue(a, out var v) ? v : 0;
 
         public void ConfigureRegionalSkills(AbilityDefinition[] skills, System.Func<int> unlocked)
         {
@@ -25,14 +28,14 @@ namespace ForjaDasMares
         public AbilityDefinition RegionalSkill(int slot) =>
             regionalSkills != null && slot >= 0 && slot < regionalSkills.Length ? regionalSkills[slot] : null;
         public bool RegionalSkillUnlocked(int slot) => RegionalSkill(slot) != null && slot < (regionalSkillCount?.Invoke() ?? 0);
-        public float RegionalSkillCooldown(int slot) => RegionalSkill(slot) != null ? regionalCooldowns[slot] : 0;
+        public float RegionalSkillCooldown(int slot) => CooldownOf(RegionalSkill(slot));
 
         public bool TryRegionalSkill(int slot)
         {
-            if (!RegionalSkillUnlocked(slot) || !CanStart || regionalCooldowns[slot] > 0) return false;
+            if (!RegionalSkillUnlocked(slot) || !CanStart || CooldownOf(regionalSkills[slot]) > 0) return false;
             var ability = regionalSkills[slot];
             if (!EnergiaInterior.Of(this).TrySpend(ability.energyCost)) return false;
-            regionalCooldowns[slot] = ability.cooldown * cooldownMultiplier;
+            abilityCooldowns[ability] = ability.cooldown * cooldownMultiplier;
             StartAbility(ability);
             return true;
         }
@@ -51,11 +54,16 @@ namespace ForjaDasMares
         }
         public float FuryRemaining=>furyRemaining;
         public AbilityDefinition Ability=>weaponAbility!=null?weaponAbility:profile!=null?profile.special:null;
-        int superHits;
+        // Super (the heavy blow), decided with Fabricio: hard to fill and rewarding.
+        // A perfect dodge gives 30 points; every 10 hits give only 1 point; each hit taken removes 10;
+        // 8 s without fighting and it drains 2 points per second.
+        float superCharge, lastCombat = -100, lastHealth = -1;
+        public const float SuperPerfectDodge = 30, SuperPerHit = .1f, SuperLostOnHit = 10, SuperDrainPerSecond = 2, SuperIdleSeconds = 8;
+        public void AddSuper(float points) { if (ultimate || furyRemaining > 0) return; superCharge = Mathf.Clamp01(superCharge + points / 100f); lastCombat = Time.time; }
         bool heavy, ultimate;
         public bool EnhancedControls => flow != null;
         public float ChargeProgress => flow == null ? 0 : Mathf.Clamp01(heldTime / Mathf.Max(.2f, flow.holdDuration));
-        public float SuperProgress => flow == null ? 0 : Mathf.Clamp01((float)superHits / Mathf.Max(1,flow.hitsForSuper));
+        public float SuperProgress => Mathf.Clamp01(superCharge);
         public bool SuperReady => flow != null && SuperProgress >= 1;
         public bool SuperQueued => superBuffer > 0;
         public bool IsHeavy => active && heavy;
@@ -66,6 +74,17 @@ namespace ForjaDasMares
         public Vector3 StrikeOrigin=>origin!=null?origin.position:transform.position+Vector3.up;
         // Where shots leave from (the body moves it to the tip of a staff held in the hand).
         public Transform StrikePoint=>origin;
+        // What the scripted abilities (HabilidadesReais) need to act.
+        public Health Owner => health;
+        public PlayerMotor Motor => motor;
+        public DamageResolver Resolver => resolver;
+        public int WallMask => geometry;
+        public int AllyMask => allies;
+        public Vector3 Facing => facing;
+        public float StrikeScale => strikeScale;
+        public bool Critical => strikeCritical;
+        // Ranged weapon (staff, bow...): abilities take their far form.
+        public bool RangedWeapon => BasicAttack != null && BasicAttack.shape == AttackShape.Projectile;
         // Tip of the weapon in the hand (staff). Shots leave from it when it is in front of the hero,
         // and bend toward the line the hero aims at, so they never fly off to the side.
         public Transform Muzzle { get; set; }
@@ -87,11 +106,11 @@ namespace ForjaDasMares
         }
         bool OriginClear=>!Physics.Linecast(transform.position+Vector3.up,origin.position,geometry,QueryTriggerInteraction.Ignore)&&!Physics.CheckSphere(origin.position,.04f,geometry,QueryTriggerInteraction.Ignore);
         public float EffectRange => currentAttack != null ? currentAttack.range * (heavy && flow != null ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1) : 2;
-        public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superHits = 0; }
+        public void ConfigureFlow(CombatFlowDefinition settings) { flow = settings; superBuffer = heldTime = heavyCooldown = furyRemaining = 0; superCharge = 0; }
         void OnEnable() { if(health != null) { health.DealtHit -= ConfirmedHit; health.DealtHit += ConfirmedHit; } }
         void OnDisable() { if(health != null) health.DealtHit -= ConfirmedHit; heldTime = superBuffer = 0; }
         void ConfirmedHit(Health target)
-        { if(flow != null && !ultimate && furyRemaining<=0 && health.IsAlive && target.Faction == CombatFaction.Enemy) superHits = Mathf.Min(Mathf.Max(1,flow.hitsForSuper),superHits + 1); }
+        { if(!ultimate && furyRemaining<=0 && health.IsAlive && (target.Faction == CombatFaction.Enemy || target.Faction == CombatFaction.Training)) AddSuper(SuperPerHit); }
         readonly DamageResolver resolver = new DamageResolver();
         readonly Collider[] nearbyAllies = new Collider[24];
         HeroDefinition profile;
@@ -120,7 +139,7 @@ namespace ForjaDasMares
         public bool MovementWindowOpen=>!active||NormalizedTime>=ImpactTime+.04f;
         public void CancelCharge(){wasHeld=false;heldTime=heavyBuffer=0;}
         public float NormalizedTime => active ? Mathf.Clamp01(elapsed / length) : 0;
-        public float SpecialCooldownRemaining => regionalSkills != null ? regionalCooldowns[0] : specialCooldown;
+        public float SpecialCooldownRemaining => regionalSkills != null ? CooldownOf(RegionalSkill(0)) : specialCooldown;
         public HeroDefinition Profile => profile;
         public CombatEffectPool Pool => pool;
         public void Configure(PlayerMotor player, Health owner, Transform strike, CombatEffectPool effects, int targetMask, int wallMask, int allyMask)
@@ -146,20 +165,17 @@ namespace ForjaDasMares
         public void ProcessAttackInput(bool held, bool pressed, bool superRequested, float deltaTime)
         {
             if (!health.IsAlive || health.IsStunned || motor.IsDodging) { wasHeld=false;heavyBuffer=0;heldTime = superBuffer = 0; return; }
-            bool released=wasHeld&&!held;float releasedCharge=ChargeProgress;wasHeld=held;if(released&&releasedCharge>=.65f&&heavyCooldown<=0)heavyBuffer=.3f;
-            if(heavyBuffer>0&&TryHeavy()){heavyBuffer=0;return;}
-            if(flow != null && held && heavyCooldown <= 0) heldTime = Mathf.Min(flow.holdDuration, heldTime + Mathf.Max(0,deltaTime));
-            else if(!held) heldTime = 0;
+            // No heavy attack on the weapon any more (decided with Fabricio): holding just keeps attacking.
+            // The heavy blow is the Super, charged by hitting enemies; each weapon will have its own.
+            wasHeld = held; heldTime = 0; heavyBuffer = 0;
             if(flow != null && superRequested && SuperReady)superBuffer = Mathf.Max(.1f,flow.superInputBuffer);
             if(superBuffer > 0 && TrySuper()){superBuffer = 0;return;}
-            if(flow != null && held && ChargeProgress >= 1 && TryHeavy()) return;
             if(pressed || held) TryAttack();
         }
         bool CanStart => profile != null && health.IsAlive && !health.IsStunned && !active && !motor.IsDodging && !motor.IsCharging;
         public bool TryAttack()
         {
             if(!CanUseWeapon)return false;
-            if(HeavyMode)return TryHeavy();
             var attacks = equipmentAttacks ?? (profile != null ? profile.attacks : null);
             if (!CanStart || attacks == null || attacks.Length == 0) return false;
             currentAttack = attacks[combo % attacks.Length]; combo++;
@@ -173,15 +189,15 @@ namespace ForjaDasMares
         }
         public bool TrySuper()
         {
-            if(hasRegionalSkill!=null || !CanStart || !SuperReady) return false;
+            if(!CanUseWeapon || !CanStart || !SuperReady) return false;
             if(flow.furyDuration>0)
             {
                 if(furyRemaining>0)return false;
-                furyRemaining=Mathf.Clamp(flow.furyDuration,.1f,12);superHits=0;heldTime=superBuffer=0;return true;
+                furyRemaining=Mathf.Clamp(flow.furyDuration,.1f,12);superCharge=0;heldTime=superBuffer=0;return true;
             }
             if(flow.superAttack==null)return false;
             currentAttack = flow.superAttack; Begin(true, currentAttack.windup + currentAttack.recovery); ultimate = true; AnimationVariant = 4;
-            superHits = 0; heldTime = superBuffer = 0; motor.LockFacing(currentAttack.windup); return true;
+            superCharge = 0; heldTime = superBuffer = 0; motor.LockFacing(currentAttack.windup); return true;
         }
         public bool TrySpecial()
         {
@@ -218,8 +234,19 @@ namespace ForjaDasMares
         public void Simulate(float deltaTime)
         {
             heavyBuffer=Mathf.Max(0,heavyBuffer-Mathf.Max(0,deltaTime));furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
-            for (int i = 0; i < regionalCooldowns.Length; i++)
-                regionalCooldowns[i] = Mathf.Max(0, regionalCooldowns[i] - Mathf.Max(0, deltaTime));
+            // Super: taking a hit costs charge; out of the fight it slowly drains.
+            if (health != null)
+            {
+                float now = health.Current;
+                if (lastHealth >= 0 && now < lastHealth && health.IsAlive) { superCharge = Mathf.Max(0, superCharge - SuperLostOnHit / 100f); lastCombat = Time.time; }
+                lastHealth = now;
+            }
+            if (superCharge > 0 && Time.time - lastCombat > SuperIdleSeconds) superCharge = Mathf.Max(0, superCharge - SuperDrainPerSecond / 100f * Mathf.Max(0, deltaTime));
+            if (abilityCooldowns.Count > 0)
+            {
+                cooldownKeys.Clear(); cooldownKeys.AddRange(abilityCooldowns.Keys);
+                foreach (var key in cooldownKeys) { float left = abilityCooldowns[key] - Mathf.Max(0, deltaTime); if (left <= 0) abilityCooldowns.Remove(key); else abilityCooldowns[key] = left; }
+            }
             specialCooldown = Mathf.Max(0, specialCooldown - Mathf.Max(0, deltaTime));
             heavyCooldown = Mathf.Max(0, heavyCooldown - Mathf.Max(0,deltaTime));
             superBuffer = Mathf.Max(0,superBuffer - Mathf.Max(0,deltaTime));
@@ -278,6 +305,7 @@ namespace ForjaDasMares
         {
             AbilityDefinition ability = castingAbility;
             if(!OriginClear&&ability.effect!=AbilityEffect.ProtectionCharge)return;
+            if(ability.effect==AbilityEffect.Scripted){HabilidadesReais.Executar(this,ability);return;}
             if(ability.effect==AbilityEffect.WeaponStrike)
             {
                 if(currentAttack.shape==AttackShape.Projectile)
@@ -313,6 +341,6 @@ namespace ForjaDasMares
                 else pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, 3, .7f);
             }
         }
-        public void ResetCombat() {System.Array.Clear(regionalCooldowns,0,regionalCooldowns.Length);wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = superHits = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
+        public void ResetCombat() {abilityCooldowns.Clear();wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = 0; superCharge = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

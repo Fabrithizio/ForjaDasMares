@@ -130,7 +130,7 @@ namespace ForjaDasMares.Networking
             // Gates to the neighbour places (world map passages).
             if (!IsCatacombInstance) PortoesDoMundo.Criar(this);
             // You fell somewhere else: the web pulls you back to the Nó that recorded you.
-            if (Historia.RenascerNoNo && mapStation != null) { Historia.RenascerNoNo = false; hero.GetComponent<PlayerMotor>().Teleport(NoSpot,Quaternion.Euler(0,180,0)); follow.Snap(); }
+            if (Historia.RenascerNoNo && mapStation != null) { Historia.RenascerNoNo = false; hero.GetComponent<PlayerMotor>().Teleport(RenascerSpot,Quaternion.Euler(0,180,0)); follow.Snap(); IriaCuidou(); }
             if (IsCatacombInstance)
             {
                 for (int i = 0; i < cardOrder.Length; i++) cardOrder[i] = 15 + (i % 6) * 5;
@@ -164,8 +164,9 @@ namespace ForjaDasMares.Networking
             int counter = camp % killsSinceDrop.Length;
             if (killsSinceDrop[counter] > 0) { killsSinceDrop[counter]--; return; }
             killsSinceDrop[counter] = 1 + (dropSequence++ & 1);
-            if (UnityEngine.AI.NavMesh.SamplePosition(position,out var walkable,1.5f,UnityEngine.AI.NavMesh.AllAreas))
-                position = walkable.position;
+            // The coins jump out of the enemy and land a little away (Saque: arc + soft yellow glow).
+            Vector3 from = position;
+            position = Saque.Pouso(position);
             int amount = 8 + Mathf.Min(4,camp) * 2;
             for (int offset = 0; offset < GoldCapacity; offset++)
             {
@@ -179,6 +180,7 @@ namespace ForjaDasMares.Networking
                 goldOrigins[slot] = position;
                 pile.transform.position = position;
                 pile.gameObject.SetActive(true);
+                Saque.Cair(pile.transform.Find("Visual"), from + Vector3.up * .9f - position);
                 goldCursor = (slot + 1) % GoldCapacity;
                 return;
             }
@@ -208,10 +210,12 @@ namespace ForjaDasMares.Networking
                 goldMaterial.SetFloat("_Metallic",.42f);
                 goldMaterial.SetFloat("_Smoothness",.72f);
             }
+            var visual = new GameObject("Visual").transform; visual.SetParent(root.transform,false);
+            var glow = root.AddComponent<SaqueNoChao>(); glow.Vida = float.MaxValue; glow.Brilho(visual,Saque.Ouro);
             for (int i = 0; i < 4; i++)
             {
                 var coin = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                coin.transform.SetParent(root.transform,false);
+                coin.transform.SetParent(visual,false);
                 coin.transform.localPosition = new Vector3((i%2-.5f)*.30f,.08f+i*.027f,(i/2-.5f)*.28f);
                 coin.transform.localScale = new Vector3(.29f,.04f,.29f);
                 coin.GetComponent<Collider>().enabled = false;
@@ -360,8 +364,33 @@ namespace ForjaDasMares.Networking
 
         // The Nó do Refúgio: the root portal (the tree with the cracked core, beside the Expedições hall).
         // Touching it opens the world map and records the player in the root (falling brings you back here).
-        // A ring of light on the ground marks where to stand.
+        // No ring on the ground any more: clicking the Raiz-Mãe itself (the building) uses it.
+        // Falling brings you back beside Iria's spring (she heals you), not to the root.
         WorldClickTarget mapStation;
+        Vector3 RenascerSpot
+        {
+            get
+            {
+                // Beside the spring of life (FonteCura), where Iria looks after you.
+                foreach (var t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+                    if (t.name.StartsWith("FonteCura"))
+                    {
+                        var toPlaza = new Vector3(-t.position.x, 0, -t.position.z); toPlaza = toPlaza.sqrMagnitude > .01f ? toPlaza.normalized : Vector3.back;
+                        var p = t.position + toPlaza * 2.6f;
+                        if (UnityEngine.AI.NavMesh.SamplePosition(p,out var near,3,UnityEngine.AI.NavMesh.AllAreas)) return near.position;
+                    }
+                // No spring in this scene: beside Iria.
+                foreach (var text in FindObjectsByType<TextMesh>(FindObjectsSortMode.None))
+                    if (text.text != null && text.text.StartsWith("Iria"))
+                    {
+                        var who = text.GetComponentInParent<TownResident>(); var p = who != null ? who.transform.position : text.transform.position;
+                        p += new Vector3(1.6f, 0, -1.2f);
+                        if (UnityEngine.AI.NavMesh.SamplePosition(p,out var hit,3,UnityEngine.AI.NavMesh.AllAreas)) return hit.position;
+                    }
+                return mapStation != null ? NoSpot : definition.refuge;
+            }
+        }
+        void IriaCuidou() => TextoFlutuante.Mostrar(hero.transform.position + Vector3.up * 2.2f, "A Iria cuidou de você.", new Color(.5f, 1f, .85f));
         public Transform No => mapStation != null ? mapStation.transform : null;
         Vector3 NoSpot
         {
@@ -381,18 +410,19 @@ namespace ForjaDasMares.Networking
             // The old service that stood there (the "santuário") gives way to the Nó.
             foreach (var old in FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None))
                 if (old.Label.IndexOf("santuário",StringComparison.OrdinalIgnoreCase) >= 0) old.enabled = false;
+            // The old yellow marker pillar of that service stands in the middle of the ring: away with it.
+            foreach (var t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+                if (t.name == "Marco" && new Vector2(t.position.x - place.x, t.position.z - place.z).magnitude < 3f) t.gameObject.SetActive(false);
             var station = new GameObject("No do Refugio");
             station.transform.SetParent(transform,false);
-            station.transform.position = place;
-            var ring = station.AddComponent<LineRenderer>();
-            const int Steps = 48; const float Radius = 2.4f;
-            ring.loop = true; ring.positionCount = Steps; ring.useWorldSpace = false; ring.widthMultiplier = .14f;
-            for (int i = 0; i < Steps; i++) { float a = i * Mathf.PI * 2 / Steps; ring.SetPosition(i,new Vector3(Mathf.Cos(a)*Radius,.07f,Mathf.Sin(a)*Radius)); }
-            var glow = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-            glow.SetColor("_BaseColor",new Color(.45f,1f,.85f,1));
-            ring.sharedMaterial = glow; ring.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            // The use point stands on walkable ground in front of the root (never inside the building).
+            station.transform.position = UnityEngine.AI.NavMesh.SamplePosition(place,out var front,6,UnityEngine.AI.NavMesh.AllAreas) ? front.position : place;
             var target = station.AddComponent<WorldClickTarget>();
             target.Configure("Raiz-Mãe do Refúgio",4.5f);
+            // Clicking the building itself (its colliders) uses it.
+            WorldClickTarget.Alias.Clear();
+            foreach (var c in Physics.OverlapSphere(place,4.5f,1<<9,QueryTriggerInteraction.Ignore))
+                if (new Vector2(c.bounds.center.x - place.x, c.bounds.center.z - place.z).magnitude < 4f) WorldClickTarget.Alias[c] = target;
             target.Interacting += actor =>
             {
                 if (actor != hero.transform || !hero.Health.IsAlive || MapaDoMundo.Aberto) return;
@@ -401,6 +431,8 @@ namespace ForjaDasMares.Networking
                 bool first = Historia.CenaDoNo != SceneManager.GetActiveScene().name;
                 Historia.GravarNo(SceneManager.GetActiveScene().name);
                 if (first) AudioSource.PlayClipAtPoint(Historia.Sino(true),station.transform.position,.9f);
+                // The first touch: the root records you and gives you a little of its power.
+                Habilidades.Aprender("raizes");
                 MapaDoMundo.Abrir(this,true);
             };
             return target;
@@ -555,8 +587,10 @@ namespace ForjaDasMares.Networking
             string noScene = Historia.CenaDoNo, here = SceneManager.GetActiveScene().name;
             if (!IsCatacombInstance && !string.IsNullOrEmpty(noScene) && noScene != here && Application.CanStreamedLevelBeLoaded(noScene))
             { Historia.RenascerNoNo = true; AreasDoMundo.VindoDe = null; TravelTo(noScene); return; }
-            hero.GetComponent<PlayerMotor>().Teleport(noScene == here && mapStation != null ? NoSpot : definition.refuge,Quaternion.identity);
+            bool city = mapStation != null && (noScene == here || string.IsNullOrEmpty(noScene));
+            hero.GetComponent<PlayerMotor>().Teleport(city ? RenascerSpot : definition.refuge,Quaternion.identity);
             follow.Snap();Changed?.Invoke();
+            if (city) IriaCuidou();
         }
         public void ReturnToCampaign() => TravelTo("CampaignCoop");
         public void Viajar(string scene) => TravelTo(scene);

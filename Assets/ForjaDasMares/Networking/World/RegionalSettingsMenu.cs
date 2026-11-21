@@ -31,7 +31,7 @@ namespace ForjaDasMares.Networking
             quality=qualityButton.GetComponentInChildren<Text>();
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToStartMenu);
-            Label("Controls","Chão: caminhar · alvo: atacar parado · Shift: atacar sem alvo\nI: inventário · Tab: modo de ataque · 1 / 2 / 3: habilidades · Espaço: esquiva · F: interagir",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
+            Label("Controls","Mouse: andar e atacar · Shift + ataque: atacar parado · 1 / 2 / 3: habilidades (miram no mouse)\nR: trocar barra · Q: Super · Espaço: esquiva · 4: poção · F: interagir · I: mochila · M: montar · K: mapa · H: voltar",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
             if (!Application.isMobilePlatform)
             {
                 Button("Fullscreen","TELA CHEIA / JANELA · F11",30,585,440,ToggleFullscreen);

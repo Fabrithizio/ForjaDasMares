@@ -52,6 +52,34 @@ namespace ForjaDasMares
                 }
             },"Armas comuns de iniciação disponíveis no perfil.");
         }
+        // ---------- Stackable resources (herbs, leather, meat, potions...) ----------
+        public int Recurso(string id)
+        {
+            if (Profile.recursos == null || string.IsNullOrEmpty(id)) return 0;
+            foreach (var r in Profile.recursos) if (r != null && r.id == id) return r.amount;
+            return 0;
+        }
+        static void AddResource(PlayerProfile p, string id, int amount)
+        {
+            p.recursos ??= new System.Collections.Generic.List<ResourceStack>();
+            var stack = p.recursos.Find(r => r != null && r.id == id);
+            if (stack == null) { stack = new ResourceStack { id = id }; p.recursos.Add(stack); }
+            stack.amount = Mathf.Clamp(stack.amount + amount, 0, 9999);
+            if (stack.amount == 0) p.recursos.Remove(stack);
+        }
+        public bool GanharRecurso(string id, int amount, string message)
+        {
+            if (string.IsNullOrEmpty(id) || amount <= 0) return false;
+            return Transaction(next => AddResource(next, id, amount), message);
+        }
+        // Spends every cost (all or nothing) and gives what was made.
+        public bool Trocar((string id, int amount)[] cost, (string id, int amount)[] gain, string message)
+        {
+            foreach (var c in cost) if (Recurso(c.id) < c.amount) { Message = "Faltam materiais."; return false; }
+            return Transaction(next => { foreach (var c in cost) AddResource(next, c.id, -c.amount); foreach (var g in gain) AddResource(next, g.id, g.amount); }, message);
+        }
+        public bool GastarRecurso(string id, int amount, string message) => Trocar(new[] { (id, amount) }, new (string, int)[0], message);
+
         bool Transaction(Action<PlayerProfile> mutate, string message)
         {
             var next = ProfileSerialization.Clone(Profile);

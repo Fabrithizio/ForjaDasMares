@@ -37,11 +37,15 @@ namespace ForjaDasMares
         void OnDestroy(){stationary?.Dispose();}
         public void PressMouse(){pressed=true;}
         public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;HoveredInteraction=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
+        // While an ability starts (PC): aim where the mouse is, not where the hero was walking.
+        public bool AimAtPointer{get;set;}
         public Vector3 AimDirection
         {
             get
             {
                 if(motor==null)return Vector3.forward;
+                if(AimAtPointer&&!Application.isMobilePlatform&&input!=null&&input.HasPointer&&TryPointer(out var aimPoint,out var aimEnemy))
+                {var aim=Flat((aimEnemy!=null?aimEnemy.transform.position:aimPoint)-motor.transform.position);if(aim.sqrMagnitude>.001f)return aim;}
                 if(queuedCast&&combat!=null&&!combat.MovementWindowOpen)return queuedAim;
                 if(navigating&&!StandStill&&Movement.sqrMagnitude>.001f)return motor.WorldDirection(Movement);
                 if(Application.isMobilePlatform&&autoAimTarget!=null&&autoAimTarget.IsAlive)return Flat(autoAimTarget.transform.position-motor.transform.position);
@@ -87,6 +91,7 @@ namespace ForjaDasMares
                 (1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),QueryTriggerInteraction.Ignore))
             {
                 var candidate = clickHit.collider.GetComponentInParent<WorldClickTarget>();
+                if (candidate == null) WorldClickTarget.Alias.TryGetValue(clickHit.collider, out candidate);
                 if (candidate != null && candidate.isActiveAndEnabled) HoveredInteraction = candidate;
             }
             WorldClickTarget clicked = pressed ? HoveredInteraction : null;

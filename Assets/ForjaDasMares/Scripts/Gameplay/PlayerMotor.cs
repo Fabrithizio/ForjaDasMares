@@ -29,7 +29,7 @@ namespace ForjaDasMares
         Health health;
         float invulnerableStart, invulnerableEnd, facingLock;
         bool charge,perfectUsed;
-        public bool ConfirmPerfectDodge(){if(!IsInvulnerable||perfectUsed||dodgeDuration-dodgeRemaining>invulnerableStart+.065f)return false;perfectUsed=true;var build=GetComponent<CombatBuildEffects>();if(build!=null)build.GrantCounter();var feel=GetComponent<HeroRoster>()?.Current.feedback;CombatAudioPool.Play(feel!=null?feel.perfect:null,.3f);return true;}
+        public bool ConfirmPerfectDodge(){if(!IsInvulnerable||perfectUsed||dodgeDuration-dodgeRemaining>invulnerableStart+.065f)return false;perfectUsed=true;GetComponent<HeroCombat>()?.AddSuper(HeroCombat.SuperPerfectDodge);var build=GetComponent<CombatBuildEffects>();if(build!=null)build.GrantCounter();var feel=GetComponent<HeroRoster>()?.Current.feedback;CombatAudioPool.Play(feel!=null?feel.perfect:null,.3f);return true;}
         float baseDodgeCooldown;
 
         public int FallRecoveries { get; private set; }

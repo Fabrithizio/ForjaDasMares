@@ -18,8 +18,9 @@ namespace ForjaDasMares.Networking
     public static class Historia
     {
         public const string Vila = "RefugioAntigo", Refugio = "RefugioUltimoSino";
-        static readonly string[] Passos = { "prologo", "chegada", "nara", "teo", "no" };
-        static string Who => string.IsNullOrEmpty(CampaignHome.CharacterName) ? "padrao" : CampaignHome.CharacterName;
+        static readonly string[] Passos = { "prologo", "chegada", "nara", "teo", "no", "m1_aceita", "m1_feita", "m2_aceita", "m2_feita", "m3_aceita", "m3_feita", "m4_aceita", "m4_chegou",
+            "hab_brotar", "hab_brasa", "hab_raizes", "hab_rajada", "hab_bolha", "hab_marca", "hab_gelo" };
+        internal static string Who => string.IsNullOrEmpty(CampaignHome.CharacterName) ? "padrao" : CampaignHome.CharacterName;
         static string Key(string step) => "ForjaHistoria_" + Who + "_" + step;
         public static bool Feito(string step) => PlayerPrefs.GetInt(Key(step), 0) == 1;
         public static void Marcar(string step) { PlayerPrefs.SetInt(Key(step), 1); PlayerPrefs.Save(); }
@@ -27,6 +28,7 @@ namespace ForjaDasMares.Networking
         {
             foreach (var s in Passos) PlayerPrefs.DeleteKey(Key(s));
             PlayerPrefs.DeleteKey("ForjaNo_" + Who);
+            Missoes.Limpar();
             PlayerPrefs.Save();
         }
         // First scene when entering the game: the village until the prologue is done, then the Refúgio.
@@ -49,15 +51,23 @@ namespace ForjaDasMares.Networking
             {
                 string scene = SceneManager.GetActiveScene().name;
                 if (scene == Vila && !Feito("prologo")) return "Sua vila. Fim de tarde.";
-                if (scene != Refugio || !Feito("prologo") || !Feito("chegada")) return null;
-                if (!Feito("nara")) return "Você acordou num lugar desconhecido.";
-                if (!Feito("teo")) return "A Nara mandou você procurar o Téo, na forja.";
-                if (!Feito("no")) return "Antes de sair, toque a Raiz-Mãe do Refúgio (a árvore de raízes, ao lado das Expedições).";
-                return "Prepare-se e saia do Refúgio.";
+                if (!Feito("prologo") || !Feito("chegada")) return null;
+                if (scene == Refugio)
+                {
+                    if (!Feito("nara")) return "Você acordou num lugar desconhecido.";
+                    if (!Feito("teo")) return "A Nara mandou você procurar o Téo, na forja.";
+                    if (!Feito("no")) return "Antes de sair, toque a Raiz-Mãe do Refúgio (a árvore de raízes, ao lado das Expedições).";
+                }
+                if (!Feito("teo")) return null;
+                // Chapter 1: the missions followed in the journal (up to 3), plus who has a request for you.
+                return Missoes.Acompanhamento;
             }
         }
         // Skills open once the player has a weapon from Téo.
         public static bool TemArmaInicial => Feito("teo");
+        public const int ErvasPedidas = 5, CarnesPedidas = 3, CourosPedidos = 3;
+        // Iria taught the healing potion (mission 1).
+        public static bool SabePocao => Feito("m1_feita");
 
         // Bell made of sound waves (no audio file needed). Cracked = buzzing, slightly out of tune.
         static AudioClip bell, crackedBell;
@@ -90,7 +100,15 @@ namespace ForjaDasMares.Networking
         static void Loaded(Scene scene, LoadSceneMode mode)
         {
             bool vila = scene.name == Vila && !Feito("prologo");
-            bool chegada = scene.name == Refugio && Feito("prologo") && (!Feito("chegada") || !Feito("nara") || !Feito("teo"));
+            // In the Refúgio the story director stays on: start of the game and the Chapter 1 missions.
+            bool chegada = scene.name == Refugio && Feito("prologo");
+            // Mission 4: arriving at the Nascente do Rio.
+            if (scene.name.Contains("Nascente")) Descobertas.Marcar(Descobertas.Nascente);
+            if (scene.name.Contains("Nascente") && Feito("m4_aceita") && !Feito("m4_chegou"))
+            {
+                Marcar("m4_chegou");
+                AvisoNaTela.Mostrar("...Esse rio. Parece o rio lá de casa.", 5);
+            }
             if (!vila && !chegada) return;
             if (UnityEngine.Object.FindFirstObjectByType<CenaDaHistoria>() != null) return;
             new GameObject("Historia").AddComponent<CenaDaHistoria>().Begin(vila);
@@ -431,11 +449,20 @@ namespace ForjaDasMares.Networking
             // From here on the player is free. Nara and Téo answer when the player looks for them.
             WorldClickTarget.Intercept = Intercept;
             Hud(true); Control(true);
-            while (!Historia.Feito("teo")) yield return null;
-            while (talking) yield return null;
-            WorldClickTarget.Intercept = null;
-            Destroy(gameObject, 1);
+            bras = PersonNamed("Brás"); if (bras == null) bras = PersonNamed("Bras");
+            // "!" / "?" over the heads of whoever has a mission for you.
+            MarcadorDeMissao.Colocar(nara, "Nara"); MarcadorDeMissao.Colocar(iria, "Iria"); MarcadorDeMissao.Colocar(teo, "Téo"); MarcadorDeMissao.Colocar(bras, "Brás");
+            // Brás was only scenery: give him a way to talk (click or F).
+            if (bras != null && TargetOf(bras) == null)
+            {
+                var talk = new GameObject("Conversar"); talk.transform.SetParent(bras, false);
+                var box = talk.AddComponent<BoxCollider>(); box.center = Vector3.up; box.size = new Vector3(1, 2, 1);
+                var t = talk.AddComponent<WorldClickTarget>(); t.Configure("Conversar · Brás · Feirante", 2.6f);
+                WorldClickTarget.Extras.Add(t);
+            }
+            // Stays on for the Chapter 1 missions (the talks take over only when a mission needs them).
         }
+        Transform bras;
 
         // Talking to Nara, Iria or Téo during the story opens the story talk instead of their usual menu.
         bool Intercept(WorldClickTarget target, Transform actor)
@@ -451,7 +478,205 @@ namespace ForjaDasMares.Networking
                 else StartCoroutine(Short("Téo", "Hm. Chegado novo. Vai falar com a Nara primeiro. Depois volta aqui."));
                 return true;
             }
+            return Missao(target);
+        }
+
+        // ---------- Chapter 1: first missions (Iria → Brás → Téo → Nara → Nascente do Rio) ----------
+        bool Missao(WorldClickTarget target)
+        {
+            if (target == TargetOf(bras) && !Historia.Feito("teo")) { StartCoroutine(Short("Brás", "Chegado novo? Brás, feirante. Vai falar com a Nara primeiro, depois passa aqui.")); return true; }
+            if (!Historia.Feito("teo")) return false;
+            // Something the player saw out there: whoever cares comments first (1 or 2 lines), then the usual talk.
+            string quem = target == TargetOf(iria) ? "Iria" : target == TargetOf(bras) ? "Brás" : target == TargetOf(teo) ? "Téo" : target == TargetOf(nara) ? "Nara" : null;
+            var comentario = quem != null ? Descobertas.Proximo(quem) : null;
+            if (comentario != null) { StartCoroutine(Comentar(quem, comentario, target)); return true; }
+            // The side missions can all be taken at once; Nara's (the main one) opens after the first hunt by the river.
+            if (target == TargetOf(iria))
+            {
+                if (!Historia.Feito("m1_aceita")) { StartCoroutine(IriaPede()); return true; }
+                if (!Historia.Feito("m1_feita"))
+                {
+                    if (Recursos.Quantos(Recursos.ErvaLuz) >= Historia.ErvasPedidas) StartCoroutine(IriaRecebe());
+                    else StartCoroutine(Short("Iria", "Ainda não? Tudo bem, tudo bem! São aquelas plantinhas que brilham no campo, fora da muralha. Cinco! Preciso de cinco."));
+                    return true;
+                }
+                StartCoroutine(IriaAlquimia()); return true;
+            }
+            if (target == TargetOf(bras))
+            {
+                if (!Historia.Feito("m2_aceita")) StartCoroutine(BrasPede());
+                else if (!Historia.Feito("m2_feita"))
+                {
+                    if (Recursos.Quantos(Recursos.Carne) >= Historia.CarnesPedidas) StartCoroutine(BrasRecebe());
+                    else StartCoroutine(Short("Brás", "Três peças de carne, amigo. Perto do rio. E olho aberto, que aqueles bichos não estão bons da cabeça."));
+                }
+                else StartCoroutine(Short("Brás", "Obrigado pela carne, amigo! A cidade agradece."));
+                return true;
+            }
+            if (target == TargetOf(teo) && !Historia.Feito("m3_feita"))
+            {
+                if (!Historia.Feito("m3_aceita")) StartCoroutine(TeoPede());
+                else if (Recursos.Quantos(Recursos.Couro) >= Historia.CourosPedidos) StartCoroutine(TeoFazManto());
+                else StartCoroutine(Short("Téo", "Três couros. Dos bichos do rio."));
+                return true;
+            }
+            if (target == TargetOf(nara))
+            {
+                if (!Historia.Feito("m2_feita")) StartCoroutine(Short("Nara", "Ainda se ajeitando? Ajude o pessoal da cidade. Quando eu precisar de você, eu chamo."));
+                else if (!Historia.Feito("m4_aceita")) StartCoroutine(NaraNascente());
+                else if (Historia.Feito("m4_chegou") && !Habilidades.Aprendeu("rajada")) StartCoroutine(NaraRajada());
+                else StartCoroutine(Short("Nara", "A Nascente fica ao sul, rio acima. Só olhe. Volte inteiro."));
+                return true;
+            }
             return false;
+        }
+
+        IEnumerator Comentar(string quem, string[] falas, WorldClickTarget target)
+        {
+            yield return StartTalk(quem == "Téo" ? teo : quem == "Brás" ? bras : quem == "Nara" ? nara : iria);
+            foreach (var fala in falas) yield return Say(quem, fala);
+            End();
+            if (!Missao(target)) target.Used.Invoke();
+        }
+
+        IEnumerator NaraRajada()
+        {
+            yield return StartTalk(nara);
+            yield return Say("Nara", "Voltou inteiro da Nascente. Bom.");
+            yield return Say("Nara", "Quem anda por lá precisa sair rápido de onde não devia estar. Eu aprendi com o vento. Olha.");
+            yield return Say("Nara", "(um sopro forte levanta a poeira em volta dela) Um passo, e o vento leva o resto.");
+            Habilidades.Aprender("rajada");
+            End();
+        }
+
+        IEnumerator TeoPede()
+        {
+            yield return StartTalk(teo);
+            yield return Say("Téo", "Hm. Você de novo.");
+            yield return Say("Téo", "Os bichos do rio, os tomados pelo Breu. O couro deles fica duro feito casca. Serve pra peça boa.");
+            yield return Say("Téo", "Traz três couros. Eu faço uma coisa pra você vestir.");
+            Historia.Marcar("m3_aceita");
+            End();
+        }
+
+        IEnumerator IriaPede()
+        {
+            yield return StartTalk(iria);
+            yield return Say("Iria", "Ei! Você! Tá ocupado? Não tá. Ótimo!");
+            yield return Say("Iria", "Acabou a erva-luz. Toda. Quem vai sair machucado lá fora precisa de poção, e eu sem erva!");
+            yield return Say(Me, "Erva-luz?");
+            yield return Say("Iria", "Não conhece? De onde você veio não tem? Como vocês curam as coisas lá?! ...Depois você me conta.");
+            yield return Say("Iria", "São plantinhas que brilham, no campo, logo fora da muralha. Traz cinco pra mim. Cinco!");
+            Historia.Marcar("m1_aceita");
+            End();
+        }
+        IEnumerator IriaRecebe()
+        {
+            yield return StartTalk(iria);
+            var s = Recursos.Servico;
+            if (s == null || !s.Trocar(new[] { (Recursos.ErvaLuz, Historia.ErvasPedidas) }, new[] { (Recursos.PocaoCura, 2) }, "Ervas entregues. +2 Poção de cura."))
+            { yield return Say("Iria", "Hm? Cadê as ervas? Achei que tinha visto... deixa pra lá."); End(); yield break; }
+            yield return Say("Iria", "Isso! Isso! Olha que bonitas. Toma, duas poções, pela ajuda. Fiz agora há pouco.");
+            yield return Say("Iria", "Quer saber? Eu te ensino. Não é difícil: três ervas, água da fonte, e pronto. Vem, vem, olha aqui.");
+            Historia.Marcar("m1_feita");
+            CloseTalk();
+            yield return Alquimia();
+            yield return Say("Iria", "Viu? Agora você mesmo faz. Precisando, é só voltar aqui na fonte.");
+            yield return Say("Iria", "Ah! E mais uma coisa. Quando apertar lá fora, faz assim: mão no chão, pensa em coisa viva...");
+            yield return Say("Iria", "(uma luz verde brota entre os dedos dela) Pronto. Cura. Não muito, mas cura. Treina!");
+            Habilidades.Aprender("brotar");
+            End();
+        }
+        IEnumerator IriaAlquimia()
+        {
+            yield return StartTalk(iria);
+            yield return Alquimia();
+            End();
+        }
+
+        // Making potions at Iria's spring: 3 Erva-luz = 1 Poção de cura.
+        IEnumerator Alquimia()
+        {
+            bool open = true;
+            var panel = RusticHudTheme.Rect(root, "Alquimia", new Vector2(.5f, .5f), Vector2.zero, new Vector2(760, 380));
+            RusticHudTheme.Panel(panel, new Color(.03f, .055f, .07f, .97f), 22);
+            RusticHudTheme.Label(panel, "Titulo", new Vector2(.5f, 1), new Vector2(0, -44), new Vector2(700, 46), "FONTE DA IRIA · POÇÕES", 28, TextAnchor.MiddleCenter).color = RusticHudTheme.Gold;
+            RusticHudTheme.Label(panel, "Receita", new Vector2(.5f, 1), new Vector2(0, -110), new Vector2(700, 40), "Poção de cura  =  3 Erva-luz", 24, TextAnchor.MiddleCenter);
+            var info = RusticHudTheme.Label(panel, "Tem", new Vector2(.5f, 1), new Vector2(0, -158), new Vector2(700, 36), "", 19, TextAnchor.MiddleCenter);
+            info.color = RusticHudTheme.Muted;
+            void Fazer(int vezes)
+            {
+                var s = Recursos.Servico; if (s == null) return;
+                int can = Mathf.Min(vezes, Recursos.Quantos(Recursos.ErvaLuz) / 3);
+                if (can <= 0) return;
+                if (s.Trocar(new[] { (Recursos.ErvaLuz, can * 3) }, new[] { (Recursos.PocaoCura, can) }, "+" + can + " Poção de cura."))
+                    EfeitosDeHabilidade.Coluna(world.Hero.transform.position, .8f, new Color(1f, .4f, .45f));
+            }
+            var one = RusticHudTheme.Button(panel, "Fazer1", new Vector2(.5f, 0), new Vector2(-190, 110), new Vector2(330, 64), "FAZER 1", () => Fazer(1));
+            var all = RusticHudTheme.Button(panel, "FazerTudo", new Vector2(.5f, 0), new Vector2(190, 110), new Vector2(330, 64), "FAZER TODAS", () => Fazer(99));
+            RusticHudTheme.Button(panel, "Fechar", new Vector2(.5f, 0), new Vector2(0, 30), new Vector2(240, 54), "FECHAR", () => open = false);
+            panel.SetAsLastSibling();
+            while (open)
+            {
+                int ervas = Recursos.Quantos(Recursos.ErvaLuz);
+                info.text = "Você tem: " + ervas + " Erva-luz · " + Recursos.Quantos(Recursos.PocaoCura) + " Poção de cura";
+                one.interactable = all.interactable = ervas >= 3;
+                if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) open = false;
+                yield return null;
+            }
+            Destroy(panel.gameObject);
+        }
+
+        IEnumerator BrasPede()
+        {
+            yield return StartTalk(bras);
+            yield return Say("Brás", "Chegado novo? Dá pra ver pela cara. Brás, ao seu dispor. Compro, vendo, troco e, de graça, conto as novidades.");
+            yield return Say("Brás", "E a novidade é ruim: os bichos lá perto do rio ficaram esquisitos. Olho roxo, brilhando. Atacam quem passa.");
+            yield return Say("Brás", "Ninguém mais caça por lá, e a cidade tá sem carne. Você tem arma, não tem? Me traz três peças e eu pago bem.");
+            yield return Say("Brás", "Saída sul, passando a ponte. Cuidado com o javali: ele avisa antes de vir. Quando ele parar e te encarar, sai da frente!");
+            Historia.Marcar("m2_aceita");
+            End();
+        }
+        IEnumerator BrasRecebe()
+        {
+            yield return StartTalk(bras);
+            var s = Recursos.Servico;
+            if (s == null || !s.GastarRecurso(Recursos.Carne, Historia.CarnesPedidas, "Carne entregue ao Brás."))
+            { yield return Say("Brás", "Cadê a carne, amigo? Promessa não enche barriga."); End(); yield break; }
+            s.CollectRegionalGold(40);
+            yield return Say("Brás", "Olha só! Inteiro e com carne. Toma, quarenta de ouro, como combinado.");
+            yield return Say("Brás", "E guarda o couro, viu? O Téo sabe o que fazer com couro de bicho tomado.");
+            Historia.Marcar("m2_feita");
+            End();
+        }
+        IEnumerator TeoFazManto()
+        {
+            yield return StartTalk(teo);
+            var s = Recursos.Servico;
+            if (s == null || !s.GastarRecurso(Recursos.Couro, Historia.CourosPedidos, "Couro entregue ao Téo."))
+            { yield return Say("Téo", "Sem couro, sem peça."); End(); yield break; }
+            yield return Say("Téo", "Hm. Couro de bicho tomado. O Breu deixa ele duro feito casca.");
+            yield return Say("Téo", "(trabalha em silêncio por um tempo)");
+            s.GrantTestEquipment("brasa-armor", ItemRarity.Common);
+            var item = s.Profile.inventory.FindLast(x => x.definitionId == "brasa-armor");
+            if (item != null) s.Equip(world.Hero.Current.heroId, item.instanceId, EquipmentSlot.Armor);
+            yield return Say("Téo", "Pronto. Um manto. Não é bonito, mas segura um golpe.");
+            yield return Say("Téo", "Viu como funciona? Material lá de fora vira peça aqui dentro. Quanto melhor o material, melhor a peça.");
+            yield return Say("Téo", "E mais uma. Fica perto da forja. Sente o calor? Segura ele na arma. Assim.");
+            Habilidades.Aprender("brasa");
+            Historia.Marcar("m3_feita");
+            End();
+        }
+        IEnumerator NaraNascente()
+        {
+            yield return StartTalk(nara);
+            yield return Say("Nara", "Você foi até o rio. O que viu?");
+            yield return Say(Me, "Bichos com olho roxo. E a água... meio escura.");
+            yield return Say("Nara", "Breu. Descendo com a água. Se está no rio, vem de cima.");
+            yield return Say("Nara", "A Nascente fica ao sul, rio acima. Meu mapa de lá é velho e tem buracos. Não gosto de buracos.");
+            yield return Say("Nara", "Vá até a Nascente e descubra o que está escurecendo o rio. Só olhe. Volte inteiro.");
+            Historia.Marcar("m4_aceita");
+            End();
         }
 
         IEnumerator StartTalk(Transform person)
@@ -464,7 +689,7 @@ namespace ForjaDasMares.Networking
 
         IEnumerator Short(string who, string text)
         {
-            yield return StartTalk(who == "Téo" ? teo : iria);
+            yield return StartTalk(who == "Téo" ? teo : who == "Brás" ? bras : who == "Nara" ? nara : iria);
             yield return Say(who, text);
             End();
         }

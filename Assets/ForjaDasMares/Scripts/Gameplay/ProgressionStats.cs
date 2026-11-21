@@ -55,7 +55,8 @@ namespace ForjaDasMares
             reason = ""; if (item == null || profile.Item(item.instanceId) == null) { reason = "Item não está no inventário."; return false; }
             foreach(var set in profile.loadouts)if(set.heroId!=heroId)foreach(var id in set.items)if(id==item.instanceId){reason="Equipado em outro herói. Desequipe primeiro.";return false;}
             var data = catalog.Find(item.definitionId); var hero = catalog.Hero(heroId);
-            if (data == null || hero == null || (data.compatibleHeroes & hero.affinity) == 0) { reason = "Incompatível com este herói."; return false; }
+            // No classes in this game: any character can use any weapon or item (no hero affinity check).
+            if (data == null || hero == null) { reason = "Item desconhecido."; return false; }
             if (Level(profile.experience, catalog.maximumLevel) < data.minimumLevel) { reason = "Requer nível " + data.minimumLevel; return false; }
             var loadout = profile.Loadout(heroId); var main = loadout != null ? profile.Item(loadout.items[0]) : null; var mainData = main != null ? catalog.Find(main.definitionId) : null;
             bool secondary = slot == EquipmentSlot.OffHand && data.slot == EquipmentSlot.MainHand && data.category == WeaponCategory.Daggers && hero.allowSecondaryWeapon;

@@ -61,6 +61,8 @@ namespace ForjaDasMares.Networking
                     ?? RegionalJourney.ReadJournal(path+".bak","sino-ato1-v1"));
             }
             combat.ConfigureRegionalSkills(starterSkills, () => world.Journey?.UnlockedSkills ?? carriedSkills);
+            // Learned abilities and the two bars of 3 (outside the catacomb test instance).
+            if (!world.IsCatacombInstance) (GetComponent<Habilidades>() ?? gameObject.AddComponent<Habilidades>()).Configure(world, this, starterSkills);
             equipment.RequireEquippedVisual=true;
             equipment.enabled=true;equipment.Initialize(Service,catalog);Changed();
         }

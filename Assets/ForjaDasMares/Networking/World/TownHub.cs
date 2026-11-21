@@ -12,7 +12,7 @@ namespace ForjaDasMares.Networking
         // New city: the expedition board stays where the scene puts it (in front of the instance hall).
         [SerializeField]bool fixedExpeditionPlace;
         public string Notice {get;private set;}
-        public string CurrentNotice => Historia.Objetivo ?? Notice ?? (world.Journey?.Accepted == true ? world.Journey.Objective : "Fale com Nara perto da tenda. Clique nela ou use F.");
+        public string CurrentNotice => Historia.Objetivo ?? Notice;
         public Vector3[] ArrivalPoints=>arrivalPoints;
         WorldClickTarget[] targets;
         bool travelling;
@@ -38,6 +38,12 @@ namespace ForjaDasMares.Networking
                 if(targets==null||world==null||world.Hero==null)return null;
                 WorldClickTarget nearest=null;float distance=float.MaxValue;
                 foreach(var t in targets)
+                {
+                    if(t==null||!t.isActiveAndEnabled||!t.InRange(world.Hero.transform))continue;
+                    float d=(t.transform.position-world.Hero.transform.position).sqrMagnitude;
+                    if(d<distance){distance=d;nearest=t;}
+                }
+                foreach(var t in WorldClickTarget.Extras)
                 {
                     if(t==null||!t.isActiveAndEnabled||!t.InRange(world.Hero.transform))continue;
                     float d=(t.transform.position-world.Hero.transform.position).sqrMagnitude;

@@ -2,13 +2,21 @@ using UnityEngine;
 
 namespace ForjaDasMares
 {
-    public enum AbilityEffect { AreaImpact, Trap, ElementalBurst, ProtectionCharge, WeaponStrike }
+    public enum AbilityEffect { AreaImpact, Trap, ElementalBurst, ProtectionCharge, WeaponStrike, Scripted }
+    // Elements and roles of the abilities (decided with Fabricio). Breu comes later, at high levels.
+    public enum Elemento { Nenhum, Fogo, Gelo, Raio, Vento, Agua, Seiva }
+    public enum Subtipo { Nenhum, Controle, Protecao, Cura, Movimento, Preparo, Enfraquecer, Fortalecer }
     [CreateAssetMenu(menuName = "Forja/Ability")]
     public sealed class AbilityDefinition : ScriptableObject
     {
         public string displayName;
         public AbilityEffect effect;
         public AttackDefinition hit;
+        // Scripted abilities (effect = Scripted) run their own code in HabilidadesReais, by this id.
+        public string scriptId;
+        public Elemento elemento;
+        public Subtipo subtipo;
+        [TextArea] public string descricaoEspada, descricaoCajado;
         [Min(0.1f)] public float cooldown = 5f;
         // Inner energy spent to use it (EnergiaInterior). There is no mana.
         [Min(0)] public float energyCost = 25f;

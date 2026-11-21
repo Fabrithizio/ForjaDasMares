@@ -20,7 +20,7 @@ namespace ForjaDasMares.Networking
             var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;gameObject.AddComponent<GraphicRaycaster>();
             var scale=gameObject.AddComponent<CanvasScaler>();scale.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scale.referenceResolution=new Vector2(1280,720);scale.matchWidthOrHeight=.5f;
             var root=RusticHudTheme.Rect(transform,"RegionSafeArea",Vector2.zero,Vector2.zero,Vector2.zero);root.anchorMax=Vector2.one;root.offsetMin=root.offsetMax=Vector2.zero;
-            town=world.GetComponent<TownHub>();BuildVitals(root);if(town!=null)BuildShop(root);if(world.Journey!=null)BuildJournal(root);
+            town=world.GetComponent<TownHub>();BuildVitals(root);if(town!=null)BuildShop(root);BuildJournal(root);
             BuildStoryPanels(root);
             world.Hud = this;
             BuildCatacombPanels(root);
@@ -28,17 +28,19 @@ namespace ForjaDasMares.Networking
             if (!Application.isMobilePlatform) BuildHoverLabel(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
-            var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);
+            // The controls now live in the settings (gear); the screen stays clean.
+            movementMode.gameObject.SetActive(false);controlHint.gameObject.SetActive(false);
+            var quest=RusticHudTheme.Rect(root,"Quest",new Vector2(1,1),new Vector2(-20,-82),new Vector2(350,135));RusticHudTheme.Panel(quest,new Color(.025f,.05f,.045f,.92f),16);objective=Label(quest,"Objective",new Vector2(14,-12),new Vector2(322,115),"",16);quest.gameObject.SetActive(false);
             var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,world.Journey!=null?-80:-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
             mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,world.Journey!=null?-258:-403),new Vector2(200,42),"Branco: você · verde: refúgio\nDourado: missão · azul: passagem",11).gameObject;
             // Old square map replaced by the round minimap (photo of the region, discovered places, turns with the camera).
-            mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,world.Journey!=null?-96:-236);
+            mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,-96);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
-            desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;
-            Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).color=RusticHudTheme.Muted;
-            if(world.Journey!=null)
+            desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;desktopLegend.SetActive(false);
+            Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).gameObject.SetActive(false);
             {
                 var dialogue = RusticHudTheme.Rect(root,"StoryNotice",Top,new Vector2(20,-116),new Vector2(315,126));
+                storyPanel = dialogue;
                 RusticHudTheme.Panel(dialogue,RusticHudTheme.Ink,14);
                 var heading = Label(dialogue,"StoryTitle",new Vector2(13,-6),new Vector2(237,29),"ACOMPANHAMENTO",13);
                 heading.color = RusticHudTheme.Gold;
@@ -47,7 +49,7 @@ namespace ForjaDasMares.Networking
                 {
                     storyCollapsed = !storyCollapsed;
                     storyNotice.gameObject.SetActive(!storyCollapsed);
-                    dialogue.sizeDelta = new Vector2(315,storyCollapsed ? 38 : 126);
+                    FitStory(storyNotice.text);
                     dialogue.Find("ToggleStory").GetComponentInChildren<Text>().text = storyCollapsed ? "+" : "−";
                 });
                 movementMode.gameObject.SetActive(false);
@@ -57,8 +59,7 @@ namespace ForjaDasMares.Networking
             Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. A Raiz-Mãe vai te puxar de volta.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
             interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
             weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button, "<Keyboard>/tab");
-            weaponModeKey.performed += OnWeaponMode;
-            weaponModeKey.Enable();
+            // Tab no longer switches to a heavy mode (there is no heavy attack: the Super is the heavy blow, Q).
             for (int i = 0; i < skillKeys.Length; i++)
             {
                 int slot = i;
@@ -71,7 +72,10 @@ namespace ForjaDasMares.Networking
             if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             if (!world.IsCatacombInstance)
             {
-                var mountButton = RusticHudTheme.Button(root,"MountToggle",Vector2.one,new Vector2(-190,-20),new Vector2(112,48),"",world.ToggleMount);
+                // One small block on top: MONTAR (and VOLTAR outside the cities, added by AreasDoMundo).
+                var bloco = RusticHudTheme.Rect(root,"AcoesTopo",Vector2.one,new Vector2(-186,-16),new Vector2(124,54));
+                RusticHudTheme.Panel(bloco,RusticHudTheme.Ink,14).borderColor = RusticHudTheme.Gold;
+                var mountButton = RusticHudTheme.Button(bloco,"MountToggle",new Vector2(1,.5f),new Vector2(-6,0),new Vector2(112,42),"",world.ToggleMount);
                 mountCaption = mountButton.GetComponentInChildren<Text>();
                 mountKey = new InputAction("Mount",InputActionType.Button,"<Keyboard>/m");
                 mountKey.performed += _ => world.ToggleMount();
@@ -83,26 +87,38 @@ namespace ForjaDasMares.Networking
             if(town!=null&&System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-runTests")<0)StartCoroutine(PlayWorldIntro(root));
         }
         bool storyCollapsed;
+        // ACOMPANHAMENTO: only while there is something to follow; as tall as its lines.
+        RectTransform storyPanel;
+        void FitStory(string text)
+        {
+            if (storyPanel == null || storyNotice == null) return;
+            text = text ?? "";
+            if (storyNotice.text != text) storyNotice.text = text;
+            bool show = text.Length > 0;
+            if (storyPanel.gameObject.activeSelf != show) storyPanel.gameObject.SetActive(show);
+            if (!show) return;
+            int lines = 1; foreach (char ch in text) if (ch == '\n') lines++;
+            var r = (RectTransform)storyNotice.transform; r.sizeDelta = new Vector2(289, lines * 20 + 4);
+            storyPanel.sizeDelta = new Vector2(315, storyCollapsed ? 38 : 44 + lines * 20);
+        }
         GameObject journalPanel;
-        Text journalText; GameObject mapPanel,mapLegend,desktopLegend; public bool JournalOpen=>journalPanel!=null&&journalPanel.activeSelf;
+        DiarioDeMissoes diario; GameObject mapPanel,mapLegend,desktopLegend; public bool JournalOpen=>journalPanel!=null&&journalPanel.activeSelf;
         void BuildJournal(RectTransform root)
         {
             RusticHudTheme.IconButton(root,"OpenJournal",Vector2.one,new Vector2(-76,-20),HudSymbol.Scroll,()=>
             {
                 if(JournalOpen){CloseJournal();return;} journalPanel.SetActive(true);var input=world.Hero.GetComponent<ArenaInput>();input.BlockCommands(true);world.Hero.GetComponent<PlayerMotor>().StopWalking();
                 journalPanel.transform.SetAsLastSibling();
-                RefreshJournal();
+                diario.Abrir();
             });
             var full=RusticHudTheme.Rect(root,"MissionJournal",Vector2.zero,Vector2.zero,Vector2.zero);
             full.anchorMax=Vector2.one;
             full.offsetMin=full.offsetMax=Vector2.zero;
             full.gameObject.AddComponent<Image>().color=new Color(.015f,.025f,.02f,.9f);
             journalPanel=full.gameObject;
-            var panel=RusticHudTheme.Rect(full,"JournalPanel",Vector2.one*.5f,Vector2.zero,new Vector2(760,460));
+            var panel=RusticHudTheme.Rect(full,"JournalPanel",Vector2.one*.5f,Vector2.zero,new Vector2(980,640));
             RusticHudTheme.Panel(panel,RusticHudTheme.Ink,24);
-            Label(panel,"JournalTitle",new Vector2(28,-20),new Vector2(520,44),"DIÁRIO DE MISSÕES",27);
-            journalText=Label(panel,"JournalEntries",new Vector2(28,-80),new Vector2(690,260),"",21);
-            RusticHudTheme.Button(panel,"CloseJournal",Top,new Vector2(490,-375),new Vector2(235,48),"VOLTAR",CloseJournal);
+            diario=panel.gameObject.AddComponent<DiarioDeMissoes>(); diario.Montar(panel,CloseJournal);
             journalPanel.SetActive(false);
         }
         public void CloseJournal()
@@ -111,22 +127,8 @@ namespace ForjaDasMares.Networking
             journalPanel.SetActive(false);
             world.Hero.GetComponent<ArenaInput>().BlockCommands(false);
         }
-        void RefreshJournal()
-        {
-            if(journalPanel==null||!journalPanel.activeSelf)return;
-            var journey=world.Journey;
-            string origin = "\nRefúgio do Último Sino · Nara, perto da tenda.\n";
-            var combat = world.Hero.GetComponent<HeroCombat>();
-            string techniques = "";
-            for (int i = 0; i < journey.UnlockedSkills; i++)
-                if (combat.RegionalSkill(i) is AbilityDefinition skill) techniques += "\n" + (i+1) + " · " + skill.displayName;
-            journalText.text = journey.Completed
-                ? "CONCLUÍDAS\n" + journey.Definition.title + origin + "Obtido: 1 Fragmento de Memória. Catacumbas liberadas." + techniques
-                : journey.Accepted
-                    ? "EM ANDAMENTO\n" + journey.Definition.title + origin + journey.Objective
-                      + "\nRecompensa: 1 Fragmento de Memória e acesso às Catacumbas." + techniques
-                    : "EM ANDAMENTO\nNenhuma missão aceita. Converse com Nara no Refúgio.\n\nCONCLUÍDAS\nNenhuma missão concluída.";
-        }
+        // The journal content is built when it opens and after each click (missions do not change while it is open).
+        void RefreshJournal() { }
 
         GameObject storyModal, expeditionModal;
         Text dialogueBody, dialogueContinue, areaName;
@@ -597,29 +599,68 @@ namespace ForjaDasMares.Networking
         {
             var input = world.Hero.GetComponent<ArenaInput>();
             // Docked to the bottom edge and compact, so it covers as little of the world as possible.
-            var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,-10),new Vector2(424,74));
+            // Clean bar (decided with Fabricio): bar tab I/II, the 3 abilities, the Super and the dodge.
+            // No attack button (the mouse attacks) and no F: "use" only shows up near something.
+            var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,-10),new Vector2(436,74)); // last 56 px: the potion pocket (Pocoes)
             RusticHudTheme.Panel(dock,RusticHudTheme.Ink,15).borderColor = RusticHudTheme.Gold;
             BuildSkillBar(dock,18);
-            CombatAction(dock,"RegionalAttack",new Vector2(-126,18),52,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack);
-            CombatAction(dock,"RegionalDodge",new Vector2(-68,18),52,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
-            CombatAction(dock,"RegionalInteract",new Vector2(-10,18),52,"F",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact);
+            dodgeButton = CombatAction(dock,"RegionalDodge",new Vector2(-70,18),52,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
+            dodgeShade = Shade(dodgeButton,52,false); dodgeSize = 52;
+            useButton = RusticHudTheme.Button(root,"Usar",new Vector2(.5f,0),new Vector2(0,96),new Vector2(320,40),"",world.Interact);
+            useLabel = useButton.GetComponentInChildren<Text>(); useLabel.fontSize = 16;
+            useButton.gameObject.SetActive(false);
         }
 
         Button attackMode;
         void BuildSkillBar(RectTransform root,float height)
         {
             bool touch = Application.isMobilePlatform;
-            float start = touch ? -286 : -358;
+            float size = touch ? 68 : 52, step = touch ? 76 : 58, first = touch ? -286 : -318;
+            barTab = RusticHudTheme.Button(root,"TrocarBarra",new Vector2(1,0),new Vector2(touch ? -362 : -378,height),new Vector2(touch ? 44 : 40,size),"I",() => Habilidades.Atual?.Trocar());
+            barTabLabel = barTab.GetComponentInChildren<Text>(); barTabLabel.fontSize = touch ? 20 : 17; barTabLabel.color = RusticHudTheme.Gold;
             for (int i = 0; i < skillButtons.Length; i++)
             {
                 int slot = i;
                 var symbol = i == 0 ? HudSymbol.SpellBolt : i == 1 ? HudSymbol.SpellBurst : HudSymbol.SpellPrison;
                 Color accent = i == 0 ? new Color(.26f,.83f,1) : i == 1 ? new Color(.48f,.58f,1) : new Color(.79f,.51f,1);
-                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(start+(touch ? 76 : 58)*i,height),touch ? 68 : 52,"",symbol,accent,() => CastRegionalSkill(slot),touch);
+                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(first+step*i,height),size,"",symbol,accent,() => CastRegionalSkill(slot),touch);
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
+                skillArt[i] = Art(skillButtons[i],size,touch); skillSymbols[i] = skillButtons[i].GetComponentInChildren<HudIcon>();
+                skillShades[i] = Shade(skillButtons[i],size,touch);
             }
-            var combat = world.Hero.GetComponent<HeroCombat>();
-            attackMode = CombatAction(root,"AttackMode",new Vector2(start+(touch ? 228 : 174),height),touch ? 68 : 52,"NORMAL",HudSymbol.Sword,RusticHudTheme.Gold,combat.ToggleWeaponMode,touch);
+            buttonSize = size;
+            attackMode = CombatAction(root,"Super",new Vector2(touch ? -58 : -132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
+            superShade = Shade(attackMode,size,true);
+        }
+
+        // Dark cover over a button that drains from the top while it recharges (with the seconds on the label).
+        Button useButton, dodgeButton, barTab; Text useLabel, barTabLabel;
+        readonly RectTransform[] skillShades = new RectTransform[3]; readonly float[] skillMax = new float[3];
+        readonly Image[] skillArt = new Image[3]; readonly HudIcon[] skillSymbols = new HudIcon[3];
+        // The ability's picture inside the button (rounded like the button).
+        static Image Art(Button button, float size, bool round)
+        {
+            var mask = RusticHudTheme.Rect(button.transform,"Arte",Vector2.one*.5f,Vector2.zero,Vector2.one*(size-8));
+            var shape = mask.gameObject.AddComponent<RoundedHudGraphic>(); shape.radius = round ? (size-8)/2 : 6; shape.border = 0; shape.raycastTarget = false;
+            mask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            var art = RusticHudTheme.Rect(mask,"Imagem",Vector2.one*.5f,Vector2.zero,Vector2.one*(size-8));
+            var image = art.gameObject.AddComponent<Image>(); image.raycastTarget = false; image.preserveAspect = true;
+            mask.gameObject.SetActive(false);
+            return image;
+        }
+        RectTransform superShade, dodgeShade; float buttonSize = 52, dodgeSize = 52, dodgeMax;
+        static RectTransform Shade(Button button, float size, bool round)
+        {
+            var shade = RusticHudTheme.Rect(button.transform,"Recarga",new Vector2(.5f,0),new Vector2(0,3),new Vector2(size-6,0));
+            shade.anchorMin = new Vector2(0,0); shade.anchorMax = new Vector2(1,0); shade.pivot = new Vector2(.5f,0);
+            var g = shade.gameObject.AddComponent<RoundedHudGraphic>(); g.color = new Color(0,0,0,.62f); g.border = 0; g.radius = round ? size/2-3 : 7; g.raycastTarget = false;
+            button.GetComponentInChildren<Text>().transform.SetAsLastSibling();
+            return shade;
+        }
+        static void SetShade(RectTransform shade, float size, float fraction)
+        {
+            if (shade == null) return;
+            shade.sizeDelta = new Vector2(-6,(size-6)*Mathf.Clamp01(fraction)); shade.anchoredPosition = new Vector2(0,3);
         }
 
         RectTransform touchSafeArea;
@@ -647,20 +688,33 @@ namespace ForjaDasMares.Networking
             var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(52,52));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=26;cap.raycastTarget=false;
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
             CombatAction(touchSafeArea,"RegionalAttack",new Vector2(-22,46),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
-            CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-148,34),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true);
-            CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-242,38),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
+            dodgeButton = CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-148,34),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true); dodgeShade = Shade(dodgeButton,78,true); dodgeSize = 78;
+            // USAR only shows up near something to use.
+            useButton = CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-242,38),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
+            useButton.gameObject.SetActive(false);
             BuildSkillBar(touchSafeArea,172);
             movementMode.gameObject.SetActive(false);
             controlHint.gameObject.SetActive(false);
             foreach(string name in new[]{"Controls","Scope","MapLegend"}){var label=root.Find(name);if(label!=null)label.gameObject.SetActive(false);}
             var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
         }
+        // First word of the ability's name, short enough for the button.
+        static string Short(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return "";
+            var word = name.Split(' ')[0].ToUpperInvariant();
+            return word.Length > 7 ? word.Substring(0, 7) : word;
+        }
         void CastRegionalSkill(int slot)
         {
             var input = world.Hero.GetComponent<ArenaInput>();
             if (input.CombatBlocked) return;
             var combat = world.Hero.GetComponent<HeroCombat>();
-            if (combat.TryRegionalSkill(slot)) input.Desktop?.StopForAbility();
+            var desk = input.Desktop;
+            if (desk != null) desk.AimAtPointer = true;
+            bool cast = combat.TryRegionalSkill(slot);
+            if (desk != null) desk.AimAtPointer = false;
+            if (cast) desk?.StopForAbility();
         }
 
         void OnWeaponMode(InputAction.CallbackContext _)
@@ -677,15 +731,36 @@ namespace ForjaDasMares.Networking
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)
             {
-                attackMode.interactable = combat.CanUseWeapon;
-                attackMode.GetComponentInChildren<Text>().text = (combat.HeavyMode ? "PESADO" : "NORMAL");
+                // The Super is the heavy blow: it charges by hitting enemies and is released with Q or this button.
+                attackMode.interactable = combat.CanUseWeapon && combat.SuperReady;
+                attackMode.GetComponentInChildren<Text>().text = combat.SuperReady ? (Application.isMobilePlatform ? "SUPER" : "Q") : Mathf.RoundToInt(combat.SuperProgress * 100) + "%";
+                SetShade(superShade, buttonSize, combat.CanUseWeapon ? 1 - combat.SuperProgress : 1);
+                if (barTabLabel != null) barTabLabel.text = Habilidades.Atual != null && Habilidades.Atual.BarraAtiva == 1 ? "II" : "I";
                 for (int i = 0; i < skillButtons.Length; i++)
                 {
                     bool unlocked = combat.RegionalSkillUnlocked(i);
                     float remaining = combat.RegionalSkillCooldown(i);
                     skillButtons[i].interactable = unlocked && remaining <= 0 && world.Hero.Health.IsAlive;
-                    string role = i == 0 ? "ALVO" : i == 1 ? "ÁREA" : "CTRL";
-                    skillLabels[i].text = !unlocked ? "—" : remaining > 0 ? Mathf.CeilToInt(remaining)+"s" : (i+1)+" · "+role;
+                    var learned = combat.RegionalSkill(i);
+                    string role = learned != null ? Short(learned.displayName) : (i == 0 ? "ALVO" : i == 1 ? "ÁREA" : "CTRL");
+                    var picture = IconesDeHabilidade.De(learned);
+                    if (skillArt[i] != null)
+                    {
+                        skillArt[i].sprite = picture; skillArt[i].transform.parent.gameObject.SetActive(picture != null);
+                        if (skillSymbols[i] != null) skillSymbols[i].enabled = picture == null;
+                    }
+                    // With a picture: only the key (or the seconds left). Without: key and short name.
+                    skillLabels[i].text = !unlocked ? "—" : remaining > 0 ? Mathf.CeilToInt(remaining)+"s" : picture != null ? (i+1).ToString() : (i+1)+" · "+role;
+                    skillMax[i] = remaining <= 0 ? 0 : Mathf.Max(skillMax[i], remaining);
+                    SetShade(skillShades[i], buttonSize, !unlocked ? 1 : skillMax[i] > 0 ? remaining / skillMax[i] : 0);
+                }
+                if (dodgeButton != null)
+                {
+                    var motor = world.Hero.GetComponent<PlayerMotor>(); float wait = motor.DodgeCooldownRemaining;
+                    dodgeMax = wait <= 0 ? 0 : Mathf.Max(dodgeMax, wait);
+                    var folego = EnergiaInterior.Of(world.Hero);
+                    bool tired = folego.Current + .01f < folego.dodgeCost * folego.DodgeMultiplier;
+                    SetShade(dodgeShade, dodgeSize, tired ? 1 : dodgeMax > 0 ? wait / dodgeMax : 0);
                 }
             }
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
@@ -702,10 +777,18 @@ namespace ForjaDasMares.Networking
             if(AreasDoMundo.Selvagem(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name))objective.text=world.Definition.displayName.ToUpperInvariant()+"\nExplore. Siga as setas no chão para os lugares vizinhos.";
             else objective.text=world.Definition.displayName.ToUpperInvariant()+"\nPatrulhas derrotadas: "+world.ClearedCount+" / "+world.Definition.camps.Length+"\n"+(world.PortalReady?(world.IsCatacombInstance?"Escolha suas duas cartas.":"O portal dos desafios está aberto."):(world.IsCatacombInstance?"Derrote os dois inimigos da sala.":"Derrote a primeira patrulha de cada local."));
             var navigationNotice=world.Hero.GetComponent<ArenaInput>().Desktop?.Notice;hint.text=string.IsNullOrEmpty(navigationNotice)?world.InteractionHint:navigationNotice;death.SetActive(!hero.Health.IsAlive);
-            if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;if(storyNotice!=null)storyNotice.text=world.Journey.Notice ?? world.Journey.Objective;}
-            if(town!=null){if(storyNotice!=null)storyNotice.text=town.CurrentNotice;hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(false);mapLegend.SetActive(false);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
+            if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;}
+            FitStory(town!=null?town.CurrentNotice:Historia.Objetivo);
+            if(town!=null){hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(false);mapLegend.SetActive(false);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
             if(world.GoldFeedback!=null)hint.text=world.GoldFeedback;
             if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
+            // The "use" button only shows up when there is something to use nearby.
+            if(useButton!=null)
+            {
+                bool near=hint.text.StartsWith("F · ")||hint.text.StartsWith("INTERAGIR · ");
+                useButton.gameObject.SetActive(near&&!world.Hero.GetComponent<ArenaInput>().CombatBlocked);
+                if(near&&useLabel!=null){useLabel.text=hint.text;hint.text="";}
+            }
         }
         void LateUpdate()
         {

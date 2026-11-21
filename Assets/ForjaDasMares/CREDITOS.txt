@@ -1,0 +1,14 @@
+CRÉDITOS DE ARTE DE TERCEIROS
+
+Ícones das habilidades
+- Desenhos de game-icons.net, licença Creative Commons BY 3.0
+  (https://creativecommons.org/licenses/by/3.0/). Cor, fundo e brilho adicionados para o jogo.
+  - Icons made by Lorc. Available on https://game-icons.net
+    (lightning-tree, whirlwind, bubbles, ground-sprout, ice-shield)
+  - Icons made by Delapouite. Available on https://game-icons.net
+    (tree-roots)
+  - Icons made by sbed. Available on https://game-icons.net
+    (lucifer-cannon)
+
+Efeitos visuais
+- Cartoon FX Remaster Free, JMO Assets (Unity Asset Store).

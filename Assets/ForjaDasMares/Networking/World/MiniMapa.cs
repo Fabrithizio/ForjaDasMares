@@ -24,11 +24,11 @@ namespace ForjaDasMares.Networking
         Texture2D fog; Color32[] fogPixels; byte[] explored;
         Vector2 center; float side;
         float radius = 32, smallRadius = 32, bigRadius = 70; bool expanded;
-        string key; float revealTimer, saveTimer, poiTimer; bool fogDirty, saveDirty;
+        string key; float revealTimer, saveTimer, poiTimer; bool fogDirty, saveDirty; int lastTargets;
         readonly List<Poi> pois = new List<Poi>();
         RectTransform markers;
 
-        sealed class Poi { public Transform target; public Vector3 fixedPosition; public RectTransform icon; public Text label; }
+        sealed class Poi { public Transform target; public Vector3 fixedPosition; public RectTransform icon; public Text label, mark; public string who; public Graphic symbol; public RoundedHudGraphic badge; public Color color; }
 
         // Moving people and enemies: small live dots (light = townsfolk, red = enemies).
         readonly List<Transform> walkers = new List<Transform>();
@@ -122,6 +122,10 @@ namespace ForjaDasMares.Networking
             // Zoom buttons under the ring (big enough for a finger).
             RusticHudTheme.Button(frame, "Menos", new Vector2(0, 0), new Vector2(4, -4), new Vector2(34, 34), "−", () => Zoom(1.25f));
             RusticHudTheme.Button(frame, "Mais", new Vector2(1, 0), new Vector2(-4, -4), new Vector2(34, 34), "+", () => Zoom(.8f));
+            // The world map, between − and + (small and out of the way; K on the PC).
+            var mapa = RusticHudTheme.IconButton(frame, "MapaMundo", new Vector2(.5f, 0), new Vector2(0, -6), HudSymbol.Compass, () => { if (!MapaDoMundo.Aberto) MapaDoMundo.Abrir(world, false); });
+            ((RectTransform)mapa.transform).sizeDelta = new Vector2(38, 38);
+            mapa.GetComponent<RoundedHudGraphic>().radius = 19;
 
             var bounds = world.Definition.bounds;
             center = new Vector2(bounds.center.x, bounds.center.z);
@@ -279,17 +283,20 @@ namespace ForjaDasMares.Networking
             {
                 string label = target.Label ?? "";
                 if (label.ToLowerInvariant().Contains("ouro")) continue; // gold piles come and go
+                if (label.StartsWith("Pegar") || label.StartsWith("Colher")) continue; // loot and herbs too
+                string who = null;
                 if (label.StartsWith("Conversar"))
                 {
                     // People: use the name on their head ("Téo · Ferreiro"); only the important ones get an icon.
-                    var plate = target.GetComponentInChildren<TextMesh>(true);
+                    var plate = Plate(target.transform);
+                    if (plate == null && target.transform.parent != null) plate = Plate(target.transform.parent);
                     if (plate == null) continue;
                     var lines = System.Text.RegularExpressions.Regex.Replace(plate.text, "<.*?>", "").Replace('·', '\n').Split('\n');
-                    string who = lines[0].Trim(), role = lines.Length > 1 ? lines[1].Trim() : "";
+                    who = lines[0].Trim(); string role = lines.Length > 1 ? lines[1].Trim() : "";
                     if (Style(who + " " + role).Item1 == HudSymbol.Hero) continue;
                     label = role.Length > 0 ? who + " · " + role : who;
                 }
-                Add(target.transform, Vector3.zero, label);
+                Add(target.transform, Vector3.zero, label, who);
             }
             // Exits of the place: "Saída para Nascente do Rio" (closed ones too).
             bool exits = false;
@@ -298,17 +305,32 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < world.Definition.camps.Length; i++) Add(null, world.Definition.camps[i].center, "Acampamento inimigo");
         }
 
-        void Add(Transform target, Vector3 position, string label)
+        // The name plate of a person (not the "!" / "?" sign over the head).
+        static TextMesh Plate(Transform t)
+        {
+            foreach (var m in t.GetComponentsInChildren<TextMesh>(true)) if (m.GetComponentInParent<MarcadorDeMissao>() == null) return m;
+            return null;
+        }
+        void Add(Transform target, Vector3 position, string label, string who = null)
         {
             var (symbol, color, bell) = Style(label);
             var icon = RusticHudTheme.Rect(markers, label, new Vector2(.5f, .5f), Vector2.zero, new Vector2(21, 21));
             var badge = icon.gameObject.AddComponent<RoundedHudGraphic>(); badge.radius = 10.5f; badge.color = new Color(.08f, .1f, .12f, .92f); badge.borderColor = color; badge.raycastTarget = false;
             if (bell) { var b = RusticHudTheme.Rect(icon, "Sino", new Vector2(.5f, .5f), Vector2.zero, new Vector2(20, 20)).gameObject.AddComponent<RawImage>(); b.texture = Resources.Load<Texture2D>("Mapa/IconeUltimoSino"); b.raycastTarget = false; }
-            else { var i = RusticHudTheme.Icon(icon, symbol, new Vector2(.5f, .5f), Vector2.zero, 14); i.color = color; }
+            Graphic symbolArt = null;
+            if (!bell) { var i = RusticHudTheme.Icon(icon, symbol, new Vector2(.5f, .5f), Vector2.zero, 14); i.color = color; symbolArt = i; }
             var name = RusticHudTheme.Label(icon, "Nome", new Vector2(.5f, 0), new Vector2(0, -10), new Vector2(180, 18), Short(label), 12, TextAnchor.MiddleCenter);
             name.horizontalOverflow = HorizontalWrapMode.Overflow;
             name.gameObject.AddComponent<Outline>().effectColor = new Color(0, 0, 0, .95f);
-            pois.Add(new Poi { target = target, fixedPosition = position, icon = icon, label = name });
+            // A person with a new mission: the icon turns into "!" until the mission is accepted, then goes back.
+            Text mark = null;
+            if (who != null)
+            {
+                mark = RusticHudTheme.Label(icon, "Missao", new Vector2(.5f, .5f), new Vector2(0, 1), new Vector2(21, 21), "", 17, TextAnchor.MiddleCenter);
+                mark.fontStyle = FontStyle.Bold; mark.raycastTarget = false;
+                mark.gameObject.AddComponent<Outline>().effectColor = new Color(0, 0, 0, .95f);
+            }
+            pois.Add(new Poi { target = target, fixedPosition = position, icon = icon, label = name, mark = mark, who = who, symbol = symbolArt, badge = badge, color = color });
         }
 
         static string Short(string label) { int cut = label.IndexOf('·'); return (cut > 0 ? label.Substring(0, cut) : label).Trim(); }
@@ -340,7 +362,13 @@ namespace ForjaDasMares.Networking
             saveTimer -= Time.unscaledDeltaTime;
             if (saveDirty && saveTimer <= 0) Save();
             poiTimer -= Time.unscaledDeltaTime;
-            if (poiTimer <= 0 && drawn != null) { poiTimer = 4; if (pois.Count == 0) CollectPlaces(); }
+            if (poiTimer <= 0 && drawn != null)
+            {
+                poiTimer = 4;
+                // Again when people or places appear later (Brás gets his talk after the scene starts).
+                int count = FindObjectsByType<WorldClickTarget>(FindObjectsSortMode.None).Length;
+                if (pois.Count == 0 || count != lastTargets) { lastTargets = count; CollectPlaces(); }
+            }
 
             float window = frame.sizeDelta.x - Border * 2;
             float ppm = window * .5f / radius;
@@ -365,6 +393,14 @@ namespace ForjaDasMares.Networking
                 poi.icon.anchoredPosition = (new Vector2(p.x, p.z) - center) * ppm;
                 poi.icon.localRotation = upright;
                 poi.label.enabled = expanded;
+                if (poi.mark != null && Time.frameCount % 15 == 0)
+                {
+                    var (s, c) = Missoes.Marcador(poi.who);
+                    bool offer = s == "!";
+                    poi.mark.text = offer ? "!" : ""; poi.mark.color = c;
+                    if (poi.symbol != null) poi.symbol.enabled = !offer;
+                    poi.badge.borderColor = offer ? c : poi.color;
+                }
             }
         }
 

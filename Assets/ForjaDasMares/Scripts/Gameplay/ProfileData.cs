@@ -27,6 +27,8 @@ namespace ForjaDasMares
         public int experience, coins;
         public List<ItemInstance> items = new List<ItemInstance>();
     }
+    // Stackable resources of the world (herbs, leather, meat, potions...), by id. See Recursos.cs.
+    [Serializable] public sealed class ResourceStack { public string id; public int amount; }
     [Serializable] public sealed class PlayerProfile
     {
         public int version = 2, experience, coins;
@@ -44,6 +46,7 @@ namespace ForjaDasMares
         public List<HeroLoadout> loadouts = new List<HeroLoadout>();
         public List<HeroTalentAllocation> talents = new List<HeroTalentAllocation>();
         public List<string> completedRuns = new List<string>();
+        public List<ResourceStack> recursos = new List<ResourceStack>();
         public ExpeditionData expedition;
         public ExpeditionResult lastResult;
         public LocalOptions options = new LocalOptions();

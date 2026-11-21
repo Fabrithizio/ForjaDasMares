@@ -43,6 +43,13 @@ namespace ForjaDasMares
         public void Stun(float duration) { stunTime = Mathf.Max(stunTime, Mathf.Max(0, duration)); Changed?.Invoke(); }
         public void Protect(float reduction, float duration)
         { protection = Mathf.Clamp(reduction, 0, 0.8f); protectionTime = Mathf.Max(0, duration); Changed?.Invoke(); }
+        // Root or slow from an ability without a hit (frost on the weapon, roots...).
+        public void ApplyControl(ControlEffect effect, float duration, float slowMultiplier = .5f)
+        {
+            if (!IsAlive || effect == ControlEffect.None || duration <= 0) return;
+            rooted = effect == ControlEffect.Root; crystalOwner = null; slow = Mathf.Clamp(slowMultiplier, .05f, 1f);
+            controlTime = Mathf.Max(controlTime, duration); Changed?.Invoke();
+        }
         public void Push(Vector3 direction,float force){if(IsAlive)Impact?.Invoke(direction,Mathf.Clamp(force,0,5));}
         public bool ApplyHit(AttackDefinition attack, Vector3 direction, Health source, float damageScale = 1, bool critical = false)
         {
@@ -50,9 +57,13 @@ namespace ForjaDasMares
             float multiplier = defense != null ? Mathf.Clamp01(defense.DamageMultiplier(direction, source, attack)) : 1;
             bool shatter = attack.prismaticEffect == PrismaticEffect.Shatter && IsCrystallized && crystalOwner == source;
             float comboMultiplier = shatter ? 1.5f : 1f;
-            if (!CanReceiveFrom(source) || multiplier <= 0 ||
-                !ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build * comboMultiplier)), critical))
-                return false;
+            if (!CanReceiveFrom(source) || multiplier <= 0) return false;
+            // Statuses from abilities: a block cancels the hit; marked or vulnerable bodies take more.
+            var estados = GetComponent<EstadosDeCombate>();
+            int planned = Mathf.Max(1, Mathf.RoundToInt(attack.damage * Mathf.Max(0, damageScale) * multiplier * build * comboMultiplier));
+            if (estados != null && estados.Bloqueia(source, planned)) return false;
+            if (estados != null) planned = Mathf.Max(1, Mathf.RoundToInt(planned * estados.Multiplicador(source)));
+            if (!ApplyDamage(planned, critical)) return false;
             if (shatter)
             {
                 crystalOwner = null;
@@ -64,6 +75,8 @@ namespace ForjaDasMares
             { rooted = attack.control == ControlEffect.Root; crystalOwner = rooted && attack.prismaticEffect == PrismaticEffect.Imprison ? source : null; slow = Mathf.Clamp(attack.slowMultiplier, 0.05f, 1f); controlTime = attack.controlDuration; if (IsCrystallized) CrystalApplied?.Invoke(this); Changed?.Invoke(); }
             if (attack.knockback > 0) Impact?.Invoke(direction, attack.knockback);
             if (source != null) source.DealtHit?.Invoke(this);
+            if (source != null) source.GetComponent<EstadosDeCombate>()?.Acertou(this);
+            if (EstadosDeCombate.AoAcertar.TryGetValue(attack, out var hook)) hook(this, source);
             return true;
         }
         public string PeriodicDamageLabel { get; private set; }
@@ -77,6 +90,7 @@ namespace ForjaDasMares
         bool ApplyDamage(int damage, bool critical)
         {
             if(damage<=0||current<=0)return false;if(dodgeSource!=null&&dodgeSource.IsInvulnerable){dodgeSource.ConfirmPerfectDodge();return false;}
+            var shield=GetComponent<EstadosDeCombate>();if(shield!=null){damage=shield.Absorve(damage);if(damage<=0){Changed?.Invoke();return true;}}
             int finalDamage = ProgressionStats.MitigatedDamage(damage,armor*(GetComponent<CombatAilments>()?.DefenseScale??1),Mathf.Max(protectionTime>0?protection:0,GetComponent<CombatBuildEffects>()?.Shelter??0));
             int lost = Mathf.Min(current, finalDamage);
             current -= lost;

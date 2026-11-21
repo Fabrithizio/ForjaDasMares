@@ -237,10 +237,19 @@ namespace ForjaDasMares.Networking
             var canvas = go.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 500;
             var scaler = go.AddComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
             go.AddComponent<GraphicRaycaster>();
-            RusticHudTheme.Button(go.transform, "Mapa", new Vector2(.5f, 0), new Vector2(-420, 22), new Vector2(190, 56), "MAPA (K)", AbrirMapa);
+            // The world map button now sits on the minimap, between − and + (MiniMapa). K still opens it.
             if (area.cidade) return;
-            var b = RusticHudTheme.Button(go.transform, "Voltar", new Vector2(.5f, 0), new Vector2(430, 22), new Vector2(210, 56), "VOLTAR (H)", Voltar);
-            botaoTexto = b.GetComponentInChildren<Text>();
+            StartCoroutine(BotaoVoltar());
+        }
+        // VOLTAR sits in the same small block as MONTAR, on top (RegionalWorldHud "AcoesTopo").
+        System.Collections.IEnumerator BotaoVoltar()
+        {
+            GameObject bloco = null;
+            for (int i = 0; i < 300 && (bloco = GameObject.Find("AcoesTopo")) == null; i++) yield return null;
+            if (bloco == null) yield break;
+            var r = (RectTransform)bloco.transform; r.sizeDelta = new Vector2(r.sizeDelta.x + 118, r.sizeDelta.y);
+            var b = RusticHudTheme.Button(r, "Voltar", new Vector2(0, .5f), new Vector2(6, 0), new Vector2(112, 42), Application.isMobilePlatform ? "VOLTAR" : "VOLTAR · H", Voltar);
+            botaoTexto = b.GetComponentInChildren<Text>(); botaoTexto.fontSize = 14;
         }
 
         void Voltar() { if (!voltando && !saindo) StartCoroutine(Voltando()); }

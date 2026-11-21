@@ -41,7 +41,7 @@ namespace ForjaDasMares.Networking
         RegionalInventory inventory;
         Action<bool> blockInput;
         Action<int> openLegacy;
-        RectTransform full, window, equipPage, statusPage, resourcePage, talentPage, runePage, tooltip;
+        RectTransform full, window, equipPage, statusPage, resourcePage, talentPage, runePage, skillPage, tooltip;
         // Talentos
         Text talentPoints, talentFeedback, resetLabel;
         Button resetButton;
@@ -60,7 +60,7 @@ namespace ForjaDasMares.Networking
         RectTransform xpFill;
         readonly ForgeSlot[] equipSlots = new ForgeSlot[Spaces.Length];
         readonly List<ForgeSlot> bagSlots = new List<ForgeSlot>();
-        readonly Button[] pageTabs = new Button[5];
+        readonly Button[] pageTabs = new Button[6];
         readonly Button[] filterTabs = new Button[FilterNames.Length];
         readonly Text[] chipValues = new Text[6];
         readonly List<Text> statValues = new List<Text>();
@@ -100,14 +100,14 @@ namespace ForjaDasMares.Networking
             RusticHudTheme.Icon(header, HudSymbol.Hero, Top, new Vector2(20, -13), 44);
             Label(header, "PERSONAGEM", 74, 8, 260, 34, 28, TextAnchor.MiddleLeft).color = RusticHudTheme.Gold;
             Label(header, "Equipamentos, status e recursos", 76, 40, 260, 20, 13, TextAnchor.MiddleLeft).color = RusticHudTheme.Muted;
-            string[] tabs = { "EQUIPAMENTO", "STATUS", "TALENTOS", "RUNAS", "RECURSOS" };
-            HudSymbol[] tabIcons = { HudSymbol.Sword, HudSymbol.Scroll, HudSymbol.Fury, HudSymbol.Rune, HudSymbol.Coin };
+            string[] tabs = { "EQUIPAMENTO", "STATUS", "TALENTOS", "RUNAS", "RECURSOS", "HABILIDADES" };
+            HudSymbol[] tabIcons = { HudSymbol.Sword, HudSymbol.Scroll, HudSymbol.Fury, HudSymbol.Rune, HudSymbol.Coin, HudSymbol.SpellBurst };
             for (int i = 0; i < tabs.Length; i++)
             {
                 int pick = i;
-                pageTabs[i] = RusticHudTheme.Button(header, "Aba" + i, Top, new Vector2(340 + i * 150, -13), new Vector2(144, 44), tabs[i], () => SetPage(pick));
+                pageTabs[i] = RusticHudTheme.Button(header, "Aba" + i, Top, new Vector2(330 + i * 128, -13), new Vector2(124, 44), tabs[i], () => SetPage(pick));
                 var text = pageTabs[i].GetComponentInChildren<Text>();
-                text.fontSize = 14; text.rectTransform.anchoredPosition = new Vector2(14, 0); text.rectTransform.sizeDelta = new Vector2(110, 40);
+                text.fontSize = 12; text.rectTransform.anchoredPosition = new Vector2(13, 0); text.rectTransform.sizeDelta = new Vector2(94, 40);
                 RusticHudTheme.Icon(pageTabs[i].transform, tabIcons[i], new Vector2(0, .5f), new Vector2(10, 0), 22);
             }
             var close = RusticHudTheme.Button(header, "Fechar", Top, new Vector2(1118, -13), new Vector2(46, 44), "X", Close);
@@ -118,6 +118,8 @@ namespace ForjaDasMares.Networking
             BuildTalentPage();
             BuildRunePage();
             BuildResourcePage();
+            // Learned abilities and the two bars (built by Habilidades when the page is first opened).
+            skillPage = Area(window, "Habilidades");
 
             noticeText = Label(window, "", 20, 726, 1140, 28, 16, TextAnchor.MiddleCenter);
             noticeText.color = RusticHudTheme.Parchment;
@@ -282,7 +284,17 @@ namespace ForjaDasMares.Networking
             seal.Show("selo", Resources.Load<Texture2D>("Forge/selo_protecao"), ForgeSlot.FullUv, GoldBorder);
             sealCount = seal.count; seal.count.fontSize = 20;
             Label(box, "Pedras, amuletos e selos são usados na Forja do mestre artesão de cada cidade.", 26, 420, 1100, 24, 15, TextAnchor.MiddleLeft).color = RusticHudTheme.Muted;
+            // Things gathered and hunted in the world (Recursos.cs).
+            Label(box, "COLETA E CAÇA", 26, 460, 600, 30, 18, TextAnchor.MiddleLeft).color = RusticHudTheme.Gold;
+            for (int i = 0; i < Recursos.Todos.Length; i++)
+            {
+                var cell = RusticHudTheme.Rect(box, "Recurso" + i, Top, new Vector2(24 + i * 226, -500), new Vector2(214, 74));
+                var back = RusticHudTheme.Panel(cell, new Color(.04f, .08f, .095f, 1), 14); back.borderColor = Recursos.Cor(Recursos.Todos[i]); back.border = 2;
+                Label(cell, Recursos.Nome(Recursos.Todos[i]), 14, 8, 190, 26, 16, TextAnchor.MiddleLeft).color = Recursos.Cor(Recursos.Todos[i]);
+                worldCounts[i] = Label(cell, "0", 14, 36, 190, 32, 24, TextAnchor.MiddleLeft);
+            }
         }
+        readonly Text[] worldCounts = new Text[Recursos.Todos.Length];
 
 
         // ---------- Talentos ----------
@@ -598,7 +610,7 @@ namespace ForjaDasMares.Networking
         public void OpenPage(int value)
         {
             if (!IsOpen) Open();
-            SetPage(Mathf.Clamp(value, 0, 4));
+            SetPage(Mathf.Clamp(value, 0, 5));
         }
 
         public void Close()
@@ -619,6 +631,8 @@ namespace ForjaDasMares.Networking
             talentPage.gameObject.SetActive(page == 2);
             runePage.gameObject.SetActive(page == 3);
             resourcePage.gameObject.SetActive(page == 4);
+            skillPage.gameObject.SetActive(page == 5);
+            if (page == 5) Habilidades.Atual?.MontarNa(skillPage);
             tooltip.gameObject.SetActive(false);
             for (int i = 0; i < pageTabs.Length; i++) Highlight(pageTabs[i], i == page);
             Refresh();
@@ -756,6 +770,7 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < stoneCounts.Length; i++) stoneCounts[i].text = inventory.Service.ForgeStoneCount(i + 1).ToString();
             luckCount.text = profile.luckCharms.ToString();
             sealCount.text = profile.protectionSeals.ToString();
+            for (int i = 0; i < worldCounts.Length; i++) if (worldCounts[i] != null) worldCounts[i].text = inventory.Service.Recurso(Recursos.Todos[i]).ToString();
         }
 
         int Compare(ItemInstance a, ItemInstance b)

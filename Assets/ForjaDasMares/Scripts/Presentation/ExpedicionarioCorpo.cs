@@ -227,11 +227,7 @@ namespace ForjaDasMares
         void OnGUI()
         {
             var e = Event.current;
-            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.F8 && !hero.ReplicaMode && body != null)
-            {
-                tuningOpen = !tuningOpen; tuning = this; e.Use();
-                if (!tuningOpen) Pause(false);
-            }
+            // Turned off: F8 is only the performance panel now. Kept here in case we need to tune a grip again.
             if (!tuningOpen || tuning != this) return;
             float k = Mathf.Max(1, Screen.height / 900f);
             GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1));

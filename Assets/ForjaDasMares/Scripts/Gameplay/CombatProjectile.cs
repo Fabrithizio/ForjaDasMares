@@ -11,6 +11,10 @@ namespace ForjaDasMares
         AttackDefinition attack;
         Health owner;
         Vector3 direction, launchPosition;
+        // Shots follow the ground: on hills they keep the same height above the floor, so they do not fly
+        // over a creature standing lower (or into the slope of a creature standing higher).
+        const int GroundMask = (1 << 0) | (1 << 8);
+        float aboveGround = -1;
         float returnTime, spin;
         bool returning;
         readonly System.Collections.Generic.HashSet<Health> struck = new System.Collections.Generic.HashSet<Health>();
@@ -36,6 +40,7 @@ namespace ForjaDasMares
             if (data.returningProjectile) AimAtEnemy(position);
             transform.SetPositionAndRotation(position, Quaternion.LookRotation(direction));
             launchPosition = position;
+            aboveGround = Physics.Raycast(position, Vector3.down, out var floor, 6f, GroundMask, QueryTriggerInteraction.Ignore) ? position.y - floor.point.y : -1;
             returning = false;
             returnTime = spin = 0;
             damageScale = scale;
@@ -120,8 +125,16 @@ namespace ForjaDasMares
                 if (attack.splashRadius > 0) resolver.Area(transform.position, attack.splashRadius, direction, 360f, attack, owner, targets, geometry, false, damageScale, criticalHit);
                 gameObject.SetActive(false);
             }
-            else { transform.position += direction * step; distance += step; }
+            else { transform.position += direction * step; distance += step; FollowGround(); }
             System.Array.Clear(hits, 0, count);
+        }
+        void FollowGround()
+        {
+            if (aboveGround < 0) return;
+            var p = transform.position;
+            if (!Physics.Raycast(p + Vector3.up * 1.5f, Vector3.down, out var floor, 5f, GroundMask, QueryTriggerInteraction.Ignore)) return;
+            p.y = Mathf.MoveTowards(p.y, floor.point.y + aboveGround, 12f * Time.deltaTime);
+            transform.position = p;
         }
         void UpdateReturnFlight()
         {
