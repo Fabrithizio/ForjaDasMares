@@ -43,7 +43,7 @@ namespace ForjaDasMares.Networking
             var color = CorDoRecurso(id);
             var chao = root.AddComponent<SaqueNoChao>(); chao.Brilho(visual, color);
             Cair(visual, from + Vector3.up * .9f - at);
-            var box = root.AddComponent<BoxCollider>(); box.center = Vector3.up * .3f; box.size = new Vector3(.8f, .6f, .8f);
+            var box = root.AddComponent<BoxCollider>(); box.center = Vector3.up * .3f; box.size = new Vector3(.8f, .6f, .8f); WorldClickTarget.Atravessavel(box);
             var target = root.AddComponent<WorldClickTarget>();
             string nome = Recursos.Nome(id);
             target.Configure("Pegar " + (amount > 1 ? amount + " " : "") + nome, 2.2f);

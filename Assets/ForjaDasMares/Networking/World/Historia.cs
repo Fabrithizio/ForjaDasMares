@@ -491,34 +491,29 @@ namespace ForjaDasMares.Networking
             var comentario = quem != null ? Descobertas.Proximo(quem) : null;
             if (comentario != null) { StartCoroutine(Comentar(quem, comentario, target)); return true; }
             // The side missions can all be taken at once; Nara's (the main one) opens after the first hunt by the river.
+            // Iria, Brás and Téo also sell or make things: a mission only takes the talk when there is something new
+            // (the request, or the delivery). Otherwise their usual window opens (shop, forge, fountain).
             if (target == TargetOf(iria))
             {
                 if (!Historia.Feito("m1_aceita")) { StartCoroutine(IriaPede()); return true; }
                 if (!Historia.Feito("m1_feita"))
                 {
-                    if (Recursos.Quantos(Recursos.ErvaLuz) >= Historia.ErvasPedidas) StartCoroutine(IriaRecebe());
-                    else StartCoroutine(Short("Iria", "Ainda não? Tudo bem, tudo bem! São aquelas plantinhas que brilham no campo, fora da muralha. Cinco! Preciso de cinco."));
-                    return true;
+                    if (Recursos.Quantos(Recursos.ErvaLuz) < Historia.ErvasPedidas) return false;
+                    StartCoroutine(IriaRecebe()); return true;
                 }
                 StartCoroutine(IriaAlquimia()); return true;
             }
             if (target == TargetOf(bras))
             {
-                if (!Historia.Feito("m2_aceita")) StartCoroutine(BrasPede());
-                else if (!Historia.Feito("m2_feita"))
-                {
-                    if (Recursos.Quantos(Recursos.Carne) >= Historia.CarnesPedidas) StartCoroutine(BrasRecebe());
-                    else StartCoroutine(Short("Brás", "Três peças de carne, amigo. Perto do rio. E olho aberto, que aqueles bichos não estão bons da cabeça."));
-                }
-                else StartCoroutine(Short("Brás", "Obrigado pela carne, amigo! A cidade agradece."));
-                return true;
+                if (!Historia.Feito("m2_aceita")) { StartCoroutine(BrasPede()); return true; }
+                if (!Historia.Feito("m2_feita") && Recursos.Quantos(Recursos.Carne) >= Historia.CarnesPedidas) { StartCoroutine(BrasRecebe()); return true; }
+                return false;
             }
             if (target == TargetOf(teo) && !Historia.Feito("m3_feita"))
             {
-                if (!Historia.Feito("m3_aceita")) StartCoroutine(TeoPede());
-                else if (Recursos.Quantos(Recursos.Couro) >= Historia.CourosPedidos) StartCoroutine(TeoFazManto());
-                else StartCoroutine(Short("Téo", "Três couros. Dos bichos do rio."));
-                return true;
+                if (!Historia.Feito("m3_aceita")) { StartCoroutine(TeoPede()); return true; }
+                if (Recursos.Quantos(Recursos.Couro) >= Historia.CourosPedidos) { StartCoroutine(TeoFazManto()); return true; }
+                return false;
             }
             if (target == TargetOf(nara))
             {

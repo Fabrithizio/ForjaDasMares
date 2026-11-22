@@ -235,7 +235,7 @@ namespace ForjaDasMares.Networking
             root.gameObject.AddComponent<Respirar>().luz = light;
             // The dark crystal in the middle: for later. Today it only tells you it is too strong.
             var cristal = new GameObject("CristalDoBreu"); cristal.transform.SetParent(root, false);
-            var col = cristal.AddComponent<SphereCollider>(); col.radius = 1f; col.center = Vector3.up;
+            var col = cristal.AddComponent<SphereCollider>(); col.radius = 1f; col.center = Vector3.up; WorldClickTarget.Atravessavel(col);
             var target = cristal.AddComponent<WorldClickTarget>(); target.Configure("Cristal do Breu", 2.6f);
             target.Interacting += actor => { if (world != null && actor == world.Hero.transform) Mostrar("Cristal do Breu", "Forte demais. Ainda não dá para tocar nisto.", Breu, 2.6f); };
             WorldClickTarget.Extras.Add(target); cristais.Add(target);
@@ -305,7 +305,7 @@ namespace ForjaDasMares.Networking
         WorldClickTarget Alvo(string nome, Vector3 at, string texto, Color cor, out Light luz)
         {
             var go = new GameObject(nome); go.transform.position = Chao(at);
-            var col = go.AddComponent<SphereCollider>(); col.radius = .9f; col.center = Vector3.up * .8f;
+            var col = go.AddComponent<SphereCollider>(); col.radius = .9f; col.center = Vector3.up * .8f; WorldClickTarget.Atravessavel(col);
             luz = new GameObject("Luz").AddComponent<Light>(); luz.transform.SetParent(go.transform, false); luz.transform.localPosition = Vector3.up * 1.6f;
             luz.type = LightType.Point; luz.color = cor; luz.range = 4; luz.intensity = 1.6f; luz.shadows = LightShadows.None;
             go.AddComponent<Respirar>().luz = luz;
@@ -380,7 +380,7 @@ namespace ForjaDasMares.Networking
             go.AddComponent<Respirar>().luz = light;
             segredo = go.AddComponent<WorldClickTarget>();
             segredo.Configure("Tocar as bolhas", 2.6f);
-            var col = go.AddComponent<SphereCollider>(); col.radius = .9f; col.center = Vector3.up * .5f; col.isTrigger = false; go.layer = 0;
+            var col = go.AddComponent<SphereCollider>(); col.radius = .9f; col.center = Vector3.up * .5f; col.isTrigger = false; go.layer = 0; WorldClickTarget.Atravessavel(col);
             segredo.Interacting += actor =>
             {
                 if (world == null || actor != world.Hero.transform || Habilidades.Aprendeu("bolha")) return;

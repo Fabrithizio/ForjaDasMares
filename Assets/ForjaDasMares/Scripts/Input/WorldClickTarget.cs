@@ -22,6 +22,12 @@ namespace ForjaDasMares
         // Colliders of a building that stand for a target (click the Raiz-Mãe itself to use it).
         public static readonly System.Collections.Generic.Dictionary<Collider,WorldClickTarget> Alias=new System.Collections.Generic.Dictionary<Collider,WorldClickTarget>();
         // The closest of the extra targets (gates, loot, herbs...) that the hero can use right now.
+        // Click shapes (loot, herbs, arrows, secrets) must not be walls: whoever walks passes through them.
+        public static void Atravessavel(Collider shape)
+        {
+            if(shape==null)return;
+            foreach(var walker in Object.FindObjectsByType<CharacterController>(FindObjectsSortMode.None))Physics.IgnoreCollision(walker,shape,true);
+        }
         public static WorldClickTarget MaisPerto(Transform hero)
         {
             WorldClickTarget best=null;float distance=float.MaxValue;

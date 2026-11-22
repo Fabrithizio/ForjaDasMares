@@ -36,7 +36,7 @@ namespace ForjaDasMares
         void OnDisable(){stationary?.Disable();Cancel();}
         void OnDestroy(){stationary?.Dispose();}
         public void PressMouse(){pressed=true;}
-        public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;HoveredInteraction=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;}
+        public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;HoveredInteraction=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;atacandoSozinho=false;travado=null;Mirando=null;MirandoAgora=false;if(input!=null)input.AutoAttack=false;}
         // While an ability starts (PC): aim where the mouse is, not where the hero was walking.
         public bool AimAtPointer{get;set;}
         public Vector3 AimDirection
@@ -96,20 +96,86 @@ namespace ForjaDasMares
             return v.z>0&&v.x>-.02f&&v.x<1.02f&&v.y>-.02f&&v.y<1.02f;
         }
         bool holdTracked,holdFromWorld;
+
+        // ---------- Phone attack ----------
+        // Tap ATAQUE: the hero turns to the nearest creature on the screen, locks it and keeps attacking by himself
+        // (walking up to it if needed) until it falls or the joystick moves. When it falls, the next one nearby.
+        // Hold ATAQUE: a small target appears; dragging from the button works like a joystick to put it on any
+        // creature on the screen; letting go locks that one.
+        Health travado;bool atacandoSozinho;
+        public Health Travado=>atacandoSozinho?travado:null;
+        public Health Mirando{get;private set;}
+        public Vector3 PontoDaMira{get;private set;}
+        public bool MirandoAgora{get;private set;}
+        float AlcanceDoAtaque=>Mathf.Max(.7f,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range*.95f:2);
+        public void ToqueAtaque()
+        {
+            var nearest=MaisPerto(motor.transform.position,22,null);
+            if(nearest!=null){travado=nearest;atacandoSozinho=true;}
+            else input.RequestAttack(); // nothing around: one blow forward
+        }
+        public void MirarComArrasto(Vector2 stick)
+        {
+            MirandoAgora=true;
+            var hero=motor.transform.position;
+            PontoDaMira=hero+motor.WorldDirection(Vector2.ClampMagnitude(stick,1))*(Vector2.ClampMagnitude(stick,1).magnitude*16f);
+            Mirando=MaisPerto(hero,24,PontoDaMira);
+        }
+        public void SoltarArrasto()
+        {
+            if(Mirando!=null){travado=Mirando;atacandoSozinho=true;}
+            Mirando=null;MirandoAgora=false;
+        }
+        static readonly Collider[] nearHits=new Collider[48];
+        Health MaisPerto(Vector3 hero,float radius,Vector3? toward)
+        {
+            int mask=combat!=null?combat.TargetMask:1<<13,walls=combat!=null?combat.GeometryMask:1<<9;
+            int n=Physics.OverlapSphereNonAlloc(hero,radius,nearHits,mask,QueryTriggerInteraction.Ignore);
+            Health best=null;float bestScore=float.MaxValue;var from=toward??hero;
+            for(int i=0;i<n;i++)
+            {
+                var hp=nearHits[i].GetComponentInParent<Health>();
+                if(hp==null||hp==best||!hp.IsAlive||hp.Faction!=CombatFaction.Enemy||!OnScreen(hp))continue;
+                if(Physics.Linecast(hero+Vector3.up,hp.transform.position+Vector3.up,out var wall,walls,QueryTriggerInteraction.Ignore)&&wall.collider.GetComponentInParent<Health>()!=hp)continue;
+                var d=hp.transform.position-from;d.y=0;float score=d.sqrMagnitude;
+                if(score<bestScore){bestScore=score;best=hp;}
+            }
+            System.Array.Clear(nearHits,0,n);
+            return best;
+        }
+        // Returns true when the hero has to walk to the locked creature (the path code below does it).
+        bool Celular()
+        {
+            pressed=false;target=null;attackGesture=attackRecovery=false;CanAttack=true;input.AutoAttack=false;
+            if(atacandoSozinho&&input.RawMove.sqrMagnitude>.06f){atacandoSozinho=false;travado=null;}
+            if(atacandoSozinho&&(travado==null||!travado.IsAlive||!OnScreen(travado)))
+            {travado=MaisPerto(motor.transform.position,10,null);if(travado==null)atacandoSozinho=false;}
+            if(atacandoSozinho)
+            {
+                autoAimTarget=travado;SelectionTarget=Mirando??travado;
+                Vector3 delta=travado.transform.position-motor.transform.position;delta.y=0;
+                float range=AlcanceDoAtaque;
+                bool visible=!Physics.Linecast(motor.transform.position+Vector3.up,travado.transform.position+Vector3.up,out var hit,combat!=null?combat.GeometryMask:1<<9,QueryTriggerInteraction.Ignore)||hit.collider.GetComponentInParent<Health>()==travado;
+                if(delta.sqrMagnitude<=range*range&&visible){navigating=false;Movement=Vector2.zero;motor.StopWalking();input.AutoAttack=true;return false;}
+                destination=travado.transform.position;
+                if(!navigating||(lastPlanned-destination).sqrMagnitude>1f){navigating=true;replan=0;count=corner=0;}
+                return true;
+            }
+            navigating=false;
+            // Free: abilities still aim at the nearest creature within reach.
+            autoAimClock-=Time.unscaledDeltaTime;
+            if(autoAimClock<=0){autoAimClock=.15f;autoAimTarget=MaisPerto(motor.transform.position,Mathf.Min(12,AlcanceDoAtaque+2),null);}
+            SelectionTarget=Mirando??(autoAimTarget!=null&&autoAimTarget.IsAlive?autoAimTarget:null);
+            return false;
+        }
         void Update()
         {
             HoveredInteraction = null;
             CanAttack=false;Movement=input!=null?input.RawMove:Vector2.zero;
             if(input==null||motor==null||!input.isActiveAndEnabled||input.CombatBlocked){Cancel();return;}
             if(health!=null&&!health.IsAlive){Cancel();CanAttack=false;return;}
-            if(UnityEngine.Device.Application.isMobilePlatform||!input.HasPointer)
-            {
-                if(UnityEngine.Device.Application.isMobilePlatform&&autoAimEnemies!=null)
-                {
-                    autoAimClock-=Time.unscaledDeltaTime;if(autoAimClock<=0){autoAimClock=.12f;autoAim.BeginScan(motor.transform.position,Mathf.Min(12,combat!=null&&combat.BasicAttack!=null?combat.BasicAttack.range:3),combat!=null?combat.GeometryMask:1<<9);foreach(var enemy in autoAimEnemies.Actors)if(enemy.IsAlive)autoAim.Consider(enemy.Health);autoAimTarget=autoAim.EndScan();}
-                }
-                SelectionTarget=autoAimTarget!=null&&autoAimTarget.IsAlive?autoAimTarget:null;CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;
-            }
+            if(UnityEngine.Device.Application.isMobilePlatform){if(Celular())goto Seguir;return;}
+            if(!input.HasPointer){SelectionTarget=null;CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;}
             // A hold that started on the world keeps walking even when the cursor slides over the HUD.
             bool overUi=input.PointerIsBlocked;
             if(input.MouseAttackHeld){if(!holdTracked){holdTracked=true;holdFromWorld=!overUi;}}else holdTracked=holdFromWorld=false;

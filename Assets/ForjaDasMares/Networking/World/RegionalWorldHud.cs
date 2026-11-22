@@ -707,7 +707,7 @@ namespace ForjaDasMares.Networking
             var ring=stick.gameObject.AddComponent<RoundedHudGraphic>();ring.color=new Color(.12f,.19f,.16f,.65f);ring.radius=80;
             var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(52,52));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=26;cap.raycastTarget=false;
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
-            CombatAction(touchSafeArea,"RegionalAttack",new Vector2(-22,46),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
+            CombatAction(touchSafeArea,"RegionalAttack",new Vector2(-22,46),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,() => { },true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
             dodgeButton = CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-164,8),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true); dodgeShade = Shade(dodgeButton,78,true); dodgeSize = 78;
             // USAR only shows up near something to use.
             useButton = CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-262,20),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);

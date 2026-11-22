@@ -81,7 +81,7 @@ namespace ForjaDasMares.Networking
             glow.type = LightType.Point; glow.color = new Color(.5f, 1f, .85f); glow.range = 2.2f; glow.intensity = .8f;
             EfeitosDeHabilidade.Aura(plant.transform, new Color(.5f, 1f, .85f), true, .25f, 4);
             // Click target.
-            var click = gameObject.AddComponent<BoxCollider>(); click.size = new Vector3(.9f, .7f, .9f); click.center = Vector3.up * .3f;
+            var click = gameObject.AddComponent<BoxCollider>(); click.size = new Vector3(.9f, .7f, .9f); click.center = Vector3.up * .3f; WorldClickTarget.Atravessavel(click);
             target = gameObject.AddComponent<WorldClickTarget>(); target.Configure("Colher Erva-luz", 2.2f);
             target.Used.AddListener(Colher);
             WorldClickTarget.Extras.Add(target);

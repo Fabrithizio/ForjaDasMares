@@ -208,7 +208,7 @@ namespace ForjaDasMares.Networking
             // Something to click: a flat box over the arrow (Default layer: does not change the walkable ground).
             var clique = new GameObject("Clique").AddComponent<BoxCollider>();
             clique.transform.SetParent(raiz, false); clique.transform.localPosition = new Vector3(0, .3f, 0);
-            clique.size = new Vector3(3.2f, .6f, 4f); clique.gameObject.layer = 0;
+            clique.size = new Vector3(3.2f, .6f, 4f); clique.gameObject.layer = 0; WorldClickTarget.Atravessavel(clique);
             var alvo = raiz.gameObject.AddComponent<WorldClickTarget>();
             alvo.Configure("Ir para " + AreasDoMundo.Nome(p.saida.para), 3.2f);
             var destino = p.saida.para;

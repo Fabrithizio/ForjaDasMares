@@ -21,7 +21,9 @@ namespace ForjaDasMares
         public bool MouseAttackHeld=>deviceAttackHeld;
         public bool PointerIsBlocked=>HasPointer&&PointerBlocked!=null&&PointerBlocked(PointerPosition);
         bool PointerAttackAllowed=>!PointerIsBlocked&&(desktop==null||desktop.CanAttack);
-        public bool AttackHeld => !blocked && (uiAttackHeld || deviceAttackHeld&&PointerAttackAllowed);
+        // Phone: after a tap on ATAQUE the hero keeps attacking the locked creature by himself (DesktopRpgControls).
+        public bool AutoAttack { get; set; }
+        public bool AttackHeld => !blocked && (uiAttackHeld || AutoAttack || deviceAttackHeld&&PointerAttackAllowed);
         public Vector3 AimDirection=>desktop!=null?desktop.AimDirection:transform.forward;
         public void ConfigureDesktop(PlayerMotor player,Camera view,HeroCombat attacks)
         {if(desktop==null)desktop=GetComponent<DesktopRpgControls>()??gameObject.AddComponent<DesktopRpgControls>();desktop.Configure(this,player,view,attacks);}
