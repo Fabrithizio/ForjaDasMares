@@ -35,12 +35,12 @@ namespace ForjaDasMares.Networking
                 for (int i = 0; i < cervos + javalis; i++)
                 {
                     var kind = i < cervos ? AnimalSelvagem.Especie.Cervo : AnimalSelvagem.Especie.Javali;
-                    if (!Ponto(world, random, out var home)) continue;
+                    if (!Ponto(world, random, i, out var home)) continue;
                     AnimalSelvagem.Criar(kind, tomados, home, world);
                 }
             }
             // Peaceful ones on the fields around the town; taken ones spread over the area, away from the arrival.
-            bool Ponto(RegionalWorld world, System.Random random, out Vector3 point)
+            bool Ponto(RegionalWorld world, System.Random random, int index, out Vector3 point)
             {
                 for (int tries = 0; tries < 40; tries++)
                 {
@@ -52,9 +52,9 @@ namespace ForjaDasMares.Networking
                     }
                     else
                     {
-                        float a = (float)random.NextDouble() * Mathf.PI * 2, d = 12 + (float)random.NextDouble() * 34;
-                        p = new Vector3(Mathf.Sin(a) * d, 0, Mathf.Cos(a) * d);
-                        if ((p - world.Hero.transform.position).sqrMagnitude < 18 * 18) continue;
+                        // Nascente do Rio: they live in the Bosque Sussurrante (never in the safe corners).
+                        var home = NascenteDoRio.Animais[index % NascenteDoRio.Animais.Length];
+                        p = home + new Vector3((float)random.NextDouble() * 6 - 3, 0, (float)random.NextDouble() * 6 - 3);
                     }
                     if (NavMesh.SamplePosition(p, out var hit, 3, NavMesh.AllAreas)) { point = hit.position; return true; }
                 }
@@ -74,6 +74,8 @@ namespace ForjaDasMares.Networking
         AttackDefinition golpe; GameObject breu; BarraDeVida barra;
         static readonly Color Roxo = new Color(.75f, .2f, 1f);
 
+        public bool Tomado => tomado;
+        public bool Vivo => health != null && health.IsAlive;
         public static AnimalSelvagem Criar(Especie kind, bool taken, Vector3 at, RegionalWorld world)
         {
             var prefab = Resources.Load<GameObject>("Animais/" + (kind == Especie.Javali ? "Javali" : "Cervo"));
@@ -311,7 +313,26 @@ namespace ForjaDasMares.Networking
     // Small life bar over a taken animal.
     public sealed class BarraDeVida : MonoBehaviour
     {
-        Health health; Transform fill; Transform back;
+        Health health; Transform fill; Transform back; bool grande; float largura = 1, espessura = .1f;
+        // Big bar with the name, always shown, for bosses and mini-bosses (placed just above the model).
+        public static BarraDeVida Grande(Transform owner, Health hp, string nome)
+        {
+            float top = 2.4f;
+            var rs = owner.GetComponentsInChildren<Renderer>();
+            if (rs.Length > 0) { var b = rs[0].bounds; foreach (var r in rs) if (!(r is ParticleSystemRenderer) && !(r is TrailRenderer)) b.Encapsulate(r.bounds); top = Mathf.Clamp(b.max.y - owner.position.y, 1.4f, 7f); }
+            var go = new GameObject("Vida"); go.transform.SetParent(owner, false);
+            var s = owner.lossyScale.y; go.transform.localPosition = Vector3.up * (top + .45f) / Mathf.Max(.01f, s); go.transform.localScale = Vector3.one / Mathf.Max(.01f, s);
+            var bar = go.AddComponent<BarraDeVida>(); bar.health = hp; bar.grande = true; bar.largura = 2.6f; bar.espessura = .22f;
+            bar.back = Quad(go.transform, new Color(.06f, .02f, .04f, .95f), 2.66f, .3f, 0);
+            bar.fill = Quad(go.transform, new Color(1f, .26f, .22f), 2.6f, .22f, -.001f);
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var label = new GameObject("Nome").AddComponent<TextMesh>(); label.transform.SetParent(go.transform, false);
+            label.transform.localPosition = new Vector3(0, .36f, -.002f);
+            label.text = nome; label.font = font; label.GetComponent<MeshRenderer>().sharedMaterial = font.material;
+            label.fontSize = 48; label.characterSize = .05f; label.anchor = TextAnchor.LowerCenter; label.alignment = TextAlignment.Center;
+            label.color = new Color(1f, .82f, .72f);
+            return bar;
+        }
         public static BarraDeVida Criar(Transform owner, Health hp, float height)
         {
             var go = new GameObject("Vida"); go.transform.SetParent(owner, false); go.transform.localPosition = Vector3.up * height;
@@ -332,8 +353,10 @@ namespace ForjaDasMares.Networking
         {
             var cam = Camera.main; if (cam != null) transform.rotation = cam.transform.rotation;
             float f = health != null ? Mathf.Clamp01((float)health.Current / Mathf.Max(1, health.Maximum)) : 0;
-            fill.localScale = new Vector3(f, .1f, 1); fill.localPosition = new Vector3(-(1 - f) * .5f, 0, -.001f);
-            back.gameObject.SetActive(f < 1); fill.gameObject.SetActive(f < 1);
+            fill.localScale = new Vector3(largura * f, espessura, 1); fill.localPosition = new Vector3(-(1 - f) * largura * .5f, 0, -.001f);
+            bool show = grande ? health != null && health.IsAlive : f < 1;
+            back.gameObject.SetActive(show); fill.gameObject.SetActive(show);
+            if (grande) foreach (Transform t in transform) if (t != back && t != fill) t.gameObject.SetActive(show);
         }
     }
 }

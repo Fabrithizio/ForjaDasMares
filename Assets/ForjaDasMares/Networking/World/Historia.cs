@@ -18,7 +18,7 @@ namespace ForjaDasMares.Networking
     public static class Historia
     {
         public const string Vila = "RefugioAntigo", Refugio = "RefugioUltimoSino";
-        static readonly string[] Passos = { "prologo", "chegada", "nara", "teo", "no", "m1_aceita", "m1_feita", "m2_aceita", "m2_feita", "m3_aceita", "m3_feita", "m4_aceita", "m4_chegou",
+        static readonly string[] Passos = { "prologo", "chegada", "nara", "teo", "no", "m1_aceita", "m1_feita", "m2_aceita", "m2_feita", "m3_aceita", "m3_feita", "m4_aceita", "m4_chegou", "m4_fonte", "m5_aceita", "m5_e0", "m5_e1", "m5_e2", "m5_feita",
             "hab_brotar", "hab_brasa", "hab_raizes", "hab_rajada", "hab_bolha", "hab_marca", "hab_gelo" };
         internal static string Who => string.IsNullOrEmpty(CampaignHome.CharacterName) ? "padrao" : CampaignHome.CharacterName;
         static string Key(string step) => "ForjaHistoria_" + Who + "_" + step;
@@ -524,7 +524,9 @@ namespace ForjaDasMares.Networking
             {
                 if (!Historia.Feito("m2_feita")) StartCoroutine(Short("Nara", "Ainda se ajeitando? Ajude o pessoal da cidade. Quando eu precisar de você, eu chamo."));
                 else if (!Historia.Feito("m4_aceita")) StartCoroutine(NaraNascente());
-                else if (Historia.Feito("m4_chegou") && !Habilidades.Aprendeu("rajada")) StartCoroutine(NaraRajada());
+                else if (Historia.Feito("m4_fonte") && !Habilidades.Aprendeu("rajada")) StartCoroutine(NaraRajada());
+                else if (Habilidades.Aprendeu("rajada")) StartCoroutine(Short("Nara", "O rio já clareou um pouco. Bom trabalho. Descansa."));
+                else if (Historia.Feito("m4_chegou")) StartCoroutine(Short("Nara", "O rio ainda escurece. Tem alguma coisa lá no Poço da Nascente. Descubra o quê."));
                 else StartCoroutine(Short("Nara", "A Nascente fica ao sul, rio acima. Só olhe. Volte inteiro."));
                 return true;
             }
@@ -543,6 +545,8 @@ namespace ForjaDasMares.Networking
         {
             yield return StartTalk(nara);
             yield return Say("Nara", "Voltou inteiro da Nascente. Bom.");
+            yield return Say("Nara", "Um capitão afogado? Lá na nascente? ...O Breu está levantando até os mortos do rio.");
+            yield return Say("Nara", "Isso não é coisa pequena. Vou anotar no mapa. Com tinta forte.");
             yield return Say("Nara", "Quem anda por lá precisa sair rápido de onde não devia estar. Eu aprendi com o vento. Olha.");
             yield return Say("Nara", "(um sopro forte levanta a poeira em volta dela) Um passo, e o vento leva o resto.");
             Habilidades.Aprender("rajada");

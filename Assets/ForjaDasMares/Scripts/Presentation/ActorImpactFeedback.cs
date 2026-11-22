@@ -17,7 +17,7 @@ namespace ForjaDasMares
         void OnEnable()=>Bind();
         void OnDisable(){Unbind();positioned=false;}
         void OnDestroy()=>Unbind();
-        void Hurt(){if(data==null)return;var follow=Camera.main!=null?Camera.main.GetComponent<ArenaCamera>():null;if(follow!=null&&follow.Target!=null&&(follow.Target.position-transform.position).sqrMagnitude>400)return;if(Time.unscaledTime-lastSound>.055f){CombatAudioPool.Play(data.impact,data.volume);lastSound=Time.unscaledTime;}Pause();if(Camera.main!=null){var camera=Camera.main.GetComponent<ArenaCamera>();if(camera!=null&&camera.Target==transform)camera.Impact(data.cameraImpulse);}if(hero!=null&&follow!=null&&follow.Target==transform&&PlayerPrefs.GetInt("CampaignVibration",0)==1&&Application.isMobilePlatform&&Time.unscaledTime-lastVibration>1){lastVibration=Time.unscaledTime;Vibrate();}}
+        void Hurt(){if(data==null)return;var follow=Camera.main!=null?Camera.main.GetComponent<ArenaCamera>():null;if(follow!=null&&follow.Target!=null&&(follow.Target.position-transform.position).sqrMagnitude>400)return;if(Time.unscaledTime-lastSound>.055f){CombatAudioPool.Play(data.impact,data.volume);lastSound=Time.unscaledTime;}Pause();if(Camera.main!=null){var camera=Camera.main.GetComponent<ArenaCamera>();if(camera!=null&&camera.Target==transform)camera.Impact(data.cameraImpulse);}if(hero!=null&&follow!=null&&follow.Target==transform&&PlayerPrefs.GetInt("CampaignVibration",0)==1&&UnityEngine.Device.Application.isMobilePlatform&&Time.unscaledTime-lastVibration>1){lastVibration=Time.unscaledTime;Vibrate();}}
         static void Vibrate()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

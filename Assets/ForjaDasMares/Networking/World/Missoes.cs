@@ -32,9 +32,9 @@ namespace ForjaDasMares.Networking
                 id = "nascente", npc = "Nara", tipo = Tipo.Principal, titulo = "A Nascente do Rio", quem = "Nara · tenda, no Refúgio",
                 descricao = "O rio está escurecendo e os bichos perto dele foram tomados pelo Breu. A Nara acha que vem de cima, da Nascente. Vá até lá e só olhe. Volte inteiro.",
                 recompensa = "Descobrir o que está escurecendo o rio.",
-                aceita = () => Historia.Feito("m4_aceita"), feita = () => false,
-                objetivos = () => new List<Objetivo> { Passo("Chegue à Nascente do Rio (saída sul, rio acima)", Historia.Feito("m4_chegou")), Passo("Descubra o que está escurecendo o rio", false) },
-                linha = () => Historia.Feito("m4_chegou") ? "Explore a Nascente do Rio." : "Vá até a Nascente do Rio (saída sul)."
+                aceita = () => Historia.Feito("m4_aceita"), feita = () => Habilidades.Aprendeu("rajada"),
+                objetivos = () => new List<Objetivo> { Passo("Chegue à Nascente do Rio (saída sul, rio acima)", Historia.Feito("m4_chegou")), Passo("Descubra o que está escurecendo o rio", Historia.Feito("m4_fonte")), Passo("Conte à Nara", Habilidades.Aprendeu("rajada")) },
+                linha = () => Historia.Feito("m4_fonte") ? "Volte ao Refúgio e conte à Nara." : Historia.Feito("m4_chegou") ? "Descubra o que escurece o rio (Poço da Nascente)." : "Vá até a Nascente do Rio (saída sul)."
             },
             new Missao
             {
@@ -62,6 +62,16 @@ namespace ForjaDasMares.Networking
                 aceita = () => Historia.Feito("m3_aceita"), feita = () => Historia.Feito("m3_feita"),
                 objetivos = () => { bool f = Historia.Feito("m3_feita"); return new List<Objetivo> { Junta("Junte couro dos bichos tomados", Recursos.Couro, Historia.CourosPedidos, f), Passo("Leve o couro ao Téo", f) }; },
                 linha = () => { int n = Recursos.Quantos(Recursos.Couro); return n < Historia.CourosPedidos ? "Couro (bichos do rio): " + n + "/" + Historia.CourosPedidos : "Leve o couro ao Téo (forja)."; }
+            },
+            new Missao
+            {
+                // Found in the world (a note at the abandoned Liga camp in the Nascente), not given by anyone.
+                id = "liga", npc = "", tipo = Tipo.Secundaria, titulo = "Estandartes da Liga", quem = "Bilhete · acampamento da Liga, Nascente do Rio",
+                descricao = "Um bilhete velho no acampamento abandonado da Liga: uma patrulha marcou o caminho com três estandartes antes de sumir. Achar os três pode contar o que aconteceu com ela.",
+                recompensa = "60 de ouro e o que a patrulha deixou.",
+                aceita = () => Historia.Feito("m5_aceita"), feita = () => Historia.Feito("m5_feita"),
+                objetivos = () => { int n = NascenteDoRio.EstandartesAchados; return new List<Objetivo> { new Objetivo { texto = "Ache os estandartes da patrulha", tem = n, precisa = 3, feito = n >= 3 } }; },
+                linha = () => "Estandartes da Liga (Nascente): " + NascenteDoRio.EstandartesAchados + "/3"
             },
         };
 

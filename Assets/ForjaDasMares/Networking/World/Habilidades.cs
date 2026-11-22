@@ -162,7 +162,7 @@ namespace ForjaDasMares.Networking
         void RefreshHud()
         {
             if (swapText == null) return;
-            swapText.text = "BARRA " + (active + 1) + "/2" + (Application.isMobilePlatform ? " · TROCAR" : " · R");
+            swapText.text = "BARRA " + (active + 1) + "/2" + (UnityEngine.Device.Application.isMobilePlatform ? " · TROCAR" : " · R");
         }
         void Update()
         {

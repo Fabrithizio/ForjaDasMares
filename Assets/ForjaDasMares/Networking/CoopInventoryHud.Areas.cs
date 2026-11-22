@@ -209,17 +209,17 @@ namespace ForjaDasMares.Networking
                 entry.callback.AddListener(data => action(data));
                 events.triggers.Add(entry);
             }
-            Add(EventTriggerType.PointerEnter,_ => { if (!Application.isMobilePlatform) ShowEquipmentTooltip(slot); });
+            Add(EventTriggerType.PointerEnter,_ => { if (!UnityEngine.Device.Application.isMobilePlatform) ShowEquipmentTooltip(slot); });
             Add(EventTriggerType.PointerExit,_ => HideEquipmentTooltip());
             Add(EventTriggerType.PointerDown,_ =>
             {
-                if (!Application.isMobilePlatform) return;
+                if (!UnityEngine.Device.Application.isMobilePlatform) return;
                 equipmentPress = Time.unscaledTime;
                 ShowEquipmentTooltip(slot);
             });
             Add(EventTriggerType.PointerUp,data =>
             {
-                if (!Application.isMobilePlatform) return;
+                if (!UnityEngine.Device.Application.isMobilePlatform) return;
                 if (data is PointerEventData pointer && Time.unscaledTime-equipmentPress >= .3f)
                     pointer.eligibleForClick = false;
                 HideEquipmentTooltip();

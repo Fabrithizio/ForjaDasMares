@@ -107,7 +107,7 @@ namespace ForjaDasMares
         }
         void LateUpdate()
         {
-            if(!Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f){float notches=Mathf.Abs(amount)>=30?amount/120:amount;SetZoom(desiredZoom*Mathf.Pow(.75f,Mathf.Clamp(notches,-3,3)));}}
+            if(!UnityEngine.Device.Application.isMobilePlatform&&wheel!=null&&(UnityEngine.EventSystems.EventSystem.current==null||!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())){float amount=wheel.ReadValue<float>();if(Mathf.Abs(amount)>.01f){float notches=Mathf.Abs(amount)>=30?amount/120:amount;SetZoom(desiredZoom*Mathf.Pow(.75f,Mathf.Clamp(notches,-3,3)));}}
             if(rpgFraming)ReadViewGestures();
             zoom=Mathf.Lerp(zoom,desiredZoom,1-Mathf.Exp(-14*Time.unscaledDeltaTime));
             smoothedFocus = Vector3.SmoothDamp(smoothedFocus, Focus(), ref smoothVelocity, followTime, Mathf.Infinity, Time.deltaTime);
@@ -121,7 +121,7 @@ namespace ForjaDasMares
             float aspect = Mathf.Max(0.1f, cameraComponent.aspect);
             float tangent = Mathf.Tan(verticalFieldOfView * Mathf.Deg2Rad * 0.5f);
             cameraComponent.fieldOfView = Mathf.Clamp(2f * Mathf.Atan(tangent * Mathf.Max(1f, referenceAspect / aspect)) * Mathf.Rad2Deg, 30f, 95f);
-            float armLength = Mathf.Max(0.1f, offset.magnitude*zoom*(rpgFraming&&!Application.isMobilePlatform&&Screen.fullScreen?fullscreenRpgDistance:1f));
+            float armLength = Mathf.Max(0.1f, offset.magnitude*zoom*(rpgFraming&&!UnityEngine.Device.Application.isMobilePlatform&&Screen.fullScreen?fullscreenRpgDistance:1f));
             // A sight-line obstruction must not change the pitch or zoom. Only an
             // actual overlap at the lens may retract the arm for camera safety.
             Vector3 direction = offset.sqrMagnitude > 0.001f ? (Quaternion.Euler(0f, yaw, 0f) * offset).normalized : Vector3.up;

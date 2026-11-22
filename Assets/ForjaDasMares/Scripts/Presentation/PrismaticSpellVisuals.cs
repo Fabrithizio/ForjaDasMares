@@ -46,9 +46,9 @@ namespace ForjaDasMares
             pulse = Build(1, 16);
             cage = Build(2, 12);
             fracture = Build(3, 7);
-            volcano = Build(4, Application.isMobilePlatform ? 24 : 40);
-            wind = Build(5, Application.isMobilePlatform ? 28 : 48);
-            barrier = Build(6, Application.isMobilePlatform ? 24 : 40);
+            volcano = Build(4, UnityEngine.Device.Application.isMobilePlatform ? 24 : 40);
+            wind = Build(5, UnityEngine.Device.Application.isMobilePlatform ? 28 : 48);
+            barrier = Build(6, UnityEngine.Device.Application.isMobilePlatform ? 24 : 40);
             rose = BuildRoseBurst();
             for (int i = 0; i < Capacity; i++)
             {
@@ -155,7 +155,7 @@ namespace ForjaDasMares
             }
             if (kind == 2 || kind == 6)
             {
-                int segments = Application.isMobilePlatform ? 12 : 20;
+                int segments = UnityEngine.Device.Application.isMobilePlatform ? 12 : 20;
                 int rows = 4;
                 Vector3 Point(int row, int column)
                 {
@@ -215,7 +215,7 @@ namespace ForjaDasMares
             }
 
             Heart(Vector3.up*.16f,.53f,0);
-            int petals = Application.isMobilePlatform ? 4 : 7;
+            int petals = UnityEngine.Device.Application.isMobilePlatform ? 4 : 7;
             for (int i = 0; i < petals; i++)
             {
                 float angle = i*2*Mathf.PI/petals;

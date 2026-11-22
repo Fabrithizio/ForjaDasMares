@@ -14,7 +14,7 @@ namespace ForjaDasMares
         public float RenderScale=>copy!=null?copy.renderScale:1;
         public void Configure(Camera camera)
         {
-            sceneCamera=camera;mobile=Application.isMobilePlatform;
+            sceneCamera=camera;mobile=UnityEngine.Device.Application.isMobilePlatform;
             if(copy==null){original=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;if(original!=null){copy=Instantiate(original);copy.name=original.name+" (runtime quality)";QualitySettings.renderPipeline=copy;}}
             lastFullscreen=Screen.fullScreen;
             Apply();

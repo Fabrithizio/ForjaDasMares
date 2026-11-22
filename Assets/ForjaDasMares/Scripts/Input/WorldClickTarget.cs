@@ -21,6 +21,19 @@ namespace ForjaDasMares
         public static readonly System.Collections.Generic.List<WorldClickTarget> Extras=new System.Collections.Generic.List<WorldClickTarget>();
         // Colliders of a building that stand for a target (click the Raiz-Mãe itself to use it).
         public static readonly System.Collections.Generic.Dictionary<Collider,WorldClickTarget> Alias=new System.Collections.Generic.Dictionary<Collider,WorldClickTarget>();
+        // The closest of the extra targets (gates, loot, herbs...) that the hero can use right now.
+        public static WorldClickTarget MaisPerto(Transform hero)
+        {
+            WorldClickTarget best=null;float distance=float.MaxValue;
+            if(hero==null)return null;
+            foreach(var t in Extras)
+            {
+                if(t==null||!t.isActiveAndEnabled||!t.InRange(hero))continue;
+                float d=(t.transform.position-hero.position).sqrMagnitude;
+                if(d<distance){distance=d;best=t;}
+            }
+            return best;
+        }
         public bool TryUse(Transform actor){if(!isActiveAndEnabled||actor==null||!InRange(actor))return false;if(Intercept!=null&&Intercept(this,actor))return true;Interacting?.Invoke(actor);used.Invoke();return true;}
         public void Configure(string text,float distance=2.4f){label=text;useDistance=distance;}
     }

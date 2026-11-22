@@ -80,8 +80,7 @@ namespace ForjaDasMares.Networking.Editor
             rio.GetComponent<MeshRenderer>().sharedMaterial = water;
             foreach (var strip in new[] { rio, fundo })
             {
-                var flow = strip.GetComponent<RioAnimado>(); if (flow == null) flow = strip.gameObject.AddComponent<RioAnimado>();
-                flow.velocidade = strip == rio ? new Vector2(.10f, .01f) : new Vector2(.16f, -.01f);
+                // The water flows by itself when the game runs (RioAnimado finds it by its name).
             }
             fundo.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             // Bridge across the river, right below the south gate.

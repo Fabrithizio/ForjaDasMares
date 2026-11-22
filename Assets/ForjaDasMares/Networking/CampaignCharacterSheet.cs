@@ -26,8 +26,6 @@ namespace ForjaDasMares.Networking
         static HudSymbol Symbol(ItemStat stat)=>stat==ItemStat.Health?HudSymbol.Heart:stat==ItemStat.Defense?HudSymbol.Shield:stat==ItemStat.AttackSpeed?HudSymbol.Dodge:stat==ItemStat.CriticalChance?HudSymbol.Target:stat==ItemStat.CooldownReduction?HudSymbol.Hourglass:HudSymbol.Sword;
         static Color Tint(ItemStat stat)=>stat==ItemStat.Health?new Color(1,.43f,.4f):stat==ItemStat.Defense?new Color(.35f,.7f,1):stat==ItemStat.AttackSpeed?new Color(.35f,.95f,.65f):stat==ItemStat.CriticalChance?new Color(.8f,.5f,1):stat==ItemStat.CooldownReduction?new Color(.35f,.9f,.95f):new Color(1,.7f,.3f);
         static string Purpose(ItemStat stat)=>stat==ItemStat.Health?"Aumenta a vida máxima do herói.":stat==ItemStat.Damage?"Aumenta o dano dos seus ataques.":stat==ItemStat.Defense?"Aumenta a redução do dano recebido.":stat==ItemStat.AttackSpeed?"Permite atacar com maior frequência.":stat==ItemStat.CriticalChance?"Aumenta a chance de causar um acerto crítico.":stat==ItemStat.CooldownReduction?"Reduz a espera para usar habilidades novamente.":"Melhora "+ItemDescriptions.Name(stat)+".";
-        public void Build(Transform parent,CoopDirector owner,CoopProfileChannel profiles,RawImage preview=null)
-        {Build(parent,new InventorySessionView(owner),new InventoryProfileView(profiles),preview);}
         public void Build(Transform parent,InventorySessionView owner,InventoryProfileView profiles,RawImage preview=null)
         {
             session=owner;channel=profiles;portraitSource=preview;
@@ -139,7 +137,7 @@ namespace ForjaDasMares.Networking
             xpFill.anchorMax=new Vector2(s.level==c.maximumLevel?1:Mathf.Clamp01((float)ProgressionStats.ExperienceInLevel(p.experience,c.maximumLevel)/ProgressionStats.RequiredExperience(s.level)),1);
             if(portraitSource!=null)portrait.texture=portraitSource.texture;
             heroSummary.text="Vida máxima   "+s.maximumHealth+"\nDano   "+s.damage+"\nDefesa   "+(s.defense*100).ToString("0.#")+"%\nCrítico   "+s.criticalDamage+" · "+(s.criticalChance*100).ToString("0.#")+"%\nCadência   "+s.attacksPerSecond.ToString("0.##")+" golpes/s\nMovimento   "+s.speed.ToString("0.#")+" m/s";
-            bool allowed=session.IsRegional?channel.CanManageLocal:!(channel.HomeMode&&channel.Hub.UsingRemote)&&(channel.HomeMode||session.GetComponent<CoopProgression>().CanManage(session.LocalSlot));
+            bool allowed=channel.CanManageLocal;
             for(int i=0;i<choices.Length;i++)
             {
                 var rule=c.talents[i];int rank=HeroTalents.Rank(p,hero.heroId,rule.id);

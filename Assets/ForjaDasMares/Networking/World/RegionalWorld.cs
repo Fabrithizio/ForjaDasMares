@@ -75,6 +75,23 @@ namespace ForjaDasMares.Networking
             if (auraChamando != null) { auraChamando.Stop(true, ParticleSystemStopBehavior.StopEmitting); Destroy(auraChamando.gameObject, 1.2f); auraChamando = null; }
         }
 
+        // Riding goes on into the next place. It only ends on DESCER, attacking or dodging, or a hit of more than 2% of the life.
+        static bool montadoNaViagem;
+        void DanoNaMontaria(Health who, int lost, bool critical)
+        {
+            if (hero == null || who != hero.Health || !IsMounted) return;
+            if (lost > hero.Health.Maximum * .02f) Dismount();
+        }
+        System.Collections.IEnumerator MontarDireto()
+        {
+            yield return null; yield return null;
+            if (hero == null || !hero.Health.IsAlive || IsCatacombInstance) yield break;
+            if (mount == null) BuildMount();
+            mountedAction = travelCombat.ActionVersion;
+            mount.SetActive(true);
+            travelMotor.TravelSpeedMultiplier = 1.8f;
+        }
+
         public void Dismount()
         {
             PararChamado();
@@ -163,7 +180,7 @@ namespace ForjaDasMares.Networking
             town=GetComponent<TownHub>();
             travelMotor = hero.GetComponent<PlayerMotor>();
             travelCombat = hero.GetComponent<HeroCombat>();
-            hero.Health.Damaged += Dismount;
+            Health.DamageTaken += DanoNaMontaria;
             regionalInventory=GetComponent<RegionalInventory>();
             hero.GetComponent<ArenaInput>().Desktop?.ConfigureAutoAim(enemies);
             var quality=follow.GetComponent<PresentationQuality>();if(quality!=null)quality.Configure(follow.GetComponent<Camera>());
@@ -196,10 +213,18 @@ namespace ForjaDasMares.Networking
                     (cardOrder[i],cardOrder[other]) = (cardOrder[other],cardOrder[i]);
                 }
             }
-            enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;
+            enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;enemies.Spawned+=BarraDoChefe;
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignMasterVolume",.8f));
             if(soundscape!=null){Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f*CampaignSoundscape.Volume(CampaignSoundscape.MusicKey));Voice("RegionalAmbience",soundscape.menu.ambience,.16f*CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey));}
+            if (montadoNaViagem) { montadoNaViagem = false; StartCoroutine(MontarDireto()); }
             Debug.Log("REGION_READY localPrototype=true camps="+residents.Length+" capacity="+enemies.Capacity);
+        }
+        // Bosses and mini-bosses carry their life bar (and name) over the head.
+        void BarraDoChefe(EnemyActor actor)
+        {
+            if(actor==null||actor.Profile==null||(actor.Profile.kind!=EnemyKind.Boss&&!actor.Profile.miniboss))return;
+            if(actor.GetComponentInChildren<BarraDeVida>(true)!=null)return;
+            BarraDeVida.Grande(actor.transform,actor.Health,actor.Profile.displayName);
         }
         void Voice(string label,AudioClip clip,float volume){var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;source.volume=volume;source.Play();}
         void HeroChanged(){hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);}
@@ -355,13 +380,12 @@ namespace ForjaDasMares.Networking
             if(NearbyGold()?.TryUse(hero.transform)==true)return;
             if(mapStation!=null&&mapStation.TryUse(hero.transform))return;
             if(town!=null&&town.TryInteractNearest())return;
+            // Outside the cities: gates, loot and the like.
+            if(town==null&&WorldClickTarget.MaisPerto(hero.transform)?.TryUse(hero.transform)==true)return;
             if(Journey!=null&&Journey.Interact())return;
             if(RefugeDistance<5&&CanRest){hero.Health.Restore();Changed?.Invoke();}
             else if(Journey==null&&PortalReady&&Vector3.Distance(hero.transform.position,definition.portal)<5)
-            {
                 if (IsCatacombInstance) Hud?.OpenCatacombCards();
-                else ReturnToCampaign();
-            }
         }
         void UpdateCollectionRune()
         {
@@ -646,13 +670,13 @@ namespace ForjaDasMares.Networking
             follow.Snap();Changed?.Invoke();
             if (city) IriaCuidou();
         }
-        public void ReturnToCampaign() => TravelTo("CampaignCoop");
         public void Viajar(string scene) => TravelTo(scene);
         // In the wild there is no free rest (only in cities).
         bool CanRest => !AreasDoMundo.Selvagem(SceneManager.GetActiveScene().name);
         public void ReturnToStartMenu() => TravelTo("Inicio");
-        void TravelTo(string scene){if(travelling)return;travelling=true;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
-        void OnDestroy(){if(hero!=null&&hero.Health!=null)hero.Health.Damaged-=Dismount;if(mountMetal!=null)Destroy(mountMetal);if(mountCrystal!=null)Destroy(mountCrystal);if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
+        // A scene that is not in the game (anymore): stay, instead of a red error.
+        void TravelTo(string scene){if(travelling||!Application.CanStreamedLevelBeLoaded(scene))return;travelling=true;montadoNaViagem=IsMounted&&hero.Health.IsAlive;hero.GetComponent<ArenaInput>().BlockCommands(true);SceneManager.LoadSceneAsync(scene); }
+        void OnDestroy(){Health.DamageTaken-=DanoNaMontaria;if(mountMetal!=null)Destroy(mountMetal);if(mountCrystal!=null)Destroy(mountCrystal);if(testRoom!=null)Destroy(testRoom);if(testRoomWallMaterial!=null)Destroy(testRoomWallMaterial);if(goldMaterial!=null)Destroy(goldMaterial);if(altarMaterial!=null)Destroy(altarMaterial);if(enemies!=null)enemies.Died-=EnemyDied;if(hero!=null)hero.Changed-=HeroChanged;ownership.Clear();}
     }
 
     // Turns slowly and floats up and down (the protector crystal of the city).

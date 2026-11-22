@@ -41,8 +41,94 @@ namespace ForjaDasMares.Networking.Editor
         static readonly string[] CenasDoJogo =
         {
             R + "Scenes/Inicio.unity", R + "Scenes/RefugioAntigo.unity", R + "Scenes/RefugioUltimoSino.unity",
-            R + "Scenes/CampaignCoop.unity", // old Expedições: goes in step 3
         };
+
+        // Step 3: the old Expedições (co-op dungeon, online rooms, old campaign). The files are already empty
+        // (the code that used them was changed first); here they go to the Recycle Bin with their scene and data.
+        static readonly string[] Etapa3 =
+        {
+            R + "Networking/CampaignAbilityBar.cs",
+            R + "Networking/CampaignAdventureChannel.cs",
+            R + "Networking/CampaignAdventureHud.cs",
+            R + "Networking/CampaignCombatReadout.cs",
+            R + "Networking/CampaignFirstSteps.cs",
+            R + "Networking/CampaignHeroPicker.cs",
+            R + "Networking/CampaignHud.cs",
+            R + "Networking/CampaignLootDrops.cs",
+            R + "Networking/CampaignMinimap.cs",
+            R + "Networking/CampaignProfileHub.cs",
+            R + "Networking/CampaignSessionMenu.cs",
+            R + "Networking/CoopActor.cs",
+            R + "Networking/CoopCloud.cs",
+            R + "Networking/CoopDirector.cs",
+            R + "Networking/CoopHud.cs",
+            R + "Networking/CoopInternetSettings.cs",
+            R + "Networking/CoopProfileChannel.cs",
+            R + "Networking/CoopProgression.cs",
+            R + "Networking/CoopProtocol.cs",
+            R + "Networking/CoopReplicaView.cs",
+            R + "Networking/CoopRewardLedger.cs",
+            R + "Networking/CoopSmokeProbe.cs",
+            R + "Scripts/Data/BiomeDefinition.cs",
+            R + "Scripts/Data/CampaignAdventureDefinition.cs",
+            R + "Scripts/Data/CampaignLevel.cs",
+            R + "Scripts/Data/DungeonStyleDefinition.cs",
+            R + "Scripts/Data/EncounterDefinition.cs",
+            R + "Scripts/Data/ExpeditionFeatureDefinition.cs",
+            R + "Scripts/Data/RoomDefinition.cs",
+            R + "Scripts/Data/RoomRewardTable.cs",
+            R + "Scripts/Gameplay/ArenaSession.cs",
+            R + "Scripts/Gameplay/CampaignAdventure.cs",
+            R + "Scripts/Gameplay/CampaignFeatures.cs",
+            R + "Scripts/Gameplay/CampaignRun.cs",
+            R + "Scripts/Gameplay/CampaignWallDarts.cs",
+            R + "Scripts/Gameplay/DungeonDoor.cs",
+            R + "Scripts/Gameplay/DungeonGenerator.cs",
+            R + "Scripts/Gameplay/DungeonInteractable.cs",
+            R + "Scripts/Gameplay/DungeonLayout.cs",
+            R + "Scripts/Gameplay/DungeonReplicaState.cs",
+            R + "Scripts/Gameplay/DungeonRoom.cs",
+            R + "Scripts/Gameplay/DungeonSession.cs",
+            R + "Scripts/Gameplay/DungeonTrap.cs",
+            R + "Scripts/Gameplay/EncounterController.cs",
+            R + "Scripts/Gameplay/ProgressionProfileRuntime.cs",
+            R + "Scripts/Gameplay/ProgressionSceneBridge.cs",
+            R + "Scripts/Gameplay/SupportCompanion.cs",
+            R + "Scripts/Input/DungeonInteractionInput.cs",
+            R + "Scripts/UI/ProgressionHud.cs",
+            R + "Scenes/CampaignCoop.unity",
+        };
+
+        [MenuItem("Forja/Limpeza/Etapa 3 · apagar as Expedições antigas")]
+        public static void Etapa3Apagar()
+        {
+            var codigo = Etapa3.Where(p => p.EndsWith(".cs") && File.Exists(p)).ToList();
+            // Data files (ScriptableObjects) made from those scripts: found by the script's id written inside them.
+            var ids = new HashSet<string>();
+            foreach (var p in codigo) { var id = AssetDatabase.AssetPathToGUID(p); if (!string.IsNullOrEmpty(id)) ids.Add(id); }
+            var dados = new List<string>();
+            foreach (var path in AssetDatabase.FindAssets("", new[] { R.TrimEnd('/') }).Select(AssetDatabase.GUIDToAssetPath).Distinct())
+            {
+                if (!path.EndsWith(".asset") || !File.Exists(path)) continue;
+                string head; using (var r = new StreamReader(path)) { var buf = new char[4096]; head = new string(buf, 0, r.Read(buf, 0, buf.Length)); }
+                int at = head.IndexOf("m_Script:");
+                if (at < 0) continue;
+                int g = head.IndexOf("guid: ", at); if (g < 0 || g - at > 80 || g + 38 > head.Length) continue;
+                if (ids.Contains(head.Substring(g + 6, 32))) dados.Add(path);
+            }
+            var tudo = Etapa3.Where(p => File.Exists(p) || Directory.Exists(p)).Concat(dados).Distinct().ToArray();
+            if (tudo.Length == 0) { EditorUtility.DisplayDialog("Forja · Limpeza", "Nada para apagar: a Etapa 3 já foi feita.", "OK"); return; }
+            string lista = string.Join("\n", tudo.Select(p => p.Replace(R, "")).Take(40)) + (tudo.Length > 40 ? "\n... e mais " + (tudo.Length - 40) : "");
+            if (!EditorUtility.DisplayDialog("Forja · Limpeza · Etapa 3",
+                tudo.Length + " itens vão para a Lixeira do Windows (dá pra recuperar):\n\n" + lista, "Apagar", "Cancelar")) return;
+            var falhou = new List<string>();
+            AssetDatabase.MoveAssetsToTrash(tudo, falhou);
+            EditorBuildSettings.scenes = EditorBuildSettings.scenes.Where(s => File.Exists(s.path)).ToArray();
+            AssetDatabase.Refresh();
+            Debug.Log("LIMPEZA_ETAPA3 apagados=" + (tudo.Length - falhou.Count) + " falhas=" + falhou.Count + (falhou.Count > 0 ? " · " + string.Join(", ", falhou) : "") + "\n" + string.Join("\n", tudo));
+            // Objects in the scenes and prefabs that carried the old scripts keep empty components: remove them.
+            TirarSemScript();
+        }
 
         // Fabricio's folder of downloaded models (outside the project): sorts the loose zips into folders.
         // Only moves files (nothing is deleted); folders left empty are removed.

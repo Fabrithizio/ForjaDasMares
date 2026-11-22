@@ -41,7 +41,9 @@ namespace ForjaDasMares.Networking
             walkers.Clear(); foes.Clear();
             foreach (var r in FindObjectsByType<TownResident>(FindObjectsSortMode.None)) walkers.Add(r.transform);
             foreach (var e in FindObjectsByType<EnemyActor>(FindObjectsSortMode.None)) foes.Add(e);
+            animals.Clear(); foreach (var a in FindObjectsByType<AnimalSelvagem>(FindObjectsSortMode.None)) animals.Add(a);
         }
+        readonly List<AnimalSelvagem> animals = new List<AnimalSelvagem>();
 
         RectTransform Dot(int index)
         {
@@ -78,6 +80,16 @@ namespace ForjaDasMares.Networking
                 var g = d.GetComponent<RoundedHudGraphic>(); g.radius = d.sizeDelta.x * .5f;
                 g.color = boss ? new Color(.72f, .35f, 1f) : strong ? new Color(1f, .58f, .15f) : new Color(1f, .3f, .22f);
                 g.borderColor = strong ? RusticHudTheme.Gold : new Color(.05f, .05f, .05f);
+            }
+            // Animals: red when taken by the Breu (they attack), green when peaceful.
+            foreach (var a in animals)
+            {
+                if (a == null || !a.Vivo) continue;
+                var p = a.transform.position; if ((new Vector2(p.x, p.z) - new Vector2(world.Hero.transform.position.x, world.Hero.transform.position.z)).magnitude > radius * 1.5f) continue;
+                var d = Dot(used++); d.gameObject.SetActive(true);
+                d.anchoredPosition = (new Vector2(p.x, p.z) - center) * ppm; d.sizeDelta = Vector2.one * 8;
+                var g = d.GetComponent<RoundedHudGraphic>(); g.radius = 4;
+                g.color = a.Tomado ? new Color(1f, .3f, .22f) : new Color(.45f, .95f, .45f); g.borderColor = new Color(.05f, .05f, .05f);
             }
             for (int i = used; i < dots.Count; i++) if (dots[i].gameObject.activeSelf) dots[i].gameObject.SetActive(false);
         }
@@ -135,11 +147,23 @@ namespace ForjaDasMares.Networking
             StartCoroutine(TakePhoto());
         }
 
+        // Phone: the big map opens in the middle of the screen, above the buttons, and goes back to the corner.
+        Vector2 cornerPosition; bool cornerKnown;
         public void Toggle()
         {
             expanded = !expanded;
-            frame.sizeDelta = Vector2.one * (expanded ? Big : Small);
-            ((RectTransform)frame.Find("Janela")).sizeDelta = Vector2.one * ((expanded ? Big : Small) - Border * 2);
+            bool phone = UnityEngine.Device.Application.isMobilePlatform;
+            float big = phone ? 480 : Big;
+            if (phone)
+            {
+                if (!cornerKnown) { cornerPosition = frame.anchoredPosition; cornerKnown = true; }
+                var anchor = expanded ? new Vector2(.5f, .5f) : new Vector2(1, 1);
+                frame.anchorMin = frame.anchorMax = frame.pivot = anchor;
+                frame.anchoredPosition = expanded ? Vector2.zero : cornerPosition;
+                if (expanded) frame.SetAsLastSibling();
+            }
+            frame.sizeDelta = Vector2.one * (expanded ? big : Small);
+            ((RectTransform)frame.Find("Janela")).sizeDelta = Vector2.one * ((expanded ? big : Small) - Border * 2);
             if (expanded) { smallRadius = radius; radius = bigRadius; } else { bigRadius = radius; radius = smallRadius; }
         }
 

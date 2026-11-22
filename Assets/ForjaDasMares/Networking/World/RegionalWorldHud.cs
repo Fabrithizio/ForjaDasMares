@@ -25,7 +25,7 @@ namespace ForjaDasMares.Networking
             world.Hud = this;
             BuildCatacombPanels(root);
             BuildDamageNumbers(root);
-            if (!Application.isMobilePlatform) BuildHoverLabel(root);
+            if (!UnityEngine.Device.Application.isMobilePlatform) BuildHoverLabel(root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             // The controls now live in the settings (gear); the screen stays clean.
@@ -34,7 +34,7 @@ namespace ForjaDasMares.Networking
             var map=RusticHudTheme.Rect(root,"LocalMap",new Vector2(1,1),new Vector2(-20,world.Journey!=null?-80:-220),new Vector2(175,175));RusticHudTheme.Panel(map,new Color(.025f,.05f,.045f,.9f),16);var mapContent=RusticHudTheme.Rect(map,"Markers",Vector2.zero,new Vector2(8,8),new Vector2(159,159));mapContent.gameObject.AddComponent<RegionalMap>().Configure(world);
             mapPanel=map.gameObject;mapLegend=Label(root,"MapLegend",new Vector2(1060,world.Journey!=null?-258:-403),new Vector2(200,42),"Branco: você · verde: refúgio\nDourado: missão · azul: passagem",11).gameObject;
             // Old square map replaced by the round minimap (photo of the region, discovered places, turns with the camera).
-            mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,-96);
+            mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,UnityEngine.Device.Application.isMobilePlatform?-16:-96);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
             desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;desktopLegend.SetActive(false);
             Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).gameObject.SetActive(false);
@@ -69,7 +69,7 @@ namespace ForjaDasMares.Networking
                 action.Enable();
             }
             world.Hero.GetComponent<ArenaInput>().PointerBlocked=p=>EventSystem.current!=null&&EventSystem.current.IsPointerOverGameObject();
-            if(Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
+            if(UnityEngine.Device.Application.isMobilePlatform)BuildTouchControls(root);else BuildPcActions(root);
             if (!world.IsCatacombInstance)
             {
                 // One small block on top: MONTAR (and VOLTAR outside the cities, added by AreasDoMundo).
@@ -85,6 +85,25 @@ namespace ForjaDasMares.Networking
             gameObject.AddComponent<RegionalSettingsMenu>().Build(root,world);
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
             if(town!=null&&System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-runTests")<0)StartCoroutine(PlayWorldIntro(root));
+            StartCoroutine(MontarFileira(root));
+        }
+        // Phone only: MONTAR/VOLTAR, mochila, diário and settings in one row at the bottom middle, between the
+        // joystick and the abilities (the minimap has the top corner alone). The PC keeps them on top.
+        System.Collections.IEnumerator MontarFileira(RectTransform root)
+        {
+            if (!UnityEngine.Device.Application.isMobilePlatform) yield break;
+            yield return null; yield return null; // the mochila button is made in CoopInventoryHud.Start
+            var fila = RusticHudTheme.Rect(root,"AcoesBaixo",new Vector2(.5f,0),new Vector2(0,14),new Vector2(10,54));
+            var row = fila.gameObject.AddComponent<FileiraDeAcoes>();
+            int lugar = int.MaxValue; // where the first of them was among the HUD pieces: windows made later still cover the row
+            foreach (var nome in new[]{"AcoesTopo","RegionalInventoryButton","OpenJournal","RegionalSettingsButton"})
+                foreach (var t in root.GetComponentsInChildren<RectTransform>(true))
+                    if (t.name == nome && t != fila)
+                    {
+                        if (t.parent == root) lugar = Mathf.Min(lugar, t.GetSiblingIndex());
+                        t.SetParent(fila,false); row.Add(t); break;
+                    }
+            if (lugar != int.MaxValue) fila.SetSiblingIndex(lugar);
         }
         bool storyCollapsed;
         // ACOMPANHAMENTO: only while there is something to follow; as tall as its lines.
@@ -161,13 +180,8 @@ namespace ForjaDasMares.Networking
             if (town == null) return;
             var routes = BuildModal(root, "Expedições", out expeditionModal);
             Label(routes,"ExpeditionInfo",new Vector2(28,-78),new Vector2(584,145),
-                "Desafios de combate para 1 a 4 jogadores.\n\nEstrada das Cinzas · Inicial\nRaízes do Breu · Veterano\nForja dos Dois Sóis · Desafiador",21);
+                "EM BREVE\n\nDesafios de combate para 1 a 4 jogadores.\nAs rotas estão sendo refeitas.",21);
             RusticHudTheme.Button(routes,"CancelExpedition",Top,new Vector2(28,-228),new Vector2(235,52),"VOLTAR",() => CloseStoryModal());
-            RusticHudTheme.Button(routes,"ViewRoutes",Top,new Vector2(295,-228),new Vector2(315,52),"VER ROTAS E GRUPOS",() =>
-            {
-                CloseStoryModal();
-                town.ConfirmExpeditions();
-            });
             expeditionModal.SetActive(false);
         }
 
@@ -614,22 +628,28 @@ namespace ForjaDasMares.Networking
         Button attackMode;
         void BuildSkillBar(RectTransform root,float height)
         {
-            bool touch = Application.isMobilePlatform;
+            bool touch = UnityEngine.Device.Application.isMobilePlatform;
             float size = touch ? 68 : 52, step = touch ? 76 : 58, first = touch ? -286 : -318;
-            barTab = RusticHudTheme.Button(root,"TrocarBarra",new Vector2(1,0),new Vector2(touch ? -362 : -378,height),new Vector2(touch ? 44 : 40,size),"I",() => Habilidades.Atual?.Trocar());
+            // Phone (Fabricio chose "two arcs"): 1, 2, 3 curve around the attack button; Super and I/II low (left of 2, above 1), potion on top;
+            // the dodge sits low, next to the attack. Positions are the buttons' lower-right corners.
+            var arco = new[] { new Vector2(-177,104), new Vector2(-122,180), new Vector2(-33,205) };
+            barTab = touch
+                ? RusticHudTheme.Button(root,"TrocarBarra",new Vector2(1,0),new Vector2(-245,206),new Vector2(44,44),"I",() => Habilidades.Atual?.Trocar())
+                : RusticHudTheme.Button(root,"TrocarBarra",new Vector2(1,0),new Vector2(-378,height),new Vector2(40,size),"I",() => Habilidades.Atual?.Trocar());
+            if (touch) barTab.GetComponent<RoundedHudGraphic>().radius = 22;
             barTabLabel = barTab.GetComponentInChildren<Text>(); barTabLabel.fontSize = touch ? 20 : 17; barTabLabel.color = RusticHudTheme.Gold;
             for (int i = 0; i < skillButtons.Length; i++)
             {
                 int slot = i;
                 var symbol = i == 0 ? HudSymbol.SpellBolt : i == 1 ? HudSymbol.SpellBurst : HudSymbol.SpellPrison;
                 Color accent = i == 0 ? new Color(.26f,.83f,1) : i == 1 ? new Color(.48f,.58f,1) : new Color(.79f,.51f,1);
-                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),new Vector2(first+step*i,height),size,"",symbol,accent,() => CastRegionalSkill(slot),touch);
+                skillButtons[i] = CombatAction(root,"SkillSlot"+(i+1),touch ? arco[i] : new Vector2(first+step*i,height),size,"",symbol,accent,() => CastRegionalSkill(slot),touch);
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
                 skillArt[i] = Art(skillButtons[i],size,touch); skillSymbols[i] = skillButtons[i].GetComponentInChildren<HudIcon>();
                 skillShades[i] = Shade(skillButtons[i],size,touch);
             }
             buttonSize = size;
-            attackMode = CombatAction(root,"Super",new Vector2(touch ? -58 : -132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
+            attackMode = CombatAction(root,"Super",touch ? new Vector2(-176,241) : new Vector2(-132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
             superShade = Shade(attackMode,size,true);
         }
 
@@ -688,15 +708,15 @@ namespace ForjaDasMares.Networking
             var thumb=RusticHudTheme.Rect(stick,"Thumb",Vector2.one*.5f,Vector2.zero,new Vector2(52,52));var cap=thumb.gameObject.AddComponent<RoundedHudGraphic>();cap.color=RusticHudTheme.Gold;cap.radius=26;cap.raycastTarget=false;
             stick.gameObject.AddComponent<TouchMoveStick>().Configure(input,thumb);
             CombatAction(touchSafeArea,"RegionalAttack",new Vector2(-22,46),112,"ATAQUE",HudSymbol.Sword,RusticHudTheme.Gold,input.RequestAttack,true).gameObject.AddComponent<HoldAttackButton>().Configure(input);
-            dodgeButton = CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-148,34),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true); dodgeShade = Shade(dodgeButton,78,true); dodgeSize = 78;
+            dodgeButton = CombatAction(touchSafeArea,"RegionalDodge",new Vector2(-164,8),78,"ESQUIVA",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge,true); dodgeShade = Shade(dodgeButton,78,true); dodgeSize = 78;
             // USAR only shows up near something to use.
-            useButton = CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-242,38),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
+            useButton = CombatAction(touchSafeArea,"RegionalInteract",new Vector2(-262,20),74,"USAR",HudSymbol.Interact,RusticHudTheme.Gold,world.Interact,true);
             useButton.gameObject.SetActive(false);
             BuildSkillBar(touchSafeArea,172);
             movementMode.gameObject.SetActive(false);
             controlHint.gameObject.SetActive(false);
             foreach(string name in new[]{"Controls","Scope","MapLegend"}){var label=root.Find(name);if(label!=null)label.gameObject.SetActive(false);}
-            var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,24);
+            var prompt=(RectTransform)hint.transform;prompt.anchorMin=prompt.anchorMax=prompt.pivot=new Vector2(.5f,0);prompt.anchoredPosition=new Vector2(0,84);
         }
         // First word of the ability's name, short enough for the button.
         static string Short(string name)
@@ -727,13 +747,13 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             RefreshTouchSafeArea();
-            if (mountCaption != null) mountCaption.text = world.Chamando ? "CHAMANDO " + Mathf.RoundToInt(world.ChamandoProgresso * 100) + "%" : (world.IsMounted ? "DESCER" : "MONTAR") + (Application.isMobilePlatform ? "" : " · M");
+            if (mountCaption != null) mountCaption.text = world.Chamando ? "CHAMANDO " + Mathf.RoundToInt(world.ChamandoProgresso * 100) + "%" : (world.IsMounted ? "DESCER" : "MONTAR") + (UnityEngine.Device.Application.isMobilePlatform ? "" : " · M");
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)
             {
                 // The Super is the heavy blow: it charges by hitting enemies and is released with Q or this button.
                 attackMode.interactable = combat.CanUseWeapon && combat.SuperReady;
-                attackMode.GetComponentInChildren<Text>().text = combat.SuperReady ? (Application.isMobilePlatform ? "SUPER" : "Q") : Mathf.RoundToInt(combat.SuperProgress * 100) + "%";
+                attackMode.GetComponentInChildren<Text>().text = combat.SuperReady ? (UnityEngine.Device.Application.isMobilePlatform ? "SUPER" : "Q") : Mathf.RoundToInt(combat.SuperProgress * 100) + "%";
                 SetShade(superShade, buttonSize, combat.CanUseWeapon ? 1 - combat.SuperProgress : 1);
                 if (barTabLabel != null) barTabLabel.text = Habilidades.Atual != null && Habilidades.Atual.BarraAtiva == 1 ? "II" : "I";
                 for (int i = 0; i < skillButtons.Length; i++)
@@ -766,7 +786,7 @@ namespace ForjaDasMares.Networking
             poll-=Time.unscaledDeltaTime;if(poll>0)return;poll=.1f;
             RefreshArea();
             movementMode.GetComponentInChildren<Text>().text="CONTROLES · AJUDA";
-            controlHint.text=Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";
+            controlHint.text=UnityEngine.Device.Application.isMobilePlatform?"Joystick: mover · ataque: mira automática\nInteragir: conversar e investigar":"Chão: andar · alvo: atacar sem perseguir\nShift + ataque: disparar parado sem alvo";
             var hero=world.Hero;string heroTitle=AccountService.Genders[Mathf.Clamp(AccountService.Character!=null?AccountService.Character.gender:0,0,1)];life.text=string.IsNullOrEmpty(CampaignHome.CharacterName)?heroTitle:CampaignHome.CharacterName+" · "+heroTitle;
             healthCaption.text="VIDA  "+hero.Health.Current+" / "+hero.Health.Maximum;healthFill.sizeDelta=new Vector2(238f*hero.Health.Current/Mathf.Max(1,hero.Health.Maximum),14);
             var energia=EnergiaInterior.Of(hero);energyFill.sizeDelta=new Vector2(238*energia.Fraction,12);energyCaption.text=EnergiaInterior.Nome+"  "+Mathf.FloorToInt(energia.Current)+" / "+Mathf.RoundToInt(energia.maximum);
@@ -780,8 +800,9 @@ namespace ForjaDasMares.Networking
             if(world.Journey!=null){objective.text=world.Journey.Definition.title.ToUpperInvariant()+"\n"+world.Journey.Objective;hint.text=string.IsNullOrEmpty(world.Journey.Hint)?world.InteractionHint:world.Journey.Hint;}
             FitStory(town!=null?town.CurrentNotice:Historia.Objetivo);
             if(town!=null){hint.text=town.Hint;bool established=world.Journey!=null&&world.Journey.Accepted;mapPanel.SetActive(false);mapLegend.SetActive(false);desktopLegend.SetActive(false);} if(world.Journey!=null){objective.transform.parent.gameObject.SetActive(false);desktopLegend.SetActive(false);RefreshJournal();}
+            if(town==null){var perto=WorldClickTarget.MaisPerto(world.Hero.transform);hint.text=perto!=null?"F · "+perto.Label:world.Journey==null?(world.InteractionHint??""):hint.text;}
             if(world.GoldFeedback!=null)hint.text=world.GoldFeedback;
-            if(Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
+            if(UnityEngine.Device.Application.isMobilePlatform)hint.text=hint.text.Replace("F · ","INTERAGIR · ");
             // The "use" button only shows up when there is something to use nearby.
             if(useButton!=null)
             {
@@ -794,7 +815,7 @@ namespace ForjaDasMares.Networking
         {
             UpdateDamageNumbers();
             UpdateHoverLabel();
-            if (Application.isMobilePlatform && Touchscreen.current is Touchscreen screen)
+            if (UnityEngine.Device.Application.isMobilePlatform && Touchscreen.current is Touchscreen screen)
             {
                 var finger = screen.primaryTouch;
                 if (finger.press.wasReleasedThisFrame &&
@@ -980,5 +1001,25 @@ namespace ForjaDasMares.Networking
             }
         }
         protected override void OnPopulateMesh(VertexHelper vh){vh.Clear();if(world==null)return;if(world.Definition.connections!=null&&world.Definition.connections.Length>0){foreach(var edge in world.Definition.connections)Path(vh,edge.from,edge.to);}else for(int i=1;i<world.Definition.route.Length;i++)Path(vh,world.Definition.route[i-1],world.Definition.route[i]);Dot(vh,world.Definition.refuge,Color.green,4);for(int i=0;i<world.Definition.camps.Length;i++)Dot(vh,world.Definition.camps[i].center,world.IsCampCleared(i)?Color.gray:new Color(1,.4f,.2f),4);if(world.Definition.landmarks!=null)foreach(var mark in world.Definition.landmarks)Dot(vh,mark.position,mark.color,3);DrawQuestMarkers(vh);Dot(vh,world.Definition.portal,Color.cyan,4);Dot(vh,world.Hero.transform.position,Color.white,3);}
+    }
+    // Lines up its buttons side by side every frame (VOLTAR makes the MONTAR block wider when it arrives).
+    public sealed class FileiraDeAcoes : MonoBehaviour
+    {
+        const float Altura = 54, Espaco = 8;
+        readonly System.Collections.Generic.List<RectTransform> itens = new System.Collections.Generic.List<RectTransform>();
+        public void Add(RectTransform item) { item.anchorMin = item.anchorMax = item.pivot = Vector2.zero; itens.Add(item); }
+        void LateUpdate()
+        {
+            float x = 0;
+            foreach (var item in itens)
+            {
+                if (item == null || !item.gameObject.activeSelf) continue;
+                item.anchoredPosition = new Vector2(x, (Altura - item.sizeDelta.y) * .5f);
+                x += item.sizeDelta.x + Espaco;
+            }
+            var self = (RectTransform)transform;
+            float largura = Mathf.Max(0, x - Espaco);
+            if (!Mathf.Approximately(self.sizeDelta.x, largura)) self.sizeDelta = new Vector2(largura, Altura);
+        }
     }
 }

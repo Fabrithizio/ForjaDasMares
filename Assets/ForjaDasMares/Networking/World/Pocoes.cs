@@ -44,15 +44,15 @@ namespace ForjaDasMares.Networking
         }
 
         // A small pocket of its own, with the potion icon and how many you carry.
-        // PC: inside the combat bar, at its right end (the bar keeps 56 px for it). Phone: above the attack button, right of the Super.
+        // PC: inside the combat bar, at its right end (the bar keeps 56 px for it). Phone: on the outer arc, left of skill 2.
         bool Build()
         {
-            bool touch = Application.isMobilePlatform;
+            bool touch = UnityEngine.Device.Application.isMobilePlatform;
             var parent = GameObject.Find(touch ? "TouchSafeArea" : "CombatDock");
             if (parent == null) return false;
             float size = touch ? 50 : 42;
             button = touch
-                ? RusticHudTheme.Button((RectTransform)parent.transform, "Pocao", new Vector2(1, 0), new Vector2(-4, 176), Vector2.one * size, "", Beber)
+                ? RusticHudTheme.Button((RectTransform)parent.transform, "Pocao", new Vector2(1, 0), new Vector2(-131, 292), Vector2.one * size, "", Beber)
                 : RusticHudTheme.Button((RectTransform)parent.transform, "Pocao", new Vector2(1, 0), new Vector2(-12, 23), Vector2.one * size, "", Beber);
             var g = button.GetComponent<RoundedHudGraphic>();
             g.radius = touch ? size / 2 : 9; g.border = 2; g.color = new Color(.16f, .03f, .05f, .97f); g.topColor = new Color(.34f, .07f, .1f, .97f);

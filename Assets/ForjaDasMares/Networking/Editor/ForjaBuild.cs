@@ -16,11 +16,9 @@ namespace ForjaDasMares.Networking.Editor
         public const string Inicio = "Assets/ForjaDasMares/Scenes/Inicio.unity";
         public const string Vila = "Assets/ForjaDasMares/Scenes/RefugioAntigo.unity";
         public const string Cidade = "Assets/ForjaDasMares/Scenes/RefugioUltimoSino.unity";
-        // The old Expedições (co-op dungeon) until it is removed in the next cleanup step.
-        const string ExpedicoesAntigas = "Assets/ForjaDasMares/Scenes/CampaignCoop.unity";
 
         static string[] Cenas() =>
-            new[] { Inicio, Vila, Cidade, ExpedicoesAntigas }.Concat(AreasInstaller.ScenePaths).Where(File.Exists).Distinct().ToArray();
+            new[] { Inicio, Vila, Cidade }.Concat(AreasInstaller.ScenePaths).Where(File.Exists).Distinct().ToArray();
 
         [MenuItem("Forja/Gerar jogo/Windows (Builds/Atual)")]
         public static void Windows() => Build(BuildTarget.StandaloneWindows64);
@@ -31,15 +29,32 @@ namespace ForjaDasMares.Networking.Editor
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android && !EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android))
             { EditorUtility.DisplayDialog("Forja", "Não consegui trocar a plataforma para Android.", "OK"); return; }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-            Build(BuildTarget.Android);
+            bool ok = Build(BuildTarget.Android);
             string apk = Path.GetFullPath("Builds/Atual/Android/ForjaDasMares.apk");
-            if (File.Exists(apk)) { Debug.Log("APK_PRONTO " + apk); EditorUtility.RevealInFinder(apk); }
+            if (ok && File.Exists(apk)) { Debug.Log("APK_PRONTO " + apk); EditorUtility.RevealInFinder(apk); }
+            else EditorUtility.DisplayDialog("Forja", "O APK NÃO foi gerado. Veja o erro vermelho no Console.", "OK");
         }
 
-        static void Build(BuildTarget target)
+        // The game makes some materials while it runs (gate arrows, water, effects) by shader name. A shader only goes
+        // into the phone build if some asset uses it, so one small material per shader lives in Resources.
+        static void GarantirShaders()
+        {
+            const string folder = "Assets/ForjaDasMares/Resources/ShadersDoJogo";
+            if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets/ForjaDasMares/Resources", "ShadersDoJogo");
+            foreach (var name in new[] { "Universal Render Pipeline/Lit", "Universal Render Pipeline/Unlit", "Universal Render Pipeline/Particles/Unlit", "Universal Render Pipeline/Simple Lit" })
+            {
+                var shader = Shader.Find(name); if (shader == null) continue;
+                string path = folder + "/" + name.Replace("Universal Render Pipeline/", "").Replace("/", "_") + ".mat";
+                if (AssetDatabase.LoadAssetAtPath<Material>(path) == null) AssetDatabase.CreateAsset(new Material(shader), path);
+            }
+            AssetDatabase.SaveAssets();
+        }
+
+        static bool Build(BuildTarget target)
         {
             if (EditorUserBuildSettings.activeBuildTarget != target)
-            { EditorUtility.DisplayDialog("Forja", "Troque a plataforma para " + target + " em File → Build Profiles antes de gerar.", "OK"); return; }
+            { EditorUtility.DisplayDialog("Forja", "Troque a plataforma para " + target + " em File → Build Profiles antes de gerar.", "OK"); return false; }
+            GarantirShaders();
             string folder = target == BuildTarget.Android ? "Builds/Atual/Android" : "Builds/Atual/Windows";
             Directory.CreateDirectory(folder);
             try
@@ -67,6 +82,7 @@ namespace ForjaDasMares.Networking.Editor
                     locationPathName = folder + (target == BuildTarget.Android ? "/ForjaDasMares.apk" : "/ForjaDasMares.exe")
                 });
                 Debug.Log("JOGO_GERADO " + target + " " + report.summary.result + " erros=" + report.summary.totalErrors);
+                return report.summary.result == BuildResult.Succeeded;
             }
             finally { AssetDatabase.SaveAssets(); }
         }

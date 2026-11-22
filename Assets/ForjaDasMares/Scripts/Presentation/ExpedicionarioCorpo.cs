@@ -75,6 +75,7 @@ namespace ForjaDasMares
             if (refreshIn > 0 && --refreshIn == 0) RefreshEquipment();
             // Other systems may switch the old body back on: keep it hidden.
             foreach (var r in hidden) if (r != null && !r.forceRenderingOff) r.forceRenderingOff = true;
+            ShowNewWeapons();
             PoseWeapon();
         }
 
@@ -380,6 +381,18 @@ namespace ForjaDasMares
             // Weapons move to the new body (now and again two frames later, after the equipment has loaded).
             RefreshEquipment(); refreshIn = 3;
             Version++;
+        }
+
+        // A weapon received in the middle of the game (Téo) uses a holder that was hidden with the old body when it was
+        // still empty. Once it carries a weapon (EquipmentMeshView) it must draw again, without changing scene.
+        float weaponCheck;
+        void ShowNewWeapons()
+        {
+            if (Time.unscaledTime < weaponCheck) return;
+            weaponCheck = Time.unscaledTime + .25f;
+            foreach (var mesh in GetComponentsInChildren<EquipmentMeshView>(true))
+                foreach (var r in mesh.GetComponentsInChildren<Renderer>(true))
+                    if (r.forceRenderingOff) { r.forceRenderingOff = false; hidden.Remove(r); }
         }
 
         void RefreshEquipment()

@@ -37,7 +37,9 @@ namespace ForjaDasMares.Networking
                 new Saida(Lado.S,"nascente",null,new Vector3(0,3,-47)), new Saida(Lado.O,"bosque",null,new Vector3(-46,0,0)), new Saida(Lado.L,"vale",null,new Vector3(46,0,0))),
             new Area("bosque","Area_Bosque",false, new Saida(Lado.SE,"refugio"), new Saida(Lado.S,"trilhos"), new Saida(Lado.SO,"estacao1"), new Saida(Lado.N,"passo",Frio)),
             // From the Nascente there is no direct way to the Vila da Foz: through the Trilhos Velhos or the Gruta da Cachoeira.
-            new Area("nascente","Area_Nascente",false, new Saida(Lado.N,"refugio"), new Saida(Lado.SO,"trilhos"), new Saida(Lado.S,"gruta"), new Saida(Lado.L,"campos")),
+            // Nascente: the arrows sit a bit inside the place; the roads go on beyond them (NascenteDoRio).
+            new Area("nascente","Area_Nascente",false, new Saida(Lado.N,"refugio",null,new Vector3(0,0,54)), new Saida(Lado.SO,"trilhos",null,new Vector3(-47,0,-50)),
+                new Saida(Lado.S,"gruta",null,new Vector3(0,0,-54)), new Saida(Lado.L,"campos",null,new Vector3(54,0,.5f))),
             new Area("vale","Area_Vale",false, new Saida(Lado.O,"refugio"), new Saida(Lado.SO,"campos")),
             new Area("campos","Area_Campos",false, new Saida(Lado.N,"vale"), new Saida(Lado.O,"nascente"), new Saida(Lado.SO,"gruta"), new Saida(Lado.SE,"riolargo",Correnteza)),
             new Area("gruta","Area_Gruta",false, new Saida(Lado.N,"nascente"), new Saida(Lado.NE,"campos"), new Saida(Lado.SO,"foz")),
@@ -104,7 +106,7 @@ namespace ForjaDasMares.Networking
     // Outside cities: "voltar à cidade" (H or the button) takes you back to the last city after a short wait.
     public sealed class PortoesDoMundo : MonoBehaviour
     {
-        sealed class Portao { public AreasDoMundo.Saida saida; public Vector3 ponto, fora; public Transform seta; public TextMesh nome; public WorldClickTarget alvo; }
+        sealed class Portao { public AreasDoMundo.Saida saida; public Vector3 ponto, fora; public Transform seta; public TextMesh nome; public WorldClickTarget alvo; public bool armado; }
         readonly List<Portao> portoes = new List<Portao>();
         RegionalWorld world; AreasDoMundo.Area area; bool saindo;
         Material ouro, fechado;
@@ -163,8 +165,11 @@ namespace ForjaDasMares.Networking
                 Vector3 d = hero - p.ponto; d.y = 0;
                 // The name shows only when you get close.
                 if (p.nome != null) p.nome.gameObject.SetActive(d.magnitude < 11f);
-                // F next to the arrow also travels (clicking/tapping the arrow walks there and travels).
-                if (p.alvo != null && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame && p.alvo.InRange(world.Hero.transform)) p.alvo.TryUse(world.Hero.transform);
+                // Phone: stepping on the arrow also travels (only after walking away from it once, so arriving
+                // on top of an arrow does not send you straight back). PC: click or F only.
+                if (p.alvo == null || !UnityEngine.Device.Application.isMobilePlatform) continue;
+                if (d.magnitude > 4f) p.armado = true;
+                else if (p.armado && d.magnitude < 1.8f) { p.armado = false; p.alvo.TryUse(world.Hero.transform); }
             }
         }
 
@@ -209,7 +214,10 @@ namespace ForjaDasMares.Networking
             var destino = p.saida.para;
             alvo.Interacting += actor => { if (actor == world.Hero.transform && !saindo && world.Hero.Health.IsAlive) Ir(destino, area.id); };
             p.alvo = alvo;
+            // In the list of things to use: near the arrow, F (PC) or the USAR button (phone) travels.
+            WorldClickTarget.Extras.Add(alvo);
         }
+        void OnDestroy() { foreach (var p in portoes) if (p.alvo != null) WorldClickTarget.Extras.Remove(p.alvo); }
 
         static Mesh malha;
         static Mesh MalhaDaSeta()
@@ -248,7 +256,7 @@ namespace ForjaDasMares.Networking
             for (int i = 0; i < 300 && (bloco = GameObject.Find("AcoesTopo")) == null; i++) yield return null;
             if (bloco == null) yield break;
             var r = (RectTransform)bloco.transform; r.sizeDelta = new Vector2(r.sizeDelta.x + 118, r.sizeDelta.y);
-            var b = RusticHudTheme.Button(r, "Voltar", new Vector2(0, .5f), new Vector2(6, 0), new Vector2(112, 42), Application.isMobilePlatform ? "VOLTAR" : "VOLTAR · H", Voltar);
+            var b = RusticHudTheme.Button(r, "Voltar", new Vector2(0, .5f), new Vector2(6, 0), new Vector2(112, 42), UnityEngine.Device.Application.isMobilePlatform ? "VOLTAR" : "VOLTAR · H", Voltar);
             botaoTexto = b.GetComponentInChildren<Text>(); botaoTexto.fontSize = 14;
         }
 
@@ -279,15 +287,5 @@ namespace ForjaDasMares.Networking
             if (cidade.id == "refugio") Historia.RenascerNoNo = true; // arrives at the Raiz-Mãe
             world.Viajar(cidade.cena);
         }
-    }
-
-    // Makes the water of a river flow (moves its texture slowly).
-    public sealed class RioAnimado : MonoBehaviour
-    {
-        public Vector2 velocidade = new Vector2(.12f, .015f);
-        Renderer view; Material own;
-        void Start() { view = GetComponent<Renderer>(); if (view != null) own = view.material; }
-        void Update() { if (own != null) own.SetTextureOffset("_BaseMap", velocidade * Time.time); }
-        void OnDestroy() { if (own != null) Destroy(own); }
     }
 }

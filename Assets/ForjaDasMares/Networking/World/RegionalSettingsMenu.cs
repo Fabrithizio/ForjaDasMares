@@ -32,7 +32,7 @@ namespace ForjaDasMares.Networking
             Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToStartMenu);
             Label("Controls","Mouse: andar e atacar · Shift + ataque: atacar parado · 1 / 2 / 3: habilidades (miram no mouse)\nR: trocar barra · Q: Super · Espaço: esquiva · 4: poção · F: interagir · I: mochila · M: montar · K: mapa · H: voltar",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
-            if (!Application.isMobilePlatform)
+            if (!UnityEngine.Device.Application.isMobilePlatform)
             {
                 Button("Fullscreen","TELA CHEIA / JANELA · F11",30,585,440,ToggleFullscreen);
                 fullscreenKey = new InputAction("RegionalFullscreen",InputActionType.Button,"<Keyboard>/f11");

@@ -90,13 +90,10 @@ namespace ForjaDasMares
         public Transform Muzzle { get; set; }
         Vector3 ShotFrom(Vector3 facing)
         {
-            Vector3 o = origin.position;
-            if (Muzzle == null) return o + facing * .05f;
-            Vector3 tip = Muzzle.position, d = tip - o;
-            if (Vector3.Dot(new Vector3(d.x, 0, d.z), facing) < -.05f || d.magnitude > 1.6f) return o + facing * .05f;
-            tip.y = Mathf.Clamp(tip.y, o.y - .35f, o.y + .35f);
-            if (Physics.Linecast(o, tip, geometry, QueryTriggerInteraction.Ignore)) return o + facing * .05f;
-            return tip;
+            // Always the same point: in front of the chest, whatever the arm is doing in the animation,
+            // so every shot leaves from the same place and flies straight where the hero aims.
+            Vector3 o = origin.position, front = o + facing * .45f;
+            return Physics.Linecast(o, front, geometry, QueryTriggerInteraction.Ignore) ? o + facing * .05f : front;
         }
         Vector3 ShotDirection(Vector3 start, Vector3 direction)
         {
@@ -179,7 +176,7 @@ namespace ForjaDasMares
             var attacks = equipmentAttacks ?? (profile != null ? profile.attacks : null);
             if (!CanStart || attacks == null || attacks.Length == 0) return false;
             currentAttack = attacks[combo % attacks.Length]; combo++;
-            Begin(false, (currentAttack.windup + currentAttack.recovery + (twinStrike ? .08f : 0)) / AttackSpeed); AnimationVariant = (combo-1)%3; return true;
+            Begin(false, (currentAttack.windup + currentAttack.recovery + (twinStrike ? .08f : 0)) / AttackSpeed); AnimationVariant = RangedWeapon ? 0 : (combo-1)%3; return true;
         }
         public bool TryHeavy()
         {

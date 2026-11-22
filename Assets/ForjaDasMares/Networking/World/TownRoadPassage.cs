@@ -13,7 +13,7 @@ namespace ForjaDasMares.Networking
         void OnTriggerStay(Collider other) => Enter(other);
         void Enter(Collider other)
         {
-            if(hub==null || traveller==null || other==null || hub.IsTravelling) return;
+            if(!enabled || hub==null || traveller==null || other==null || hub.IsTravelling) return;
             if(other.transform==traveller || other.transform.IsChildOf(traveller)) hub.Explore();
         }
     }

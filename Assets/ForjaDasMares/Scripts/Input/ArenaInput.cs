@@ -59,7 +59,7 @@ namespace ForjaDasMares
             superAction.performed += _ => RequestSuper();
             gameplay.FindAction("Dodge", true).performed += OnDodge;
             gameplay.FindAction("Reset", true).performed += OnReset;
-            var ability=gameplay.FindAction("Special");if(ability!=null&&!Application.isMobilePlatform)ability.AddBinding("<Mouse>/rightButton");
+            var ability=gameplay.FindAction("Special");if(ability!=null&&!UnityEngine.Device.Application.isMobilePlatform)ability.AddBinding("<Mouse>/rightButton");
             BindOptional("Special", RequestSpecial);
             BindOptional("NextHero", () => nextPending = true);
             BindOptional("TestDamage", () => damagePending = true);
@@ -73,10 +73,10 @@ namespace ForjaDasMares
         void OnDisable() { gameplay?.Disable(); ClearRequests(); }
         void OnDestroy() { if (runtimeActions != null) Destroy(runtimeActions); }
         void OnApplicationFocus(bool focus) { if (!focus) ClearRequests(); }
-        void OnPoint(InputAction.CallbackContext _) => pointerMode = !Application.isMobilePlatform;
+        void OnPoint(InputAction.CallbackContext _) => pointerMode = !UnityEngine.Device.Application.isMobilePlatform;
         void OnMove(InputAction.CallbackContext context) { if (context.control.device is Gamepad) pointerMode = false; }
         void OnAttack(InputAction.CallbackContext context)
-        { if(context.control.device is Mouse){pointerMode=!Application.isMobilePlatform;desktop?.PressMouse();}if (context.control.device is Gamepad) pointerMode = false; attackPending = true; deviceAttackHeld = true; }
+        { if(context.control.device is Mouse){pointerMode=!UnityEngine.Device.Application.isMobilePlatform;desktop?.PressMouse();}if (context.control.device is Gamepad) pointerMode = false; attackPending = true; deviceAttackHeld = true; }
         void OnDodge(InputAction.CallbackContext _) => dodgePending = true;
         void OnReset(InputAction.CallbackContext _) => resetPending = true;
         void ClearRequests() { desktop?.Cancel();deviceAttackHeld = uiAttackHeld = superPending = false; attackPending = dodgePending = resetPending = specialPending = nextPending = damagePending = victoryPending = false; heroSlot = -1; SetTouchMove(Vector2.zero, false); }

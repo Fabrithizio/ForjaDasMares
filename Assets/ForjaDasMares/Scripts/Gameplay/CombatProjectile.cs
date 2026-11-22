@@ -106,13 +106,26 @@ namespace ForjaDasMares
             if (attack.returningProjectile) { UpdateReturnFlight(); return; }
             float step = Mathf.Min(attack.projectileSpeed * Time.deltaTime, attack.range - distance);
             if (step <= 0f) { gameObject.SetActive(false); return; }
-            int count = Physics.SphereCastNonAlloc(transform.position, attack.projectileRadius, direction, hits, step, targets | geometry, QueryTriggerInteraction.Ignore);
+            // Walls at the height of the shot; creatures with a standing column from the ground up, so a shot
+            // never flies over (or under) a creature, whatever its size or the slope (seen from above, it is a hit).
+            float wall = Physics.SphereCast(transform.position, attack.projectileRadius, direction, out var wallHit, step, geometry, QueryTriggerInteraction.Ignore) ? wallHit.distance : float.MaxValue;
+            var p0 = transform.position;
+            int count = Physics.CapsuleCastNonAlloc(p0 - Vector3.up * 1.4f, p0 + Vector3.up * 1.2f, Mathf.Max(attack.projectileRadius, .22f), direction, hits, step, targets, QueryTriggerInteraction.Ignore);
             int closest = -1; float nearest = float.MaxValue;
             for (int i = 0; i < count; i++)
             {
                 Health victim = hits[i].collider.GetComponentInParent<Health>();
-                if (victim != null && !victim.CanReceiveFrom(owner)) continue;
-                if (hits[i].distance < nearest) { closest = i; nearest = hits[i].distance; }
+                if (victim == null || !victim.CanReceiveFrom(owner)) continue;
+                if (hits[i].distance < nearest && hits[i].distance <= wall) { closest = i; nearest = hits[i].distance; }
+            }
+            if (closest < 0 && wall <= step)
+            {
+                transform.position += direction * wall;
+                if (attack.prismaticEffect == PrismaticEffect.Shatter) effectPool?.PrismBurst(transform.position, .55f, 0);
+                if (attack.splashRadius > 0) resolver.Area(transform.position, attack.splashRadius, direction, 360f, attack, owner, targets, geometry, false, damageScale, criticalHit);
+                System.Array.Clear(hits, 0, count);
+                gameObject.SetActive(false);
+                return;
             }
             if (closest >= 0)
             {
@@ -174,7 +187,7 @@ namespace ForjaDasMares
             Vector3 heading = travel / length;
             float wallDistance = Physics.SphereCast(position, attack.projectileRadius, heading, out var wall,
                 length, geometry, QueryTriggerInteraction.Ignore) ? wall.distance : length;
-            int count = Physics.SphereCastNonAlloc(position, attack.projectileRadius, heading, hits,
+            int count = Physics.CapsuleCastNonAlloc(position - Vector3.up * 1.4f, position + Vector3.up * 1.2f, Mathf.Max(attack.projectileRadius, .22f), heading, hits,
                 wallDistance, targets, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < count; i++)
             {

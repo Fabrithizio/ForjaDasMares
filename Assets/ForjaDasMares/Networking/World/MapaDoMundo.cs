@@ -199,7 +199,10 @@ namespace ForjaDasMares.Networking
             var tipOutline = tooltip.gameObject.AddComponent<Outline>(); tipOutline.effectColor = new Color(0, 0, 0, .95f); tipOutline.effectDistance = new Vector2(2, -2);
             tooltip.enabled = false;
 
-            var panel = RusticHudTheme.Rect(root, "Info", new Vector2(1, .5f), new Vector2(-26, -34), new Vector2(420, 900));
+            // Info panel: from under the title to the bottom edge, whatever the screen shape (phones are wider and shorter).
+            var panel = RusticHudTheme.Rect(root, "Info", new Vector2(1, .5f), Vector2.zero, new Vector2(420, 0));
+            panel.anchorMin = new Vector2(1, 0); panel.anchorMax = new Vector2(1, 1); panel.pivot = new Vector2(1, .5f);
+            panel.offsetMin = new Vector2(-26 - 420, 36); panel.offsetMax = new Vector2(-26, -104);
             RusticHudTheme.Panel(panel, RusticHudTheme.Surface, 16);
             title = RusticHudTheme.Label(panel, "Nome", new Vector2(.5f, 1), new Vector2(0, -50), new Vector2(370, 70), "", 28, TextAnchor.UpperLeft);
             title.color = RusticHudTheme.Gold; title.horizontalOverflow = HorizontalWrapMode.Wrap; title.verticalOverflow = VerticalWrapMode.Overflow;
@@ -217,6 +220,7 @@ namespace ForjaDasMares.Networking
                 RusticHudTheme.Button(panel, "Teste", new Vector2(.5f, 0), new Vector2(0, 26), new Vector2(370, 40),
                     DescobertasDoMapa.RevelarTudo ? "(teste) esconder de novo" : "(teste) revelar tudo",
                     () => { DescobertasDoMapa.RevelarTudo = !DescobertasDoMapa.RevelarTudo; var w = world; bool s = estacao; Fechar(); Abrir(w, s); });
+            root.Find("Fechar").SetAsLastSibling(); // the X is never covered
             // Where the player is now: chosen at opening, marked with a ring.
             aqui = AreasDoMundo.PorCena(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name)?.id ?? "refugio";
             DescobertasDoMapa.Descobrir(aqui);
@@ -386,7 +390,7 @@ namespace ForjaDasMares.Networking
         {
             int area = AreaAt(screen);
             // On the phone there is no mouse hover: the tapped area is lit and named instead.
-            if (Application.isMobilePlatform && areas != null) { hovered = area; PaintHighlight(); Tip(area, screen); }
+            if (UnityEngine.Device.Application.isMobilePlatform && areas != null) { hovered = area; PaintHighlight(); Tip(area, screen); }
             if (area >= 0) Show(Lugares[area]);
         }
 
@@ -411,7 +415,7 @@ namespace ForjaDasMares.Networking
                 if ((fit - content.sizeDelta).sqrMagnitude > .5f) { content.sizeDelta = fit; Pan(Vector2.zero); }
             }
             // Name of the area under the mouse (on the phone: the area you tap is chosen instead).
-            if (!Application.isMobilePlatform && Mouse.current != null && areas != null)
+            if (!UnityEngine.Device.Application.isMobilePlatform && Mouse.current != null && areas != null)
             {
                 var screen = Mouse.current.position.ReadValue();
                 int area = AreaAt(screen);

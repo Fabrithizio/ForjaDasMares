@@ -87,10 +87,11 @@ namespace ForjaDasMares.Networking
         public void Mentor() => Speak("Luma: equipe sua arma e experimente os ataques no alvo de treino. Tab alterna entre Normal e Pesado.");
         public void Explore()=>BeginTravel("CostaAto1");
         public void OpenExpeditions()=>FindFirstObjectByType<RegionalWorldHud>()?.OpenExpeditionPanel();
-        public void ConfirmExpeditions(){if(travelling||!world.Hero.Health.IsAlive)return;CampaignHome.EnterExpeditionRoutes=true;BeginTravel("CampaignCoop");}
         void BeginTravel(string scene)
         {
             if(travelling || world==null || !world.Hero.Health.IsAlive) return;
+            // A place that is not in the game anymore (the old coast): do nothing, instead of trying again every frame.
+            if(!Application.CanStreamedLevelBeLoaded(scene)) return;
             travelling=true;
             world.Hero.GetComponent<ArenaInput>().Desktop?.Cancel();
             world.Hero.GetComponent<ArenaInput>().BlockCommands(true);

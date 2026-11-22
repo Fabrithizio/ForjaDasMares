@@ -5,7 +5,6 @@ namespace ForjaDasMares.Networking
     // Session inventory reads the host mirror; every mutation sends a validated intention.
     [DefaultExecutionOrder(260)] public sealed partial class CoopInventoryHud : MonoBehaviour
     {
-        [SerializeField] CoopDirector director;
         InventorySessionView view;RegionalInventory regional;RectTransform regionalRoot;
         InventoryProfileView channel; Font font; GameObject overlay; Text detail, header, notice;
         readonly Button[] rows = new Button[16]; Button equip, remove, discard;
@@ -37,22 +36,10 @@ namespace ForjaDasMares.Networking
         {
             get
             {
-                if(view.IsRegional)return channel.CanManageLocal;
-                if (channel.HomeMode) return true;
-                if (view.LocalSlot < 0) return false;
-                if (view.Manager.IsServer) return channel.CanManageLocal;
-                var actor = ActiveActor;
-                if (actor == null) return false;
-                if (view.Phase == CoopPhase.Lobby) return true;
-                // Replicas cannot predict every host-owned effect. The host validates again
-                // and returns its reason if an effect is still active when the request arrives.
-                return actor.Health.IsAlive && view.Phase != CoopPhase.Loading && view.Phase != CoopPhase.Connecting
-                    && (view.EncounterStatus != EncounterState.Spawning && view.EncounterStatus != EncounterState.Fighting
-                        || view.Dungeon.OpenLandscape && !view.Dungeon.Encounter.Enemies.ThreatNear(actor.transform.position, 12));
+                return channel.CanManageLocal;
             }
         }
         int page, revision = -1,lastHero=-1; string selected, pendingDiscard; bool results;
-        public void Configure(CoopDirector session) => director = session;
         public void Configure(RegionalInventory local,RectTransform root){regional=local;regionalRoot=root;}
         // New Personagem/Mochila window for the RPG. Talentos and Runas still open the older screens (legacyRoute).
         MochilaPanel mochila;bool legacyRoute;
@@ -60,9 +47,9 @@ namespace ForjaDasMares.Networking
         void Start()
         {
             itemOrder=CompareInventoryItems;
-            view=regional!=null?new InventorySessionView(regional):new InventorySessionView(director);
+            view=new InventorySessionView(regional);
             channel = view.Profiles; font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            var parent = regionalRoot!=null?regionalRoot:GetComponent<CoopHud>().SafeRoot;
+            var parent = regionalRoot;
             inventoryButton = view.IsRegional
                 ? RusticHudTheme.IconButton(parent, "RegionalInventoryButton", Vector2.one, new Vector2(-132,-20), HudSymbol.Bag, OpenInventory)
                 : TopRight(parent, "INVENTÁRIO", -119, () => Show(false));
@@ -87,7 +74,7 @@ namespace ForjaDasMares.Networking
         }
         void BuildPaperDoll()
         {
-            touchLayout=Application.isMobilePlatform;
+            touchLayout=UnityEngine.Device.Application.isMobilePlatform;
             var panel=(RectTransform)overlay.transform;panel.anchorMin=panel.anchorMax=panel.pivot=Vector2.one*.5f;panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1280,700);
             overlay.GetComponent<Image>().color=RusticHudTheme.Ink;RusticHudTheme.Skin(closeButton);RusticHudTheme.Skin(previous);RusticHudTheme.Skin(next);RusticHudTheme.Panel(panel,new Color(.035f,.06f,.05f,.72f),22);
             var backdrop=MenuArtwork.Fill(panel,"InventoryBackdrop","MenuArt/RoutesBackdrop",new Color(.65f,.7f,.68f,1));backdrop.transform.SetAsFirstSibling();
@@ -191,7 +178,6 @@ namespace ForjaDasMares.Networking
         void Show(bool result)
         {
             if (channel.LocalProfile == null || view.LocalSlot < 0&&!channel.HomeMode) return;
-            GetComponent<CampaignSessionMenu>()?.Close();
             if(view.IsRegional)foreach(var stick in GetComponentsInChildren<TouchMoveStick>(true))stick.Release();
             sheet?.Hide();if(itemPopup!=null)itemPopup.SetActive(false);results = result; deliveries=false; expeditionView=false;selected = pendingDiscard = pendingClaim = null; page = 0; overlay.SetActive(true); overlay.transform.SetAsLastSibling(); view.SetInputBlocked(true); Refresh();
         }
@@ -329,7 +315,7 @@ namespace ForjaDasMares.Networking
             if(notice!=null)notice.gameObject.SetActive((sheet==null||!sheet.IsOpen)&&(itemPopup==null||!itemPopup.activeSelf));
             if(itemNotice==null||(!itemPopup.activeSelf&&desktopInventory==null))return;
             string message=itemContextNotice;bool blocked=itemContextBlocked;
-            if((view.IsRegional||!channel.HomeMode&&view.Manager.IsServer)&&!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
+            if(!channel.CanManageLocal){message=channel.LocalManagementBlockReason;blocked=true;}
             else if(!itemContextBlocked&&pendingDiscard!=selected&&(channel.Message!=selectionMessage||channel.Revision!=selectionRevision))
             {if(!string.IsNullOrEmpty(channel.Message))message=channel.Message;}
             if(desktopStatus!=null)desktopStatus.text=string.IsNullOrEmpty(selected)?"":message;

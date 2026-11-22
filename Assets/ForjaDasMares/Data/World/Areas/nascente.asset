@@ -14,14 +14,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionDefinition
   regionId: nascente
   displayName: Nascente do Rio
-  refuge: {x: 0, y: 0.1, z: 0}
+  refuge: {x: 0, y: 0.1, z: 46}
   portal: {x: 0, y: -500, z: 0}
   route:
-  - {x: 0, y: 0.1, z: 0}
-  camps: []
+  - {x: 0, y: 0.1, z: 46}
+  camps:
+  - label: Pedras Partidas
+    center: {x: 36, y: 0.05012207, z: 26}
+    spawns:
+    - {x: 33, y: 0.05012207, z: 24}
+    - {x: 39, y: 0.05012207, z: 23}
+    - {x: 36, y: 0.05012207, z: 30}
+    - {x: 41, y: 0.05012207, z: 28}
+    enemies:
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    respawnSeconds: 120
+  - label: Toca do Breu
+    center: {x: -48, y: 0.05012207, z: -10}
+    spawns:
+    - {x: -50, y: 0.09960441, z: -7}
+    - {x: -45, y: 0.05012207, z: -12}
+    - {x: -51, y: 0.50327474, z: -13}
+    - {x: -45, y: 0.05012207, z: -6}
+    enemies:
+    - {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
+    - {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
+    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    respawnSeconds: 120
+  - label: "Po\xE7o da Nascente"
+    center: {x: 26, y: 0, z: -46}
+    spawns:
+    - {x: 26, y: 0.050773192, z: -46}
+    - {x: 20, y: 0.05012207, z: -42}
+    - {x: 32, y: 0.05012207, z: -42}
+    enemies:
+    - {fileID: 11400000, guid: 837c3b3e1b7486344bc527cbdb85747b, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    respawnSeconds: 300
   connections: []
   landmarks: []
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 66, y: 20, z: 66}
-  activeEnemyLimit: 12
+  activeEnemyLimit: 14

@@ -26,7 +26,7 @@ namespace ForjaDasMares
                 // PC with mouse: the hero does not follow the cursor. He turns to where he walks (the click),
                 // and toward the mouse only while the button is held. Attacks and abilities turn him themselves.
                 var arena=GetComponent<ArenaInput>();
-                if(!Application.isMobilePlatform&&commands.HasPointer&&arena!=null&&!arena.MouseAttackHeld)
+                if(!UnityEngine.Device.Application.isMobilePlatform&&commands.HasPointer&&arena!=null&&!arena.MouseAttackHeld)
                 {
                     direction=motor.PlanarVelocity;
                     if(direction.sqrMagnitude<.04f)return;
