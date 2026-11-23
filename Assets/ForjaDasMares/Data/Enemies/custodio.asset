@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
   spawnWarning: 0
   enemyId: custodio
-  displayName: Custodio da Forja
+  displayName: "Cust\xF3dio dos Trilhos"
   kind: 6
   prefab: {fileID: 2947600674569460248, guid: e3c320c102fb0e747a4fc59518c70f30, type: 3}
   maximumHealth: 450

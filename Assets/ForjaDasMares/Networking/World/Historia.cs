@@ -19,6 +19,7 @@ namespace ForjaDasMares.Networking
     {
         public const string Vila = "RefugioAntigo", Refugio = "RefugioUltimoSino";
         static readonly string[] Passos = { "prologo", "chegada", "nara", "teo", "no", "m1_aceita", "m1_feita", "m2_aceita", "m2_feita", "m3_aceita", "m3_feita", "m4_aceita", "m4_chegou", "m4_fonte", "m5_aceita", "m5_e0", "m5_e1", "m5_e2", "m5_feita",
+            "m6_aceita", "m6_chegou", "m6_custodio", "m6_feita", "m7_aceita", "m7_pedra", "m7_feita", "m8_aceita", "m8_p0", "m8_p1", "m8_p2", "m8_feita",
             "hab_brotar", "hab_brasa", "hab_raizes", "hab_rajada", "hab_bolha", "hab_marca", "hab_gelo" };
         internal static string Who => string.IsNullOrEmpty(CampaignHome.CharacterName) ? "padrao" : CampaignHome.CharacterName;
         static string Key(string step) => "ForjaHistoria_" + Who + "_" + step;
@@ -108,6 +109,13 @@ namespace ForjaDasMares.Networking
             {
                 Marcar("m4_chegou");
                 AvisoNaTela.Mostrar("...Esse rio. Parece o rio lá de casa.", 5);
+            }
+            // Mission 6: arriving at the Trilhos Velhos.
+            if (scene.name.Contains("Trilhos")) Descobertas.Marcar(Descobertas.Trilhos);
+            if (scene.name.Contains("Trilhos") && Feito("m6_aceita") && !Feito("m6_chegou"))
+            {
+                Marcar("m6_chegou");
+                AvisoNaTela.Mostrar("Trilhos no meio do mato... Lá perto de casa tinha uma linha assim. Abandonada também.", 5);
             }
             if (!vila && !chegada) return;
             if (UnityEngine.Object.FindFirstObjectByType<CenaDaHistoria>() != null) return;
@@ -515,12 +523,23 @@ namespace ForjaDasMares.Networking
                 if (Recursos.Quantos(Recursos.Couro) >= Historia.CourosPedidos) { StartCoroutine(TeoFazManto()); return true; }
                 return false;
             }
+            // Téo's stone (side mission 7): after the Nascente. If the player already found the stone, he goes straight to it.
+            if (target == TargetOf(teo) && Historia.Feito("m4_fonte") && !Historia.Feito("m7_feita"))
+            {
+                if (Historia.Feito("m7_pedra")) { StartCoroutine(TeoPedraVista()); return true; }
+                if (!Historia.Feito("m7_aceita")) { StartCoroutine(TeoPedra()); return true; }
+                return false;
+            }
             if (target == TargetOf(nara))
             {
                 if (!Historia.Feito("m2_feita")) StartCoroutine(Short("Nara", "Ainda se ajeitando? Ajude o pessoal da cidade. Quando eu precisar de você, eu chamo."));
                 else if (!Historia.Feito("m4_aceita")) StartCoroutine(NaraNascente());
                 else if (Historia.Feito("m4_fonte") && !Habilidades.Aprendeu("rajada")) StartCoroutine(NaraRajada());
-                else if (Habilidades.Aprendeu("rajada")) StartCoroutine(Short("Nara", "O rio já clareou um pouco. Bom trabalho. Descansa."));
+                else if (Habilidades.Aprendeu("rajada") && !Historia.Feito("m6_aceita")) StartCoroutine(NaraTrilhos());
+                else if (Historia.Feito("m6_custodio") && !Historia.Feito("m6_feita")) StartCoroutine(NaraPatrulha());
+                else if (Historia.Feito("m6_feita")) StartCoroutine(Short("Nara", "A Estação Antiga fica a noroeste dos Trilhos. Ainda estou juntando o que sei de lá. Descansa enquanto isso."));
+                else if (Historia.Feito("m6_chegou")) StartCoroutine(Short("Nara", "Siga a linha até o pátio de manobras. Alguma coisa parou a patrulha lá. Descubra o quê."));
+                else if (Historia.Feito("m6_aceita")) StartCoroutine(Short("Nara", "Os Trilhos Velhos: saia da Nascente pelo sudoeste e siga a linha de ferro."));
                 else if (Historia.Feito("m4_chegou")) StartCoroutine(Short("Nara", "O rio ainda escurece. Tem alguma coisa lá no Poço da Nascente. Descubra o quê."));
                 else StartCoroutine(Short("Nara", "A Nascente fica ao sul, rio acima. Só olhe. Volte inteiro."));
                 return true;
@@ -545,6 +564,60 @@ namespace ForjaDasMares.Networking
             yield return Say("Nara", "Quem anda por lá precisa sair rápido de onde não devia estar. Eu aprendi com o vento. Olha.");
             yield return Say("Nara", "(um sopro forte levanta a poeira em volta dela) Um passo, e o vento leva o resto.");
             Habilidades.Aprender("rajada");
+            End();
+        }
+
+        IEnumerator NaraTrilhos()
+        {
+            yield return StartTalk(nara);
+            yield return Say("Nara", "Pensei no seu capitão afogado a noite toda.");
+            yield return Say("Nara", "Morto não sobe rio sozinho. Alguém está mexendo no Breu. E mexendo com vontade.");
+            yield return Say("Nara", "E tem mais. Mandei uma patrulha da Liga pelos Trilhos Velhos há dez dias. Ninguém voltou.");
+            yield return Say(Me, "Os estandartes na Nascente... eles iam para oeste.");
+            yield return Say("Nara", "Então você já está no rastro deles. Bom.");
+            yield return Say("Nara", "Os trilhos levam à Estação Antiga. Lá tem uma Raiz-Mãe. Se ela ainda vive, talvez saiba de onde vêm os que ela puxa.");
+            yield return Say(Me, "...E para onde eles podem voltar.");
+            yield return Say("Nara", "Talvez. Não prometo o que não sei. Saia da Nascente pelo sudoeste e siga a linha de ferro. Ache a patrulha.");
+            Historia.Marcar("m6_aceita");
+            End();
+        }
+
+        IEnumerator NaraPatrulha()
+        {
+            yield return StartTalk(nara);
+            yield return Say("Nara", "Pela sua cara, achou alguma coisa.");
+            yield return Say(Me, "O guardião da linha. O Custódio. Estava tomado. A patrulha deixou um recado: foram para a Estação. Estão vivos.");
+            yield return Say("Nara", "(solta o ar devagar) Vivos. ...Bom. Muito bom.");
+            yield return Say("Nara", "Um guardião tomado. Primeiro os mortos do rio, agora as máquinas velhas. O Breu está aprendendo.");
+            yield return Say("Nara", "Toma. É da Liga, pelo trabalho. E não gasta tudo com o Brás.");
+            Recursos.Servico?.CollectRegionalGold(100);
+            yield return Say("Nara", "A Estação Antiga fica a noroeste dos Trilhos. Vou juntar o que sei de lá antes de mandar você.");
+            Historia.Marcar("m6_feita");
+            End();
+        }
+
+        IEnumerator TeoPedra()
+        {
+            yield return StartTalk(teo);
+            yield return Say("Téo", "Hm. Ouvi dizer que você vai pros lados dos Trilhos.");
+            yield return Say("Téo", "Tem uma pedra lá. Gravada. A oeste, depois dos vagões tombados, escondida no mato.");
+            yield return Say("Téo", "Eu achei faz vinte anos. Olha pra ela. Com calma.");
+            yield return Say("Téo", "Depois volta e me diz o que viu.");
+            Historia.Marcar("m7_aceita");
+            End();
+        }
+
+        IEnumerator TeoPedraVista()
+        {
+            yield return StartTalk(teo);
+            yield return Say("Téo", "Você viu a pedra. Tá na sua cara.");
+            yield return Say(Me, "O rio da minha vila estava lá. A serra. O caminho da feira. Tudo.");
+            yield return Say("Téo", "(para de bater o martelo) ...Eu vi a minha casa nela. Vinte anos atrás.");
+            yield return Say("Téo", "Não conta pra todo mundo. Ninguém acredita. E quem acredita fica com medo.");
+            yield return Say("Téo", "Toma. Fiz com uma lasca da mesma pedra. Pra você não esquecer de onde veio.");
+            Recursos.Servico?.GrantTestEquipment("estrada-charm", ItemRarity.Uncommon);
+            AvisoNaTela.Mostrar("Missão concluída: A Pedra Gravada · novo amuleto na mochila", 4);
+            Historia.Marcar("m7_feita");
             End();
         }
 

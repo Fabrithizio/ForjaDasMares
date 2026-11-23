@@ -45,7 +45,9 @@ namespace ForjaDasMares.Networking
             new Area("gruta","Area_Gruta",false, new Saida(Lado.N,"nascente"), new Saida(Lado.NE,"campos"), new Saida(Lado.SO,"foz")),
             new Area("estacao1","Area_EstacaoAntiga",false, new Saida(Lado.NE,"bosque"), new Saida(Lado.SE,"trilhos"), new Saida(Lado.NO,"mina"), new Saida(Lado.O,"desfiladeiro",Desmoronamento)),
             new Area("mina","Area_Mina",false, new Saida(Lado.SE,"estacao1")),
-            new Area("trilhos","Area_Trilhos",false, new Saida(Lado.N,"bosque"), new Saida(Lado.NO,"estacao1"), new Saida(Lado.NE,"nascente"), new Saida(Lado.SE,"foz")),
+            // Trilhos Velhos: like the Nascente, the arrows sit a bit inside; the railway and the roads go on beyond (TrilhosVelhos).
+            new Area("trilhos","Area_Trilhos",false, new Saida(Lado.N,"bosque",null,new Vector3(0,0,54)), new Saida(Lado.NO,"estacao1",null,new Vector3(-47,0,47)),
+                new Saida(Lado.NE,"nascente",null,new Vector3(47,0,47)), new Saida(Lado.SE,"foz",null,new Vector3(47,0,-47))),
             new Area("foz","Area_Foz",true, new Saida(Lado.NO,"trilhos"), new Saida(Lado.NE,"gruta"), new Saida(Lado.SO,"costa"), new Saida(Lado.L,"cemiterio")),
             new Area("costa","Area_Costa",false, new Saida(Lado.NE,"foz")),
             new Area("cemiterio","Area_Cemiterio",false, new Saida(Lado.O,"foz"), new Saida(Lado.N,"riolargo",Correnteza)),

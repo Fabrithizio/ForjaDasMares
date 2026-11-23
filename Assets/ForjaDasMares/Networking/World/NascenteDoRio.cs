@@ -130,6 +130,8 @@ namespace ForjaDasMares.Networking
             world.Enemies.Spawned += Surgiu; world.Enemies.Died += Morreu;
             CriarSegredo();
             CriarMissaoDaLiga();
+            // The river can be waded (30% slower); the pool of the spring is deep and stays closed.
+            PassoNaAgua.Criar(p => NascenteDoRio.AoRio(p) < NascenteDoRio.LarguraDoRio * .5f + .2f || Vector2.Distance(p, NascenteDoRio.Poco) < NascenteDoRio.RaioDoPoco + .3f).transform.SetParent(transform, false);
             foreach (var c in NascenteDoRio.Cantos) if (c.tipo == NascenteDoRio.Tipo.Breu) CriarZonaDoBreu(c);
         }
 

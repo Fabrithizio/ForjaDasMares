@@ -77,7 +77,7 @@ namespace ForjaDasMares.Networking.Editor
             if (bank < 1.8f)
             {
                 bool vau = Vector2.Distance(p, NascenteDoRio.Vau) < NascenteDoRio.RaioDoVau + 1.5f;
-                float fundo = vau ? -.42f : poco < NascenteDoRio.RaioDoPoco + 1 ? -1.6f : -1.15f;
+                float fundo = vau ? -.42f : poco < NascenteDoRio.RaioDoPoco + 1 ? -1.6f : -.72f; // the river is shallow: it can be waded
                 y = Mathf.Lerp(fundo, y, S(-1.6f, 1.8f, bank));
             }
             return y;
@@ -320,17 +320,8 @@ namespace ForjaDasMares.Networking.Editor
             fall.SetTriangles(new[] { 0, 2, 1, 1, 2, 3, 0, 1, 2, 1, 3, 2 }, 0); fall.RecalculateNormals(); fall.RecalculateBounds();
             Malha(holder, "Cachoeira", fall, queda, new Vector2(0, .9f));
 
-            // The water cannot be walked into (except the ford): marks on the navigation.
+            // The river can be waded (slower, PassoNaAgua). Only the deep pool of the spring is closed on the navigation.
             var bloqueio = new GameObject("AguaBloqueio").transform; bloqueio.SetParent(holder, false);
-            for (int i = 0; i < line.Count; i += 2)
-            {
-                if (Vector2.Distance(line[i], NascenteDoRio.Vau) < NascenteDoRio.RaioDoVau + .3f) continue;
-                if (Vector2.Distance(line[i], NascenteDoRio.Poco) < NascenteDoRio.RaioDoPoco - 1) continue;
-                var dir = (line[Mathf.Min(line.Count - 1, i + 1)] - line[Mathf.Max(0, i - 1)]).normalized;
-                var go = new GameObject("Agua"); go.transform.SetParent(bloqueio, false);
-                go.transform.position = new Vector3(line[i].x, 0, line[i].y); go.transform.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.y));
-                var vol = go.AddComponent<NavMeshModifierVolume>(); vol.size = new Vector3(NascenteDoRio.LarguraDoRio - .6f, 5, 2.6f); vol.center = Vector3.zero; vol.area = 1;
-            }
             foreach (float ang in new[] { 0f, 45f })
             {
                 var go = new GameObject("PocoBloqueio"); go.transform.SetParent(bloqueio, false);

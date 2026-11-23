@@ -14,14 +14,71 @@ MonoBehaviour:
   m_EditorClassIdentifier: ForjaDasMares.Networking::ForjaDasMares.Networking.RegionDefinition
   regionId: trilhos
   displayName: Trilhos Velhos
-  refuge: {x: 0, y: 0.1, z: 0}
+  refuge: {x: 36, y: 0.1, z: 36}
   portal: {x: 0, y: -500, z: 0}
   route:
-  - {x: 0, y: 0.1, z: 0}
-  camps: []
+  - {x: 36, y: 0.1, z: 36}
+  camps:
+  - label: "Vag\xF5es Tombados"
+    center: {x: -36, y: 2.343231, z: 10}
+    spawns:
+    - {x: -39, y: 2.343231, z: 8}
+    - {x: -33, y: 2.343231, z: 11}
+    - {x: -36, y: 2.343231, z: 14}
+    - {x: -37, y: 2.343231, z: 5}
+    enemies:
+    - {fileID: 11400000, guid: 87337262567ff764ebc943ccdf42fef4, type: 2}
+    - {fileID: 11400000, guid: 87337262567ff764ebc943ccdf42fef4, type: 2}
+    - {fileID: 11400000, guid: 87337262567ff764ebc943ccdf42fef4, type: 2}
+    - {fileID: 11400000, guid: a7eb4981d6b2e334f88da7c654d7cc0c, type: 2}
+    respawnSeconds: 150
+  - label: Bosque de Ferro
+    center: {x: 36, y: 1.4623177, z: 6}
+    spawns:
+    - {x: 32, y: 1.4623177, z: 8}
+    - {x: 40, y: 1.4623177, z: 5}
+    - {x: 36, y: 1.4623177, z: 2}
+    - {x: 38, y: 1.4623177, z: 11}
+    enemies:
+    - {fileID: 11400000, guid: 0da3e4f2b0e63a34bb0e5ba0834bf499, type: 2}
+    - {fileID: 11400000, guid: 0da3e4f2b0e63a34bb0e5ba0834bf499, type: 2}
+    - {fileID: 11400000, guid: 1c81ad241d126d844bc91686402c229c, type: 2}
+    - {fileID: 11400000, guid: 32dacce1d9919fe428c1125b30de821d, type: 2}
+    respawnSeconds: 120
+  - label: Trincheira dos Ecos
+    center: {x: 8, y: 1.2689464, z: -44}
+    spawns:
+    - {x: 8, y: 1.2689464, z: -42}
+    - {x: 4, y: 1.2689464, z: -46}
+    - {x: 12, y: 1.2689464, z: -46}
+    enemies:
+    - {fileID: 11400000, guid: 4c7207346e9621e48aaf434fc739a063, type: 2}
+    - {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
+    - {fileID: 11400000, guid: 5bef594e413bc7947b533e92046048c9, type: 2}
+    respawnSeconds: 140
+  - label: "P\xE1tio de Manobras"
+    center: {x: -26, y: 0.29818398, z: -30}
+    spawns:
+    - {x: -26, y: 0.29818398, z: -30}
+    - {x: -31, y: 0.05467968, z: -27}
+    - {x: -21, y: 0.20735817, z: -27}
+    enemies:
+    - {fileID: 11400000, guid: f1b488f9a19732044b3e607f6fffce62, type: 2}
+    - {fileID: 11400000, guid: 0da3e4f2b0e63a34bb0e5ba0834bf499, type: 2}
+    - {fileID: 11400000, guid: 0da3e4f2b0e63a34bb0e5ba0834bf499, type: 2}
+    respawnSeconds: 300
+  - label: Linha
+    center: {x: -20, y: 0.29199868, z: 20}
+    spawns:
+    - {x: -22, y: 0.29199892, z: 22}
+    - {x: -18, y: 0.30013734, z: 18}
+    enemies:
+    - {fileID: 11400000, guid: 87337262567ff764ebc943ccdf42fef4, type: 2}
+    - {fileID: 11400000, guid: 95954bef396854941a96c73e0f84df73, type: 2}
+    respawnSeconds: 90
   connections: []
   landmarks: []
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 66, y: 20, z: 66}
-  activeEnemyLimit: 12
+  activeEnemyLimit: 16

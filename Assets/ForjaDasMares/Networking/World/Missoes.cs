@@ -16,6 +16,8 @@ namespace ForjaDasMares.Networking
         {
             public string id, npc, titulo, quem, descricao, recompensa, recurso; public Tipo tipo;
             public Func<bool> aceita, feita; public Func<List<Objetivo>> objetivos; public Func<string> linha;
+            // When the person can offer it (null = always). Before that, no "!" over their head.
+            public Func<bool> disponivel;
         }
 
         static Objetivo Junta(string nome, string recurso, int precisa, bool entregue)
@@ -73,6 +75,35 @@ namespace ForjaDasMares.Networking
                 objetivos = () => { int n = NascenteDoRio.EstandartesAchados; return new List<Objetivo> { new Objetivo { texto = "Ache os estandartes da patrulha", tem = n, precisa = 3, feito = n >= 3 } }; },
                 linha = () => "Estandartes da Liga (Nascente): " + NascenteDoRio.EstandartesAchados + "/3"
             },
+            new Missao
+            {
+                id = "trilhos", npc = "Nara", tipo = Tipo.Principal, titulo = "Os Trilhos Velhos", quem = "Nara · tenda, no Refúgio",
+                descricao = "Uma patrulha da Liga foi pelos Trilhos Velhos há dez dias e não voltou. Os trilhos levam à Estação Antiga, onde há uma Raiz-Mãe que talvez saiba de onde vêm os Chegados. Siga a linha de ferro e ache a patrulha.",
+                recompensa = "100 de ouro da Liga e o caminho para a Estação Antiga.",
+                aceita = () => Historia.Feito("m6_aceita"), feita = () => Historia.Feito("m6_feita"),
+                objetivos = () => new List<Objetivo> { Passo("Chegue aos Trilhos Velhos (Nascente, saída sudoeste)", Historia.Feito("m6_chegou")), Passo("Descubra o que parou a patrulha (Pátio de Manobras)", Historia.Feito("m6_custodio")), Passo("Conte à Nara", Historia.Feito("m6_feita")) },
+                linha = () => Historia.Feito("m6_custodio") ? "Volte ao Refúgio e conte à Nara." : Historia.Feito("m6_chegou") ? "Siga os trilhos até o Pátio de Manobras." : "Vá aos Trilhos Velhos (Nascente, saída sudoeste)."
+            },
+            new Missao
+            {
+                id = "pedra", npc = "Téo", tipo = Tipo.Secundaria, titulo = "A Pedra Gravada", quem = "Téo · forja do Refúgio",
+                descricao = "O Téo falou de uma pedra gravada nos Trilhos Velhos, a oeste, depois dos vagões tombados, escondida no mato. Ele a achou vinte anos atrás e quer saber o que você vê nela.",
+                recompensa = "Uma peça feita pelo Téo.",
+                disponivel = () => Historia.Feito("m4_fonte"),
+                aceita = () => Historia.Feito("m7_aceita") || Historia.Feito("m7_pedra"), feita = () => Historia.Feito("m7_feita"),
+                objetivos = () => new List<Objetivo> { Passo("Ache a pedra gravada (Trilhos Velhos, oeste)", Historia.Feito("m7_pedra")), Passo("Conte ao Téo o que viu", Historia.Feito("m7_feita")) },
+                linha = () => Historia.Feito("m7_pedra") ? "Conte ao Téo o que viu na pedra." : "Pedra gravada (Trilhos Velhos, oeste)."
+            },
+            new Missao
+            {
+                // Found in the world (a note on the door of the line keeper's house), not given by anyone.
+                id = "diario", npc = "", tipo = Tipo.Secundaria, titulo = "A Última Viagem", quem = "Bilhete · Casa do Guarda-Linha, Trilhos Velhos",
+                descricao = "O guarda-linha foi embora com pressa e perdeu o diário pelo caminho, folha por folha. As páginas podem contar por que o sino da Estação ficou mudo.",
+                recompensa = "70 de ouro e o que o guarda-linha deixou.",
+                aceita = () => Historia.Feito("m8_aceita"), feita = () => Historia.Feito("m8_feita"),
+                objetivos = () => { int n = TrilhosVelhos.PaginasAchadas; return new List<Objetivo> { new Objetivo { texto = "Ache as páginas do diário", tem = n, precisa = 3, feito = n >= 3 } }; },
+                linha = () => "Páginas do diário (Trilhos): " + TrilhosVelhos.PaginasAchadas + "/3"
+            },
         };
 
         // The sign over a person's head (and on the minimap), like in Drakensang:
@@ -86,9 +117,13 @@ namespace ForjaDasMares.Networking
             if (quem == "Téo" && Historia.Feito("nara") && !Historia.Feito("teo")) return ("!", Saque.Principal);
             if (!Historia.Feito("teo")) return ("", default);
             if (quem == "Nara" && Historia.Feito("m2_feita") && !Historia.Feito("m4_aceita")) return ("!", Saque.Principal);
+            if (quem == "Nara" && Historia.Feito("m4_fonte") && !Habilidades.Aprendeu("rajada")) return ("?", Saque.Principal);
+            if (quem == "Nara" && Habilidades.Aprendeu("rajada") && !Historia.Feito("m6_aceita")) return ("!", Saque.Principal);
+            if (quem == "Nara" && Historia.Feito("m6_custodio") && !Historia.Feito("m6_feita")) return ("?", Saque.Principal);
             foreach (var m in Todas)
             {
                 if (m.npc != quem || m.tipo != Tipo.Secundaria || m.feita()) continue;
+                if (m.disponivel != null && !m.disponivel() && !m.aceita()) continue;
                 if (!m.aceita()) return ("!", Saque.Secundaria);
                 return ("?", m.objetivos()[0].feito ? Saque.Secundaria : Cinza);
             }
@@ -149,6 +184,8 @@ namespace ForjaDasMares.Networking
             {
                 if (!Historia.Feito("teo")) yield break;
                 if (Historia.Feito("m2_feita") && !Historia.Feito("m4_aceita")) yield return "A Nara quer falar com você.";
+                if (Habilidades.Aprendeu("rajada") && !Historia.Feito("m6_aceita")) yield return "A Nara quer falar com você.";
+                if (Historia.Feito("m4_fonte") && Historia.Feito("m3_feita") && !Historia.Feito("m7_aceita") && !Historia.Feito("m7_pedra")) yield return "O Téo, na forja, quer falar com você.";
                 if (!Historia.Feito("m1_aceita")) yield return "A Iria, na fonte, tem um pedido.";
                 if (!Historia.Feito("m2_aceita")) yield return "O Brás, na feira, está chamando você.";
                 if (!Historia.Feito("m3_aceita")) yield return "O Téo, na forja, quer falar com você.";
@@ -166,8 +203,8 @@ namespace ForjaDasMares.Networking
     // (1 or 2 lines before the usual talk), each person once per thing.
     public static class Descobertas
     {
-        public const string BreuVisto = "breu_visto", TomadoAbatido = "tomado_abatido", Nascente = "nascente", PocaoBebida = "pocao_bebida";
-        static readonly string[] Todas = { BreuVisto, TomadoAbatido, Nascente, PocaoBebida };
+        public const string BreuVisto = "breu_visto", TomadoAbatido = "tomado_abatido", Nascente = "nascente", PocaoBebida = "pocao_bebida", Trilhos = "trilhos";
+        static readonly string[] Todas = { BreuVisto, TomadoAbatido, Nascente, PocaoBebida, Trilhos };
         static readonly string[] Pessoas = { "Iria", "Brás", "Téo", "Nara" };
         static string Key(string what) => "ForjaDescoberta_" + Historia.Who + "_" + what;
         public static bool Viu(string what) => PlayerPrefs.GetInt(Key(what), 0) == 1;
@@ -185,6 +222,9 @@ namespace ForjaDasMares.Networking
             ("Iria", PocaoBebida, new[] { "Usou a poção! Funcionou? Claro que funcionou. Eu que fiz!" }),
             ("Nara", Nascente, new[] { "Você chegou à Nascente. Eu vi na sua cara.", "Depois me conta tudo. Com calma. Cada detalhe." }),
             ("Iria", Nascente, new[] { "Você foi até a Nascente?! Sozinho? Ai, ai, ai..." }),
+            ("Brás", Trilhos, new[] { "Os Trilhos Velhos! Meu avô dizia que o trem passava cantando.", "Hoje só passa vento. E bicho de ferrugem." }),
+            ("Iria", Trilhos, new[] { "Trilhos? Aquilo lá é ferrugem e bicho ruim! Levou poção? Leva poção!" }),
+            ("Téo", Trilhos, new[] { "Foi nos Trilhos. Hm. Cuidado com o que range." }),
         };
         static string Visto(string quem, string coisa) => "ForjaComentario_" + Historia.Who + "_" + quem + "_" + coisa;
 

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2cc77b689eb79438a1a5d12087049f, type: 3}
+  m_Name: rato-ferrugem
+  m_EditorClassIdentifier: ForjaDasMares.Runtime::ForjaDasMares.EnemyDefinition
+  spawnWarning: 0
+  enemyId: rato-ferrugem
+  displayName: Rato de Ferrugem
+  kind: 0
+  prefab: {fileID: 350909092464922381, guid: b9b42e1f11c181f4081250ed11d6bc3e, type: 3}
+  maximumHealth: 30
+  poolCapacity: 6
+  armor: 0
+  speed: 5.72
+  acceleration: 24
+  height: 1.3
+  radius: 0.32
+  agentTypeId: 0
+  detectionRange: 16
+  forgetRange: 20
+  perceptionInterval: 0.2
+  patrolRadius: 2
+  preferredRange: 6
+  retreatRange: 3.5
+  attackCooldown: 1.1
+  attack: {fileID: 11400000, guid: d2e1a29128cf9bf4083a818f3575b4ae, type: 2}
+  blockArc: 120
+  blockReduction: 0.75
+  knockbackResistance: 0
+  staggerDuration: 0.12
+  summonedEnemy: {fileID: 0}
+  summonPerCast: 1
+  maxOwnedSummons: 2
+  summonBudget: 6
+  summonCooldown: 4
+  boss: {fileID: 0}
+  rewardTheme: -1
+  miniboss: 0
+  feedback: {fileID: 11400000, guid: 9a14bf6cbbcc692468af031fb7d58b26, type: 2}
+  color: {r: 0.78, g: 0.45, b: 0.25, a: 1}
