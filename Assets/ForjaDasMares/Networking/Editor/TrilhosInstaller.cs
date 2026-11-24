@@ -691,7 +691,9 @@ namespace ForjaDasMares.Networking.Editor
                 vigia = Inimigo("Enemies/vigia-sombrio"), eco = Inimigo("Enemies/eco-forja"), fragmento = Inimigo("Enemies/fragmento"),
                 custodio = Inimigo("Enemies/custodio"),
             };
-            if (l.custodio != null) { l.custodio.displayName = "Custódio dos Trilhos"; EditorUtility.SetDirty(l.custodio); }
+            // The Custódio used the big-agent navigation type, which these places do not bake: it never appeared.
+            // Here it walks on the normal navigation like everyone else.
+            if (l.custodio != null) { l.custodio.displayName = "Custódio dos Trilhos"; l.custodio.agentTypeId = 0; EditorUtility.SetDirty(l.custodio); }
             AssetDatabase.SaveAssets();
             return l;
         }

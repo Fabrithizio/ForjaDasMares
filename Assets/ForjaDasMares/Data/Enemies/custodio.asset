@@ -24,7 +24,7 @@ MonoBehaviour:
   acceleration: 24
   height: 2.7
   radius: 0.7
-  agentTypeId: -1372625422
+  agentTypeId: 0
   detectionRange: 16
   forgetRange: 20
   perceptionInterval: 0.2

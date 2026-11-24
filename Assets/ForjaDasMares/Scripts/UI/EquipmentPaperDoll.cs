@@ -40,10 +40,15 @@ namespace ForjaDasMares
             // The hero now wears the starting character: show only it (and the weapons), not the old test body underneath.
             var body=FindChild(model.transform,"Expedicionario");
             if(body!=null)foreach(var renderer in model.GetComponentsInChildren<Renderer>(true))if(!renderer.transform.IsChildOf(body)&&renderer.GetComponentInParent<EquipmentMeshView>()==null)renderer.enabled=false;
-            if(portrait){var renderers=model.GetComponentsInChildren<Renderer>();Bounds bounds=new Bounds();bool first=true;foreach(var renderer in renderers){if(!renderer.enabled||renderer is ParticleSystemRenderer||renderer is LineRenderer||renderer is TrailRenderer)continue;if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);}if(!first){var focus=bounds.center+Vector3.up*bounds.size.y*.28f;preview.orthographicSize=Mathf.Max(.12f,bounds.size.y*.25f);preview.transform.position=focus+Vector3.forward*4;preview.transform.rotation=Quaternion.LookRotation(focus-preview.transform.position);}}
             var animator=model.GetComponentInChildren<Animator>();
             if(body!=null){animator=body.GetComponentInChildren<Animator>(true);if(animator!=null)animator.enabled=true;}
-            if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");}
+            if(animator!=null){animator.Rebind();animator.Play("Base Layer.Idle");animator.Update(0);}
+            // Copied while riding (or in the middle of a jump), the body is lifted: put its feet back on the floor of the preview.
+            if(body!=null)body.localPosition=Vector3.zero;
+            var all=model.GetComponentsInChildren<Renderer>();Bounds bounds=new Bounds();bool first=true;
+            foreach(var renderer in all){if(!renderer.enabled||renderer is ParticleSystemRenderer||renderer is LineRenderer||renderer is TrailRenderer)continue;if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);}
+            if(!first){var floor=world.transform.position;model.transform.position+=new Vector3(floor.x-bounds.center.x,floor.y-bounds.min.y,floor.z-bounds.center.z);bounds.center+=new Vector3(floor.x-bounds.center.x,floor.y-bounds.min.y,floor.z-bounds.center.z);}
+            if(portrait&&!first){var focus=bounds.center+Vector3.up*bounds.size.y*.28f;preview.orthographicSize=Mathf.Max(.12f,bounds.size.y*.25f);preview.transform.position=focus+Vector3.forward*4;preview.transform.rotation=Quaternion.LookRotation(focus-preview.transform.position);}
         }
         static Transform FindChild(Transform root,string name){if(root.name==name)return root;foreach(Transform child in root){var found=FindChild(child,name);if(found!=null)return found;}return null;}
         void LateUpdate(){if(portrait&&preview!=null&&preview.enabled&&--dirty<=0){preview.enabled=false;world.SetActive(false);}}

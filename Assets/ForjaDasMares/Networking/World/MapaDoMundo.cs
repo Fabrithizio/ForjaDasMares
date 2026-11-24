@@ -64,7 +64,7 @@ namespace ForjaDasMares.Networking
             new Lugar("estacao1","Estação Antiga","c1","estacao",37.0f,47.0f,"Guardada pelo Vigia da Estação. Religar dá a primeira viagem rápida."),
             new Lugar("campos","Campos Adormecidos","c1","lugar",61.0f,56.0f,"Fazendas abandonadas, natureza comum, bichos e bandidos. Mostra o que a drenagem fez."),
             new Lugar("mina","Mina de Cristal","c1","lugar",31.0f,37.0f,"Cristal vazando: magos e servos de cristal. Bom material para a Forja."),
-            new Lugar("foz","Vila da Foz","c1","cidade",52.0f,68.0f,"Vila de pescadores que resiste na boca do rio, ao lado de uma estação morta."),
+            new Lugar("foz","Vila da Foz","c1","cidade",52.0f,68.0f,"Vila de pescadores que resiste na boca do rio. A Raiz-Mãe da vila ainda vive: fraca, mas viva."),
             new Lugar("costa","Costa dos Naufrágios","c1","lugar",44.0f,79.0f,"Onde o Breu começa: marinheiros afogados se levantam na areia."),
             new Lugar("cemiterio","Cemitério de Navios","c1","covil",66.0f,78.0f,"Navios afundados no Breu e o farol velho. Casa do Capitão Afogado; sob o farol, a estação do porto e o Faroleiro."),
             new Lugar("desfiladeiro","Desfiladeiro da Entrada","c2","lugar",28.0f,43.0f,"Passagem nas montanhas entre o Coração Verde e o oeste seco."),
@@ -115,7 +115,7 @@ namespace ForjaDasMares.Networking
         RegionalWorld world;
         RectTransform viewport, content;
         Text title, region, body, status;
-        Button travel;
+        Button travel, andar;
         float zoom = 1, pinch;
         static readonly Color Fog = new Color(.02f, .04f, .07f, .92f);
 
@@ -138,8 +138,11 @@ namespace ForjaDasMares.Networking
             Destroy(gameObject);
         }
 
+        bool naRaiz; RectTransform confirma;
+
         void Build(bool estacao)
         {
+            naRaiz = estacao;
             var canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 30000; // above the game HUD
             var scaler = gameObject.AddComponent<CanvasScaler>();
@@ -153,7 +156,7 @@ namespace ForjaDasMares.Networking
 
             RusticHudTheme.Label(root, "Titulo", new Vector2(0, 1), new Vector2(40, -24), new Vector2(600, 44), "MAPA DO MUNDO", 34, TextAnchor.MiddleLeft).color = RusticHudTheme.Gold;
             RusticHudTheme.Label(root, "Dica", new Vector2(0, 1), new Vector2(40, -70), new Vector2(1300, 28),
-                estacao ? "Raiz-Mãe do Refúgio · toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar"
+                estacao ? "Raiz-Mãe · toque no sino de uma cidade para viajar · arraste para mover · roda ou pinça para aproximar"
                         : "Toque num lugar descoberto · arraste para mover · roda ou pinça para aproximar", 18, TextAnchor.MiddleLeft).color = RusticHudTheme.Muted;
             RusticHudTheme.Button(root, "Fechar", new Vector2(1, 1), new Vector2(-60, -50), new Vector2(84, 56), "X", Fechar);
 
@@ -214,6 +217,12 @@ namespace ForjaDasMares.Networking
             status.color = RusticHudTheme.Gold; status.horizontalOverflow = HorizontalWrapMode.Wrap;
             travel = RusticHudTheme.Button(panel, "Viajar", new Vector2(.5f, 0), new Vector2(0, 140), new Vector2(370, 64), "VIAJAR", () => { });
             travel.interactable = false;
+            // Walk there by yourself (on the mount if you are riding): the hero follows the exits up to the place.
+            andar = RusticHudTheme.Button(panel, "Andar", new Vector2(.5f, 0), new Vector2(-95, 140), new Vector2(180, 64), "IR ANDANDO", () => { });
+            andar.interactable = false;
+            // Turned off: crossing the whole world by itself made the game too easy. Walking by itself is only
+            // inside the area, by clicking on the big minimap.
+            andar.gameObject.SetActive(false);
             RusticHudTheme.Label(panel, "Legenda", new Vector2(.5f, 0), new Vector2(0, 70), new Vector2(370, 60),
                 "Sinos: pontos de viagem (dourado: cidade, verde-água: estação) · linhas finas: áreas · tracejado forte: regiões", 15, TextAnchor.MiddleLeft).color = RusticHudTheme.Muted;
             if (Application.isEditor)
@@ -317,19 +326,57 @@ namespace ForjaDasMares.Networking
                 title.text = "Área não descoberta";
                 region.text = r0.nome + " · " + r0.capitulo + " · nível " + r0.nivel;
                 body.text = "Ninguém da Liga mapeou este lugar ainda. Vá até lá para revelar o que existe.";
-                status.text = ""; travel.interactable = false;
+                status.text = ""; travel.interactable = false; andar.interactable = false;
                 return;
             }
             title.text = lugar.nome;
             var r = Regioes.TryGetValue(lugar.regiao, out var found) ? found : default;
             string kind = lugar.tipo == "cidade" ? "Cidade" : lugar.tipo == "estacao" ? "Estação" : lugar.tipo == "covil" ? "Covil" : lugar.tipo == "segredo" ? "Segredo" : "Lugar";
             region.text = kind + " · " + r.nome + " · " + r.capitulo + " · nível " + r.nivel;
+            var missoes = Missoes.ContaDe(lugar.id);
+            if (missoes != null) region.text += "   ·   Missões: " + missoes;
             body.text = lugar.texto;
             status.text = lugar.id == aqui ? (lugar.id == "refugio" ? "Você está aqui. A Raiz-Mãe do Refúgio está rachada: ela puxa gente de longe, mas só leva para outras Raízes-Mães vivas." : "Você está aqui.")
                 : lugar.id == "refugio" ? "A Raiz-Mãe do Refúgio está rachada: ela puxa gente de longe, mas só leva para outras Raízes-Mães vivas."
                 : lugar.tipo == "estacao" ? "Estação ainda não religada. Limpe o Breu em volta e acorde o Vigia para viajar até aqui."
                 : "Para viajar até aqui, religue a estação desta região.";
             travel.interactable = false;
+            andar.interactable = false; andar.onClick.RemoveAllListeners();
+            if (lugar.id != aqui && CaminhoAPe.Proximo(aqui, lugar.id) != null)
+            {
+                var alvo = lugar.id; andar.interactable = true;
+                andar.onClick.AddListener(() => { CaminhoAPe.Ir(alvo); Fechar(); });
+            }
+            // Cities with a Raiz-Mãe: travel from one root to another the player has touched.
+            var raiz = RaizesMaes.PorId(lugar.id);
+            if (raiz == null || lugar.id == aqui) return;
+            if (!RaizesMaes.Conectada(lugar.id)) { status.text = "Toque a " + raiz.nome + " uma vez (indo até lá a pé) para poder viajar até ela."; return; }
+            if (!naRaiz) { status.text = "Raiz-Mãe ligada. Para viajar, use a Raiz-Mãe de uma cidade."; return; }
+            status.text = "Raiz-Mãe ligada. Você pode viajar até lá.";
+            travel.interactable = true;
+            travel.onClick.RemoveAllListeners();
+            var destino = raiz;
+            travel.onClick.AddListener(() => Confirmar(destino));
+        }
+
+        // "Viajar para ...?" Sim / Não.
+        void Confirmar(RaizesMaes.Raiz destino)
+        {
+            if (confirma != null) Destroy(confirma.gameObject);
+            var root = (RectTransform)transform;
+            confirma = new GameObject("Confirmar", typeof(RectTransform)).GetComponent<RectTransform>();
+            Stretch(confirma, root, 0, 0, 0, 0);
+            confirma.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, .6f); // blocks the map behind
+            var box = RusticHudTheme.Rect(confirma, "Caixa", new Vector2(.5f, .5f), Vector2.zero, new Vector2(620, 260));
+            RusticHudTheme.Panel(box, RusticHudTheme.Surface, 18);
+            var pergunta = RusticHudTheme.Label(box, "Pergunta", new Vector2(.5f, 1), new Vector2(0, -70), new Vector2(560, 90), "Viajar para " + destino.nome + "?", 28, TextAnchor.MiddleCenter);
+            pergunta.color = RusticHudTheme.Gold; pergunta.horizontalOverflow = HorizontalWrapMode.Wrap;
+            RusticHudTheme.Button(box, "Sim", new Vector2(.5f, 0), new Vector2(-140, 60), new Vector2(240, 64), "VIAJAR", () =>
+            {
+                var w = world; Fechar();
+                RaizesMaes.Viajar(w, destino.id);
+            });
+            RusticHudTheme.Button(box, "Nao", new Vector2(.5f, 0), new Vector2(140, 60), new Vector2(240, 64), "AGORA NÃO", () => { if (confirma != null) Destroy(confirma.gameObject); confirma = null; });
         }
 
         // Areas: each of the 52 places owns a piece of land. MapaAreasDados.bytes = one byte per pixel (836 x 470, rows from
@@ -405,7 +452,7 @@ namespace ForjaDasMares.Networking
 
         void Update()
         {
-            if (Keyboard.current != null && (Keyboard.current.escapeKey.wasPressedThisFrame || Keyboard.current.kKey.wasPressedThisFrame)) { Fechar(); return; }
+            if ((Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) || Teclas.Apertou("mapa")) { Fechar(); return; }
             if (marcaAqui != null) marcaAqui.localScale = Vector3.one * (1 + Mathf.Sin(Time.unscaledTime * 4) * .12f) / Mathf.Max(.01f, zoom);
             if (viewport.rect.width > 10)
             {

@@ -28,6 +28,27 @@ namespace ForjaDasMares
             if(shape==null)return;
             foreach(var walker in Object.FindObjectsByType<CharacterController>(FindObjectsSortMode.None))Physics.IgnoreCollision(walker,shape,true);
         }
+        // Big things (a Raiz-Mãe, an exit arrow): clicking anywhere within ClickRadius (metres, on the ground plane)
+        // of ClickCenter uses them, even where the model has no collider of its own.
+        // What lights up (gold outline) when the mouse is over it; null = the target's own model.
+        public Renderer[] Realce{get;set;}
+        // Clicks only count on the object itself, never on scenery standing between the camera and the hero.
+        public float ClickRadius{get;set;}
+        public Vector3? ClickCenter{get;set;}
+        public static readonly System.Collections.Generic.List<WorldClickTarget> Areas=new System.Collections.Generic.List<WorldClickTarget>();
+        public void ClicavelEmVolta(float radius,Vector3? center=null){ClickRadius=radius;ClickCenter=center;if(!Areas.Contains(this))Areas.Add(this);}
+        public static WorldClickTarget PertoDoClique(Vector3 point)
+        {
+            WorldClickTarget best=null;float distance=float.MaxValue;
+            for(int i=Areas.Count-1;i>=0;i--)
+            {
+                var t=Areas[i];if(t==null){Areas.RemoveAt(i);continue;}
+                if(!t.isActiveAndEnabled)continue;
+                Vector3 d=point-(t.ClickCenter??t.transform.position);d.y=0;
+                if(d.sqrMagnitude<=t.ClickRadius*t.ClickRadius&&d.sqrMagnitude<distance){distance=d.sqrMagnitude;best=t;}
+            }
+            return best;
+        }
         public static WorldClickTarget MaisPerto(Transform hero)
         {
             WorldClickTarget best=null;float distance=float.MaxValue;

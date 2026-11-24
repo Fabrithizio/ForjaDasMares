@@ -59,6 +59,11 @@ namespace ForjaDasMares
             superAction = gameplay.FindAction("Super");
             if(superAction == null) { superAction = gameplay.AddAction("Super", InputActionType.Button); superAction.AddBinding("<Keyboard>/q"); superAction.AddBinding("<Gamepad>/rightShoulder"); }
             superAction.performed += _ => RequestSuper();
+            // Keys chosen by the player (Configurações › Teclas). Old arena keys come off the keyboard so they do
+            // not fight with the new ones (E, R, Tab, H, V, 1-4): mouse and gamepad stay.
+            Teclas.Assumir("super", superAction);
+            Teclas.Assumir("esquiva", gameplay.FindAction("Dodge", true));
+            foreach (var old in new[] { "Special", "Reset", "NextHero", "TestDamage", "Victory", "Hero1", "Hero2", "Hero3", "Hero4" }) Teclas.Soltar(gameplay.FindAction(old));
             gameplay.FindAction("Dodge", true).performed += OnDodge;
             gameplay.FindAction("Reset", true).performed += OnReset;
             var ability=gameplay.FindAction("Special");if(ability!=null&&!UnityEngine.Device.Application.isMobilePlatform)ability.AddBinding("<Mouse>/rightButton");

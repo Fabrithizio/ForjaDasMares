@@ -202,6 +202,15 @@ namespace ForjaDasMares.Networking
             if (!IsCatacombInstance) PortoesDoMundo.Criar(this);
             // You fell somewhere else: the web pulls you back to the Nó that recorded you.
             if (Historia.RenascerNoNo && mapStation != null) { Historia.RenascerNoNo = false; hero.GetComponent<PlayerMotor>().Teleport(RenascerSpot,Quaternion.Euler(0,180,0)); follow.Snap(); IriaCuidou(); }
+            // Arriving by a Raiz-Mãe (travel between cities): in front of the Refúgio's.
+            if (RaizesMaes.ChegandoEm == "refugio" && mapStation != null)
+            {
+                RaizesMaes.ChegandoEm = null;
+                var spot = NoSpot; var away = spot - raizBounds.center; away.y = 0;
+                hero.GetComponent<PlayerMotor>().Teleport(spot,away.sqrMagnitude > .01f ? Quaternion.LookRotation(away) : Quaternion.Euler(0,180,0));
+                follow.Snap();
+                RaizesMaes.Chegada(spot);
+            }
             if (IsCatacombInstance)
             {
                 for (int i = 0; i < cardOrder.Length; i++) cardOrder[i] = 15 + (i % 6) * 5;
@@ -222,8 +231,10 @@ namespace ForjaDasMares.Networking
         // Bosses and mini-bosses carry their life bar (and name) over the head.
         void BarraDoChefe(EnemyActor actor)
         {
-            if(actor==null||actor.Profile==null||(actor.Profile.kind!=EnemyKind.Boss&&!actor.Profile.miniboss))return;
+            if(actor==null||actor.Profile==null)return;
             if(actor.GetComponentInChildren<BarraDeVida>(true)!=null)return;
+            // Common enemies: a small bar that appears after the first hit (you see how much is left).
+            if(actor.Profile.kind!=EnemyKind.Boss&&!actor.Profile.miniboss){BarraDeVida.Criar(actor.transform,actor.Health,BarraDeVida.Altura(actor.transform,1.8f)+.35f);return;}
             BarraDeVida.Grande(actor.transform,actor.Health,actor.Profile.displayName);
         }
         void Voice(string label,AudioClip clip,float volume){var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;source.volume=volume;source.Play();}
@@ -339,6 +350,10 @@ namespace ForjaDasMares.Networking
             if (!Physics.Raycast(camera.ScreenPointToRay(screenPosition),out var hit,150,
                 (1<<0)|(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
             if (mapStation != null && (hit.point - mapStation.transform.position).sqrMagnitude < 36) return mapStation.TryUse(hero.transform);
+            // A building that stands for a target (the Raízes-Mães), or a click close to a big target (exit arrows).
+            if (WorldClickTarget.Alias.TryGetValue(hit.collider,out var standIn) && standIn != null) return standIn.TryUse(hero.transform);
+            var around = WorldClickTarget.PertoDoClique(hit.point);
+            if (around != null) return around.TryUse(hero.transform);
             var target = hit.collider.GetComponentInParent<WorldClickTarget>();
             if (target == null || (target != catacombAltar && Array.IndexOf(goldPiles,target) < 0)) return false;
             return target.TryUse(hero.transform);
@@ -445,6 +460,7 @@ namespace ForjaDasMares.Networking
         // No ring on the ground any more: clicking the Raiz-Mãe itself (the building) uses it.
         // Falling brings you back beside Iria's spring (she heals you), not to the root.
         WorldClickTarget mapStation;
+        Bounds raizBounds; bool raizAchada;
         Vector3 RenascerSpot
         {
             get
@@ -474,7 +490,27 @@ namespace ForjaDasMares.Networking
         {
             get
             {
+                // Outside the building, on the camera side first (south), so the tree never covers the hero:
+                // never inside the trunk (where the hero used to get stuck).
                 var p = mapStation.transform.position;
+                if (raizAchada)
+                {
+                    var c = raizBounds.center; float reach = Mathf.Max(raizBounds.extents.x,raizBounds.extents.z) + 1.5f;
+                    var plaza = new Vector3(-c.x,0,-c.z).normalized;
+                    var tries = new[] { Vector3.back, plaza, (Vector3.back + plaza).normalized, Vector3.right, Vector3.left, Vector3.forward };
+                    foreach (var dir in tries)
+                    {
+                        if (dir.sqrMagnitude < .01f) continue;
+                        var at = new Vector3(c.x,p.y,c.z) + dir * reach;
+                        if (!UnityEngine.AI.NavMesh.SamplePosition(at,out var near,2f,UnityEngine.AI.NavMesh.AllAreas)) continue;
+                        var flat = new Vector2(near.position.x - c.x, near.position.z - c.z);
+                        if (Mathf.Abs(flat.x) < raizBounds.extents.x + .4f && Mathf.Abs(flat.y) < raizBounds.extents.z + .4f) continue; // inside the building
+                        // Room for the hero (and the mount): nothing solid within 1.2 m.
+                        var foot = near.position + Vector3.up * .5f;
+                        if (Physics.CheckCapsule(foot, foot + Vector3.up * 1.2f, 1.2f, (1 << 0) | (1 << 9), QueryTriggerInteraction.Ignore)) continue;
+                        return near.position;
+                    }
+                }
                 return UnityEngine.AI.NavMesh.SamplePosition(p,out var hit,4,UnityEngine.AI.NavMesh.AllAreas) ? hit.position : p;
             }
         }
@@ -497,10 +533,47 @@ namespace ForjaDasMares.Networking
             station.transform.position = UnityEngine.AI.NavMesh.SamplePosition(place,out var front,6,UnityEngine.AI.NavMesh.AllAreas) ? front.position : place;
             var target = station.AddComponent<WorldClickTarget>();
             target.Configure("Raiz-Mãe do Refúgio",4.5f);
-            // Clicking the building itself (its colliders) uses it.
+            // Clicking the building itself uses it: its own colliders, plus an invisible body inside it (the model may
+            // have no collider where the player clicks, like the roots and the crown).
             WorldClickTarget.Alias.Clear();
             foreach (var c in Physics.OverlapSphere(place,4.5f,1<<9,QueryTriggerInteraction.Ignore))
                 if (new Vector2(c.bounds.center.x - place.x, c.bounds.center.z - place.z).magnitude < 4f) WorldClickTarget.Alias[c] = target;
+            bool found = false; var building = new Bounds(place,Vector3.zero); var pecas = new List<Renderer>();
+            foreach (var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+            {
+                var b = r.bounds;
+                if (r.GetComponentInParent<TownResident>() != null || r is ParticleSystemRenderer || r.GetComponent<TextMesh>() != null) continue;
+                if (new Vector2(b.center.x - place.x, b.center.z - place.z).magnitude > 5f || Mathf.Max(b.size.x,b.size.z) > 22f) continue;
+                if (b.max.y > .5f) pecas.Add(r); // its parts (roots, crown...) light up together
+                if (b.size.y < 3f) continue;
+                if (!found) { building = b; found = true; } else building.Encapsulate(b);
+            }
+            // Only the building itself is clickable (not the grass and the road around it); the mouse over it lights it up.
+            // Every collider of the building's own parts (whatever their layer, but the ground) is the root too:
+            // the click hits the outside of the building first, not the click capsule inside it.
+            // (only parts standing inside the building's footprint and taller than a step: never the floor around it)
+            if (found) pecas.RemoveAll(r => r.bounds.size.y < 1f || Mathf.Abs(r.bounds.center.x - building.center.x) > building.extents.x || Mathf.Abs(r.bounds.center.z - building.center.z) > building.extents.z);
+            foreach (var r in pecas)
+                foreach (var c in r.GetComponentsInParent<Collider>())
+                    if (c.gameObject.layer != 8 && !c.isTrigger && Mathf.Max(c.bounds.size.x, c.bounds.size.z) < 22f && c.GetComponentInParent<TownResident>() == null) WorldClickTarget.Alias[c] = target;
+            foreach (var c in Physics.OverlapSphere(found ? building.center : place, found ? Mathf.Max(building.extents.x, building.extents.z) : 4.5f, (1 << 0) | (1 << 9), QueryTriggerInteraction.Ignore))
+                if (c.GetComponentInParent<TownResident>() == null && c.GetComponentInParent<CharacterController>() == null && (!found || (Mathf.Abs(c.bounds.center.x - building.center.x) < building.extents.x && Mathf.Abs(c.bounds.center.z - building.center.z) < building.extents.z)))
+                    WorldClickTarget.Alias[c] = target;
+            // The whole tree (roots on the ground too), for the arrival spot: outside all of it.
+            var inteira = building; foreach (var r in pecas) if (found) inteira.Encapsulate(r.bounds);
+            raizAchada = found; raizBounds = inteira;
+            target.Realce = pecas.ToArray();
+            BrilhoAoApontar.Criar(target, found ? building.center : place + Vector3.up * 2);
+            if (found)
+            {
+                var body = new GameObject("CliqueDaRaiz"); body.transform.SetParent(station.transform.parent,false); body.layer = 9;
+                body.transform.position = new Vector3(building.center.x,building.min.y,building.center.z);
+                var capsule = body.AddComponent<CapsuleCollider>();
+                capsule.radius = Mathf.Max(1f,Mathf.Min(building.extents.x,building.extents.z) * .9f);
+                capsule.height = Mathf.Max(capsule.radius * 2,building.size.y); capsule.center = Vector3.up * capsule.height * .5f;
+                WorldClickTarget.Alias[capsule] = target;
+                WorldClickTarget.Atravessavel(capsule); // only for the click: walking is not changed
+            }
             target.Interacting += actor =>
             {
                 if (actor != hero.transform || !hero.Health.IsAlive || MapaDoMundo.Aberto) return;
@@ -508,9 +581,9 @@ namespace ForjaDasMares.Networking
                 // The bell is the Nó's signal: it rings when the root records you.
                 bool first = Historia.CenaDoNo != SceneManager.GetActiveScene().name;
                 Historia.GravarNo(SceneManager.GetActiveScene().name);
-                if (first) AudioSource.PlayClipAtPoint(Historia.Sino(true),station.transform.position,.9f);
                 // The first touch: the root records you and gives you a little of its power.
                 Habilidades.Aprender("raizes");
+                RaizesMaes.Conectar("refugio");
                 MapaDoMundo.Abrir(this,true);
             };
             return target;
@@ -666,11 +739,13 @@ namespace ForjaDasMares.Networking
             if (!IsCatacombInstance && !string.IsNullOrEmpty(noScene) && noScene != here && Application.CanStreamedLevelBeLoaded(noScene))
             { Historia.RenascerNoNo = true; AreasDoMundo.VindoDe = null; TravelTo(noScene); return; }
             bool city = mapStation != null && (noScene == here || string.IsNullOrEmpty(noScene));
-            hero.GetComponent<PlayerMotor>().Teleport(city ? RenascerSpot : definition.refuge,Quaternion.identity);
+            // A city with a Raiz-Mãe built while playing (Vila da Foz): you rise again in front of it.
+            hero.GetComponent<PlayerMotor>().Teleport(city ? RenascerSpot : RaizesMaes.PontoAqui ?? definition.refuge,Quaternion.identity);
             follow.Snap();Changed?.Invoke();
             if (city) IriaCuidou();
         }
         public void Viajar(string scene) => TravelTo(scene);
+        public void ChegarEm(Vector3 position,Quaternion rotation){hero.GetComponent<PlayerMotor>().Teleport(position,rotation);follow.Snap();}
         // In the wild there is no free rest (only in cities).
         bool CanRest => !AreasDoMundo.Selvagem(SceneManager.GetActiveScene().name);
         public void ReturnToStartMenu() => TravelTo("Inicio");

@@ -28,7 +28,7 @@ namespace ForjaDasMares.Networking
             label.text = wait > 0 ? Mathf.CeilToInt(wait).ToString() : "";
             this.count.text = count.ToString();
             shade.sizeDelta = new Vector2(-6, (((RectTransform)button.transform).sizeDelta.y - 6) * Mathf.Clamp01(wait / Espera));
-            if (!blocked && Keyboard.current != null && Keyboard.current.digit4Key.wasPressedThisFrame) Beber();
+            if (!blocked && Teclas.Apertou("pocao")) Beber();
         }
 
         public void Beber()
@@ -75,7 +75,7 @@ namespace ForjaDasMares.Networking
             // The key, on PC only.
             if (!touch)
             {
-                var key = RusticHudTheme.Label(button.transform, "Tecla", new Vector2(0, 1), new Vector2(2, -1), new Vector2(12, 13), "4", 10, TextAnchor.MiddleCenter);
+                var key = RusticHudTheme.Label(button.transform, "Tecla", new Vector2(0, 1), new Vector2(2, -1), new Vector2(12, 13), Teclas.Nome("pocao"), 10, TextAnchor.MiddleCenter);
                 key.color = RusticHudTheme.Gold; key.fontStyle = FontStyle.Bold; key.raycastTarget = false;
             }
             return true;

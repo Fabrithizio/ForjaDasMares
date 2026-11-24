@@ -158,9 +158,11 @@ namespace ForjaDasMares.Networking
         {
             if (world == null || world.Hero == null) return;
             foreach (var p in portoes) if (p.seta != null) p.seta.localPosition = new Vector3(0, .06f, Mathf.Sin(Time.time * 3) * .25f);
+            if (!world.Hero.Health.IsAlive) CaminhoAPe.Cancelar();
             if (saindo || !world.Hero.Health.IsAlive) return;
-            if (!area.cidade && Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame) Voltar();
-            if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame && !MapaDoMundo.Aberto && MapaDoMundo.FechadoNoQuadro != Time.frameCount) AbrirMapa();
+            Caminhar();
+            if (!area.cidade && Teclas.Apertou("voltar")) Voltar();
+            if (Teclas.Apertou("mapa") && !MapaDoMundo.Aberto && MapaDoMundo.FechadoNoQuadro != Time.frameCount) AbrirMapa();
             var hero = world.Hero.transform.position;
             foreach (var p in portoes)
             {
@@ -213,13 +215,59 @@ namespace ForjaDasMares.Networking
             clique.size = new Vector3(3.2f, .6f, 4f); clique.gameObject.layer = 0; WorldClickTarget.Atravessavel(clique);
             var alvo = raiz.gameObject.AddComponent<WorldClickTarget>();
             alvo.Configure("Ir para " + AreasDoMundo.Nome(p.saida.para), 3.2f);
+            alvo.ClicavelEmVolta(2.8f); // clicking on or right around the arrow
             var destino = p.saida.para;
             alvo.Interacting += actor => { if (actor == world.Hero.transform && !saindo && world.Hero.Health.IsAlive) Ir(destino, area.id); };
             p.alvo = alvo;
             // In the list of things to use: near the arrow, F (PC) or the USAR button (phone) travels.
             WorldClickTarget.Extras.Add(alvo);
         }
-        void OnDestroy() { foreach (var p in portoes) if (p.alvo != null) WorldClickTarget.Extras.Remove(p.alvo); }
+        void OnDestroy() { foreach (var p in portoes) if (p.alvo != null) WorldClickTarget.Extras.Remove(p.alvo); if (faixa != null) Destroy(faixa.transform.root.gameObject); }
+
+        // ---------- Walking by itself to a place picked on the world map ----------
+        DesktopRpgControls controles; Portao indo; float espera = .8f; int vidaAntes = -1; Text faixa;
+        void Caminhar()
+        {
+            if (CaminhoAPe.Destino == null) { indo = null; Faixa(null); return; }
+            if (controles == null) controles = world.Hero.GetComponent<ArenaInput>()?.Desktop;
+            if (controles == null) { CaminhoAPe.Cancelar(); return; }
+            var hp = world.Hero.Health.Current;
+            if (area.id == CaminhoAPe.Destino) { Faixa(null); Aviso("Você chegou: " + AreasDoMundo.Nome(area.id)); CaminhoAPe.Cancelar(); controles.PararAuto(); return; }
+            // A hit stops the walk (you need your hands).
+            if (vidaAntes >= 0 && hp < vidaAntes && indo != null) { controles.PararAuto(); vidaAntes = hp; CaminhoAPe.Cancelar(); Aviso("Caminhada interrompida: você foi atacado"); return; }
+            vidaAntes = hp;
+            if (espera > 0) { espera -= Time.deltaTime; return; } // a moment after arriving
+            if (indo == null)
+            {
+                var proximo = CaminhoAPe.Proximo(area.id, CaminhoAPe.Destino);
+                indo = portoes.Find(p => p.saida.para == proximo && p.alvo != null);
+                if (indo == null) { CaminhoAPe.Cancelar(); Aviso("Não há caminho a pé até lá daqui"); return; }
+                controles.IrAte(indo.alvo);
+                Faixa("A caminho de " + AreasDoMundo.Nome(CaminhoAPe.Destino) + "  ·  mexa-se para parar");
+                return;
+            }
+            if (controles.Auto == null && controles.AutoParou) { CaminhoAPe.Cancelar(); indo = null; Faixa(null); Aviso("Caminhada interrompida"); }
+        }
+        void Aviso(string texto) { Faixa(texto); avisoAte = Time.time + 3f; }
+        float avisoAte;
+        void LateUpdate() { if (faixa != null && avisoAte > 0 && Time.time > avisoAte && CaminhoAPe.Destino == null) { avisoAte = 0; Faixa(null); } }
+        void Faixa(string texto)
+        {
+            if (texto == null) { if (faixa != null && (avisoAte == 0 || Time.time > avisoAte)) faixa.transform.parent.gameObject.SetActive(false); return; }
+            if (faixa == null)
+            {
+                var canvasGo = new GameObject("CaminhoAPe"); var canvas = canvasGo.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 400;
+                var scaler = canvasGo.AddComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1600, 900); scaler.matchWidthOrHeight = .5f;
+                var box = new GameObject("Faixa", typeof(RectTransform), typeof(Image)); box.transform.SetParent(canvasGo.transform, false);
+                var rt = (RectTransform)box.transform; rt.anchorMin = rt.anchorMax = new Vector2(.5f, 1); rt.pivot = new Vector2(.5f, 1); rt.anchoredPosition = new Vector2(0, -92); rt.sizeDelta = new Vector2(620, 46);
+                var img = box.GetComponent<Image>(); img.color = new Color(.06f, .09f, .1f, .88f); img.raycastTarget = false;
+                faixa = new GameObject("Texto", typeof(RectTransform)).AddComponent<Text>(); faixa.transform.SetParent(box.transform, false);
+                var tr = (RectTransform)faixa.transform; tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.offsetMin = tr.offsetMax = Vector2.zero;
+                faixa.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); faixa.fontSize = 22; faixa.alignment = TextAnchor.MiddleCenter;
+                faixa.color = new Color(1f, .88f, .6f); faixa.raycastTarget = false;
+            }
+            faixa.text = texto; faixa.transform.parent.gameObject.SetActive(true);
+        }
 
         static Mesh malha;
         static Mesh MalhaDaSeta()
@@ -286,8 +334,36 @@ namespace ForjaDasMares.Networking
             var cidade = AreasDoMundo.PorId(AreasDoMundo.UltimaCidade) ?? AreasDoMundo.PorId("refugio");
             saindo = true;
             AreasDoMundo.VindoDe = null;
-            if (cidade.id == "refugio") Historia.RenascerNoNo = true; // arrives at the Raiz-Mãe
-            world.Viajar(cidade.cena);
+            // The city's Raiz-Mãe pulls you home: the bell, the light, and you arrive in front of it.
+            if (RaizesMaes.PorId(cidade.id) != null) { RaizesMaes.ChegandoEm = cidade.id; RaizesMaes.Partir(world, cidade.cena); }
+            else world.Viajar(cidade.cena);
+        }
+    }
+
+    // Walking to a place picked on the world map: the next area on the shortest way (open exits only).
+    // Kept between scenes, so the walk goes on through each area until it arrives.
+    public static class CaminhoAPe
+    {
+        public static string Destino { get; private set; }
+        public static void Ir(string destino) => Destino = destino;
+        public static void Cancelar() => Destino = null;
+        public static string Proximo(string de, string para)
+        {
+            if (de == para || AreasDoMundo.PorId(para) == null || AreasDoMundo.PorId(de) == null) return null;
+            var veio = new Dictionary<string, string> { [de] = null }; var fila = new Queue<string>(); fila.Enqueue(de);
+            while (fila.Count > 0)
+            {
+                var a = AreasDoMundo.PorId(fila.Dequeue()); if (a == null) continue;
+                foreach (var s in a.saidas)
+                {
+                    if (s.trava != null || veio.ContainsKey(s.para)) continue;
+                    var b = AreasDoMundo.PorId(s.para); if (b == null || !Application.CanStreamedLevelBeLoaded(b.cena)) continue;
+                    veio[s.para] = a.id;
+                    if (s.para == para) { var passo = para; while (veio[passo] != de) passo = veio[passo]; return passo; }
+                    fila.Enqueue(s.para);
+                }
+            }
+            return null;
         }
     }
 }

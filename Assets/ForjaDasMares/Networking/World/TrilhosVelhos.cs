@@ -62,6 +62,13 @@ namespace ForjaDasMares.Networking
             "\"O Custódio não deixa mais ninguém passar. Ele, que cuidava da linha. Os olhos dele ficaram roxos.\"",
             "\"Vou para a Estação. Se a Raiz-Mãe de lá ainda vive, alguém precisa contar a ela que o sino se calou.\"",
         };
+        // Where the wind took the pages (a hint in the journal, so nobody gets stuck looking for the last one).
+        static readonly string[] OndeFoi = { "a oeste, no meio do caminho", "a leste, perto dos trilhos", "ao sul, junto da cerca do fundo" };
+        public static string Pista()
+        {
+            for (int i = 0; i < Paginas.Length; i++) if (!Historia.Feito("m8_p" + i)) return "uma folha voou " + OndeFoi[i];
+            return null;
+        }
         public static int PaginasAchadas { get { int n = 0; for (int i = 0; i < 3; i++) if (Historia.Feito("m8_p" + i)) n++; return n; } }
 
         public static float ALinha(Vector2 p) { float best = float.MaxValue; foreach (var t in Trilhos) best = Mathf.Min(best, NascenteDoRio.Distancia(p, t)); return best; }
@@ -323,6 +330,7 @@ namespace ForjaDasMares.Networking
                 if (Historia.Feito("m8_p" + i)) continue;
                 int index = i;
                 var alvo = Alvo("Pagina" + i, TrilhosVelhos.Paginas[i], "Pegar a página", Saque.Secundaria);
+                Folha(alvo.transform);
                 alvo.Interacting += actor =>
                 {
                     if (world == null || actor != world.Hero.transform || Historia.Feito("m8_p" + index)) return;
@@ -340,6 +348,25 @@ namespace ForjaDasMares.Networking
                     }
                 };
             }
+        }
+
+        // A page you can see from far: a sheet of paper floating and turning, with a thin column of light over it.
+        static void Folha(Transform onde)
+        {
+            var papel = GameObject.CreatePrimitive(PrimitiveType.Cube); Destroy(papel.GetComponent<Collider>());
+            papel.name = "Papel"; papel.transform.SetParent(onde, false); papel.transform.localPosition = Vector3.up * .9f; papel.transform.localScale = new Vector3(.42f, .02f, .56f);
+            var m = new Material(Shader.Find("Universal Render Pipeline/Lit")); m.SetColor("_BaseColor", new Color(.96f, .92f, .8f));
+            m.EnableKeyword("_EMISSION"); m.SetColor("_EmissionColor", new Color(.5f, .45f, .3f)); papel.GetComponent<Renderer>().sharedMaterial = m;
+            papel.AddComponent<Flutuar>();
+            var coluna = GameObject.CreatePrimitive(PrimitiveType.Cylinder); Destroy(coluna.GetComponent<Collider>());
+            coluna.name = "Coluna"; coluna.transform.SetParent(onde, false); coluna.transform.localPosition = Vector3.up * 3.5f; coluna.transform.localScale = new Vector3(.18f, 3.5f, .18f);
+            var r = coluna.GetComponent<Renderer>(); r.sharedMaterial = EfeitosDeHabilidade.Brilho; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", new Color(1f, .85f, .45f, .35f)); r.SetPropertyBlock(block);
+        }
+        sealed class Flutuar : MonoBehaviour
+        {
+            float y0; void Start() => y0 = transform.localPosition.y;
+            void Update() { transform.localPosition = new Vector3(0, y0 + Mathf.Sin(Time.time * 1.8f) * .15f, 0); transform.Rotate(8 * Time.deltaTime, 50 * Time.deltaTime, 0, Space.Self); }
         }
 
         static Vector3 Chao(Vector3 p)

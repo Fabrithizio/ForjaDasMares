@@ -36,7 +36,7 @@ namespace ForjaDasMares.Networking
             // Old square map replaced by the round minimap (photo of the region, discovered places, turns with the camera).
             mapPanel.SetActive(false);mapLegend.SetActive(false);MiniMapa.Criar(root,world,UnityEngine.Device.Application.isMobilePlatform?-16:-96);
             hint=Label(root,"Interact",new Vector2(350,-625),new Vector2(580,35),"",18);hint.alignment=TextAnchor.MiddleCenter;hint.color=RusticHudTheme.Gold;var promptRect=(RectTransform)hint.transform;promptRect.anchorMin=promptRect.anchorMax=promptRect.pivot=new Vector2(.5f,0);promptRect.anchoredPosition=new Vector2(0,174);
-            desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · Shift: atacar parado · botão direito / E: habilidade · Espaço: esquiva · roda: zoom · F: interagir",13).gameObject;desktopLegend.SetActive(false);
+            desktopLegend=Label(root,"Controls",new Vector2(22,-674),new Vector2(1200,35),"Mouse: mover e atacar · "+Teclas.Nome("parado")+": atacar parado · "+Teclas.Nome("hab1")+" / "+Teclas.Nome("hab2")+" / "+Teclas.Nome("hab3")+": habilidades · "+Teclas.Nome("esquiva")+": esquiva · roda: zoom · "+Teclas.Nome("interagir")+": interagir",13).gameObject;desktopLegend.SetActive(false);
             Label(root,"Scope",new Vector2(22,-640),new Vector2(320,24),world.Definition.displayName.ToUpperInvariant()+" · PRÉVIA LOCAL",12).gameObject.SetActive(false);
             {
                 var dialogue = RusticHudTheme.Rect(root,"StoryNotice",Top,new Vector2(20,-116),new Vector2(315,126));
@@ -57,13 +57,13 @@ namespace ForjaDasMares.Networking
             }
             death=RusticHudTheme.Rect(root,"Death",Vector2.one*.5f,Vector2.zero,new Vector2(450,180)).gameObject;RusticHudTheme.Panel((RectTransform)death.transform,RusticHudTheme.Ink,20);
             Label(death.transform,"Title",new Vector2(25,-20),new Vector2(400,60),"Você caiu. A Raiz-Mãe vai te puxar de volta.",23);RusticHudTheme.Button(death.transform,"Respawn",Top,new Vector2(25,-100),new Vector2(400,50),"REAPARECER",world.Respawn);death.SetActive(false);
-            interact=new InputAction("RegionalInteract",InputActionType.Button);interact.AddBinding("<Keyboard>/f");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
-            weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button, "<Keyboard>/tab");
+            interact=Teclas.Criar("interagir");interact.AddBinding("<Gamepad>/buttonWest");interact.performed+=OnInteract;interact.Enable();
+            weaponModeKey = new InputAction("RegionalWeaponMode", InputActionType.Button); // Tab is now "trocar barra" (Teclas)
             // Tab no longer switches to a heavy mode (there is no heavy attack: the Super is the heavy blow, Q).
             for (int i = 0; i < skillKeys.Length; i++)
             {
                 int slot = i;
-                var action = new InputAction("RpgSkill"+i, InputActionType.Button, "<Keyboard>/"+(i+1));
+                var action = Teclas.Criar("hab"+(i+1));
                 action.performed += _ => CastRegionalSkill(slot);
                 skillKeys[i] = action;
                 action.Enable();
@@ -77,7 +77,7 @@ namespace ForjaDasMares.Networking
                 RusticHudTheme.Panel(bloco,RusticHudTheme.Ink,14).borderColor = RusticHudTheme.Gold;
                 var mountButton = RusticHudTheme.Button(bloco,"MountToggle",new Vector2(1,.5f),new Vector2(-6,0),new Vector2(112,42),"",world.ToggleMount);
                 mountCaption = mountButton.GetComponentInChildren<Text>();
-                mountKey = new InputAction("Mount",InputActionType.Button,"<Keyboard>/m");
+                mountKey = Teclas.Criar("montar");
                 mountKey.performed += _ => world.ToggleMount();
                 mountKey.Enable();
             }
@@ -86,6 +86,7 @@ namespace ForjaDasMares.Networking
             var inventory=world.GetComponent<RegionalInventory>();if(inventory!=null)gameObject.AddComponent<CoopInventoryHud>().Configure(inventory,root);
             if(town!=null&&System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-runTests")<0)StartCoroutine(PlayWorldIntro(root));
             StartCoroutine(MontarFileira(root));
+            gameObject.AddComponent<LayoutDoHud>().Configurar(root,world);
         }
         // Phone only: MONTAR/VOLTAR, mochila, diário and settings in one row at the bottom middle, between the
         // joystick and the abilities (the minimap has the top corner alone). The PC keeps them on top.
@@ -618,7 +619,7 @@ namespace ForjaDasMares.Networking
             var dock = RusticHudTheme.Rect(root,"CombatDock",new Vector2(.5f,0),new Vector2(0,-10),new Vector2(436,74)); // last 56 px: the potion pocket (Pocoes)
             RusticHudTheme.Panel(dock,RusticHudTheme.Ink,15).borderColor = RusticHudTheme.Gold;
             BuildSkillBar(dock,18);
-            dodgeButton = CombatAction(dock,"RegionalDodge",new Vector2(-70,18),52,"ESPAÇO",HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
+            dodgeButton = CombatAction(dock,"RegionalDodge",new Vector2(-70,18),52,Teclas.Nome("esquiva"),HudSymbol.Dodge,new Color(.55f,.86f,1),input.RequestDodge);
             dodgeShade = Shade(dodgeButton,52,false); dodgeSize = 52;
             useButton = RusticHudTheme.Button(root,"Usar",new Vector2(.5f,0),new Vector2(0,96),new Vector2(320,40),"",world.Interact);
             useLabel = useButton.GetComponentInChildren<Text>(); useLabel.fontSize = 16;
@@ -647,10 +648,12 @@ namespace ForjaDasMares.Networking
                 skillLabels[i] = skillButtons[i].GetComponentInChildren<Text>();
                 skillArt[i] = Art(skillButtons[i],size,touch); skillSymbols[i] = skillButtons[i].GetComponentInChildren<HudIcon>();
                 skillShades[i] = Shade(skillButtons[i],size,touch);
+                SegurarParaVer.Em(skillButtons[i],() => Habilidades.Atual != null ? Habilidades.Atual.DicaDoSlot(slot) : "");
             }
             buttonSize = size;
             attackMode = CombatAction(root,"Super",touch ? new Vector2(-176,241) : new Vector2(-132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
             superShade = Shade(attackMode,size,true);
+            SegurarParaVer.Em(attackMode,() => "SUPER\nGolpe especial forte.\nEnche 1% a cada 3 acertos e com esquivas perfeitas.\nSó começa a esvaziar depois de 10 segundos fora de combate.");
         }
 
         // Dark cover over a button that drains from the top while it recharges (with the seconds on the label).
@@ -734,7 +737,7 @@ namespace ForjaDasMares.Networking
             if (desk != null) desk.AimAtPointer = true;
             bool cast = combat.TryRegionalSkill(slot);
             if (desk != null) desk.AimAtPointer = false;
-            if (cast) desk?.StopForAbility();
+            if (cast) { desk?.PararAuto(); desk?.StopForAbility(); }
         }
 
         void OnWeaponMode(InputAction.CallbackContext _)
@@ -747,13 +750,13 @@ namespace ForjaDasMares.Networking
         void Update()
         {
             RefreshTouchSafeArea();
-            if (mountCaption != null) mountCaption.text = world.Chamando ? "CHAMANDO " + Mathf.RoundToInt(world.ChamandoProgresso * 100) + "%" : (world.IsMounted ? "DESCER" : "MONTAR") + (UnityEngine.Device.Application.isMobilePlatform ? "" : " · M");
+            if (mountCaption != null) mountCaption.text = world.Chamando ? "CHAMANDO " + Mathf.RoundToInt(world.ChamandoProgresso * 100) + "%" : (world.IsMounted ? "DESCER" : "MONTAR") + (UnityEngine.Device.Application.isMobilePlatform ? "" : " · " + Teclas.Nome("montar"));
             var combat=world.Hero.GetComponent<HeroCombat>();
             if (attackMode != null)
             {
                 // The Super is the heavy blow: it charges by hitting enemies and is released with Q or this button.
                 attackMode.interactable = combat.CanUseWeapon && combat.SuperReady;
-                attackMode.GetComponentInChildren<Text>().text = combat.SuperReady ? (UnityEngine.Device.Application.isMobilePlatform ? "SUPER" : "Q") : Mathf.RoundToInt(combat.SuperProgress * 100) + "%";
+                attackMode.GetComponentInChildren<Text>().text = combat.SuperReady ? (UnityEngine.Device.Application.isMobilePlatform ? "SUPER" : Teclas.Nome("super")) : Mathf.RoundToInt(combat.SuperProgress * 100) + "%";
                 SetShade(superShade, buttonSize, combat.CanUseWeapon ? 1 - combat.SuperProgress : 1);
                 if (barTabLabel != null) barTabLabel.text = Habilidades.Atual != null && Habilidades.Atual.BarraAtiva == 1 ? "II" : "I";
                 for (int i = 0; i < skillButtons.Length; i++)

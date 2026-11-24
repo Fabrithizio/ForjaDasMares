@@ -24,6 +24,8 @@ namespace ForjaDasMares.Networking
         Texture2D fog; Color32[] fogPixels; byte[] explored;
         Vector2 center; float side;
         float radius = 32, smallRadius = 32, bigRadius = 70; bool expanded;
+        // Big map: drag to look around (PC and phone) without walking there. Metres away from the hero.
+        Vector2 pan;
         string key; float revealTimer, saveTimer, poiTimer; bool fogDirty, saveDirty; int lastTargets;
         readonly List<Poi> pois = new List<Poi>();
         RectTransform markers;
@@ -138,6 +140,13 @@ namespace ForjaDasMares.Networking
             var mapa = RusticHudTheme.IconButton(frame, "MapaMundo", new Vector2(.5f, 0), new Vector2(0, -6), HudSymbol.Compass, () => { if (!MapaDoMundo.Aberto) MapaDoMundo.Abrir(world, false); });
             ((RectTransform)mapa.transform).sizeDelta = new Vector2(38, 38);
             mapa.GetComponent<RoundedHudGraphic>().radius = 19;
+            // Big map: a click (or tap) on it walks there; this X (or N) closes it.
+            fechar = RusticHudTheme.Button(frame, "Fechar", new Vector2(1, 1), new Vector2(-2, -2), new Vector2(38, 38), "×", () => { if (expanded) Toggle(); }).gameObject;
+            fechar.SetActive(false);
+            // Where you are walking to: a small gold mark on the map.
+            alvoMarca = RusticHudTheme.Rect(spin, "Destino", new Vector2(.5f, .5f), Vector2.zero, new Vector2(14, 14));
+            var marca = alvoMarca.gameObject.AddComponent<RoundedHudGraphic>(); marca.radius = 7; marca.color = new Color(1f, .82f, .38f); marca.borderColor = new Color(.15f, .1f, .05f); marca.raycastTarget = false;
+            alvoMarca.gameObject.SetActive(false);
 
             var bounds = world.Definition.bounds;
             center = new Vector2(bounds.center.x, bounds.center.z);
@@ -165,7 +174,30 @@ namespace ForjaDasMares.Networking
             frame.sizeDelta = Vector2.one * (expanded ? big : Small);
             ((RectTransform)frame.Find("Janela")).sizeDelta = Vector2.one * ((expanded ? big : Small) - Border * 2);
             if (expanded) { smallRadius = radius; radius = bigRadius; } else { bigRadius = radius; radius = smallRadius; }
+            pan = Vector2.zero;
+            if (fechar != null) fechar.SetActive(expanded);
         }
+        GameObject fechar; RectTransform alvoMarca;
+
+        // A click on the big map: the hero walks to that spot (on the mount if riding). Moving or clicking stops it.
+        void IrPara(PointerEventData data)
+        {
+            if (world == null || world.Hero == null || lastPpm <= 0) return;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(frame, data.position, data.pressEventCamera, out var local)) return;
+            local -= frame.rect.center; // from the middle of the map (the frame's pivot sits in its corner)
+            var metres = (Vector2)(Quaternion.Euler(0, 0, -lastYaw) * (Vector3)local) / lastPpm;
+            var hero = world.Hero.transform.position;
+            var flat = new Vector2(hero.x, hero.z) + pan + metres;
+            var point = new Vector3(flat.x, hero.y, flat.y);
+            if (Physics.Raycast(point + Vector3.up * 200, Vector3.down, out var hit, 400, 1 << 8, QueryTriggerInteraction.Ignore)) point = hit.point;
+            // Clicked on a house or a wall: go to the nearest walkable spot.
+            if (UnityEngine.AI.NavMesh.SamplePosition(point, out var chao, 8f, UnityEngine.AI.NavMesh.AllAreas)) point = chao.position;
+            var controles = world.Hero.GetComponent<ArenaInput>()?.Desktop;
+            if (controles == null) return;
+            if (!controles.IrPara(point)) { EfeitosDeHabilidade.Explosao(world.Hero.transform.position + Vector3.up * 2, .4f, new Color(1f, .4f, .3f), 6); return; }
+            destino = point;
+        }
+        Vector3? destino;
 
         void Zoom(float factor) => radius = Mathf.Clamp(radius * factor, 12, expanded ? 140 : 80);
 
@@ -378,7 +410,7 @@ namespace ForjaDasMares.Networking
         void LateUpdate()
         {
             if (world == null || world.Hero == null) return;
-            if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame) Toggle();
+            if (Teclas.Apertou("minimapa")) Toggle();
             var hero = world.Hero.transform;
             revealTimer -= Time.unscaledDeltaTime;
             if (revealTimer <= 0) { revealTimer = .2f; Reveal(hero.position); }
@@ -397,14 +429,26 @@ namespace ForjaDasMares.Networking
             float window = frame.sizeDelta.x - Border * 2;
             float ppm = window * .5f / radius;
             ground.sizeDelta = Vector2.one * side * ppm;
-            ground.anchoredPosition = (center - new Vector2(hero.position.x, hero.position.z)) * ppm;
+            if (!expanded) pan = Vector2.zero;
+            ground.anchoredPosition = (center - new Vector2(hero.position.x, hero.position.z) - pan) * ppm;
             var cam = Camera.main;
             float yaw = cam != null ? cam.transform.eulerAngles.y : 0;
             spin.localRotation = Quaternion.Euler(0, 0, yaw);
             arrow.localRotation = Quaternion.Euler(0, 0, yaw - hero.eulerAngles.y);
+            // You stay where you are on the map while it is dragged away (clamped to the window).
+            var you = (Vector2)(Quaternion.Euler(0, 0, yaw) * (Vector3)(-pan * ppm));
+            arrow.anchoredPosition = Vector2.ClampMagnitude(you, window * .5f - 8);
+            lastYaw = yaw; lastPpm = ppm;
+            if (expanded && Mouse.current != null && hoveringMap)
+            { float wheel = Mouse.current.scroll.ReadValue().y; if (Mathf.Abs(wheel) > .01f) Zoom(wheel > 0 ? .9f : 1.1f); }
             float ring = frame.sizeDelta.x * .5f - Border * .5f;
             north.anchoredPosition = new Vector2(-Mathf.Sin(yaw * Mathf.Deg2Rad), Mathf.Cos(yaw * Mathf.Deg2Rad)) * ring;
 
+            // The walk's destination on the map (while walking).
+            var walking = world.Hero.GetComponent<ArenaInput>()?.Desktop;
+            if (destino.HasValue && (walking == null || !walking.IndoParaPonto)) destino = null;
+            alvoMarca.gameObject.SetActive(destino.HasValue);
+            if (destino.HasValue) alvoMarca.anchoredPosition = (new Vector2(destino.Value.x, destino.Value.z) - new Vector2(hero.position.x, hero.position.z) - pan) * ppm;
             DrawWalkers(ppm);
             var upright = Quaternion.Euler(0, 0, -yaw);
             foreach (var poi in pois)
@@ -416,7 +460,7 @@ namespace ForjaDasMares.Networking
                 if (!show) continue;
                 poi.icon.anchoredPosition = (new Vector2(p.x, p.z) - center) * ppm;
                 poi.icon.localRotation = upright;
-                poi.label.enabled = expanded;
+                poi.label.enabled = false; // decided below, so names never sit on top of each other
                 if (poi.mark != null && Time.frameCount % 15 == 0)
                 {
                     var (s, c) = Missoes.Marcador(poi.who);
@@ -426,6 +470,43 @@ namespace ForjaDasMares.Networking
                     poi.badge.borderColor = offer ? c : poi.color;
                 }
             }
+            if (expanded) PlaceLabels(yaw);
+        }
+
+        // Names only where they fit: people and exits first, then the rest; a name that would cover another is hidden
+        // (zoom in or drag to read it).
+        readonly List<Rect> placed = new List<Rect>();
+        void PlaceLabels(float yaw)
+        {
+            placed.Clear();
+            var rot = Quaternion.Euler(0, 0, yaw);
+            float half = (frame.sizeDelta.x - Border * 2) * .5f;
+            for (int pass = 0; pass < 3; pass++)
+                foreach (var poi in pois)
+                {
+                    if (poi.icon == null || !poi.icon.gameObject.activeSelf) continue;
+                    int rank = poi.who != null || poi.label.text.StartsWith("Saída") ? 0 : poi.label.text.StartsWith("Acampamento") ? 2 : 1;
+                    if (rank != pass) continue;
+                    Vector2 at = (Vector2)(rot * (Vector3)(poi.icon.anchoredPosition + ground.anchoredPosition));
+                    if (Mathf.Abs(at.x) > half || Mathf.Abs(at.y) > half) continue;
+                    float w = Mathf.Min(180, poi.label.preferredWidth + 6);
+                    var box = new Rect(at.x - w * .5f, at.y - 20, w, 16);
+                    bool free = true;
+                    foreach (var r in placed) if (r.Overlaps(box)) { free = false; break; }
+                    if (!free) continue;
+                    placed.Add(box); poi.label.enabled = true;
+                }
+        }
+
+        float lastYaw, lastPpm = 1; bool hoveringMap, dragged;
+        void Arrastar(Vector2 screenDelta)
+        {
+            if (!expanded || lastPpm <= 0) return;
+            float scale = frame.lossyScale.x > 0 ? frame.lossyScale.x : 1;
+            var local = screenDelta / scale;
+            var metres = (Vector2)(Quaternion.Euler(0, 0, -lastYaw) * (Vector3)local);
+            pan -= metres / lastPpm;
+            pan = Vector2.ClampMagnitude(pan, side * .6f);
         }
 
         void Save()
@@ -440,10 +521,16 @@ namespace ForjaDasMares.Networking
             if (drawn != null) Destroy(drawn);
         }
 
-        sealed class Clique : MonoBehaviour, IPointerClickHandler
+        // Tap/click: open the small map; on the big one, walk there (X closes). Drag (big map): look around. Pointer over it: the wheel zooms.
+        sealed class Clique : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
         {
             public MiniMapa map;
-            public void OnPointerClick(PointerEventData data) => map.Toggle();
+            public void OnPointerClick(PointerEventData data) { if (map.dragged) { map.dragged = false; return; } if (map.expanded) map.IrPara(data); else map.Toggle(); }
+            public void OnBeginDrag(PointerEventData data) { map.dragged = map.expanded; }
+            public void OnDrag(PointerEventData data) => map.Arrastar(data.delta);
+            public void OnEndDrag(PointerEventData data) { }
+            public void OnPointerEnter(PointerEventData data) => map.hoveringMap = true;
+            public void OnPointerExit(PointerEventData data) => map.hoveringMap = false;
         }
 
         // ---------- Small drawn textures ----------

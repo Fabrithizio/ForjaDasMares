@@ -29,17 +29,53 @@ namespace ForjaDasMares.Networking
             }
             qualityButton=Button("RegionalGraphics","",30,432,565,()=>{var q=world.GetComponentInChildren<PresentationQuality>();if(q==null&&Camera.main!=null)q=Camera.main.GetComponent<PresentationQuality>();q?.Cycle();Refresh();});
             quality=qualityButton.GetComponentInChildren<Text>();
-            Button("RegionalFps","MOSTRAR / OCULTAR FPS · F8",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
+            Button("RegionalFps","MOSTRAR / OCULTAR FPS",615,432,295,()=>{GetComponent<CampaignPerformanceHud>()?.Toggle();Close();});
             Button("ReturnToMenu","VOLTAR AO MENU",675,505,235,world.ReturnToStartMenu);
-            Label("Controls","Mouse: andar e atacar · Shift + ataque: atacar parado · 1 / 2 / 3: habilidades (miram no mouse)\nR: trocar barra · Q: Super · Espaço: esquiva · 4: poção · F: interagir · I: mochila · M: montar · K: mapa · H: voltar",30,500,620,17).rectTransform.sizeDelta=new Vector2(620,70);
+            Button("Layout","EDITAR LAYOUT DO HUD",UnityEngine.Device.Application.isMobilePlatform?30:490,585,UnityEngine.Device.Application.isMobilePlatform?620:420,()=>{Close();LayoutDoHud.Atual?.Editar();});
+            if(!UnityEngine.Device.Application.isMobilePlatform){Button("Teclas","TECLAS · ESCOLHER AS TECLAS DE CADA AÇÃO",30,505,620,AbrirTeclas);BuildTeclas(full);}
             if (!UnityEngine.Device.Application.isMobilePlatform)
             {
-                Button("Fullscreen","TELA CHEIA / JANELA · F11",30,585,440,ToggleFullscreen);
-                fullscreenKey = new InputAction("RegionalFullscreen",InputActionType.Button,"<Keyboard>/f11");
+                Button("Fullscreen","TELA CHEIA / JANELA",30,585,440,ToggleFullscreen);
+                fullscreenKey = Teclas.Criar("tela");
                 fullscreenKey.performed += _ => ToggleFullscreen();
                 fullscreenKey.Enable();
             }
-            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{var hud=GetComponent<RegionalWorldHud>();if(hud?.IntroOpen==true)return;if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
+            escape=new InputAction("RegionalSettingsEscape",InputActionType.Button,"<Keyboard>/escape");escape.performed+=_=>{if(LayoutDoHud.Atual!=null&&LayoutDoHud.Atual.Editando)return;if(Teclas.Escutando||Teclas.ParouNoQuadro>=Time.frameCount-1)return;if(teclas!=null&&teclas.activeSelf){teclas.SetActive(false);return;}var hud=GetComponent<RegionalWorldHud>();if(hud?.IntroOpen==true)return;if(hud!=null&&hud.CloseStoryModal())return;if(hud!=null&&hud.ShopOpen){hud.CloseShop();return;}if(hud!=null&&hud.JournalOpen){hud.CloseJournal();return;}closeInventory=GetComponent<CoopInventoryHud>()?.IsOpen==true;requested=true;};escape.Enable();overlay.SetActive(false);Refresh();
+        }
+        // ---------- Keys (PC): one button per action; click it and press the new key ----------
+        GameObject teclas;Text[] teclaTexto;Text teclaAviso;
+        void BuildTeclas(RectTransform full)
+        {
+            var panel=RusticHudTheme.Rect(full,"TeclasPanel",Vector2.one*.5f,Vector2.zero,new Vector2(940,670));RusticHudTheme.Panel(panel,RusticHudTheme.Ink,26);teclas=panel.gameObject;
+            RusticHudTheme.Label(panel,"Titulo",new Vector2(0,1),new Vector2(28,-20),new Vector2(600,38),"TECLAS",28).color=RusticHudTheme.Gold;
+            RusticHudTheme.Button(panel,"Fechar",new Vector2(0,1),new Vector2(710,-20),new Vector2(200,44),"VOLTAR · ESC",()=>teclas.SetActive(false));
+            teclaAviso=RusticHudTheme.Label(panel,"Aviso",new Vector2(0,1),new Vector2(28,-70),new Vector2(880,30),"Clique na tecla de uma ação e aperte a nova. Se outra ação usava essa tecla, as duas trocam.",16);
+            teclaAviso.color=RusticHudTheme.Muted;
+            int n=Teclas.Todas.Length,metade=(n+1)/2;teclaTexto=new Text[n];
+            for(int i=0;i<n;i++)
+            {
+                int index=i;var acao=Teclas.Todas[i];float x=i<metade?30:490,y=112+(i%metade)*58;
+                RusticHudTheme.Label(panel,"Nome"+i,new Vector2(0,1),new Vector2(x,-y),new Vector2(250,44),acao.nome,17,TextAnchor.MiddleLeft);
+                var b=RusticHudTheme.Button(panel,"Tecla"+i,new Vector2(0,1),new Vector2(x+260,-y),new Vector2(160,44),"",()=>Escolher(index));
+                teclaTexto[i]=b.GetComponentInChildren<Text>();
+            }
+            RusticHudTheme.Button(panel,"Padrao",new Vector2(0,1),new Vector2(30,-600),new Vector2(300,44),"VOLTAR AO PADRÃO",()=>{Teclas.Padrao();teclaAviso.text="Teclas de volta ao padrão.";AtualizarTeclas();});
+            teclas.SetActive(false);
+        }
+        void AbrirTeclas(){if(teclas==null)return;teclas.SetActive(true);teclas.transform.SetAsLastSibling();AtualizarTeclas();}
+        void AtualizarTeclas(){for(int i=0;i<teclaTexto.Length;i++)teclaTexto[i].text=Teclas.Nome(Teclas.Todas[i].id);}
+        void Escolher(int i)
+        {
+            if(Teclas.Escutando)return;
+            var acao=Teclas.Todas[i];teclaTexto[i].text="...";teclaAviso.text="Aperte a nova tecla para "+acao.nome.ToUpperInvariant()+" · Esc cancela";
+            Teclas.Escutar(path=>
+            {
+                if(path==null){teclaAviso.text="Nada mudou.";AtualizarTeclas();return;}
+                var outra=Teclas.QuemUsa(path,acao.id);var antiga=Teclas.Nome(acao.id);
+                Teclas.Mudar(acao.id,path);
+                teclaAviso.text=acao.nome+": "+Teclas.Nome(acao.id)+(outra!=null?"   ·   "+Teclas.NomeDaAcao(outra)+" passou para "+antiga:"");
+                AtualizarTeclas();
+            });
         }
         void ChangeVolume(int i,float step)
         {
@@ -54,7 +90,7 @@ namespace ForjaDasMares.Networking
                 Screen.SetResolution(Display.main.systemWidth,Display.main.systemHeight,FullScreenMode.FullScreenWindow);
         }
         public void Open(){if(overlay==null)return;GetComponent<RegionalWorldHud>()?.CloseJournal();GetComponent<CoopInventoryHud>()?.CloseInventory();overlay.SetActive(true);overlay.transform.SetAsLastSibling();SetBlocked(true);Refresh();}
-        public void Close(){if(overlay==null)return;overlay.SetActive(false);SetBlocked(false);}
+        public void Close(){if(overlay==null)return;if(teclas!=null)teclas.SetActive(false);overlay.SetActive(false);SetBlocked(false);}
         void SetBlocked(bool blocked){if(world==null||world.Hero==null)return;world.Hero.GetComponent<ArenaInput>().BlockCommands(blocked);world.Hero.GetComponent<PlayerMotor>().StopWalking();}
         void Update(){if(!requested)return;requested=false;if(closeInventory){closeInventory=false;GetComponent<CoopInventoryHud>()?.CloseInventory();return;}if(IsOpen)Close();else if(GetComponent<CoopInventoryHud>()?.IsOpen!=true)Open();}
         void OnDestroy(){fullscreenKey?.Dispose();escape?.Dispose();if(IsOpen)SetBlocked(false);}

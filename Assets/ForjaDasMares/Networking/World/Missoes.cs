@@ -15,6 +15,8 @@ namespace ForjaDasMares.Networking
         public sealed class Missao
         {
             public string id, npc, titulo, quem, descricao, recompensa, recurso; public Tipo tipo;
+            // Where it happens (for the count per place in the journal). Secret = found in the world: it only counts once started.
+            public string lugar = "refugio"; public bool secreta;
             public Func<bool> aceita, feita; public Func<List<Objetivo>> objetivos; public Func<string> linha;
             // When the person can offer it (null = always). Before that, no "!" over their head.
             public Func<bool> disponivel;
@@ -31,7 +33,7 @@ namespace ForjaDasMares.Networking
         {
             new Missao
             {
-                id = "nascente", npc = "Nara", tipo = Tipo.Principal, titulo = "A Nascente do Rio", quem = "Nara · tenda, no Refúgio",
+                id = "nascente", lugar = "nascente", npc = "Nara", tipo = Tipo.Principal, titulo = "A Nascente do Rio", quem = "Nara · tenda, no Refúgio",
                 descricao = "O rio está escurecendo e os bichos perto dele foram tomados pelo Breu. A Nara acha que vem de cima, da Nascente. Vá até lá e só olhe. Volte inteiro.",
                 recompensa = "Descobrir o que está escurecendo o rio.",
                 aceita = () => Historia.Feito("m4_aceita"), feita = () => Habilidades.Aprendeu("rajada"),
@@ -68,7 +70,7 @@ namespace ForjaDasMares.Networking
             new Missao
             {
                 // Found in the world (a note at the abandoned Liga camp in the Nascente), not given by anyone.
-                id = "liga", npc = "", tipo = Tipo.Secundaria, titulo = "Estandartes da Liga", quem = "Bilhete · acampamento da Liga, Nascente do Rio",
+                id = "liga", lugar = "nascente", secreta = true, npc = "", tipo = Tipo.Secundaria, titulo = "Estandartes da Liga", quem = "Bilhete · acampamento da Liga, Nascente do Rio",
                 descricao = "Um bilhete velho no acampamento abandonado da Liga: uma patrulha marcou o caminho com três estandartes antes de sumir. Achar os três pode contar o que aconteceu com ela.",
                 recompensa = "60 de ouro e o que a patrulha deixou.",
                 aceita = () => Historia.Feito("m5_aceita"), feita = () => Historia.Feito("m5_feita"),
@@ -77,7 +79,7 @@ namespace ForjaDasMares.Networking
             },
             new Missao
             {
-                id = "trilhos", npc = "Nara", tipo = Tipo.Principal, titulo = "Os Trilhos Velhos", quem = "Nara · tenda, no Refúgio",
+                id = "trilhos", lugar = "trilhos", npc = "Nara", tipo = Tipo.Principal, titulo = "Os Trilhos Velhos", quem = "Nara · tenda, no Refúgio",
                 descricao = "Uma patrulha da Liga foi pelos Trilhos Velhos há dez dias e não voltou. Os trilhos levam à Estação Antiga, onde há uma Raiz-Mãe que talvez saiba de onde vêm os Chegados. Siga a linha de ferro e ache a patrulha.",
                 recompensa = "100 de ouro da Liga e o caminho para a Estação Antiga.",
                 aceita = () => Historia.Feito("m6_aceita"), feita = () => Historia.Feito("m6_feita"),
@@ -86,7 +88,7 @@ namespace ForjaDasMares.Networking
             },
             new Missao
             {
-                id = "pedra", npc = "Téo", tipo = Tipo.Secundaria, titulo = "A Pedra Gravada", quem = "Téo · forja do Refúgio",
+                id = "pedra", lugar = "trilhos", npc = "Téo", tipo = Tipo.Secundaria, titulo = "A Pedra Gravada", quem = "Téo · forja do Refúgio",
                 descricao = "O Téo falou de uma pedra gravada nos Trilhos Velhos, a oeste, depois dos vagões tombados, escondida no mato. Ele a achou vinte anos atrás e quer saber o que você vê nela.",
                 recompensa = "Uma peça feita pelo Téo.",
                 disponivel = () => Historia.Feito("m4_fonte"),
@@ -97,12 +99,17 @@ namespace ForjaDasMares.Networking
             new Missao
             {
                 // Found in the world (a note on the door of the line keeper's house), not given by anyone.
-                id = "diario", npc = "", tipo = Tipo.Secundaria, titulo = "A Última Viagem", quem = "Bilhete · Casa do Guarda-Linha, Trilhos Velhos",
+                id = "diario", lugar = "trilhos", secreta = true, npc = "", tipo = Tipo.Secundaria, titulo = "A Última Viagem", quem = "Bilhete · Casa do Guarda-Linha, Trilhos Velhos",
                 descricao = "O guarda-linha foi embora com pressa e perdeu o diário pelo caminho, folha por folha. As páginas podem contar por que o sino da Estação ficou mudo.",
                 recompensa = "70 de ouro e o que o guarda-linha deixou.",
                 aceita = () => Historia.Feito("m8_aceita"), feita = () => Historia.Feito("m8_feita"),
-                objetivos = () => { int n = TrilhosVelhos.PaginasAchadas; return new List<Objetivo> { new Objetivo { texto = "Ache as páginas do diário", tem = n, precisa = 3, feito = n >= 3 } }; },
-                linha = () => "Páginas do diário (Trilhos): " + TrilhosVelhos.PaginasAchadas + "/3"
+                objetivos = () =>
+                {
+                    int n = TrilhosVelhos.PaginasAchadas; var list = new List<Objetivo> { new Objetivo { texto = "Ache as páginas do diário", tem = n, precisa = 3, feito = n >= 3 } };
+                    if (n >= 1 && n < 3) list.Add(new Objetivo { texto = "Pista: " + TrilhosVelhos.Pista() + ". Procure a coluna de luz.", tem = 0, precisa = 0, feito = false });
+                    return list;
+                },
+                linha = () => "Páginas do diário (Trilhos): " + TrilhosVelhos.PaginasAchadas + "/3" + (TrilhosVelhos.PaginasAchadas >= 2 && TrilhosVelhos.PaginasAchadas < 3 ? " · " + TrilhosVelhos.Pista() : "")
             },
         };
 
@@ -133,6 +140,25 @@ namespace ForjaDasMares.Networking
         // The mission in progress that still asks for this resource (its drops glow in the mission colour).
         public static Missao QuemPrecisa(string recurso) => EmAndamento.FirstOrDefault(m => m.recurso == recurso);
         public static IEnumerable<Missao> EmAndamento => Ordem(Todas.Where(m => m.aceita() && !m.feita()));
+        // "Refúgio 3/4 · Nascente 1/2 · Trilhos 0/1": missions done per place. A secret one counts only after it starts.
+        // "2/5" for one place (secret ones only after they started), or null when the place has none.
+        public static string ContaDe(string lugar)
+        {
+            var conta = Todas.Where(m => m.lugar == lugar && (!m.secreta || m.aceita() || m.feita())).ToList();
+            return conta.Count == 0 ? null : conta.Count(m => m.feita()) + "/" + conta.Count;
+        }
+        public static string PorLugar()
+        {
+            var parts = new List<string>();
+            foreach (var lugar in Todas.Select(m => m.lugar).Distinct())
+            {
+                var conta = Todas.Where(m => m.lugar == lugar && (!m.secreta || m.aceita() || m.feita())).ToList();
+                if (conta.Count == 0) continue;
+                int feitas = conta.Count(m => m.feita());
+                parts.Add(AreasDoMundo.Nome(lugar) + " " + feitas + "/" + conta.Count);
+            }
+            return string.Join("  ·  ", parts);
+        }
         public static IEnumerable<Missao> Concluidas => Ordem(Todas.Where(m => m.feita()));
         static IEnumerable<Missao> Ordem(IEnumerable<Missao> list) => list.OrderBy(m => m.tipo == Tipo.Principal ? 0 : 1);
 
@@ -246,16 +272,44 @@ namespace ForjaDasMares.Networking
     }
 
     // The mission journal (icon next to the backpack): In progress / Completed, details and "follow".
+    // Notes, pages and carvings the player found (like the files of Resident Evil): read once on the screen, then kept in
+    // the journal (tab ACHADOS) to read again. Each one is "found" when its story step is done, so nothing extra is saved.
+    public static class Achados
+    {
+        public sealed class Achado { public string id, titulo, lugar, texto; public Func<bool> tem; }
+        public static readonly List<Achado> Todos = new List<Achado>
+        {
+            new Achado { id = "liga_bilhete", lugar = "nascente", titulo = "Bilhete da Liga", tem = () => Historia.Feito("m5_aceita"),
+                texto = "\"Patrulha da Liga. Marcamos o caminho com três estandartes. Se não voltarmos, sigam as marcas.\"" },
+            new Achado { id = "liga_e0", lugar = "nascente", titulo = "Estandarte · dia 3", tem = () => Historia.Feito("m5_e0"), texto = NascenteDoRio.Registros[0] },
+            new Achado { id = "liga_e1", lugar = "nascente", titulo = "Estandarte · dia 4", tem = () => Historia.Feito("m5_e1"), texto = NascenteDoRio.Registros[1] },
+            new Achado { id = "liga_e2", lugar = "nascente", titulo = "Estandarte · dia 5", tem = () => Historia.Feito("m5_e2"), texto = NascenteDoRio.Registros[2] },
+            new Achado { id = "guarda_bilhete", lugar = "trilhos", titulo = "Bilhete do guarda-linha", tem = () => Historia.Feito("m8_aceita"),
+                texto = "\"Fui embora com pressa. Perdi o diário pelo caminho, folha por folha. Quem achar, leia.\"" },
+            new Achado { id = "guarda_p0", lugar = "trilhos", titulo = "Diário · página 1", tem = () => Historia.Feito("m8_p0"), texto = TrilhosVelhos.Diario[0] },
+            new Achado { id = "guarda_p1", lugar = "trilhos", titulo = "Diário · página 2", tem = () => Historia.Feito("m8_p1"), texto = TrilhosVelhos.Diario[1] },
+            new Achado { id = "guarda_p2", lugar = "trilhos", titulo = "Diário · página 3", tem = () => Historia.Feito("m8_p2"), texto = TrilhosVelhos.Diario[2] },
+            new Achado { id = "vagao", lugar = "trilhos", titulo = "Riscado num vagão", tem = () => Historia.Feito("m6_custodio"),
+                texto = "\"Liga. Custódio tomado. Fomos para a Estação Antiga. Estamos vivos.\"" },
+            new Achado { id = "pedra", lugar = "trilhos", titulo = "A Pedra Gravada", tem = () => Historia.Feito("m7_pedra"),
+                texto = "Um mapa gravado na pedra. Rios, montanhas... e uma curva de rio que eu conheço. É o caminho da minha vila. O mesmo rio. A mesma serra. Mas eu nunca estive aqui." },
+        };
+    }
+
     public sealed class DiarioDeMissoes : MonoBehaviour
     {
-        RectTransform list, detail; Button tabOpen, tabDone; bool showDone; string selected; Text notice;
+        RectTransform list, detail; Button tabOpen, tabDone, tabFound; bool showDone, showFound; string selected; Text notice, porLugar;
 
         public void Montar(RectTransform panel, UnityEngine.Events.UnityAction fechar)
         {
             var top = new Vector2(0, 1);
             RusticHudTheme.Label(panel, "Titulo", top, new Vector2(30, -18), new Vector2(520, 48), "DIÁRIO DE MISSÕES", 28).color = RusticHudTheme.Gold;
-            tabOpen = RusticHudTheme.Button(panel, "EmAndamento", top, new Vector2(30, -76), new Vector2(220, 44), "EM ANDAMENTO", () => { showDone = false; selected = null; Abrir(); });
-            tabDone = RusticHudTheme.Button(panel, "Concluidas", top, new Vector2(262, -76), new Vector2(200, 44), "CONCLUÍDAS", () => { showDone = true; selected = null; Abrir(); });
+            tabOpen = RusticHudTheme.Button(panel, "EmAndamento", top, new Vector2(30, -76), new Vector2(220, 44), "EM ANDAMENTO", () => { showDone = showFound = false; selected = null; Abrir(); });
+            tabDone = RusticHudTheme.Button(panel, "Concluidas", top, new Vector2(262, -76), new Vector2(200, 44), "CONCLUÍDAS", () => { showDone = true; showFound = false; selected = null; Abrir(); });
+            // Notes, pages and carvings found in the world: kept here to read again.
+            tabFound = RusticHudTheme.Button(panel, "Achados", top, new Vector2(474, -76), new Vector2(200, 44), "ACHADOS", () => { showFound = true; showDone = false; selected = null; Abrir(); });
+            porLugar = RusticHudTheme.Label(panel, "PorLugar", new Vector2(1, 1), new Vector2(-30, -26), new Vector2(430, 40), "", 16, TextAnchor.MiddleRight);
+            porLugar.color = RusticHudTheme.Muted; porLugar.horizontalOverflow = HorizontalWrapMode.Wrap;
             var listBox = RusticHudTheme.Rect(panel, "Lista", top, new Vector2(30, -134), new Vector2(330, 420));
             RusticHudTheme.Panel(listBox, new Color(0, 0, 0, .25f), 12);
             list = RusticHudTheme.Rect(listBox, "Itens", top, new Vector2(10, -10), new Vector2(310, 400));
@@ -276,10 +330,36 @@ namespace ForjaDasMares.Networking
             var open = Missoes.EmAndamento.ToList(); var done = Missoes.Concluidas.ToList();
             tabOpen.GetComponentInChildren<Text>().text = "EM ANDAMENTO (" + open.Count + ")";
             tabDone.GetComponentInChildren<Text>().text = "CONCLUÍDAS (" + done.Count + ")";
-            tabOpen.GetComponentInChildren<Text>().color = showDone ? RusticHudTheme.Muted : RusticHudTheme.Gold;
-            tabDone.GetComponentInChildren<Text>().color = showDone ? RusticHudTheme.Gold : RusticHudTheme.Muted;
-            var shown = showDone ? done : open;
+            var achados = Achados.Todos.Where(a => a.tem()).ToList();
+            tabFound.GetComponentInChildren<Text>().text = "ACHADOS (" + achados.Count + ")";
+            tabOpen.GetComponentInChildren<Text>().color = showDone || showFound ? RusticHudTheme.Muted : RusticHudTheme.Gold;
+            tabDone.GetComponentInChildren<Text>().color = showDone && !showFound ? RusticHudTheme.Gold : RusticHudTheme.Muted;
+            tabFound.GetComponentInChildren<Text>().color = showFound ? RusticHudTheme.Gold : RusticHudTheme.Muted;
+            // Only the place where you are and the total (with many places, a list would not fit): each place's count
+            // is on the world map, when you pick it.
+            var aqui = AreasDoMundo.PorCena(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            var contaAqui = aqui != null ? Missoes.ContaDe(aqui.id) : null;
+            var todas = Missoes.Todas.Where(m => !m.secreta || m.aceita() || m.feita()).ToList();
+            porLugar.text = (contaAqui != null ? "Aqui (" + AreasDoMundo.Nome(aqui.id) + "): " + contaAqui + "   ·   " : "") + "Todas: " + todas.Count(m => m.feita()) + "/" + todas.Count;
             var top = new Vector2(0, 1);
+            if (showFound)
+            {
+                if (achados.Count == 0) { RusticHudTheme.Label(list, "Vazio", top, Vector2.zero, new Vector2(310, 80), "Nada guardado ainda.\nBilhetes e páginas que você achar ficam aqui.", 17).color = RusticHudTheme.Muted; return; }
+                if (selected == null || !achados.Any(a => a.id == selected)) selected = achados[0].id;
+                float ya = 0; string lugar = null;
+                foreach (var a in achados)
+                {
+                    if (a.lugar != lugar) { lugar = a.lugar; RusticHudTheme.Label(list, "Grupo", top, new Vector2(4, -ya), new Vector2(300, 26), AreasDoMundo.Nome(lugar).ToUpperInvariant(), 15).color = RusticHudTheme.Muted; ya += 28; }
+                    var item = a;
+                    var b = RusticHudTheme.Button(list, "Achado_" + a.id, top, new Vector2(0, -ya), new Vector2(310, 42), "   " + a.titulo, () => { selected = item.id; Abrir(); });
+                    var t = b.GetComponentInChildren<Text>(); t.alignment = TextAnchor.MiddleLeft; t.fontSize = 17;
+                    t.color = a.id == selected ? Color.white : RusticHudTheme.Parchment;
+                    ya += 46;
+                }
+                Achado(achados.First(a => a.id == selected));
+                return;
+            }
+            var shown = showDone ? done : open;
             if (shown.Count == 0)
             {
                 RusticHudTheme.Label(list, "Vazio", top, Vector2.zero, new Vector2(310, 80), showDone ? "Nenhuma missão concluída ainda." : "Nenhuma missão aceita.\nConverse com o pessoal do Refúgio.", 17).color = RusticHudTheme.Muted;
@@ -301,6 +381,19 @@ namespace ForjaDasMares.Networking
             Detalhe(shown.First(m => m.id == selected));
         }
 
+        void Achado(Achados.Achado a)
+        {
+            var top = new Vector2(0, 1); float y = 0;
+            Text Linha(string text, int size, Color color, float height)
+            {
+                var l = RusticHudTheme.Label(detail, "Linha", top, new Vector2(0, -y), new Vector2(538, height), text, size, TextAnchor.UpperLeft);
+                l.color = color; l.supportRichText = true; l.horizontalOverflow = HorizontalWrapMode.Wrap; l.verticalOverflow = VerticalWrapMode.Overflow; y += height; return l;
+            }
+            Linha(a.titulo.ToUpperInvariant(), 24, RusticHudTheme.Parchment, 34);
+            Linha(AreasDoMundo.Nome(a.lugar), 16, RusticHudTheme.Muted, 32);
+            Linha(a.texto, 20, RusticHudTheme.Parchment, 300).fontStyle = FontStyle.Italic;
+        }
+
         void Detalhe(Missoes.Missao m)
         {
             var top = new Vector2(0, 1); float y = 0;
@@ -311,7 +404,7 @@ namespace ForjaDasMares.Networking
             }
             bool done = m.feita();
             Linha(m.titulo.ToUpperInvariant(), 24, m.tipo == Missoes.Tipo.Principal ? RusticHudTheme.Gold : RusticHudTheme.Parchment, 34);
-            Linha((m.tipo == Missoes.Tipo.Principal ? "Principal" : "Secundária") + " · " + m.quem + (done ? " · <color=#8FD18F>concluída</color>" : ""), 16, RusticHudTheme.Muted, 30);
+            Linha((m.tipo == Missoes.Tipo.Principal ? "Principal" : "Secundária") + " · " + m.quem + " · " + AreasDoMundo.Nome(m.lugar) + (done ? " · <color=#8FD18F>concluída</color>" : ""), 16, RusticHudTheme.Muted, 30);
             Linha(m.descricao, 17, RusticHudTheme.Parchment, 70);
             Linha("OBJETIVOS", 16, RusticHudTheme.Gold, 26);
             foreach (var o in m.objetivos())

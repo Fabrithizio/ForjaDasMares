@@ -20,7 +20,7 @@ namespace ForjaDasMares.Networking
         public int SampleCount=>count;
         void Update()
         {
-            if(panel==null)return;if(Keyboard.current!=null&&Keyboard.current.f8Key.wasPressedThisFrame)Toggle();
+            if(panel==null)return;if(Teclas.Apertou("fps"))Toggle();
             bool gameplay=region!=null&&region.Hero!=null&&GetComponent<CoopInventoryHud>()?.IsOpen!=true&&GetComponent<RegionalSettingsMenu>()?.IsOpen!=true;
             // Menu frames must not make combat measurements look faster.
             if(!gameplay){count=index=0;refresh=0;panel.SetActive(false);return;}

@@ -157,12 +157,12 @@ namespace ForjaDasMares.Networking
             go.AddComponent<GraphicRaycaster>();
             canvas = (RectTransform)go.transform;
             // The I/II tab on the combat bar (RegionalWorldHud) calls Trocar(); here only the R key.
-            swapKey = new InputAction("TrocarBarra", InputActionType.Button, "<Keyboard>/r"); swapKey.performed += _ => { if (!input.CombatBlocked) Trocar(); }; swapKey.Enable();
+            swapKey = Teclas.Criar("trocar"); swapKey.performed += _ => { if (!input.CombatBlocked) Trocar(); }; swapKey.Enable();
         }
         void RefreshHud()
         {
             if (swapText == null) return;
-            swapText.text = "BARRA " + (active + 1) + "/2" + (UnityEngine.Device.Application.isMobilePlatform ? " · TROCAR" : " · R");
+            swapText.text = "BARRA " + (active + 1) + "/2" + (UnityEngine.Device.Application.isMobilePlatform ? " · TROCAR" : " · " + Teclas.Nome("trocar"));
         }
         void Update()
         {
@@ -255,6 +255,14 @@ namespace ForjaDasMares.Networking
             string form = longe ? a.descricaoCajado : a.descricaoEspada;
             return a.displayName.ToUpperInvariant() + "  ·  " + Describe(a) + "\n" + (longe ? "Longe: " : "Perto: ") + form + "   (toque num espaço para colocar)";
         }
+        // What the ability in this slot of the bar does (shown while the button is held).
+        public string DicaDoSlot(int slot)
+        {
+            var a = slot >= 0 && slot < kit.Length ? kit[slot] : null;
+            if (a == null) return "Espaço vazio.\nColoque uma habilidade no painel de habilidades.";
+            bool longe = combat != null && combat.RangedWeapon;
+            return a.displayName.ToUpperInvariant() + "\n" + Describe(a) + "\n\n" + (longe ? "Com arma de longe: " + a.descricaoCajado : "Com arma de perto: " + a.descricaoEspada);
+        }
         internal static string Describe(AbilityDefinition a)
         {
             if (a == null) return "";
@@ -329,7 +337,7 @@ namespace ForjaDasMares.Networking
                 owner = h; bar = b; index = i;
                 var rect = (RectTransform)transform;
                 back = RusticHudTheme.Panel(rect, new Color(.03f, .06f, .08f, .97f), 16); back.raycastTarget = true;
-                RusticHudTheme.Label(rect, "Numero", new Vector2(0, 1), new Vector2(12, -8), new Vector2(60, 24), (i + 1).ToString(), 16).color = RusticHudTheme.Muted;
+                RusticHudTheme.Label(rect, "Numero", new Vector2(0, 1), new Vector2(12, -8), new Vector2(60, 24), UnityEngine.Device.Application.isMobilePlatform ? (i + 1).ToString() : Teclas.Nome("hab" + (i + 1)), 16).color = RusticHudTheme.Muted;
                 picture = Picture(rect, null, new Vector2(30, -12), 100, 14);
                 name = RusticHudTheme.Label(rect, "Nome", new Vector2(.5f, 0), new Vector2(0, 6), new Vector2(150, 30), "", 15, TextAnchor.MiddleCenter);
                 name.horizontalOverflow = HorizontalWrapMode.Wrap;

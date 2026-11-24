@@ -311,52 +311,96 @@ namespace ForjaDasMares.Networking
     }
 
     // Small life bar over a taken animal.
+    // Life bars over creatures: a solid, readable bar (not a glow) in the game's rustic style. Gold frame, dark
+    // bed, red life with a light top edge, notches every quarter (so you can tell how much is left at a glance), a
+    // pale "recent damage" strip that shrinks after each hit, a white flash when hit, and a red pulse when it is
+    // almost dead. Bosses also show their name and the numbers.
     public sealed class BarraDeVida : MonoBehaviour
     {
-        Health health; Transform fill; Transform back; bool grande; float largura = 1, espessura = .1f;
-        // Big bar with the name, always shown, for bosses and mini-bosses (placed just above the model).
+        Health health; Transform fill, brilho, rastro, back, moldura; TextMesh numeros; Renderer fillR;
+        bool grande; float largura = 1, espessura = .1f, rastroF = 1, ultimoF = 1, espera, flash;
+        static Material plano;
+        static readonly Color Vermelho = new Color(.82f, .13f, .11f), Claro = new Color(1f, .5f, .4f), Rastro = new Color(1f, .86f, .62f);
+
+        // Top of the model (renderers), from its pivot.
+        public static float Altura(Transform owner, float padrao)
+        {
+            var rs = owner.GetComponentsInChildren<Renderer>(); bool first = true; var b = new Bounds();
+            foreach (var r in rs) { if (r is ParticleSystemRenderer || r is TrailRenderer || r is LineRenderer || r.GetComponentInParent<BarraDeVida>() != null) continue; if (first) { b = r.bounds; first = false; } else b.Encapsulate(r.bounds); }
+            return first ? padrao : Mathf.Clamp(b.max.y - owner.position.y, 1.2f, 7f);
+        }
+        // Big bar with the name and numbers, always shown, for bosses and mini-bosses (just above the model).
         public static BarraDeVida Grande(Transform owner, Health hp, string nome)
         {
-            float top = 2.4f;
-            var rs = owner.GetComponentsInChildren<Renderer>();
-            if (rs.Length > 0) { var b = rs[0].bounds; foreach (var r in rs) if (!(r is ParticleSystemRenderer) && !(r is TrailRenderer)) b.Encapsulate(r.bounds); top = Mathf.Clamp(b.max.y - owner.position.y, 1.4f, 7f); }
-            var go = new GameObject("Vida"); go.transform.SetParent(owner, false);
-            var s = owner.lossyScale.y; go.transform.localPosition = Vector3.up * (top + .45f) / Mathf.Max(.01f, s); go.transform.localScale = Vector3.one / Mathf.Max(.01f, s);
-            var bar = go.AddComponent<BarraDeVida>(); bar.health = hp; bar.grande = true; bar.largura = 2.6f; bar.espessura = .22f;
-            bar.back = Quad(go.transform, new Color(.06f, .02f, .04f, .95f), 2.66f, .3f, 0);
-            bar.fill = Quad(go.transform, new Color(1f, .26f, .22f), 2.6f, .22f, -.001f);
+            float top = Altura(owner, 2.4f);
+            var bar = Montar(owner, hp, top + .5f, 2.8f, .26f, true);
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            var label = new GameObject("Nome").AddComponent<TextMesh>(); label.transform.SetParent(go.transform, false);
-            label.transform.localPosition = new Vector3(0, .36f, -.002f);
-            label.text = nome; label.font = font; label.GetComponent<MeshRenderer>().sharedMaterial = font.material;
-            label.fontSize = 48; label.characterSize = .05f; label.anchor = TextAnchor.LowerCenter; label.alignment = TextAlignment.Center;
-            label.color = new Color(1f, .82f, .72f);
+            var label = Texto(bar.transform, font, nome, new Vector3(0, .34f, -.004f), 48, .05f, TextAnchor.LowerCenter, new Color(1f, .86f, .7f));
+            bar.numeros = Texto(bar.transform, font, "", new Vector3(0, 0, -.006f), 40, .028f, TextAnchor.MiddleCenter, Color.white);
             return bar;
         }
-        public static BarraDeVida Criar(Transform owner, Health hp, float height)
+        // Small bar (shown only after the first hit) for common creatures.
+        public static BarraDeVida Criar(Transform owner, Health hp, float height) => Montar(owner, hp, height, 1.25f, .13f, false);
+
+        static BarraDeVida Montar(Transform owner, Health hp, float height, float w, float h, bool big)
         {
-            var go = new GameObject("Vida"); go.transform.SetParent(owner, false); go.transform.localPosition = Vector3.up * height;
-            var b = go.AddComponent<BarraDeVida>(); b.health = hp;
-            b.back = Quad(go.transform, new Color(.08f, .02f, .1f, .9f), 1.02f, .14f, 0);
-            b.fill = Quad(go.transform, new Color(.8f, .25f, 1f), 1f, .1f, -.001f);
-            return b;
+            var go = new GameObject("Vida"); go.transform.SetParent(owner, false);
+            var s = Mathf.Max(.01f, owner.lossyScale.y); go.transform.localPosition = Vector3.up * height / s; go.transform.localScale = Vector3.one / s;
+            var bar = go.AddComponent<BarraDeVida>(); bar.health = hp; bar.grande = big; bar.largura = w; bar.espessura = h;
+            float borda = big ? .06f : .04f;
+            bar.moldura = Quad(go.transform, new Color(.78f, .6f, .3f), w + borda * 2, h + borda * 2, 0);
+            bar.back = Quad(go.transform, new Color(.07f, .04f, .04f), w, h, -.001f);
+            bar.rastro = Quad(go.transform, Rastro, w, h, -.002f);
+            bar.fill = Quad(go.transform, Vermelho, w, h, -.003f); bar.fillR = bar.fill.GetComponent<Renderer>();
+            bar.brilho = Quad(go.transform, Claro, w, h * .3f, -.0035f);
+            // Notches every quarter (thin dark lines over the life).
+            for (int i = 1; i < 4; i++) { var n = Quad(go.transform, new Color(.07f, .04f, .04f), big ? .03f : .022f, h, -.004f); n.localPosition = new Vector3(-w * .5f + w * i / 4f, 0, -.004f); }
+            if (hp != null) bar.ultimoF = bar.rastroF = Fracao(hp);
+            return bar;
+        }
+        static TextMesh Texto(Transform parent, Font font, string text, Vector3 at, int size, float character, TextAnchor anchor, Color c)
+        {
+            var label = new GameObject("Texto").AddComponent<TextMesh>(); label.transform.SetParent(parent, false); label.transform.localPosition = at;
+            label.text = text; label.font = font; label.GetComponent<MeshRenderer>().sharedMaterial = font.material;
+            label.fontSize = size; label.characterSize = character; label.anchor = anchor; label.alignment = TextAlignment.Center; label.color = c;
+            return label;
         }
         static Transform Quad(Transform parent, Color c, float w, float h, float z)
         {
+            if (plano == null) plano = new Material(Shader.Find("Universal Render Pipeline/Unlit")) { name = "BarraDeVida" };
             var q = GameObject.CreatePrimitive(PrimitiveType.Quad); Destroy(q.GetComponent<Collider>());
             q.transform.SetParent(parent, false); q.transform.localPosition = new Vector3(0, 0, z); q.transform.localScale = new Vector3(w, h, 1);
-            var r = q.GetComponent<Renderer>(); r.sharedMaterial = EfeitosDeHabilidade.Brilho; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", c); r.SetPropertyBlock(block);
+            var r = q.GetComponent<Renderer>(); r.sharedMaterial = plano; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; r.receiveShadows = false;
+            Cor(r, c);
             return q.transform;
+        }
+        static readonly MaterialPropertyBlock bloco = new MaterialPropertyBlock();
+        static void Cor(Renderer r, Color c) { bloco.SetColor("_BaseColor", c); r.SetPropertyBlock(bloco); }
+        static float Fracao(Health h) => Mathf.Clamp01((float)h.Current / Mathf.Max(1, h.Maximum));
+        static void Encher(Transform t, float f, float w, float h, float y)
+        {
+            t.localScale = new Vector3(Mathf.Max(.0001f, w * f), h, 1);
+            t.localPosition = new Vector3(-(1 - f) * w * .5f, y, t.localPosition.z);
         }
         void LateUpdate()
         {
             var cam = Camera.main; if (cam != null) transform.rotation = cam.transform.rotation;
-            float f = health != null ? Mathf.Clamp01((float)health.Current / Mathf.Max(1, health.Maximum)) : 0;
-            fill.localScale = new Vector3(largura * f, espessura, 1); fill.localPosition = new Vector3(-(1 - f) * largura * .5f, 0, -.001f);
-            bool show = grande ? health != null && health.IsAlive : f < 1;
-            back.gameObject.SetActive(show); fill.gameObject.SetActive(show);
-            if (grande) foreach (Transform t in transform) if (t != back && t != fill) t.gameObject.SetActive(show);
+            float f = health != null ? Fracao(health) : 0;
+            // A hit: flash, and the pale strip waits a moment before shrinking to the new life.
+            if (f < ultimoF - .0001f) { flash = 1; espera = .45f; }
+            if (f > rastroF) rastroF = f;
+            ultimoF = f;
+            if (espera > 0) espera -= Time.deltaTime; else rastroF = Mathf.MoveTowards(rastroF, f, Time.deltaTime * .7f);
+            flash = Mathf.MoveTowards(flash, 0, Time.deltaTime * 6);
+            Encher(fill, f, largura, espessura, 0);
+            Encher(rastro, rastroF, largura, espessura, 0);
+            Encher(brilho, f, largura, espessura * .3f, espessura * .35f);
+            var cor = Vermelho;
+            if (f < .25f) cor = Color.Lerp(Vermelho, new Color(1f, .3f, .2f), .5f + Mathf.Sin(Time.time * 10) * .5f);
+            Cor(fillR, Color.Lerp(cor, Color.white, flash * .8f));
+            if (numeros != null && health != null) numeros.text = Mathf.Max(0, health.Current) + " / " + health.Maximum;
+            bool show = grande ? health != null && health.IsAlive : f < 1 && f > 0;
+            foreach (Transform t in transform) if (t.gameObject.activeSelf != show) t.gameObject.SetActive(show);
         }
     }
 }

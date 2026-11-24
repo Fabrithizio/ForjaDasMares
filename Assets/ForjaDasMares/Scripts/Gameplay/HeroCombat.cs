@@ -58,7 +58,7 @@ namespace ForjaDasMares
         // A perfect dodge gives 30 points; every 10 hits give only 1 point; each hit taken removes 10;
         // 8 s without fighting and it drains 2 points per second.
         float superCharge, lastCombat = -100, lastHealth = -1;
-        public const float SuperPerfectDodge = 30, SuperPerHit = .1f, SuperLostOnHit = 10, SuperDrainPerSecond = 2, SuperIdleSeconds = 8;
+        public const float SuperPerfectDodge = 30, SuperPerHit = 1f / 3f, SuperLostOnHit = 0, SuperDrainPerSecond = 2, SuperIdleSeconds = 10; // 1% every 3 hits; it only drains after 10 s out of combat
         public void AddSuper(float points) { if (ultimate || furyRemaining > 0) return; superCharge = Mathf.Clamp01(superCharge + points / 100f); lastCombat = Time.time; }
         bool heavy, ultimate;
         public bool EnhancedControls => flow != null;
@@ -235,7 +235,7 @@ namespace ForjaDasMares
             if (health != null)
             {
                 float now = health.Current;
-                if (lastHealth >= 0 && now < lastHealth && health.IsAlive) { superCharge = Mathf.Max(0, superCharge - SuperLostOnHit / 100f); lastCombat = Time.time; }
+                if (lastHealth >= 0 && now < lastHealth && health.IsAlive) lastCombat = Time.time; // being hit keeps you in combat (the charge is kept)
                 lastHealth = now;
             }
             if (superCharge > 0 && Time.time - lastCombat > SuperIdleSeconds) superCharge = Mathf.Max(0, superCharge - SuperDrainPerSecond / 100f * Mathf.Max(0, deltaTime));

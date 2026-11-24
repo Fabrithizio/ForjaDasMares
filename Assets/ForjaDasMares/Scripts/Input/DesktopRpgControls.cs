@@ -30,12 +30,22 @@ namespace ForjaDasMares
         void Awake()
         {
             path=new NavMeshPath();
-            stationary=new InputAction("StandStill",InputActionType.Button);stationary.AddBinding("<Keyboard>/leftShift");stationary.AddBinding("<Keyboard>/rightShift");
+            stationary=Teclas.Criar("parado");
         }
         void OnEnable(){stationary?.Enable();}
         void OnDisable(){stationary?.Disable();Cancel();}
         void OnDestroy(){stationary?.Dispose();}
         public void PressMouse(){pressed=true;}
+        // Walking by itself (picked on the world map): to this target, then use it. Any move, click or hit stops it.
+        public WorldClickTarget Auto{get;private set;}
+        public bool AutoParou{get;set;}
+        public void IrAte(WorldClickTarget alvo){Auto=alvo;AutoParou=false;interaction=null;navigating=false;count=corner=0;replan=0;}
+        public void PararAuto(){if(Auto==null&&!autoPonto)return;Auto=null;autoPonto=false;AutoParou=true;navigating=false;Movement=Vector2.zero;motor?.StopWalking();}
+        // Walking by itself to a spot (picked on the big minimap). False when there is no way there.
+        bool autoPonto;Vector3 pontoAuto;
+        public bool IndoParaPonto=>autoPonto;
+        public bool IrPara(Vector3 ponto){Auto=null;interaction=null;target=null;if(!Plan(ponto))return false;autoPonto=true;pontoAuto=ponto;AutoParou=false;pressed=false;vidaNoCaminho=health!=null?health.Current:-1;return true;}
+        int vidaNoCaminho=-1;
         public void Cancel(){Notice="";navigating=false;target=null;SelectionTarget=null;HoveredInteraction=null;count=corner=0;Movement=Vector2.zero;pressed=false;attackGesture=attackRecovery=abilityLock=false;interaction=null;interactionGesture=false;queuedCast=false;atacandoSozinho=false;travado=null;Mirando=null;MirandoAgora=false;if(input!=null)input.AutoAttack=false;}
         // While an ability starts (PC): aim where the mouse is, not where the hero was walking.
         public bool AimAtPointer{get;set;}
@@ -55,6 +65,25 @@ namespace ForjaDasMares
             }
         }
         static Vector3 Flat(Vector3 value){value.y=0;return value.sqrMagnitude>.0001f?value.normalized:Vector3.zero;}
+        // The first thing under the cursor, skipping scenery that stands between the camera and the hero (a tree
+        // the camera looks through is see-through: clicking "on" it means the ground behind it).
+        static readonly RaycastHit[] clickHits=new RaycastHit[16];
+        bool ClickRay(Ray ray,int mask,out RaycastHit best)
+        {
+            best=default;int count=Physics.RaycastNonAlloc(ray,clickHits,500,mask,QueryTriggerInteraction.Ignore);
+            System.Array.Sort(clickHits,0,count,HitOrder);
+            Vector3 eye=ray.origin,hero=motor!=null?motor.transform.position+Vector3.up*1.1f:eye;Vector3 toHero=hero-eye;float heroDistance=toHero.magnitude;
+            for(int i=0;i<count;i++)
+            {
+                var hit=clickHits[i];
+                bool scenery=(hit.collider.gameObject.layer==9||hit.collider.gameObject.layer==0)&&hit.collider.GetComponentInParent<Health>()==null;
+                if(scenery&&motor!=null&&hit.distance<heroDistance-1f&&hit.collider.Raycast(new Ray(eye,toHero/heroDistance),out _,heroDistance))continue;
+                best=hit;return true;
+            }
+            return false;
+        }
+        sealed class ByDistance:System.Collections.Generic.IComparer<RaycastHit>{public int Compare(RaycastHit a,RaycastHit b)=>a.distance.CompareTo(b.distance);}
+        static readonly ByDistance HitOrder=new ByDistance();
         public bool TryPointer(out Vector3 point,out Health enemy)
         {
             enemy=null;point=Vector3.zero;if(camera==null||input==null||motor==null)return false;
@@ -174,6 +203,27 @@ namespace ForjaDasMares
             CanAttack=false;Movement=input!=null?input.RawMove:Vector2.zero;
             if(input==null||motor==null||!input.isActiveAndEnabled||input.CombatBlocked){Cancel();return;}
             if(health!=null&&!health.IsAlive){Cancel();CanAttack=false;return;}
+            if(autoPonto)
+            {
+                // It only stops by: clicking on the world to walk (or moving the stick), using an ability, or a hit that
+                // takes more than 2% of the life. Closing the map, clicking buttons, scratches: it keeps going.
+                bool cliqueNoMundo=pressed&&!input.PointerIsBlocked;
+                if(pressed&&!cliqueNoMundo)pressed=false;
+                if(health!=null){int agora=health.Current;if(vidaNoCaminho>=0&&vidaNoCaminho-agora>health.Maximum*.02f){PararAuto();return;}vidaNoCaminho=agora;}
+                if(input.RawMove.sqrMagnitude>.01f||cliqueNoMundo){PararAuto();return;}
+                var falta=pontoAuto-motor.transform.position;falta.y=0;if(falta.sqrMagnitude<1.2f*1.2f){autoPonto=false;navigating=false;Movement=Vector2.zero;motor.StopWalking();return;}
+                destination=pontoAuto;
+                if(!navigating&&!Plan(destination)){PararAuto();return;}
+                goto Seguir;
+            }
+            if(Auto!=null)
+            {
+                if(!Auto.isActiveAndEnabled||input.RawMove.sqrMagnitude>.01f||pressed||input.MouseAttackHeld){pressed=false;PararAuto();return;}
+                if(Auto.InRange(motor.transform)){var use=Auto;Auto=null;navigating=false;Movement=Vector2.zero;motor.StopWalking();use.TryUse(motor.transform);return;}
+                destination=Auto.Approach;
+                if((count==0||!navigating)&&!Plan(destination)){PararAuto();return;}
+                goto Seguir;
+            }
             if(UnityEngine.Device.Application.isMobilePlatform){if(Celular())goto Seguir;return;}
             if(!input.HasPointer){SelectionTarget=null;CanAttack=true;pressed=false;navigating=false;target=null;attackGesture=attackRecovery=false;return;}
             // A hold that started on the world keeps walking even when the cursor slides over the HUD.
@@ -184,14 +234,15 @@ namespace ForjaDasMares
             var pointerAt=input.PointerPosition;if(!float.IsFinite(pointerAt.x)||!float.IsFinite(pointerAt.y)){Cancel();return;}
             bool pointer=TryPointer(out var point,out var hovered);
             SelectionTarget=hovered;
-            if (camera != null && Physics.Raycast(camera.ScreenPointToRay(input.PointerPosition),out var clickHit,500,
-                (1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),QueryTriggerInteraction.Ignore))
+            if (camera != null && ClickRay(camera.ScreenPointToRay(input.PointerPosition),(1<<0)|(1<<8)|(1<<9)|(combat!=null?combat.TargetMask:1<<13),out var clickHit))
             {
                 var candidate = clickHit.collider.GetComponentInParent<WorldClickTarget>();
                 if (candidate == null) WorldClickTarget.Alias.TryGetValue(clickHit.collider, out candidate);
+                if (candidate == null) candidate = WorldClickTarget.PertoDoClique(clickHit.point);
                 if (candidate != null && candidate.isActiveAndEnabled) HoveredInteraction = candidate;
             }
             WorldClickTarget clicked = pressed ? HoveredInteraction : null;
+            if (clicked != null) Debug.Log("CLIQUE_ALVO " + clicked.Label);
             if (HoveredInteraction != null) hovered = SelectionTarget = null;
             bool groundPress=pressed&&pointer&&hovered==null&&!StandStill;
             if(groundPress){queuedCast=combat!=null&&!combat.MovementWindowOpen;queuedAim=target!=null?Flat(target.transform.position-motor.transform.position):motor.transform.forward;interactionGesture=clicked!=null;interaction=clicked;destination=clicked!=null?clicked.Approach:point;navigating=true;replan=0;count=corner=0;attackGesture=attackRecovery=false;target=null;combat?.CancelCharge();pressed=false;}
@@ -246,7 +297,7 @@ namespace ForjaDasMares
             destination=point;replan=.15f;lastPlanned=point;count=corner=0;
             var filter=new NavMeshQueryFilter{agentTypeID=0,areaMask=NavMesh.AllAreas};
             if(!NavMesh.SamplePosition(motor.transform.position,out var start,2,filter)||!NavMesh.SamplePosition(point,out var end,4,filter)||Mathf.Abs(end.position.y-point.y)>2||!NavMesh.CalculatePath(start.position,end.position,filter,path)||path.status!=NavMeshPathStatus.PathComplete)
-            {Notice="Caminho bloqueado";navigating=false;return false;}
+            {Notice="Caminho bloqueado";navigating=false;if(interaction!=null)Debug.Log("CAMINHO_BLOQUEADO ate "+interaction.Label+" "+point);return false;}
             count=path.GetCornersNonAlloc(corners);corner=count>1?1:0;navigating=count>0;Notice="";return navigating;
         }
     }

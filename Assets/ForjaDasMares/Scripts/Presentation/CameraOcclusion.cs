@@ -91,7 +91,7 @@ namespace ForjaDasMares
         }
         void SetOpacity(Material source, Material result)
         {
-            Color color = source.HasProperty(BaseColor) ? source.GetColor(BaseColor) : source.color;
+            Color color = source.HasProperty(BaseColor) ? source.GetColor(BaseColor) : source.HasProperty("_Color") ? source.color : Color.white;
             color.a = opacity; result.SetColor(BaseColor, color);
         }
         public void Restore()

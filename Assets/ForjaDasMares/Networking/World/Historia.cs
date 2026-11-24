@@ -573,8 +573,13 @@ namespace ForjaDasMares.Networking
             yield return Say("Nara", "Pensei no seu capitão afogado a noite toda.");
             yield return Say("Nara", "Morto não sobe rio sozinho. Alguém está mexendo no Breu. E mexendo com vontade.");
             yield return Say("Nara", "E tem mais. Mandei uma patrulha da Liga pelos Trilhos Velhos há dez dias. Ninguém voltou.");
-            yield return Say(Me, "Os estandartes na Nascente... eles iam para oeste.");
-            yield return Say("Nara", "Então você já está no rastro deles. Bom.");
+            // Only who read the Liga banners in the Nascente (secret mission) knows where they went.
+            if (Historia.Feito("m5_aceita"))
+            {
+                yield return Say(Me, "Os estandartes na Nascente... eles iam para oeste.");
+                yield return Say("Nara", "Então você já está no rastro deles. Bom.");
+            }
+            else yield return Say("Nara", "Eles saíram da Nascente rumo ao oeste. Os Trilhos ficam para aqueles lados.");
             yield return Say("Nara", "Os trilhos levam à Estação Antiga. Lá tem uma Raiz-Mãe. Se ela ainda vive, talvez saiba de onde vêm os que ela puxa.");
             yield return Say(Me, "...E para onde eles podem voltar.");
             yield return Say("Nara", "Talvez. Não prometo o que não sei. Saia da Nascente pelo sudoeste e siga a linha de ferro. Ache a patrulha.");

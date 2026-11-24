@@ -25,7 +25,8 @@ namespace ForjaDasMares
                 if (selectedObject != null && material != null && !cache.ContainsKey(selectedObject))
                 {
                     var presentation = selectedObject.GetComponent<EnemyPresentation>();
-                    Create(selectedObject,presentation != null && presentation.Model != null ? presentation.Model : selectedObject.transform);
+                    if (interaction != null && interaction.gameObject == selectedObject && interaction.Realce != null) Create(selectedObject,interaction.Realce);
+                    else Create(selectedObject,(presentation != null && presentation.Model != null ? presentation.Model : selectedObject.transform).GetComponentsInChildren<Renderer>(true));
                 }
             }
             selected = next;
@@ -34,14 +35,17 @@ namespace ForjaDasMares
             if(firing!=attacking||material.GetColor("_OutlineColor").a==0){attacking=firing;material.SetColor("_OutlineColor",firing?new Color(1,.38f,.08f,1):new Color(1,.85f,.3f,1));}
             foreach(var item in surfaces)if(item.outline!=null)item.outline.enabled=item.source!=null&&item.source.enabled&&item.source.gameObject.activeInHierarchy;
         }
-        void Create(GameObject actor, Transform root)
+        void Create(GameObject actor, Renderer[] sources)
         {
             var list=new List<Surface>();cache.Add(actor,list);
-            foreach(var source in root.GetComponentsInChildren<Renderer>(true))
+            foreach(var source in sources)
             {
+                if(source==null)continue;
                 if(source is ParticleSystemRenderer||source is LineRenderer||source is TrailRenderer||source.name.StartsWith("SelectionOutline"))continue;
                 // Models use LOD0/1/2 children. One silhouette is sufficient for one selected target.
                 if(source.name.StartsWith("LOD")&&source.name!="LOD0")continue;
+                // Scenery merged at build time: its mesh is the whole batch, not this piece.
+                if(source.isPartOfStaticBatch)continue;
                 GameObject go=null;Renderer renderer=null;
                 if(source is SkinnedMeshRenderer skin&&skin.sharedMesh!=null)
                 {go=new GameObject("SelectionOutlineSkin");var copy=go.AddComponent<SkinnedMeshRenderer>();copy.sharedMesh=skin.sharedMesh;copy.bones=skin.bones;copy.rootBone=skin.rootBone;copy.localBounds=skin.localBounds;renderer=copy;}

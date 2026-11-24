@@ -7,7 +7,7 @@ namespace ForjaDasMares.Networking
         void BuildRegionalKeys()
         {
             inventoryButton.name="RegionalInventoryButton";
-            regionalInventoryKey=new InputAction("RegionalInventory",InputActionType.Button,"<Keyboard>/i");
+            regionalInventoryKey=Teclas.Criar("mochila");
             regionalCloseKey=new InputAction("RegionalInventoryClose",InputActionType.Button,"<Keyboard>/escape");
             regionalInventoryKey.performed+=OnRegionalInventory;regionalCloseKey.performed+=OnRegionalClose;
             regionalInventoryKey.Enable();regionalCloseKey.Enable();
