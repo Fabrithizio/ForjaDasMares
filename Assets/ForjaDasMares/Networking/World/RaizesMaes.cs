@@ -83,7 +83,8 @@ namespace ForjaDasMares.Networking
                 var go = new GameObject("SinoDaRaiz"); Object.DontDestroyOnLoad(go);
                 sino = go.AddComponent<AudioSource>(); sino.playOnAwake = false; sino.spatialBlend = 0; sino.clip = Historia.Sino(true);
             }
-            sino.volume = .85f; sino.Stop(); sino.Play();
+            float efeitos = Volumes.De(Volumes.Efeitos); sino.Stop(); if (efeitos <= 0) return;
+            sino.volume = .85f * efeitos; sino.Play();
         }
 
         // Arriving through a root: a ring of sap opens on the ground, motes rise, and the light over the screen opens.

@@ -40,6 +40,7 @@ namespace ForjaDasMares.Networking
         {
             var start = hero.transform.position; int action = travelCombat.ActionVersion;
             auraChamando = EfeitosDeHabilidade.Aura(hero.transform, LuzDoLobo, true, .8f, 28);
+            SonsDoJogo.Tocar("Uivo", .45f); // calling the wolf
             var pose = hero.GetComponentInChildren<HeroModelView>(); if (pose != null) pose.PoseFixa = "Conjurar";
             for (float t = 0; t < TempoMontar; t += Time.deltaTime)
             {
@@ -224,7 +225,13 @@ namespace ForjaDasMares.Networking
             }
             enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;enemies.Spawned+=BarraDoChefe;
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignMasterVolume",.8f));
-            if(soundscape!=null){Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f*CampaignSoundscape.Volume(CampaignSoundscape.MusicKey));Voice("RegionalAmbience",soundscape.menu.ambience,.16f*CampaignSoundscape.Volume(CampaignSoundscape.AmbienceKey));}
+            // Music chosen by Fabricio (Jogos/Som): each place gets its own track when it exists (Resources/Som/Musicas/
+            // <area id>), otherwise the city theme in cities and the exploration theme outside. Old tracks only if none.
+            var lugar=AreasDoMundo.PorCena(gameObject.scene.name);
+            string faixa=lugar!=null&&Resources.Load<AudioClip>("Som/Musicas/"+lugar.id)!=null?lugar.id:(town!=null||lugar!=null&&lugar.cidade)?"Tema":"Exploracao";
+            TrilhaSonora.Tocar(faixa);
+            SonsDoJogo.NaCidade=town!=null||lugar!=null&&lugar.cidade; SonsDoJogo.Montado=()=>this!=null&&IsMounted;
+            if(soundscape!=null){if(!TrilhaSonora.Tocando)Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f,Volumes.Musica);Voice("RegionalAmbience",soundscape.menu.ambience,.16f,Volumes.Ambiente);}
             if (montadoNaViagem) { montadoNaViagem = false; StartCoroutine(MontarDireto()); }
             Debug.Log("REGION_READY localPrototype=true camps="+residents.Length+" capacity="+enemies.Capacity);
         }
@@ -237,7 +244,7 @@ namespace ForjaDasMares.Networking
             if(actor.Profile.kind!=EnemyKind.Boss&&!actor.Profile.miniboss){BarraDeVida.Criar(actor.transform,actor.Health,BarraDeVida.Altura(actor.transform,1.8f)+.35f);return;}
             BarraDeVida.Grande(actor.transform,actor.Health,actor.Profile.displayName);
         }
-        void Voice(string label,AudioClip clip,float volume){var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;source.volume=volume;source.Play();}
+        void Voice(string label,AudioClip clip,float gain,string key){if(clip==null)return;var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;VolumeAoVivo.Ligar(source,key,gain);source.Play();}
         void HeroChanged(){hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);}
         void EnemyDied(EnemyActor actor)
         {

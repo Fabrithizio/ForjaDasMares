@@ -34,6 +34,11 @@ namespace ForjaDasMares
         public StatSnapshot Stats { get; private set; }
         public bool RequireEquippedVisual {get;set;}
         public EquipmentDefinition MainWeapon { get; private set; }
+        // The weapon in the hand as the player owns it: its rarity and forge level (+0..+12), read live, so the
+        // effects grow as soon as the weapon is upgraded.
+        ItemInstance mainItem;
+        public ItemRarity MainRarity => mainItem != null ? mainItem.rarity : ItemRarity.Common;
+        public int MainForge => mainItem != null ? mainItem.forgeLevel : 0;
         public void Configure(HeroRoster roster, PlayerMotor player, HeroCombat attacks, MeshRenderer primary, MeshRenderer secondary)
         { heroes = roster; motor = player; combat = attacks; mainVisual = primary; secondaryVisual = secondary; CaptureRestPose(); }
         public void Initialize(ProfileService profile, ProgressionCatalog data)
@@ -56,7 +61,7 @@ namespace ForjaDasMares
             Stats=calculated;heroes.Health.ApplyAttributes(Stats.maximumHealth, Stats.defense); heroes.Health.ConfigureDefense(this);
             motor.ApplyMovementAttributes(Stats.speed, Stats.cooldownMultiplier);
             var main = loadout != null ? profile.Item(loadout.items[0]) : null; var off = loadout != null ? profile.Item(loadout.items[1]) : null;
-            MainWeapon = main != null ? catalog.Find(main.definitionId) : null;heroes.GetComponent<HeroPresentation>().SetWeapon(MainWeapon); var secondary = off != null ? catalog.Find(off.definitionId) : null;
+            MainWeapon = main != null ? catalog.Find(main.definitionId) : null;mainItem=main;heroes.GetComponent<HeroPresentation>().SetWeapon(MainWeapon); var secondary = off != null ? catalog.Find(off.definitionId) : null;
             var visual = heroes.GetComponent<HeroPresentation>().Visible;
             if (visual != null)
             {

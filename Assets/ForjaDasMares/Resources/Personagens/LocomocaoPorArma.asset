@@ -17,11 +17,25 @@ MonoBehaviour:
   baseAndar: {fileID: -203655887218126122, guid: d79f6e3f25829f94281bf12b1e1d9bcb, type: 3}
   baseAndarFeminino: {fileID: 0}
   baseCorrer: {fileID: -203655887218126122, guid: a92ab634b7691cd4c9f52d90bb1dff4e, type: 3}
+  baseAtaque1: {fileID: -203655887218126122, guid: e9f16677ef5b3d74d8a7f69484d5b299, type: 3}
+  baseAtaque2: {fileID: -203655887218126122, guid: c11c1f9fa1367be40a4397cc58da8ad0, type: 3}
+  baseAtaque3: {fileID: -203655887218126122, guid: d5ca23dc258f436499bdcbe829020419, type: 3}
+  baseForte: {fileID: -203655887218126122, guid: 21ff934edaa49f148babf5076b707109, type: 3}
+  baseSuper: {fileID: -203655887218126122, guid: d0551f6639ebfa94d9f6953efaac632e, type: 3}
+  baseHabilidade: {fileID: -203655887218126122, guid: 56ff3fb35c655e048904f1b8a4a21062, type: 3}
+  baseDano: {fileID: -203655887218126122, guid: 5159743cb73fbf2489e39867b7deebae, type: 3}
   espada:
     nome: Espada
     parado: {fileID: -203655887218126122, guid: 1fe78595303f89543b5e27737683523a, type: 3}
     andar: {fileID: -203655887218126122, guid: 6374f3714e4a63d429b38b6aeccdcded, type: 3}
     correr: {fileID: -203655887218126122, guid: 62221b92bb4816f41b810b93ad37d95b, type: 3}
+    ataque1: {fileID: -203655887218126122, guid: 69bf0364740ba8b42b5a08dbbb7b5b41, type: 3}
+    ataque2: {fileID: -203655887218126122, guid: 9b8ebe2c27663bf42a18290b94fccf9e, type: 3}
+    ataque3: {fileID: -203655887218126122, guid: 59740af3eb1fcb744932117aa136b887, type: 3}
+    forte: {fileID: -203655887218126122, guid: 89737e67cf9171349955995a0846ebdb, type: 3}
+    super: {fileID: -203655887218126122, guid: 63edf83ae929964419c098053219b790, type: 3}
+    habilidade: {fileID: -203655887218126122, guid: dd4080b66a05ed34ea4cceac39ed11ed, type: 3}
+    dano: {fileID: -203655887218126122, guid: 55baf5be6ce5ce74fa781a6bf2448330, type: 3}
     passadaAndar:
     - 1.3253804
     - 1.1514004
@@ -33,6 +47,13 @@ MonoBehaviour:
     parado: {fileID: -203655887218126122, guid: f364e9cc240624c449f02d2ccc10dc0a, type: 3}
     andar: {fileID: -203655887218126122, guid: b5465e0eac76b174b88537bf499f69f4, type: 3}
     correr: {fileID: -203655887218126122, guid: 9f61711b74e70f248b16838d3a9333b0, type: 3}
+    ataque1: {fileID: -203655887218126122, guid: c11c1f9fa1367be40a4397cc58da8ad0, type: 3}
+    ataque2: {fileID: -203655887218126122, guid: d5ca23dc258f436499bdcbe829020419, type: 3}
+    ataque3: {fileID: -203655887218126122, guid: 5b059cbda0afe964f97cac52f297aa33, type: 3}
+    forte: {fileID: 0}
+    super: {fileID: 0}
+    habilidade: {fileID: 0}
+    dano: {fileID: 0}
     passadaAndar:
     - 1.4580613
     - 1.2666645

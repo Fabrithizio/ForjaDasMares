@@ -42,6 +42,7 @@ namespace ForjaDasMares.Networking
             if (FindFirstObjectByType<EventSystem>() == null)
                 new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
             Camera.main.cullingMask &= ~(1 << PreviewLayer);
+            TrilhaSonora.Tocar("Tema"); // the game's theme on the title screen
             BuildInterface();
         }
 

@@ -12,12 +12,16 @@ namespace ForjaDasMares
         {
             public string nome;
             public AnimationClip parado, andar, correr;
+            // Fighting with this weapon (null = keep the hero's base move): the 3 blows of the combo, the charged
+            // blow, the Super, the abilities and being hit.
+            public AnimationClip ataque1, ataque2, ataque3, forte, super, habilidade, dano;
             // Metres per loop for each body (0 = male, 1 = female), so the feet keep pace with the ground.
             public float[] passadaAndar = { 1, 1 }, passadaCorrer = { 2.4f, 2.4f };
         }
 
         // The base clips of the hero's Animator, the ones that get replaced.
         public AnimationClip baseParado, baseParadoOlhando, baseAndar, baseAndarFeminino, baseCorrer;
+        public AnimationClip baseAtaque1, baseAtaque2, baseAtaque3, baseForte, baseSuper, baseHabilidade, baseDano;
         public Jeito espada, cajado;
 
         public Jeito Para(WeaponCategory category) =>
@@ -46,6 +50,13 @@ namespace ForjaDasMares
                 if (key == baseParado || key == baseParadoOlhando) swap = jeito.parado;
                 else if (key == baseAndar || key == baseAndarFeminino) swap = jeito.andar;
                 else if (key == baseCorrer) swap = jeito.correr;
+                else if (key == baseAtaque1) swap = jeito.ataque1;
+                else if (key == baseAtaque2) swap = jeito.ataque2;
+                else if (key == baseAtaque3) swap = jeito.ataque3;
+                else if (key == baseForte) swap = jeito.forte;
+                else if (key == baseSuper) swap = jeito.super;
+                else if (key == baseHabilidade) swap = jeito.habilidade;
+                else if (key == baseDano) swap = jeito.dano;
                 if (swap != null) pairs[i] = new KeyValuePair<AnimationClip, AnimationClip>(key, swap);
             }
             result.ApplyOverrides(pairs);

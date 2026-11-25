@@ -266,7 +266,7 @@ namespace ForjaDasMares.Networking
             marker.gameObject.SetActive(false);
         }
 
-        void Bell(float volume, bool cracked) => sound.PlayOneShot(Historia.Sino(cracked), volume);
+        void Bell(float volume, bool cracked) { float efeitos = Volumes.De(Volumes.Efeitos); if (efeitos > 0) sound.PlayOneShot(Historia.Sino(cracked), volume * efeitos); }
 
         Transform PersonNamed(string part)
         {

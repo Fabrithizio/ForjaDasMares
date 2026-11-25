@@ -533,6 +533,8 @@ namespace ForjaDasMares.Networking
             video.renderMode=UnityEngine.Video.VideoRenderMode.RenderTexture;
             video.targetTexture=texture;
             video.audioOutputMode=UnityEngine.Video.VideoAudioOutputMode.Direct;
+            // Direct audio skips the game's listener, so it gets the general and music volumes by hand.
+            video.SetDirectAudioVolume(0,Volumes.De(Volumes.Geral)*Volumes.De(Volumes.Musica));
             bool finished=false,failed=false;
             video.loopPointReached+=_=>finished=true;
             video.errorReceived+=(_,message)=>{failed=true;Debug.LogWarning("Abertura: "+message);};
@@ -653,7 +655,7 @@ namespace ForjaDasMares.Networking
             buttonSize = size;
             attackMode = CombatAction(root,"Super",touch ? new Vector2(-176,241) : new Vector2(-132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
             superShade = Shade(attackMode,size,true);
-            SegurarParaVer.Em(attackMode,() => "SUPER\nGolpe especial forte.\nEnche 1% a cada 3 acertos e com esquivas perfeitas.\nSó começa a esvaziar depois de 10 segundos fora de combate.");
+            SegurarParaVer.Em(attackMode,() => "SUPER\nGolpe especial forte.\nEnche 1% a cada acerto e com esquivas perfeitas.\nSó começa a esvaziar depois de 10 segundos fora de combate.");
         }
 
         // Dark cover over a button that drains from the top while it recharges (with the seconds on the label).

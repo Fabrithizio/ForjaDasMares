@@ -13,7 +13,7 @@ namespace ForjaDasMares.Networking.Editor
     {
         const string Folder = "Assets/ForjaDasMares/Resources/Efeitos";
         const string Pack = "Assets/JMO Assets/Cartoon FX Remaster/CFXR Prefabs/";
-        const int Version = 1;
+        const int Version = 2;
 
         // ability key -> pack prefab (path inside CFXR Prefabs)
         static readonly (string key, string path)[] Map =
@@ -33,6 +33,11 @@ namespace ForjaDasMares.Networking.Editor
             ("brotar_aura", "Misc/CFXR2 Shiny Item (Loop)"),
             ("gelo", "Ice/CFXR3 Hit Ice B (Air)"),
             ("super", "Explosions/CFXR Explosion 1"),
+            // Blade attacks (CortesDaEspada and the hit on the enemy).
+            ("corte_cruz", "Sword Trails/Plain/CFXR4 Sword Hit PLAIN (Cross)"),
+            ("corte_giro", "Sword Trails/Plain/CFXR4 Sword Trail PLAIN (360 Spiral)"),
+            ("corte_giro_fino", "Sword Trails/Plain/CFXR4 Sword Trail PLAIN (360 Thin Spiral)"),
+            ("acerto_brilho", "Light/CFXR3 Hit Light B (Air)"),
         };
 
         static EfeitosInstaller() { EditorApplication.delayCall += () => { if (Needed()) Install(); }; }

@@ -42,7 +42,30 @@ namespace ForjaDasMares.Networking.Editor
         }
 
         [MenuItem("Forja/Personagem/Revisar o corpo (fotos)")]
-        public static void Revisar()
+        public static void Revisar() => Fotografar(Clipes, Momentos, new[] { "Masculino", "Feminino" }, "");
+
+        // New moves (Animacoes/Espada/Golpes): imported as Humanoid and pictured on the male body, 5 moments each,
+        // so we can choose which ones become the combo, the charged blow and the skills.
+        [MenuItem("Forja/Personagem/Ver golpes novos da espada (fotos)")]
+        public static void VerGolpes()
+        {
+            const string pasta = Animacoes + "Espada/Golpes/";
+            var nomes = new List<string>();
+            foreach (var arquivo in Directory.GetFiles(pasta, "*.fbx").OrderBy(f => f))
+            {
+                var caminho = arquivo.Replace('\\', '/');
+                if (AssetImporter.GetAtPath(caminho) is ModelImporter imp && (imp.animationType != ModelImporterAnimationType.Human || imp.materialImportMode != ModelImporterMaterialImportMode.None))
+                {
+                    imp.animationType = ModelImporterAnimationType.Human; imp.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                    imp.importAnimation = true; imp.materialImportMode = ModelImporterMaterialImportMode.None; imp.importCameras = imp.importLights = false;
+                    imp.SaveAndReimport();
+                }
+                nomes.Add("Espada/Golpes/" + Path.GetFileNameWithoutExtension(arquivo));
+            }
+            Fotografar(nomes.ToArray(), new[] { .15f, .35f, .5f, .65f, .85f }, new[] { "Masculino" }, "Golpes_");
+        }
+
+        static void Fotografar(string[] Clipes, float[] Momentos, string[] generos, string prefixo)
         {
             var pasta = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Logs", "RevisaoDoCorpo");
             Directory.CreateDirectory(pasta);
@@ -59,7 +82,7 @@ namespace ForjaDasMares.Networking.Editor
                 var rt = new RenderTexture(Lado, Lado, 24) { antiAliasing = 4 }; cam.targetTexture = rt;
                 var origem = new Vector3(0, -800, 0);
 
-                foreach (var genero in new[] { "Masculino", "Feminino" })
+                foreach (var genero in generos)
                 {
                     var prefab = Resources.Load<GameObject>("Personagens/" + genero);
                     if (prefab == null) { relatorio.AppendLine(genero + ": prefab não encontrado"); continue; }
@@ -129,18 +152,18 @@ namespace ForjaDasMares.Networking.Editor
                         }
                     }
                     folha.Apply();
-                    File.WriteAllBytes(Path.Combine(pasta, genero + ".png"), folha.EncodeToPNG());
+                    File.WriteAllBytes(Path.Combine(pasta, prefixo + genero + ".png"), folha.EncodeToPNG());
                     Object.DestroyImmediate(folha);
                     Object.DestroyImmediate(corpo); // one body at a time in the pictures
                 }
                 cam.targetTexture = null; rt.Release();
                 relatorio.AppendLine("Linhas: " + string.Join(" | ", Clipes.Select(c => c == "" ? "pose original" : c)));
-                relatorio.AppendLine("Colunas: momento 30% frente, 30% lado, 65% frente, 65% lado");
+                relatorio.AppendLine("Colunas: cada momento (" + string.Join(", ", Momentos.Select(m => Mathf.RoundToInt(m * 100) + "%")) + ") de frente e de lado");
             }
             finally
             {
                 EditorSceneManager.CloseScene(cena, true);
-                File.WriteAllText(Path.Combine(pasta, "relatorio.txt"), relatorio.ToString());
+                File.WriteAllText(Path.Combine(pasta, prefixo + "relatorio.txt"), relatorio.ToString());
                 Debug.Log(relatorio.ToString());
             }
         }

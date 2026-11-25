@@ -138,14 +138,70 @@ namespace ForjaDasMares.Networking.Editor
             var set = AssetDatabase.LoadAssetAtPath<LocomocaoPorArma>(path);
             if (set == null) { set = ScriptableObject.CreateInstance<LocomocaoPorArma>(); AssetDatabase.CreateAsset(set, path); }
             set.baseParado = Base("Idle"); set.baseParadoOlhando = Base("Idle2"); set.baseAndar = Base("Walk"); set.baseCorrer = Base("Run");
+            set.baseAtaque1 = Base("Attack"); set.baseAtaque2 = Base("Attack2"); set.baseAtaque3 = Base("Attack3");
+            set.baseForte = Base("Charged"); set.baseSuper = Base("Super"); set.baseHabilidade = Base("Skill"); set.baseDano = Base("Hit");
             var female = AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(Root + "Feminino/Animador.overrideController");
             set.baseAndarFeminino = female != null && set.baseAndar != null ? female[set.baseAndar] : null;
             var report = new System.Text.StringBuilder("ANIMACOES_POR_ARMA ·");
             set.espada = WeaponMoves("Espada", report);
             set.cajado = WeaponMoves("Cajado", report);
+            FightMoves(set, report);
             EditorUtility.SetDirty(set);
             AssetDatabase.SaveAssets();
             Debug.Log(report.ToString());
+        }
+
+        // How each weapon fights (chosen from the pictures of "Ver golpes novos da espada", 24/11):
+        // sword = Mixamo "Pro Sword And Shield": quick slash, backhand, overhead finish; jump smash when charged;
+        // spinning blow for the Super; sword raised then brought down for abilities; its own hit reaction.
+        // staff = the "Pro Magic" casts: three one-hand casts in the combo, the two-hand blast when charged.
+        // Each clip is cut around its fastest moment, so the hit lands when the game hits (like the base moves).
+        static readonly (string arquivo, float contato)[] GolpesDaEspada =
+        {
+            ("Espada_Golpe_1", .3f), ("Espada_Golpe_3", .3f), ("Espada_Ataque_4", .3f), ("Espada_Ataque_1", .5f), ("Espada_Golpe_4", .5f), ("Espada_Magia_1", .5f), ("Espada_Dano", 0),
+        };
+        static void FightMoves(LocomocaoPorArma set, System.Text.StringBuilder report)
+        {
+            var maleSource = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "Masculino/Modelo.fbx");
+            if (maleSource == null) return;
+            var rig = Object.Instantiate(maleSource);
+            try
+            {
+                AnimationClip Golpe(string folder, string file, float contact)
+                {
+                    string path = folder + file + ".fbx";
+                    if (!File.Exists(path) || !(AssetImporter.GetAtPath(path) is ModelImporter importer)) { report.Append(" faltando ").Append(file); return null; }
+                    importer.animationType = ModelImporterAnimationType.Human;
+                    importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                    importer.importAnimation = true; importer.materialImportMode = ModelImporterMaterialImportMode.None;
+                    importer.importCameras = importer.importLights = false;
+                    importer.SaveAndReimport();
+                    SetClip(importer, file, false, -1, -1);
+                    var clip = Clip(path);
+                    if (clip == null || contact <= 0) return clip;
+                    float peak = Peak(Sample(rig, clip));
+                    if (peak < 0) return clip;
+                    float before = contact < .4f ? .45f : .75f, after = contact < .4f ? 1.05f : .75f;
+                    float first = Mathf.Max(0, peak - before), last = Mathf.Min(clip.length, peak + after);
+                    SetClip(importer, file, false, first, last);
+                    report.Append(" ").Append(file).Append(" ").Append(first.ToString("0.00")).Append("-").Append(last.ToString("0.00")).Append("s");
+                    return Clip(path);
+                }
+                if (set.espada != null)
+                {
+                    string golpes = Animations + "Espada/Golpes/";
+                    var g = GolpesDaEspada.Select(x => Golpe(golpes, x.arquivo, x.contato)).ToArray();
+                    set.espada.ataque1 = g[0]; set.espada.ataque2 = g[1]; set.espada.ataque3 = g[2];
+                    set.espada.forte = g[3]; set.espada.super = g[4]; set.espada.habilidade = g[5]; set.espada.dano = g[6];
+                }
+                if (set.cajado != null)
+                {
+                    // The base combo starts with a throw (the boomerang's move): the staff casts instead.
+                    set.cajado.ataque1 = set.baseAtaque2; set.cajado.ataque2 = set.baseAtaque3;
+                    set.cajado.ataque3 = Golpe(Animations, "Ataque_Magico_3", .3f); // the 3rd blow hits at 30% too (HeroModelView)
+                }
+            }
+            finally { Object.DestroyImmediate(rig); }
         }
 
         static LocomocaoPorArma.Jeito WeaponMoves(string nome, System.Text.StringBuilder report)

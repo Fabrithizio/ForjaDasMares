@@ -35,8 +35,8 @@ ModelImporter:
       name: Ataque_Magico_3
       takeName: mixamo.com
       internalID: -203655887218126122
-      firstFrame: 0
-      lastFrame: 69
+      firstFrame: 10.157145
+      lastFrame: 55.157143
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

@@ -84,8 +84,12 @@ namespace ForjaDasMares
         // and go to the hand while attacking, then back after a few seconds without fighting.
         const float DrawnSeconds = 3f;
         static bool AlwaysInHand(WeaponCategory c) => c == WeaponCategory.Sword || c == WeaponCategory.Axe || c == WeaponCategory.Hammer || c == WeaponCategory.Staff;
+        // Where the weapon in the hand is this frame (after the animation), for the slashes (CortesDaEspada).
+        public bool ArmaNaMao { get; private set; }
+        public Vector3 PontaDaArma { get; private set; }
         void PoseWeapon()
         {
+            ArmaNaMao = false;
             if (bodyView == null) { PoseBackWeapon(); return; }
             if (combat == null) combat = GetComponentInParent<HeroCombat>();
             if (combat != null && (combat.IsBusy || combat.ActionVersion != lastAction)) { lastAction = combat.ActionVersion; drawnUntil = Time.time + DrawnSeconds; }
@@ -94,6 +98,7 @@ namespace ForjaDasMares
             bool inHand = AlwaysInHand(category) || Time.time < drawnUntil;
             Vector3? tip = null;
             if (inHand) tip = PoseHandWeapon(category); else PoseBackWeapon();
+            if (tip.HasValue) { ArmaNaMao = true; PontaDaArma = tip.Value; }
             // Shots of a staff (or bow, focus) leave from the tip of the weapon in the hand, not from the chest.
             bool shoots = category == WeaponCategory.Staff || category == WeaponCategory.MagicWeapon || category == WeaponCategory.Bow;
             // The aim point stays at the chest; only the visible start of the shot moves to the tip (HeroCombat.Muzzle).
@@ -148,9 +153,10 @@ namespace ForjaDasMares
                 int along = extent.x >= extent.y && extent.x >= extent.z ? 0 : extent.y >= extent.z ? 1 : 2;
                 int thin = extent.x <= extent.y && extent.x <= extent.z ? 0 : extent.y <= extent.z ? 1 : 2;
                 if (thin == along) thin = (along + 1) % 3;
-                float sign = HandleAtMin(mesh, along) ? 1 : -1;
+                var shape = Shape(mesh, along, HasGuard(category));
+                float sign = shape.handleAtMin ? 1 : -1;
                 string key = category + "/" + mesh.name;
-                var grip = Grip(key, category, hand, height);
+                var grip = Grip(key, category, hand, height, shape);
                 if (tip == null) { editing = grip; editingKey = key; }
                 var model = Quaternion.LookRotation(Axis(thin), Axis(along) * sign);
                 item.rotation = hand.rotation * Quaternion.Euler(grip.rot) * Quaternion.Inverse(model);
@@ -175,14 +181,14 @@ namespace ForjaDasMares
         }
 
         // The saved grip of this weapon, or a first guess: handle in the palm, the weapon crossing the fist along the thumb.
-        Pegada Grip(string key, WeaponCategory category, Transform hand, float height)
+        Pegada Grip(string key, WeaponCategory category, Transform hand, float height, Forma shape)
         {
             if (Pegadas.TryGetValue(key, out var known)) return known;
-            var made = Default(key, category, hand, height);
+            var made = Default(key, category, hand, height, shape);
             Pegadas[key] = made;
             return made;
         }
-        Pegada Default(string key, WeaponCategory category, Transform hand, float height)
+        Pegada Default(string key, WeaponCategory category, Transform hand, float height, Forma shape)
         {
             var middle = bodyAnimator.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
             var thumb = bodyAnimator.GetBoneTransform(HumanBodyBones.RightThumbProximal);
@@ -198,7 +204,8 @@ namespace ForjaDasMares
                 pos = grip / height,
                 rot = Quaternion.LookRotation(fingers, blade.normalized).eulerAngles,
                 length = category == WeaponCategory.Staff ? .85f : category == WeaponCategory.Sword ? .55f : category == WeaponCategory.Axe ? .48f : category == WeaponCategory.Hammer ? .52f : .38f,
-                hold = category == WeaponCategory.Staff ? .38f : category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? .1f : .3f,
+                // A sword is held in the middle of its handle, between the pommel and the guard (found on the model).
+                hold = HasGuard(category) && shape.guard > 0 ? Mathf.Clamp(shape.guard * .55f, .06f, .3f) : category == WeaponCategory.Staff ? .38f : category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? .1f : .3f,
             };
         }
 
@@ -271,7 +278,7 @@ namespace ForjaDasMares
             if (GUILayout.Button("SALVAR PEGADA", GUILayout.Height(34))) SaveGrip(grip);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Voltar ao salvo")) { var copy = SavedCopy(editingKey); if (copy != null) { copy.saved = true; Pegadas[editingKey] = copy; editing = copy; } }
-            if (GUILayout.Button("Padrão")) { var hand = bodyAnimator.GetBoneTransform(HumanBodyBones.RightHand); if (hand != null) { var d = Default(editingKey, bodyView.CurrentWeaponCategory, hand, h); Pegadas[editingKey] = d; editing = d; } }
+            if (GUILayout.Button("Padrão")) { var hand = bodyAnimator.GetBoneTransform(HumanBodyBones.RightHand); if (hand != null) { var d = Default(editingKey, bodyView.CurrentWeaponCategory, hand, h, default); Pegadas[editingKey] = d; editing = d; } }
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
@@ -288,24 +295,50 @@ namespace ForjaDasMares
         }
 #endif
 
-        // Which end of the long axis is the handle: the thinner one (a staff head or a blade is wider than the grip).
-        static readonly Dictionary<Mesh, bool> handleAtMin = new Dictionary<Mesh, bool>();
-        static bool HandleAtMin(Mesh mesh, int along)
+        // Which end of the long axis is the handle, read from the model's shape (its width along the length):
+        // - a sword or dagger has its widest part at the guard, right above the handle: the handle is the end NEAR it;
+        // - an axe, hammer or staff has its widest part at the head: the handle is the end FAR from it.
+        // (Comparing only the two ends fails on a sword: its pommel is wider than its pointed tip.)
+        public struct Forma { public bool handleAtMin; public float guard; }
+        static bool HasGuard(WeaponCategory c) => c == WeaponCategory.Sword || c == WeaponCategory.Daggers;
+        static readonly Dictionary<(Mesh, bool), Forma> shapes = new Dictionary<(Mesh, bool), Forma>();
+        static Forma Shape(Mesh mesh, int along, bool guard)
         {
-            if (handleAtMin.TryGetValue(mesh, out bool known)) return known;
-            bool result = true;
+            if (shapes.TryGetValue((mesh, guard), out var known)) return known;
+            var result = new Forma { handleAtMin = true, guard = 0 };
             if (mesh.isReadable)
             {
+                const int Bins = 20;
                 var vertices = mesh.vertices; var b = mesh.bounds; float min = b.min[along], span = Mathf.Max(.0001f, b.size[along]);
-                Vector2 center = Flat(b.center, along); float low = 0, high = 0; int nLow = 0, nHigh = 0;
+                Vector2 center = Flat(b.center, along); var width = new float[Bins];
                 foreach (var v in vertices)
                 {
-                    float k = (v[along] - min) / span; float r = (Flat(v, along) - center).magnitude;
-                    if (k < .15f) { low += r; nLow++; } else if (k > .85f) { high += r; nHigh++; }
+                    int k = Mathf.Clamp((int)((v[along] - min) / span * Bins), 0, Bins - 1);
+                    width[k] = Mathf.Max(width[k], (Flat(v, along) - center).magnitude);
                 }
-                if (nLow > 0 && nHigh > 0) result = low / nLow <= high / nHigh;
+                int widest = 0; for (int i = 1; i < Bins; i++) if (width[i] > width[widest]) widest = i;
+                float at = (widest + .5f) / Bins; // 0 = min end, 1 = max end
+                float ends = Mathf.Max(width[0], width[Bins - 1]);
+                if (width[widest] > ends * 1.3f && Mathf.Abs(at - .5f) > .08f)
+                {
+                    bool nearMin = at < .5f;
+                    result.handleAtMin = guard ? nearMin : !nearMin;
+                    // Where the guard starts, measured from the handle end (0..1).
+                    if (guard) result.guard = nearMin ? widest / (float)Bins : (Bins - 1 - widest) / (float)Bins;
+                }
+                else
+                {
+                    // No clear head or guard (a plain stick): the thinner end is the handle.
+                    float low = 0, high = 0; int nLow = 0, nHigh = 0;
+                    foreach (var v in vertices)
+                    {
+                        float k = (v[along] - min) / span; float r = (Flat(v, along) - center).magnitude;
+                        if (k < .15f) { low += r; nLow++; } else if (k > .85f) { high += r; nHigh++; }
+                    }
+                    if (nLow > 0 && nHigh > 0) result.handleAtMin = low / nLow <= high / nHigh;
+                }
             }
-            handleAtMin[mesh] = result;
+            shapes[(mesh, guard)] = result;
             return result;
         }
         static Vector2 Flat(Vector3 v, int along) => along == 0 ? new Vector2(v.y, v.z) : along == 1 ? new Vector2(v.x, v.z) : new Vector2(v.x, v.y);

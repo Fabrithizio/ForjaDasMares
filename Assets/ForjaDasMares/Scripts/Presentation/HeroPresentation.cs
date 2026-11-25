@@ -37,7 +37,7 @@ namespace ForjaDasMares
         public void Configure(Transform[] roots, PlayerMotor movement, HeroCombat attacks, Health hp)
         { models = roots; motor = movement; combat = attacks; health = hp; }
         void OnEnable() { if (health != null) health.Damaged += Hit; }
-        void EnsureEnergy(){var energy=GetComponent<HeroWeaponEffects>();if(energy==null){energy=gameObject.AddComponent<HeroWeaponEffects>();energy.Configure(this,GetComponent<HeroRoster>(),combat);}if(GetComponent<WeaponSweepRibbon>()==null)gameObject.AddComponent<WeaponSweepRibbon>().Configure(this,combat);}
+        void EnsureEnergy(){var energy=GetComponent<HeroWeaponEffects>();if(energy==null){energy=gameObject.AddComponent<HeroWeaponEffects>();energy.Configure(this,GetComponent<HeroRoster>(),combat);}if(GetComponent<WeaponSweepRibbon>()==null)gameObject.AddComponent<WeaponSweepRibbon>().Configure(this,combat);if(GetComponent<CortesDaEspada>()==null)gameObject.AddComponent<CortesDaEspada>().Configure(this);}
         void OnDisable() { if (health != null) health.Damaged -= Hit; }
         void Hit() { hitTime = 0.2f; victoryTime = 0; }
         public void Show(int slot)
