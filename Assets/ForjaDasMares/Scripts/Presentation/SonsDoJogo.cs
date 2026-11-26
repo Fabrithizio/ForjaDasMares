@@ -108,10 +108,11 @@ namespace ForjaDasMares
                 ativa = 1 - ativa; velha = nova; nova = vozes[ativa];
                 nova.clip = velha.clip; nova.time = 0; nova.volume = 0; nova.Play();
             }
-            nova.volume = Mathf.MoveTowards(nova.volume, alvo, passo * Mathf.Max(alvo, .01f));
+            // Fading in is smooth; turning the music down in the settings takes effect at once.
+            nova.volume = nova.volume > alvo ? alvo : Mathf.MoveTowards(nova.volume, alvo, passo * Mathf.Max(ganho, .01f));
             if (velha.isPlaying)
             {
-                velha.volume = Mathf.MoveTowards(velha.volume, 0, passo * Mathf.Max(alvo, .01f));
+                velha.volume = Mathf.Min(Mathf.MoveTowards(velha.volume, 0, passo * Mathf.Max(ganho, .01f)), alvo);
                 if (velha.volume <= 0) velha.Stop();
             }
         }

@@ -7,25 +7,26 @@ namespace ForjaDasMares
     // Fabricio sent: a bright crescent with a white core and a coloured glow, drawn on the plane of the real swing.
     // The arc is not a fixed drawing: it is read from where the blade tip actually travelled in the animation
     // right before the blow, so each move (horizontal, diagonal, upward...) gets its own slash.
-    //   combo (1, 2, 3)  -> crescent in the colour of the weapon's rarity
-    //   strong attack    -> larger crescent, doubled
-    //   super            -> big crescent + spiral of light + burst
-    // The weapon's power (rarity + forge level) makes it all grow (decided with Fabricio): a plain +0 sword gives a
-    // simple slash; an upgraded or epic weapon gives bigger, longer, layered slashes with many more sparks.
+    //   combo (1, 2, 3)  -> blue-white crescent
+    //   strong attack    -> larger golden crescent, doubled
+    //   super            -> big golden crescent + spiral of light + burst
+    // This is the plain look of any blade. Special weapons (legendaries...) get their own unique effects and moves,
+    // made one by one (decided with Fabricio: no general rule by rarity or forge level).
     // Everything is pooled (4 slashes, one spark system): nothing is created per blow, good for weak phones.
     [DefaultExecutionOrder(250)]
     public sealed class CortesDaEspada : MonoBehaviour
     {
-        const int History = 20, Segments = 30, Pool = 4;
+        const int History = 20, Segments = 30, Pool = 6;
         static readonly Color Azul = new Color(.22f, .58f, 1f), Ouro = new Color(1f, .72f, .25f), Brasa = new Color(1f, .42f, .12f);
 
-        HeroPresentation hero; ExpedicionarioCorpo body; HeroEquipment gear;
+        HeroPresentation hero; ExpedicionarioCorpo body;
         readonly Vector3[] tips = new Vector3[History]; readonly float[] when = new float[History]; int count;
         int version = -1; bool fired;
         readonly Corte[] slashes = new Corte[Pool]; int next;
         ParticleSystem sparks;
 
         public void Configure(HeroPresentation view) { hero = view; }
+        public HeroPresentation Heroi => hero;
         // When the last slash appeared (used by the Editor test "Forja/Teste/Golpe e pausa" to freeze on it).
         public static float UltimoCorte { get; private set; } = -10;
 
@@ -36,6 +37,9 @@ namespace ForjaDasMares
             var state = hero.State; int variant = hero.ActionVariant;
             bool blow = state == HeroState.Attack || state == HeroState.Skill && variant == 4;
             bool blade = body != null && body.ArmaNaMao && Laminas(hero.EquippedWeapon);
+            // A special weapon with its own look (EstilosDeArma) also lives while just held (glow, drops...).
+            var style = EstilosDeArma.Para(hero.EquippedWeapon);
+            if (style != null) style.Segurando(this, blade, blade ? body.PontaDaArma : transform.position);
             if (!blow || !blade) { count = 0; if (!blow) version = -1; Animate(); return; }
             if (hero.ActionVersion != version) { version = hero.ActionVersion; count = 0; fired = false; }
             // Remember where the tip went (newest first).
@@ -45,22 +49,6 @@ namespace ForjaDasMares
             if (!fired && count >= 3 && hero.ActionProgress >= hero.ActionImpact - .02f) { fired = true; Fire(variant); }
             Animate();
         }
-
-        // 0 = common +0 ... 1 = legendary +12. Rarity weighs a bit more than the forge.
-        public float Poder
-        {
-            get
-            {
-                if (gear == null) { gear = GetComponent<HeroEquipment>(); if (gear == null) gear = GetComponentInParent<HeroEquipment>(); }
-                if (gear == null) return 0;
-                return Mathf.Clamp01((int)gear.MainRarity / 4f * .55f + gear.MainForge / (float)ForgeRules.MaxLevel * .45f);
-            }
-        }
-        static Color CorDaRaridade(ItemRarity r) =>
-            r == ItemRarity.Uncommon ? new Color(.3f, 1f, .7f) :
-            r == ItemRarity.Rare ? new Color(.15f, .45f, 1f) :
-            r == ItemRarity.Epic ? new Color(.7f, .3f, 1f) :
-            r == ItemRarity.Legendary ? new Color(1f, .62f, .15f) : Azul;
 
         static bool Laminas(EquipmentDefinition weapon)
         {
@@ -96,37 +84,39 @@ namespace ForjaDasMares
             float radius = Mathf.Clamp(flat.magnitude, .7f * size, 1.4f * size) + .3f * size;
 
             UltimoCorte = Time.time;
+            var own = EstilosDeArma.Para(hero.EquippedWeapon);
+            if (own != null)
+            {
+                own.Golpe(this, new Golpe { centro = center, normal = normal, x = x, y = y, inicio = start, fim = end, raio = radius, tamanho = size, variante = variant, heroi = transform });
+                return;
+            }
             bool heavy = variant == 3, super = variant == 4;
-            float power = Poder;
-            var rarity = gear != null ? gear.MainRarity : ItemRarity.Common;
             var cat = hero.EquippedWeapon != null ? hero.EquippedWeapon.category : WeaponCategory.Sword;
-            // Common and uncommon weapons: strong blows in gold. Rare and above keep their own colour, brighter.
-            Color own = rarity == ItemRarity.Common ? (cat == WeaponCategory.Axe ? Brasa : cat == WeaponCategory.Hammer ? Ouro : Azul) : CorDaRaridade(rarity);
-            Color tint = (super || heavy) && rarity <= ItemRarity.Uncommon ? Ouro : own;
-            float scale = (super ? 1.55f : heavy ? 1.3f : 1) * (1 + .6f * power);   // the area grows with the weapon
-            float width = .9f * (1 + .45f * power), life = .1f * power;
-            Spawn(center, normal, x, y, start, end, radius * scale, width * size * scale, tint, (super ? .45f : heavy ? .38f : .3f) + life);
-            // Doubled crescent: strong blows always; every blow from an upgraded weapon.
-            if (heavy || super || power >= .3f) Spawn(center, normal, x, y, start - 25, end - 10, radius * scale * .74f, width * .72f * size * scale, Color.Lerp(tint, Color.white, .3f), (super ? .42f : .34f) + life);
-            // An echo outside the first one: epic-level weapons.
-            if (power >= .6f) Spawn(center, normal, x, y, start + 15, end + 20, radius * scale * 1.22f, width * .45f * size * scale, Color.Lerp(tint, Color.white, .15f), .36f + life);
-            Sparks(center, normal, x, y, start, end, radius * scale, tint, Mathf.RoundToInt((super ? 26 : heavy ? 18 : 10) * (1 + 2f * power)));
+            Color tint = super || heavy ? Ouro : cat == WeaponCategory.Axe ? Brasa : cat == WeaponCategory.Hammer ? Ouro : Azul;
+            float scale = super ? 1.55f : heavy ? 1.3f : 1;
+            Spawn(center, normal, x, y, start, end, radius * scale, .9f * size * scale, tint, super ? .45f : heavy ? .38f : .3f);
+            if (heavy || super) Spawn(center, normal, x, y, start - 25, end - 10, radius * scale * .74f, .65f * size * scale, Color.Lerp(tint, Color.white, .3f), super ? .42f : .34f);
+            Sparks(center, normal, x, y, start, end, radius * scale, tint, super ? 26 : heavy ? 18 : 10);
             if (super)
             {
-                EfeitosDeHabilidade.Extra("corte_giro", transform.position + Vector3.up * .9f * size, transform.rotation, 1.3f * size * (1 + .5f * power));
-                EfeitosDeHabilidade.Explosao(transform.position + transform.forward * 1.2f * size, 2.2f * size * (1 + .5f * power), tint, Mathf.RoundToInt(40 * (1 + power)));
+                EfeitosDeHabilidade.Extra("corte_giro", transform.position + Vector3.up * .9f * size, transform.rotation, 1.3f * size);
+                EfeitosDeHabilidade.Explosao(transform.position + transform.forward * 1.2f * size, 2.2f * size, Ouro, 40);
             }
-            else if (heavy) EfeitosDeHabilidade.Extra("corte_giro_fino", transform.position + Vector3.up * .9f * size, transform.rotation, 1.05f * size * (1 + .5f * power));
-            // Legendary-level weapons: every combo blow also leaves a thin spiral of light.
-            else if (power >= .85f) EfeitosDeHabilidade.Extra("corte_giro_fino", transform.position + Vector3.up * .9f * size, transform.rotation, .8f * size);
+            else if (heavy) EfeitosDeHabilidade.Extra("corte_giro_fino", transform.position + Vector3.up * .9f * size, transform.rotation, 1.05f * size);
         }
 
         void Spawn(Vector3 c, Vector3 n, Vector3 x, Vector3 y, float a0, float a1, float r, float w, Color tint, float life)
+            => Crescente(c, n, x, y, a0, a1, r, w, tint, new Color(tint.r * .7f, tint.g * .75f, tint.b * .9f), Color.white, life);
+
+        // For weapon styles: one crescent with its own colours (glow, solid body, core).
+        // cheio: 0 = pointed crescent, 1 = full, thick from end to end (Fabricio's style "A", 26/11).
+        public void Crescente(Vector3 c, Vector3 n, Vector3 x, Vector3 y, float a0, float a1, float r, float w, Color glow, Color body, Color core, float life, float cheio = 0)
         {
             var s = slashes[next]; if (s == null) slashes[next] = s = new Corte(transform);
             next = (next + 1) % Pool;
-            s.Begin(c, n, x, y, a0, a1, r, w, tint, life);
+            s.Begin(c, n, x, y, a0, a1, r, w, glow, body, core, life, cheio);
         }
+        public void Faiscas(Vector3 c, Vector3 n, Vector3 x, Vector3 y, float a0, float a1, float r, Color tint, int amount) => Sparks(c, n, x, y, a0, a1, r, tint, amount);
 
         void Animate() { foreach (var s in slashes) s?.Tick(); }
 
@@ -172,7 +162,7 @@ namespace ForjaDasMares
             readonly GameObject root; readonly Mesh body, glow, core; readonly MeshRenderer bodyView, glowView, coreView;
             readonly Vector3[] bv = new Vector3[(Segments + 1) * 2], gv = new Vector3[(Segments + 1) * 2], cv = new Vector3[(Segments + 1) * 2];
             readonly Color[] bc = new Color[(Segments + 1) * 2], gc = new Color[(Segments + 1) * 2], cc = new Color[(Segments + 1) * 2];
-            Vector3 c, n, x, y; float a0, a1, r, w, life, born = -10; Color tint;
+            Vector3 c, n, x, y; float a0, a1, r, w, life, born = -10, full; Color tint, bodyTint, coreTint;
 
             public Corte(Transform owner)
             {
@@ -228,6 +218,16 @@ namespace ForjaDasMares
                 {
                     if (solid != null) return solid;
                     solid = new Material(Material) { name = "CorteDaEspadaCorpo" };
+                    // The body is solid colour across almost all its width (only its edges fade), so the slash
+                    // reads as a deep blue blade of water and not as a pale glow.
+                    const int H = 64; var body = new Texture2D(4, H, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "CorteCorpo" };
+                    for (int j = 0; j < H; j++)
+                    {
+                        float v = j / (H - 1f), a = Mathf.Clamp01(v / .22f) * Mathf.Clamp01((1 - v) / .1f);
+                        for (int i = 0; i < 4; i++) body.SetPixel(i, j, new Color(1, 1, 1, a));
+                    }
+                    body.Apply(false, true);
+                    solid.SetTexture("_BaseMap", body); solid.mainTexture = body;
                     solid.SetFloat("_Blend", 0);
                     solid.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha); solid.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
                     solid.renderQueue = Material.renderQueue - 1;
@@ -235,9 +235,9 @@ namespace ForjaDasMares
                 }
             }
 
-            public void Begin(Vector3 center, Vector3 normal, Vector3 ax, Vector3 ay, float from, float to, float radius, float width, Color color, float seconds)
+            public void Begin(Vector3 center, Vector3 normal, Vector3 ax, Vector3 ay, float from, float to, float radius, float width, Color color, Color body, Color core, float seconds, float cheio)
             {
-                c = center; n = normal; x = ax; y = ay; a0 = from; a1 = to; r = radius; w = width; tint = color; life = seconds; born = Time.time;
+                full = cheio; c = center; n = normal; x = ax; y = ay; a0 = from; a1 = to; r = radius; w = width; tint = color; bodyTint = body; coreTint = core; life = seconds; born = Time.time;
                 root.SetActive(true); Tick();
             }
             public void Hide() { born = -10; if (root != null) root.SetActive(false); }
@@ -256,19 +256,21 @@ namespace ForjaDasMares
                     float a = Mathf.Lerp(a0, a1, u) * Mathf.Deg2Rad;
                     Vector3 dir = x * Mathf.Cos(a) + y * Mathf.Sin(a);
                     // Crescent: pointed ends, thickest a little after the middle (toward the leading edge).
-                    float shape = Mathf.Sin(Mathf.PI * Mathf.Pow(u, 1.6f));
+                    // Max(0, …): sin(π) comes out as a tiny negative number, and a power of it is NaN (broken mesh).
+                    float pointed = Mathf.Max(0, Mathf.Sin(Mathf.PI * Mathf.Pow(u, 1.6f)));
+                    float shape = full > 0 ? Mathf.Lerp(pointed, Mathf.Pow(Mathf.Max(0, Mathf.Sin(Mathf.PI * Mathf.Pow(u, 1.25f))), .45f), full) : pointed;
                     float outer = r * grow, wide = w * shape * thin;
                     bv[i * 2] = root.transform.InverseTransformPoint(c + dir * (outer - wide)); bv[i * 2 + 1] = root.transform.InverseTransformPoint(c + dir * outer);
-                    float glowW = wide * .7f;
+                    float glowW = wide * .45f;
                     gv[i * 2] = root.transform.InverseTransformPoint(c + dir * (outer - glowW)); gv[i * 2 + 1] = root.transform.InverseTransformPoint(c + dir * outer);
-                    float coreW = wide * .24f, coreOut = outer - wide * .04f;
+                    float coreW = wide * .1f, coreOut = outer - wide * .03f;
                     cv[i * 2] = root.transform.InverseTransformPoint(c + dir * (coreOut - coreW)); cv[i * 2 + 1] = root.transform.InverseTransformPoint(c + dir * coreOut);
                     float seen = u > head ? 0 : Mathf.Clamp01((u - tail) / .25f) * (.55f + .45f * u);
                     float edge = Mathf.Clamp01((head - u) / .08f + .35f);                // the leading edge glows brighter
                     float k = seen * fade * edge;
-                    bc[i * 2] = bc[i * 2 + 1] = new Color(tint.r * .7f, tint.g * .75f, tint.b * .9f, Mathf.Clamp01(k * 1.1f));
-                    gc[i * 2] = gc[i * 2 + 1] = new Color(tint.r, tint.g, tint.b, k * .7f);
-                    cc[i * 2] = cc[i * 2 + 1] = new Color(1, 1, 1, k);
+                    bc[i * 2] = bc[i * 2 + 1] = new Color(bodyTint.r, bodyTint.g, bodyTint.b, Mathf.Clamp01(k * 1.1f));
+                    gc[i * 2] = gc[i * 2 + 1] = new Color(tint.r, tint.g, tint.b, k * .55f);
+                    cc[i * 2] = cc[i * 2 + 1] = new Color(coreTint.r, coreTint.g, coreTint.b, k);
                 }
                 body.vertices = bv; body.colors = bc; body.RecalculateBounds();
                 glow.vertices = gv; glow.colors = gc; glow.RecalculateBounds();

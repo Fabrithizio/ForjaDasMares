@@ -145,6 +145,7 @@ namespace ForjaDasMares.Networking.Editor
             var report = new System.Text.StringBuilder("ANIMACOES_POR_ARMA ·");
             set.espada = WeaponMoves("Espada", report);
             set.cajado = WeaponMoves("Cajado", report);
+            set.pesada = File.Exists(Animations + "Pesada/Pesada_Parado.fbx") ? WeaponMoves("Pesada", report) : null;
             FightMoves(set, report);
             EditorUtility.SetDirty(set);
             AssetDatabase.SaveAssets();
@@ -159,6 +160,18 @@ namespace ForjaDasMares.Networking.Editor
         static readonly (string arquivo, float contato)[] GolpesDaEspada =
         {
             ("Espada_Golpe_1", .3f), ("Espada_Golpe_3", .3f), ("Espada_Ataque_4", .3f), ("Espada_Ataque_1", .5f), ("Espada_Golpe_4", .5f), ("Espada_Magia_1", .5f), ("Espada_Dano", 0),
+        };
+        // Two-handed heavy weapons (axe, hammer) = Mixamo "Great Sword Pack", both hands on the handle, no shield arm.
+        // Chosen for the Perdição de Netuno: wide slashes in the combo, the leap that smashes the ground as the
+        // 3rd blow (Impacto do Maremoto), the forward slide for the charged blow (Onda Avançante), the high spin
+        // for the Super (Fúria do Oceano), the power-up for abilities.
+        static readonly (string arquivo, float contato)[] GolpesDaPesada =
+        {
+            // Fabricio (26/11): three sideways blows, nothing from above. Measured (Logs/RevisaoDoCorpo/Pesada_trajetoria):
+            // Golpe_3 turns 168° from the hero's left to his right, Golpe_2 203° back from right to left, Investida a
+            // turn of 254° (one circle seen from above); the Super launches the bull (Poder, the axe held up).
+            // The 4th entry (charged blow) is no longer used by the game.
+            ("Pesada_Golpe_3", .3f), ("Pesada_Golpe_2", .3f), ("Pesada_Investida", .3f), ("Pesada_Investida", .5f), ("Pesada_Poder", .5f), ("Pesada_Poder", .5f), ("Pesada_Dano", 0),
         };
         static void FightMoves(LocomocaoPorArma set, System.Text.StringBuilder report)
         {
@@ -193,6 +206,13 @@ namespace ForjaDasMares.Networking.Editor
                     var g = GolpesDaEspada.Select(x => Golpe(golpes, x.arquivo, x.contato)).ToArray();
                     set.espada.ataque1 = g[0]; set.espada.ataque2 = g[1]; set.espada.ataque3 = g[2];
                     set.espada.forte = g[3]; set.espada.super = g[4]; set.espada.habilidade = g[5]; set.espada.dano = g[6];
+                }
+                if (set.pesada != null)
+                {
+                    string golpes = Animations + "Pesada/Golpes/";
+                    var g = GolpesDaPesada.Select(x => Golpe(golpes, x.arquivo, x.contato)).ToArray();
+                    set.pesada.ataque1 = g[0]; set.pesada.ataque2 = g[1]; set.pesada.ataque3 = g[2];
+                    set.pesada.forte = g[3]; set.pesada.super = g[4]; set.pesada.habilidade = g[5]; set.pesada.dano = g[6];
                 }
                 if (set.cajado != null)
                 {

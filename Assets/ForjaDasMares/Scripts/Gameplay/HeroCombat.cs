@@ -55,10 +55,10 @@ namespace ForjaDasMares
         public float FuryRemaining=>furyRemaining;
         public AbilityDefinition Ability=>weaponAbility!=null?weaponAbility:profile!=null?profile.special:null;
         // Super (the heavy blow), decided with Fabricio: hard to fill and rewarding.
-        // A perfect dodge gives 30 points; every 10 hits give only 1 point; each hit taken removes 10;
-        // 8 s without fighting and it drains 2 points per second.
+        // (26/11) Each hit on an enemy gives 1 point, a perfect dodge 30; taking damage costs nothing.
+        // After 10 s without hitting or being hit it drains 5 points a second; fighting again restarts the 10 s.
         float superCharge, lastCombat = -100, lastHealth = -1;
-        public const float SuperPerfectDodge = 30, SuperPerHit = 1f, SuperLostOnHit = 0, SuperDrainPerSecond = 2, SuperIdleSeconds = 10; // 1% per hit; it only drains after 10 s out of combat
+        public const float SuperPerfectDodge = 30, SuperPerHit = 1f, SuperLostOnHit = 0, SuperDrainPerSecond = 5, SuperIdleSeconds = 10; // 1% per hit; after 10 s out of combat it drains 5% a second
         public void AddSuper(float points) { if (ultimate || furyRemaining > 0) return; superCharge = Mathf.Clamp01(superCharge + points / 100f); lastCombat = Time.time; }
         bool heavy, ultimate;
         public bool EnhancedControls => flow != null;
@@ -107,7 +107,7 @@ namespace ForjaDasMares
         void OnEnable() { if(health != null) { health.DealtHit -= ConfirmedHit; health.DealtHit += ConfirmedHit; } }
         void OnDisable() { if(health != null) health.DealtHit -= ConfirmedHit; heldTime = superBuffer = 0; }
         void ConfirmedHit(Health target)
-        { if(!ultimate && furyRemaining<=0 && health.IsAlive && (target.Faction == CombatFaction.Enemy || target.Faction == CombatFaction.Training)) AddSuper(SuperPerHit); }
+        { if(!ultimate && furyRemaining<=0 && (mecanica == null || !mecanica.SemCarga) && health.IsAlive && (target.Faction == CombatFaction.Enemy || target.Faction == CombatFaction.Training)) AddSuper(SuperPerHit); }
         readonly DamageResolver resolver = new DamageResolver();
         readonly Collider[] nearbyAllies = new Collider[24];
         HeroDefinition profile;
@@ -124,6 +124,16 @@ namespace ForjaDasMares
         float damageMultiplier = 1, attackSpeed = 1, cooldownMultiplier = 1, criticalChance, elementalDamage, strikeScale = 1;
         bool twinStrike, secondResolved;
         AttackDefinition legendaryEcho;
+        // A special weapon's own Super (EquipmentDefinition.superAttack) and its own way of playing (MecanicasDeArma:
+        // passive, what its Super does). Kept while the same weapon stays in the hand (so the passive's charge is not lost).
+        AttackDefinition weaponHeavy, weaponSuper;
+        MecanicaDeArma mecanica;
+        public MecanicaDeArma Mecanica => mecanica;
+        public void ApplyWeaponMoves(EquipmentDefinition weapon)
+        {
+            weaponSuper = weapon != null ? weapon.superAttack : null;
+            if (mecanica == null || mecanica.Arma != weapon) { mecanica?.Zerar(); mecanica = MecanicasDeArma.Criar(weapon); }
+        }
         bool echoResolved;
         public AttackDefinition BasicAttack => equipmentAttacks != null && equipmentAttacks.Length > 0 ? equipmentAttacks[0] : profile != null ? profile.attacks[0] : null;
         public float AttackSpeed => Mathf.Min(2.5f,(GetComponent<CombatBuildEffects>()?.Tempo??1)*attackSpeed*(furyRemaining>0&&flow!=null?Mathf.Clamp(flow.furyAttackSpeed,1,2):1));
@@ -141,7 +151,7 @@ namespace ForjaDasMares
         public CombatEffectPool Pool => pool;
         public void Configure(PlayerMotor player, Health owner, Transform strike, CombatEffectPool effects, int targetMask, int wallMask, int allyMask)
         { motor = player; health = owner; origin = strike; pool = effects; targets = targetMask; geometry = wallMask; allies = allyMask; }
-        public void ApplyHero(HeroDefinition hero) { profile = hero; equipmentAttacks = null; weaponAbility=null; legendaryEcho = null; damageMultiplier = attackSpeed = cooldownMultiplier = 1; criticalChance = elementalDamage = 0; twinStrike = false; combo = 0; ResetCombat(); }
+        public void ApplyHero(HeroDefinition hero) { profile = hero; equipmentAttacks = null; weaponAbility=null; legendaryEcho = null; weaponHeavy = weaponSuper = null; mecanica?.Zerar(); mecanica = null; damageMultiplier = attackSpeed = cooldownMultiplier = 1; criticalChance = elementalDamage = 0; twinStrike = false; combo = 0; ResetCombat(); }
         void Awake()
         {
             if (motor == null || health == null || origin == null || pool == null)
@@ -181,12 +191,17 @@ namespace ForjaDasMares
         public bool TryHeavy()
         {
             if(!CanUseWeapon || flow == null || heavyCooldown > 0 || !CanStart || BasicAttack == null) return false;
-            currentAttack = BasicAttack.returningProjectile && weaponAbility != null ? weaponAbility.hit : BasicAttack; Begin(false, Mathf.Max(flow.heavyWindup+.1f,flow.heavyDuration)); heavy = true; AnimationVariant = 3;
+            currentAttack = weaponHeavy != null ? weaponHeavy : BasicAttack.returningProjectile && weaponAbility != null ? weaponAbility.hit : BasicAttack; Begin(false, Mathf.Max(flow.heavyWindup+.1f,flow.heavyDuration)); heavy = true; AnimationVariant = 3;
             strikeScale *= Mathf.Max(1,flow.heavyMultiplier); heldTime = 0; heavyCooldown = Mathf.Max(.1f,flow.heavyCooldown); motor.LockFacing(flow.heavyWindup); return true;
         }
         public bool TrySuper()
         {
             if(!CanUseWeapon || !CanStart || !SuperReady) return false;
+            if(weaponSuper!=null)
+            {
+                currentAttack = weaponSuper; Begin(true, currentAttack.windup + currentAttack.recovery); ultimate = true; AnimationVariant = 4;
+                superCharge = 0; heldTime = superBuffer = 0; motor.LockFacing(currentAttack.windup); return true;
+            }
             if(flow.furyDuration>0)
             {
                 if(furyRemaining>0)return false;
@@ -230,6 +245,7 @@ namespace ForjaDasMares
         }
         public void Simulate(float deltaTime)
         {
+            mecanica?.Passo(this, Mathf.Max(0, deltaTime));
             heavyBuffer=Mathf.Max(0,heavyBuffer-Mathf.Max(0,deltaTime));furyRemaining=Mathf.Max(0,furyRemaining-Mathf.Max(0,deltaTime));
             // Super: taking a hit costs charge; out of the fight it slowly drains.
             if (health != null)
@@ -276,27 +292,33 @@ namespace ForjaDasMares
                     for (int i = 0; i < Mathf.Clamp(currentAttack.projectileCount, 1, 5); i++)
                     { float angle = (i - (currentAttack.projectileCount - 1) * .5f) * currentAttack.projectileSpread; pool.Shoot(start, ShotDirection(start, Quaternion.Euler(0, angle, 0) * facing), currentAttack, health, targets, geometry, strikeScale, strikeCritical); }
             }
-            else resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
+            else
+            {
+                int hits = resolver.Area(origin.position, currentAttack.range * (heavy ? Mathf.Max(1,flow.heavyRangeMultiplier) : 1), facing, heavy ? Mathf.Max(160,currentAttack.arc) : currentAttack.arc, currentAttack, health, targets, geometry, true, strikeScale, strikeCritical);
+                if (!heavy && !secondResolved) mecanica?.GolpeBasico(this, hits, Mathf.Max(0, combo - 1) % 3);
+            }
             if(heavy&&!currentAttack.returningProjectile&&currentAttack.maximumTargets!=1) pool.PlaceZone(transform.position + facing, 1.5f,.25f,currentAttack,health,targets,geometry,false);
-            if (legendaryEcho != null && !currentAttack.returningProjectile && combo % 3 == 0 && !echoResolved)
+            if (legendaryEcho != null && mecanica == null && !currentAttack.returningProjectile && combo % 3 == 0 && !echoResolved)
             { echoResolved = true; resolver.Area(origin.position, legendaryEcho.range, facing, 360, legendaryEcho, health, targets, geometry, true, strikeScale, strikeCritical); }
         }
         void ResolveSuper()
         {
             if(!OriginClear)return;
-            if(currentAttack.shape==AttackShape.Projectile)
+            // A weapon with its own Super does its own damage (the protection below is the same for every weapon).
+            bool own = mecanica != null && mecanica.Super(this, currentAttack);
+            if(!own && currentAttack.shape==AttackShape.Projectile)
             {
                 for(int i=0;i<Mathf.Clamp(currentAttack.projectileCount,1,5);i++)
                 {float angle=(i-(currentAttack.projectileCount-1)*.5f)*currentAttack.projectileSpread;var from=ShotFrom(facing);pool.Shoot(from,ShotDirection(from,Quaternion.Euler(0,angle,0)*facing),currentAttack,health,targets,geometry, strikeScale, strikeCritical);}
             }
-            else resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
+            else if(!own) resolver.Area(origin.position, currentAttack.range, facing,360,currentAttack,health,targets,geometry,true, strikeScale, strikeCritical);
             if(flow.superProtection>0)
             {
                 health.Protect(flow.superProtection,flow.protectionDuration);
                 int count=Physics.OverlapSphereNonAlloc(transform.position,currentAttack.range,nearbyAllies,allies,QueryTriggerInteraction.Ignore);
                 for(int i=0;i<count;i++){var ally=nearbyAllies[i].GetComponentInParent<Health>();if(ally!=null&&ally.Faction==health.Faction&&ally.IsAlive&&!Physics.Linecast(origin.position,ally.transform.position+Vector3.up,geometry,QueryTriggerInteraction.Ignore))ally.Protect(flow.superProtection,flow.protectionDuration);}
             }
-            pool.PlaceZone(transform.position,currentAttack.shape==AttackShape.Projectile?2.5f:currentAttack.range,.45f,currentAttack,health,targets,geometry,false);
+            if(!own) pool.PlaceZone(transform.position,currentAttack.shape==AttackShape.Projectile?2.5f:currentAttack.range,.45f,currentAttack,health,targets,geometry,false);
         }
         void ResolveSpecial()
         {
@@ -338,6 +360,6 @@ namespace ForjaDasMares
                 else pool.PrismBurst(transform.position + Vector3.up * .08f, ability.radius, 3, .7f);
             }
         }
-        public void ResetCombat() {abilityCooldowns.Clear();wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = 0; superCharge = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
+        public void ResetCombat() {mecanica?.Zerar();abilityCooldowns.Clear();wasHeld=false;heavyBuffer=0; active = special = resolved = chargeWindow = heavy = ultimate = false; combo = 0; superCharge = 0; furyRemaining=0; superBuffer = heldTime = heavyCooldown = elapsed = specialCooldown = 0; resolver.Clear(); if (pool != null) pool.ClearOwned(health); }
     }
 }

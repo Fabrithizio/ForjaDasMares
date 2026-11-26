@@ -60,3 +60,21 @@ MonoBehaviour:
     passadaCorrer:
     - 2.10479
     - 1.8284985
+  pesada:
+    nome: Pesada
+    parado: {fileID: -203655887218126122, guid: d5236fcf8b8c03041a4daf1a902a3717, type: 3}
+    andar: {fileID: -203655887218126122, guid: 41b630eda3665ae4498dfbae8336c43e, type: 3}
+    correr: {fileID: -203655887218126122, guid: ea34cf1d36867ef40bbad5c28db9d3fd, type: 3}
+    ataque1: {fileID: -203655887218126122, guid: 7f2becd75a56bd946844d8018bffb03c, type: 3}
+    ataque2: {fileID: -203655887218126122, guid: 16e26951db9c35346af5818f56c1de07, type: 3}
+    ataque3: {fileID: -203655887218126122, guid: ec46599f6a794f14b99b5b756e45591a, type: 3}
+    forte: {fileID: -203655887218126122, guid: ec46599f6a794f14b99b5b756e45591a, type: 3}
+    super: {fileID: -203655887218126122, guid: 667f6221dc048a04d9f23d4643ee091b, type: 3}
+    habilidade: {fileID: -203655887218126122, guid: 667f6221dc048a04d9f23d4643ee091b, type: 3}
+    dano: {fileID: -203655887218126122, guid: b51ca123506d74d4eaaf8069a7b6c077, type: 3}
+    passadaAndar:
+    - 1.1219734
+    - 0.97469425
+    passadaCorrer:
+    - 1.2
+    - 1.2

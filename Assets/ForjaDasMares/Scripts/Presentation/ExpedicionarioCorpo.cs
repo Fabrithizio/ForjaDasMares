@@ -198,14 +198,17 @@ namespace ForjaDasMares
             Vector3 blade = up - Vector3.Dot(up, fingers) * fingers;
             if (blade.sqrMagnitude < 1e-6f) blade = Vector3.Cross(fingers, Vector3.right);
             Vector3 grip = middle != null ? back * (Vector3.Lerp(hand.position, middle.position, .55f) - hand.position) : Vector3.zero;
+            // A special weapon can bring its own size and hand position (EquipmentDefinition.gripLength / gripHold).
+            var weapon = hero != null ? hero.EquippedWeapon : null;
+            bool own = weapon != null && weapon.category == category;
             return new Pegada
             {
                 key = key, saved = false,
                 pos = grip / height,
                 rot = Quaternion.LookRotation(fingers, blade.normalized).eulerAngles,
-                length = category == WeaponCategory.Staff ? .85f : category == WeaponCategory.Sword ? .55f : category == WeaponCategory.Axe ? .48f : category == WeaponCategory.Hammer ? .52f : .38f,
+                length = own && weapon.gripLength > 0 ? weapon.gripLength : category == WeaponCategory.Staff ? .85f : category == WeaponCategory.Sword ? .55f : category == WeaponCategory.Axe ? .48f : category == WeaponCategory.Hammer ? .52f : .38f,
                 // A sword is held in the middle of its handle, between the pommel and the guard (found on the model).
-                hold = HasGuard(category) && shape.guard > 0 ? Mathf.Clamp(shape.guard * .55f, .06f, .3f) : category == WeaponCategory.Staff ? .38f : category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? .1f : .3f,
+                hold = own && weapon.gripHold > 0 ? weapon.gripHold : HasGuard(category) && shape.guard > 0 ? Mathf.Clamp(shape.guard * .55f, .06f, .3f) : category == WeaponCategory.Staff ? .38f : category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? .1f : .3f,
             };
         }
 

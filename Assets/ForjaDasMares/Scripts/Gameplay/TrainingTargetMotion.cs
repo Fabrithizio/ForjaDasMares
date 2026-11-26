@@ -15,6 +15,8 @@ namespace ForjaDasMares
         void Receive(Vector3 direction, float force) { direction.y = 0; velocity += direction.normalized * force; velocity = Vector3.ClampMagnitude(velocity, 10f); }
         void Update()
         {
+            if (health.Carried)
+            { Vector3 to = health.CarriedTo - transform.position; to.y = 0; transform.position += to * Mathf.Min(1, 14 * Time.deltaTime); velocity = Vector3.zero; return; }
             Vector3 displacement = velocity * (Time.deltaTime * health.ControlMultiplier);
             if (displacement.sqrMagnitude > 0.000001f)
             {

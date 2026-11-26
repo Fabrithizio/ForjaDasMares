@@ -40,6 +40,13 @@ namespace ForjaDasMares
         { maximum = Mathf.Max(1, hitPoints); faction = team; armor = Mathf.Clamp(reduction, 0, 0.75f); dodgeSource = dodge; Restore(); }
         public bool CanReceiveFrom(Health source) => IsAlive && source != this && (source == null || source.faction != faction);
         public void ConfigureDefense(MonoBehaviour modifier) { defenseSource = modifier; defense = modifier as IHitDefense; }
+        // Carried by a blow (the Netuno's bull and whirlpool): whoever moves this body takes it to CarriedTo instead
+        // of walking (EnemyMotor, the animals, the training targets). Renewed every frame by the blow; it ends by itself.
+        Vector3 carriedTo; float carriedUntil;
+        public bool Carried => IsAlive && Time.time < carriedUntil;
+        public Vector3 CarriedTo => carriedTo;
+        public void Carry(Vector3 point, float duration)
+        { if (!IsAlive) return; carriedTo = point; carriedUntil = Time.time + Mathf.Max(0, duration); stunTime = Mathf.Max(stunTime, duration); }
         public void Stun(float duration) { stunTime = Mathf.Max(stunTime, Mathf.Max(0, duration)); Changed?.Invoke(); }
         public void Protect(float reduction, float duration)
         { protection = Mathf.Clamp(reduction, 0, 0.8f); protectionTime = Mathf.Max(0, duration); Changed?.Invoke(); }

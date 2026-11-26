@@ -64,6 +64,13 @@ namespace ForjaDasMares
         public void Tick(float deltaTime)
         {
             if (!Ready || !health.IsAlive || deltaTime <= 0) return;
+            if (health.Carried)
+            {
+                // Taken by a blow: follow the point it gives (it can lift the body; gravity brings it down after).
+                velocity = impulse = Vector3.zero; verticalSpeed = 0; rushTime = 0;
+                controller.Move((health.CarriedTo - transform.position) * Mathf.Min(1, 14 * deltaTime));
+                agent.nextPosition = transform.position; previous = transform.position; return;
+            }
             repath -= deltaTime;
             bool blocked = health.ControlMultiplier == 0;
             if (blocked) rushTime = 0;

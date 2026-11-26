@@ -31,10 +31,10 @@ namespace ForjaDasMares
             var col=target.GetComponentInChildren<Collider>();
             Vector3 at=col!=null?col.bounds.center:target.transform.position+Vector3.up;
             var cam=Camera.main;Quaternion face=cam!=null?Quaternion.LookRotation(-cam.transform.forward):Quaternion.identity;
-            // Bigger and brighter with the weapon's power (rarity + forge), like the slashes.
-            var slashes=hero!=null?hero.GetComponent<CortesDaEspada>():null;float power=slashes!=null?slashes.Poder:0;
-            EfeitosDeHabilidade.Extra("corte_cruz",at,face,(strong?1f:.7f)*(1+.6f*power));
-            if(strong||power>=.5f)EfeitosDeHabilidade.Extra("acerto_brilho",at,face,1.1f*(1+.4f*power));
+            var style=hero!=null?EstilosDeArma.Para(hero.EquippedWeapon):null;
+            if(style!=null){style.Acerto(at,face,strong);return;}
+            EfeitosDeHabilidade.Extra("corte_cruz",at,face,strong?1f:.7f);
+            if(strong)EfeitosDeHabilidade.Extra("acerto_brilho",at,face,1.1f);
         }
         // What the hero holds: 0 = blade (sword, axe, hammer), 1 = caster (staff, book, focus), 2 = thrown (boomerang...).
         int Corpo()

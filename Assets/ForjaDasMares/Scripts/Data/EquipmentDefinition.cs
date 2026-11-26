@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 namespace ForjaDasMares
 {
     public enum EquipmentSlot { MainHand, OffHand, Armor, Accessory, Artifact }
@@ -22,6 +23,13 @@ namespace ForjaDasMares
         public Mesh visualMesh;public Material[] visualMaterials;public Vector3 authoredScale=Vector3.one;
         // Largest size (metres) of the weapon held in the hand. 0 = use the category default.
         [Min(0)] public float heldLength;
+        // Grip of a weapon held in the new bodies (ExpedicionarioCorpo): length as a fraction of the character's
+        // height and where the hand holds it (0 = handle end, 1 = other end). Zero = the default of its category.
+        [Min(0)] public float gripLength; [Range(0, 1)] public float gripHold;
+        // Unique parts of a special weapon (optional; decided with Fabricio 26/11: combo, passive and Super, no charged blow):
+        // the blow its passive releases and its own Super. What the passive does is code, one per weapon (MecanicasDeArma).
+        [FormerlySerializedAs("heavyAttack")] public AttackDefinition passiveAttack;
+        public AttackDefinition superAttack;
         [TextArea] public string description;
         public EquipmentSlot slot;
         public WeaponCategory category = WeaponCategory.None;

@@ -10,7 +10,11 @@ namespace ForjaDasMares
         int seenCount;
         public void Clear() { Array.Clear(seen, 0, seenCount); seenCount = 0; }
         public void Remember(Health target) { if (seenCount < seen.Length) seen[seenCount++] = target; }
-        public int Area(Vector3 origin, float radius, Vector3 direction, float arc, AttackDefinition attack, Health source, int targets, int geometry, bool clear = true, float damageScale = 1, bool critical = false)
+        // Who this resolver has already struck (since the last Clear).
+        public int Struck => seenCount;
+        public Health StruckAt(int i) => seen[i];
+        // push: 0 = away from origin (normal blow), 1 = along direction (dragged by a charge), -1 = toward origin (pulled in).
+        public int Area(Vector3 origin, float radius, Vector3 direction, float arc, AttackDefinition attack, Health source, int targets, int geometry, bool clear = true, float damageScale = 1, bool critical = false, int push = 0)
         {
             if (clear) Clear();
             int count = Physics.OverlapSphereNonAlloc(origin, attack.footprint==MeleeFootprint.Line&&arc<359.9f?Mathf.Sqrt(radius*radius+attack.width*attack.width*.25f):radius, contacts, targets, QueryTriggerInteraction.Ignore), hits = 0;
@@ -30,7 +34,8 @@ namespace ForjaDasMares
                 if (!MeleeGeometry.Contains(delta,direction,radius,arc,attack.width,attack.footprint)) continue;
                 if (Physics.Linecast(origin, point,out var obstruction, geometry, QueryTriggerInteraction.Ignore)&&obstruction.collider.GetComponentInParent<Health>()!=health) continue;
                 Remember(health);
-                if (health.ApplyHit(attack, delta.sqrMagnitude > 0.001f ? delta.normalized : direction, source, damageScale, critical)) hits++;
+                Vector3 away = delta.sqrMagnitude > 0.001f ? delta.normalized : direction;
+                if (health.ApplyHit(attack, push > 0 ? direction : push < 0 ? -away : away, source, damageScale, critical)) hits++;
             }
             Array.Clear(contacts, 0, count); return hits;
         }

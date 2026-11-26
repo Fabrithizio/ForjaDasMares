@@ -17,6 +17,9 @@ namespace ForjaDasMares
         Vector3 previousPosition;
         bool hasPosition;
         public EquipmentDefinition EquippedWeapon {get;private set;}
+        // The weapon's own mechanic (passive...) of the hero played here; none for other players' copies.
+        public MecanicaDeArma Mecanica=>ReplicaMode||combat==null?null:combat.Mecanica;
+        public int WallMask=>combat!=null?combat.WallMask:0;
         public float ActionProgress=>ReplicaMode?replicaAnimation:State==HeroState.Dodge?(motor.IsDodging?motor.DodgeProgress:1):State==HeroState.Hit?Mathf.Clamp01(1-hitTime/.2f):combat.NormalizedTime;
         void Start(){var feedback=GetComponent<ActorImpactFeedback>()??gameObject.AddComponent<ActorImpactFeedback>();feedback.Configure(health,GetComponent<HeroRoster>().Current.feedback,this);var reach=GetComponent<HeroAttackArea>()??gameObject.AddComponent<HeroAttackArea>();reach.Configure(this,combat,GetComponent<HeroRoster>());}
         public int ActionVariant=>ReplicaMode?replicaVariant:combat.AnimationVariant;

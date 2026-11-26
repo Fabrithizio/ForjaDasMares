@@ -223,7 +223,7 @@ namespace ForjaDasMares.Networking
                     (cardOrder[i],cardOrder[other]) = (cardOrder[other],cardOrder[i]);
                 }
             }
-            enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;enemies.Spawned+=BarraDoChefe;
+            enemies.SetLimit(definition.activeEnemyLimit);enemies.Died+=EnemyDied;
             AudioListener.volume=Mathf.Clamp01(PlayerPrefs.GetFloat("CampaignMasterVolume",.8f));
             // Music chosen by Fabricio (Jogos/Som): each place gets its own track when it exists (Resources/Som/Musicas/
             // <area id>), otherwise the city theme in cities and the exploration theme outside. Old tracks only if none.
@@ -234,15 +234,6 @@ namespace ForjaDasMares.Networking
             if(soundscape!=null){if(!TrilhaSonora.Tocando)Voice("RegionalMusic",town!=null?soundscape.menu.music:soundscape.biomes[0].music,.26f,Volumes.Musica);Voice("RegionalAmbience",soundscape.menu.ambience,.16f,Volumes.Ambiente);}
             if (montadoNaViagem) { montadoNaViagem = false; StartCoroutine(MontarDireto()); }
             Debug.Log("REGION_READY localPrototype=true camps="+residents.Length+" capacity="+enemies.Capacity);
-        }
-        // Bosses and mini-bosses carry their life bar (and name) over the head.
-        void BarraDoChefe(EnemyActor actor)
-        {
-            if(actor==null||actor.Profile==null)return;
-            if(actor.GetComponentInChildren<BarraDeVida>(true)!=null)return;
-            // Common enemies: a small bar that appears after the first hit (you see how much is left).
-            if(actor.Profile.kind!=EnemyKind.Boss&&!actor.Profile.miniboss){BarraDeVida.Criar(actor.transform,actor.Health,BarraDeVida.Altura(actor.transform,1.8f)+.35f);return;}
-            BarraDeVida.Grande(actor.transform,actor.Health,actor.Profile.displayName);
         }
         void Voice(string label,AudioClip clip,float gain,string key){if(clip==null)return;var go=new GameObject(label);go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.spatialBlend=0;source.clip=clip;VolumeAoVivo.Ligar(source,key,gain);source.Play();}
         void HeroChanged(){hero.GetComponent<HeroCombat>().ConfigureFlow(hero.Current.onlineFlow);}

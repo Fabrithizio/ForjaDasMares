@@ -26,6 +26,7 @@ namespace ForjaDasMares.Networking
             BuildCatacombPanels(root);
             BuildDamageNumbers(root);
             if (!UnityEngine.Device.Application.isMobilePlatform) BuildHoverLabel(root);
+            AlvoNoTopo.Criar(world, root);
             movementMode=RusticHudTheme.Button(root,"MovementHelp",Top,new Vector2(22,-118),new Vector2(300,36),"CONTROLES · AJUDA",()=>{controlHint.gameObject.SetActive(!controlHint.gameObject.activeSelf);});
             controlHint=Label(root,"ControlHint",new Vector2(22,-158),new Vector2(430,56),"",14);
             // The controls now live in the settings (gear); the screen stays clean.
@@ -416,7 +417,7 @@ namespace ForjaDasMares.Networking
             var testItem=shopInventory.Catalog.Find(TestItemIds[0]);
             if(testItem!=null)
             {
-                Label(panel,"TestItem",new Vector2(25,-382),new Vector2(540,47),"TESTE · Bumerangue do Coração · as 3 versões",18).color=new Color(1f,.62f,.82f);
+                Label(panel,"TestItem",new Vector2(25,-382),new Vector2(540,47),"TESTE · Coração (3 versões) + Perdição de Netuno",18).color=new Color(1f,.62f,.82f);
                 RusticHudTheme.Button(panel,"TestGift",Top,new Vector2(590,-382),new Vector2(200,45),"PEGAR GRÁTIS",GiveTestItem);
             }
 #endif
@@ -436,7 +437,7 @@ namespace ForjaDasMares.Networking
             shop.SetActive(false);
         }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        static readonly string[] TestItemIds={"coracao-v1","coracao-v2","coracao-v3"};
+        static readonly string[] TestItemIds={"coracao-v1","coracao-v2","coracao-v3","netuno-v3"};
         void GiveTestItem()
         {
             if(!ShopOpen)return;
@@ -655,7 +656,8 @@ namespace ForjaDasMares.Networking
             buttonSize = size;
             attackMode = CombatAction(root,"Super",touch ? new Vector2(-176,241) : new Vector2(-132,height),size,"SUPER",HudSymbol.Fury,RusticHudTheme.Gold,world.Hero.GetComponent<ArenaInput>().RequestSuper,true);
             superShade = Shade(attackMode,size,true);
-            SegurarParaVer.Em(attackMode,() => "SUPER\nGolpe especial forte.\nEnche 1% a cada acerto e com esquivas perfeitas.\nSó começa a esvaziar depois de 10 segundos fora de combate.");
+            SuperPronto.Em(attackMode,() => { var c = world.Hero != null ? world.Hero.GetComponent<HeroCombat>() : null; return c != null && c.CanUseWeapon && c.SuperReady; });
+            SegurarParaVer.Em(attackMode,() => "SUPER\nGolpe especial forte.\nEnche 1% a cada acerto e com esquivas perfeitas.\nDepois de 10 segundos fora de combate, esvazia 5% por segundo.");
         }
 
         // Dark cover over a button that drains from the top while it recharges (with the seconds on the label).
@@ -848,9 +850,8 @@ namespace ForjaDasMares.Networking
             if (hoverBox == null) return;
             var input = world.Hero.GetComponent<ArenaInput>();
             var target = input.Desktop?.HoveredInteraction;
-            var enemy = input.Desktop?.SelectionTarget;
-            string title = target != null && target.isActiveAndEnabled ? target.HoverLabel ?? target.Label :
-                enemy != null && enemy.IsAlive ? enemy.GetComponent<EnemyActor>()?.Profile?.displayName : null;
+            // Only people and things show their name by the mouse; enemies go to the top of the screen (AlvoNoTopo).
+            string title = target != null && target.isActiveAndEnabled ? target.HoverLabel ?? target.Label : null;
             bool visible = !input.CombatBlocked && !string.IsNullOrEmpty(title);
             hoverBox.gameObject.SetActive(visible);
             if (!visible) return;

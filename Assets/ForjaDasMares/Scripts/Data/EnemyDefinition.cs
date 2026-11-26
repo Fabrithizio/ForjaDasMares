@@ -7,6 +7,8 @@ namespace ForjaDasMares
     {
         [Range(0,2)] public float spawnWarning;
         public string enemyId, displayName;
+        // Shown next to the name at the top of the screen (0 = not shown).
+        [Min(0)] public int level;
         public EnemyKind kind;
         public GameObject prefab;
         [Min(1)] public int maximumHealth = 40, poolCapacity = 4;

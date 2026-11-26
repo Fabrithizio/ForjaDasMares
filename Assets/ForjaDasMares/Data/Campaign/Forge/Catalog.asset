@@ -43,6 +43,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c90bfd2b91d3c384b9765a42dcba7af9, type: 2}
   - {fileID: 11400000, guid: 381b186ab42b2954a8d2bb82609390ae, type: 2}
   - {fileID: 11400000, guid: 9e100263c51510c458ee8e6d5353bf8f, type: 2}
+  - {fileID: 11400000, guid: a3eec6b2c82eefc42abd37e09ae9a10e, type: 2}
   baseCriticalMultiplier: 1.5
   maximumDefensePoints: 75
   talents:

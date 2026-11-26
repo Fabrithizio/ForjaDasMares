@@ -69,6 +69,7 @@ namespace ForjaDasMares.Networking
         enum Estado { Vagando, Parado, Pastando, Fugindo, Alerta, Investida, Recuperando, Voltando, Morto }
 
         Especie especie; bool tomado; Vector3 home; float wander;
+        public string Nome => especie == Especie.Javali ? "Javali" : "Cervo";
         NavMeshAgent agent; Animator anim; Health health; RegionalWorld world; Transform model;
         Estado estado; float until; Vector3 chargeDir; bool hitThisCharge; string playing;
         AttackDefinition golpe; GameObject breu; BarraDeVida barra;
@@ -114,7 +115,7 @@ namespace ForjaDasMares.Networking
                 golpe = ScriptableObject.CreateInstance<AttackDefinition>();
                 golpe.damage = especie == Especie.Javali ? 12 : 9; golpe.knockback = 3; golpe.range = 1.4f; golpe.arc = 360; golpe.color = Roxo;
                 Tomar();
-                barra = BarraDeVida.Criar(transform, health, especie == Especie.Javali ? 1.5f : 2.1f);
+                // Its life is shown at the top of the screen when focused (AlvoNoTopo), not over its head.
             }
             Mudar(Estado.Parado, Random.Range(1f, 3f));
         }
@@ -162,6 +163,12 @@ namespace ForjaDasMares.Networking
         {
             if (estado == Estado.Morto) return;
             if (health != null && !health.IsAlive) { StartCoroutine(Morrer()); return; }
+            if (health != null && health.Carried)
+            {
+                // Taken by a blow (the Netuno's bull and whirlpool): follow it along the ground.
+                if (agent.enabled && agent.isOnNavMesh) { Vector3 to = health.CarriedTo - transform.position; to.y = 0; agent.Move(to * Mathf.Min(1, 14 * Time.deltaTime)); }
+                return;
+            }
             var hero = world != null && world.Hero != null ? world.Hero.transform : null;
             Vector3 toHero = hero != null ? hero.position - transform.position : Vector3.one * 999; toHero.y = 0;
             float distance = toHero.magnitude;

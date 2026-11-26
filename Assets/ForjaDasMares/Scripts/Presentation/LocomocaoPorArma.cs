@@ -22,11 +22,13 @@ namespace ForjaDasMares
         // The base clips of the hero's Animator, the ones that get replaced.
         public AnimationClip baseParado, baseParadoOlhando, baseAndar, baseAndarFeminino, baseCorrer;
         public AnimationClip baseAtaque1, baseAtaque2, baseAtaque3, baseForte, baseSuper, baseHabilidade, baseDano;
-        public Jeito espada, cajado;
+        // pesada = two-handed heavy weapons (axes, hammers): Mixamo "Great Sword Pack".
+        public Jeito espada, cajado, pesada;
 
         public Jeito Para(WeaponCategory category) =>
             category == WeaponCategory.Staff ? Valid(cajado) :
-            category == WeaponCategory.Sword || category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? Valid(espada) : null;
+            category == WeaponCategory.Axe || category == WeaponCategory.Hammer ? Valid(pesada) ?? Valid(espada) :
+            category == WeaponCategory.Sword ? Valid(espada) : null;
         static Jeito Valid(Jeito j) => j != null && j.parado != null && j.andar != null && j.correr != null ? j : null;
 
         static LocomocaoPorArma loaded; static bool tried;
